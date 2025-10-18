@@ -16,6 +16,7 @@
       height: 100vh;
       margin: 0;
       padding: 20px;
+      font-size: 18px;
       color: #2d3436;
     }
 
@@ -39,18 +40,17 @@
 
     label {
       display: block;
-      margin-top: 20px;
+      margin-top: 30px;
       color: white;
-      font-size: 15px;
     }
 
     input {
       width: 100%;
       padding: 10px 12px;
-      margin-top: 6px;
+      margin-top: 5px;
       box-sizing: border-box;
       border: 2px solid #dfe6e9;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 15px;
       transition: all 0.3s ease;
     }
@@ -84,8 +84,7 @@
     /* ======== ENLACES Y MENSAJES ======== */
     p {
       text-align: center;
-      margin-top: 20px;
-      font-size: 15px;
+      margin-top: 15px;
       color: white;
     }
 
@@ -99,7 +98,12 @@
       color: #fdcb6e;
     }
 
-    /* ======== BOTÓN DE RECUPERACIÓN ======== */
+    .error {
+      color: #ffcccc;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
     .recover-btn {
       display: inline-block;
       width: 100%;
@@ -118,14 +122,6 @@
       background-color: #5a4edb;
       transform: scale(1.03);
     }
-
-    /* ======== MENSAJE DE ERROR ======== */
-    .error {
-      color: #ffcccc;
-      font-size: 14px;
-      margin-top: 6px;
-      line-height: 1.3;
-    }
   </style>
 </head>
 <body>
@@ -141,8 +137,7 @@
       <input type="email" id="email" name="email" placeholder="Ej. maria@gmail.com" required>
 
       <label for="password">Contraseña:</label>
-      <input type="password" id="password" name="password" placeholder="********" required>
-
+      <input type="password" id="password" name="password" required>
       <div id="passwordError" class="error"></div>
 
       <button type="submit">Registrarme</button>
@@ -158,7 +153,7 @@
   </div>
 
   <script>
-    /* ======== VALIDACIÓN DE CONTRASEÑA SEGURA ======== */
+    // Función para validar seguridad de contraseña
     function validarContrasena(password, name, email) {
       const errors = [];
 
@@ -174,7 +169,7 @@
       if (!/[0-9]/.test(password)) {
         errors.push("Debe incluir al menos un número.");
       }
-      if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
         errors.push("Debe incluir al menos un carácter especial.");
       }
       if (password.toLowerCase().includes(name.toLowerCase()) ||
@@ -185,10 +180,9 @@
       return errors;
     }
 
-    /* ======== EVENTO DE ENVÍO DEL FORMULARIO ======== */
+    // Validar al enviar formulario
     document.getElementById('registerForm').addEventListener('submit', function(event) {
       event.preventDefault();
-
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
@@ -200,9 +194,8 @@
         errorDiv.innerHTML = errores.join("<br>");
       } else {
         errorDiv.innerHTML = "";
-        alert('✅ Registro exitoso. Contraseña segura.');
-        // Aquí puedes conectar con Laravel o tu API backend
-        // Ejemplo: enviar datos con fetch('/register', { method: 'POST', body: new FormData(this) })
+        alert('Registro exitoso. Contraseña segura.');
+        // Aquí puedes enviar los datos al servidor (Laravel o API)
       }
     });
   </script>
