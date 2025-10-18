@@ -173,9 +173,16 @@
       Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El Paraíso.</p>
 
       <div class="mt-4">
-        <button class="btn btn-yellow me-2">🔑 Iniciar Matrícula</button>
-        <button class="btn btn-outline-light">⚙️ Panel Administrativo</button>
+
+<a href="{{ url('/login') }}" class="btn btn-outline-primary">
+  Iniciar sesión
+</a>
+
+
       </div>
+    </div>
+  </section>
+
     </div>
   </section>
 
@@ -216,7 +223,32 @@
         <h4>Calendario Académico 2026</h4>
         <p>Fechas importantes del año escolar</p>
       </div>
-      <button class="btn btn-calendar">📅 Ver Calendario</button>
+      <button class="btn btn-calendar">Ver Calendario</button>
+    </div>
+  </section>
+
+  <!-- MISIÓN Y VISIÓN -->
+  <section class="mision-vision container my-5">
+    <div class="row justify-content-center text-center">
+      <div class="col-md-8 mb-4">
+        <h3 class="fw-bold text-primary">Misión</h3>
+        <p>
+          Somos una institución pionera responsable de formar y transformar a la niñez municipal,
+          Departamental y Nacional, ofreciendo una Educación Básica de calidad en un clima de
+          respeto, disciplina y compañerismo, con el propósito de lograr en los alumnos las competencias
+          necesarias para adaptarse a la época de cambios que exige la sociedad y el mundo actual.
+        </p>
+      </div>
+      <div class="col-md-8">
+        <h3 class="fw-bold text-success">Visión</h3>
+        <p>
+          Ser una institución líder en la formación de la niñez Hondureña;
+          incorporando diversos conocimientos y tecnología de acorde con las necesidades básicas;
+          con el fin de lograr en los educandos: "Excelente calidad educativa, valores éticos, morales y espirituales",
+          capacidad de análisis, sentimientos de identidad nacional y una actitud crítica positiva
+          que les permita enfrentar los actuales y futuros retos que el mundo y la sociedad demandan.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -272,8 +304,7 @@
       </div>
     </div>
   </section>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
 
