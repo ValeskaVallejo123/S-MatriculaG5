@@ -13,13 +13,18 @@
     }
 
     /* ======= SECCIÓN HERO ======= */
-    .hero {
-      background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-                  url('{{ asset('imagenes/centroEd.jpg') }}') center/cover no-repeat;
-      color: white;
-      padding: 80px 0 60px;
-    }
+   .hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45));
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    padding: 80px 0 60px;
+}
 
+.hero[style*="background-image"] {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), var(--bg-url);
+}
     .hero h1 {
       font-size: 2.8rem;
       font-weight: 700;
@@ -173,7 +178,7 @@
       Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El Paraíso.</p>
 
       <div class="mt-4">
-        <button class="btn btn-yellow me-2">🔑 Iniciar Matrícula</button>
+        <button class="btn btn-yellow me-2"> Iniciar Matrícula</button>
         <button class="btn btn-outline-light">⚙️ Panel Administrativo</button>
       </div>
     </div>
