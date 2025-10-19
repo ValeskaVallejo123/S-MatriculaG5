@@ -9,27 +9,50 @@ class Estudiante extends Model
 {
     use HasFactory;
 
-    protected $table = 'estudiantes';
-
     protected $fillable = [
         'nombre',
         'apellido',
-        'correo',
+        'email',
         'telefono',
+        'dni',
+        'fecha_nacimiento',
         'direccion',
-        'padre_id', // Relación con el padre
+        'grado',
+        'seccion',
+        'estado',
+        'observaciones'
     ];
 
-    // 🔁 Relación inversa: un estudiante pertenece a un padre
-    public function padre()
+    protected $casts = [
+        'fecha_nacimiento' => 'date',
+    ];
+
+    // Accessor para nombre completo
+    public function getNombreCompletoAttribute()
     {
-        return $this->belongsTo(Padre::class, 'padre_id');
+        return "{$this->nombre} {$this->apellido}";
     }
 
-    // 📁 Un estudiante puede tener muchos documentos
-    public function documentos()
+    // Opciones de grados
+    public static function grados()
     {
-        return $this->hasMany(Documento::class, 'estudiante_id');
+        return [
+            '1ro Primaria',
+            '2do Primaria',
+            '3ro Primaria',
+            '4to Primaria',
+            '5to Primaria',
+            '6to Primaria',
+            '1ro Secundaria',
+            '2do Secundaria',
+            '3ro Secundaria',
+            
+        ];
+    }
+
+    // Opciones de secciones
+    public static function secciones()
+    {
+        return ['A', 'B', 'C', 'D', 'E'];
     }
 }
-
