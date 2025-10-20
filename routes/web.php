@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfesorController;
 
 Route::get('/', function () {
     return redirect()->route('admins.index');
@@ -10,6 +11,9 @@ Route::get('/', function () {
 
 Route::resource('admins', AdminController::class);
 Route::resource('estudiantes', EstudianteController::class);
+Route::resource('profesores', ProfesorController::class)->parameters([
+    'profesores' => 'profesor'
+]);
 
 // O si prefieres definirlas manualmente:
 /*
