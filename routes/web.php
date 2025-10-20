@@ -1,18 +1,14 @@
 <?php
 
-<<<<<<< HEAD
 use App\Http\Controllers\PasswordResetController;
-=======
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
->>>>>>> 738a459a0798e11a977982445f805f9c8cd2e572
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('admins.index');
 });
 
-<<<<<<< HEAD
 Route::get('/', function () {
     return view('plantilla'); // o tu vista principal
 });
@@ -41,10 +37,8 @@ Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
 
 
 
-=======
 Route::resource('admins', AdminController::class);
 Route::resource('estudiantes', EstudianteController::class);
->>>>>>> 738a459a0798e11a977982445f805f9c8cd2e572
 
 // O si prefieres definirlas manualmente:
 /*

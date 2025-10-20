@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Admin;
+use App\Models\Estudiante;
 use App\Models\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +17,6 @@ class PasswordResetController extends Controller
      */
     public function showForgotForm()
     {
-        // Vista personalizada dentro de resources/views/recuperarcontrasenia/
         return view('recuperarcontrasenia.solicitar');
     }
 
@@ -25,22 +26,32 @@ class PasswordResetController extends Controller
     public function sendResetLink(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
         ], [
-            'email.exists' => 'El correo ingresado no está registrado.',
+            'email.required' => 'El correo es obligatorio.',
             'email.email' => 'El formato del correo no es válido.',
         ]);
 
+        $email = $request->email;
 
-        // Generar token y guardarlo en la tabla password_resets
-        $reset = PasswordReset::generateToken($request->email);
+        // Verificar si el correo existe en alguna de las tablas
+        $existsInUsers = User::where('email', $email)->exists();
+        $existsInAdmins = Admin::where('email', $email)->exists();
+        $existsInEstudiantes = Estudiante::where('email', $email)->exists();
+
+        if (!($existsInUsers || $existsInAdmins || $existsInEstudiantes)) {
+            return back()->withErrors(['email' => 'El correo ingresado no está registrado en el sistema.']);
+        }
+
+        // Generar token y guardarlo
+        $reset = PasswordReset::generateToken($email);
 
         // Enlace de recuperación
-        $link = url('/password/reset/' . $reset->token);
+        $link = url('/password/restablecer/' . $reset->token);
 
-        // Enviar correo con plantilla Blade
-        Mail::send('emails.recuperar_contrasenia', ['link' => $link], function ($message) use ($request) {
-            $message->to($request->email)
+        // Enviar correo usando tu plantilla personalizada
+        Mail::send('emails.recuperar_contrasenia', ['link' => $link], function ($message) use ($email) {
+            $message->to($email)
                 ->subject('Recuperar contraseña - Escuela Gabriela Mistral');
         });
 
@@ -56,13 +67,13 @@ class PasswordResetController extends Controller
     }
 
     /**
-     * Guarda la nueva contraseña del usuario.
+     * Guarda la nueva contraseña del usuario, administrador o estudiante.
      */
     public function resetPassword(Request $request)
     {
         $request->validate([
             'token' => 'required',
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
             'password' => 'required|min:6|confirmed',
         ]);
 
@@ -75,11 +86,19 @@ class PasswordResetController extends Controller
             return back()->withErrors(['email' => 'El token es inválido o ha expirado.']);
         }
 
-        // Actualizar la contraseña del usuario
-        $user = User::where('email', $request->email)->first();
-        $user->update([
-            'password' => Hash::make($request->password),
-        ]);
+        $email = $request->email;
+        $newPassword = Hash::make($request->password);
+
+        // Buscar en cada tabla y actualizar
+        if ($user = User::where('email', $email)->first()) {
+            $user->update(['password' => $newPassword]);
+        } elseif ($admin = Admin::where('email', $email)->first()) {
+            $admin->update(['password' => $newPassword]);
+        } elseif ($estudiante = Estudiante::where('email', $email)->first()) {
+            $estudiante->update(['password' => $newPassword]);
+        } else {
+            return back()->withErrors(['email' => 'No se encontró ninguna cuenta asociada a este correo.']);
+        }
 
         // Eliminar token usado
         $reset->delete();
