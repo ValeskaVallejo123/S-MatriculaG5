@@ -4,12 +4,28 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/', function () {
     return redirect()->route('admins.index');
 });
 
 Route::resource('admins', AdminController::class);
 Route::resource('estudiantes', EstudianteController::class);
+
+
+/*Route::get('/', function () {
+    return view('welcome'); // o tu vista principal
+});*/
+
+Route::get('/', function () {
+    return view('plantilla');
+});
+
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+
+
 
 // O si prefieres definirlas manualmente:
 /*
