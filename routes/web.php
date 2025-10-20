@@ -4,6 +4,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfesorController;
 
 
 Route::get('/', function () {
@@ -40,6 +41,9 @@ Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
 
 Route::resource('admins', AdminController::class);
 Route::resource('estudiantes', EstudianteController::class);
+Route::resource('profesores', ProfesorController::class)->parameters([
+    'profesores' => 'profesor'
+]);
 
 
 /*Route::get('/', function () {
