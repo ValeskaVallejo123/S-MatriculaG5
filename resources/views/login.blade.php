@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -16,7 +17,6 @@
       height: 100vh;
       margin: 0;
       padding: 20px;
-      font-size: 18px;
       color: #2d3436;
     }
 
@@ -40,17 +40,18 @@
 
     label {
       display: block;
-      margin-top: 30px;
+      margin-top: 20px;
       color: white;
+      font-size: 15px;
     }
 
     input {
       width: 100%;
       padding: 10px 12px;
-      margin-top: 5px;
+      margin-top: 6px;
       box-sizing: border-box;
       border: 2px solid #dfe6e9;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 15px;
       transition: all 0.3s ease;
     }
@@ -84,7 +85,8 @@
     /* ======== ENLACES Y MENSAJES ======== */
     p {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 20px;
+      font-size: 15px;
       color: white;
     }
 
@@ -104,6 +106,11 @@
       margin-top: 5px;
     }
 
+    a:hover {
+      color: #fdcb6e;
+    }
+
+    /* ======== BOTÓN DE RECUPERACIÓN ======== */
     .recover-btn {
       display: inline-block;
       width: 100%;
@@ -122,6 +129,14 @@
       background-color: #5a4edb;
       transform: scale(1.03);
     }
+
+    /* ======== MENSAJE DE ERROR ======== */
+    .error {
+      color: #ffcccc;
+      font-size: 14px;
+      margin-top: 6px;
+      line-height: 1.3;
+    }
   </style>
 </head>
 <body>
@@ -137,7 +152,8 @@
       <input type="email" id="email" name="email" placeholder="Ej. maria@gmail.com" required>
 
       <label for="password">Contraseña:</label>
-      <input type="password" id="password" name="password" required>
+      <input type="password" id="password" name="password" placeholder="********" required>
+
       <div id="passwordError" class="error"></div>
 
       <button type="submit">Registrarme</button>
@@ -153,7 +169,7 @@
   </div>
 
   <script>
-    // Función para validar seguridad de contraseña
+    /* ======== VALIDACIÓN DE CONTRASEÑA SEGURA ======== */
     function validarContrasena(password, name, email) {
       const errors = [];
 
@@ -169,7 +185,7 @@
       if (!/[0-9]/.test(password)) {
         errors.push("Debe incluir al menos un número.");
       }
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
         errors.push("Debe incluir al menos un carácter especial.");
       }
       if (password.toLowerCase().includes(name.toLowerCase()) ||
@@ -180,9 +196,10 @@
       return errors;
     }
 
-    // Validar al enviar formulario
+    /* ======== EVENTO DE ENVÍO DEL FORMULARIO ======== */
     document.getElementById('registerForm').addEventListener('submit', function(event) {
       event.preventDefault();
+
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
