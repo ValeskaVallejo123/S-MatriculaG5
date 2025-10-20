@@ -174,10 +174,11 @@
 
       <div class="mt-4">
 
-<a href="{{ url('/login') }}" class="btn btn-outline-primary">
+<a href="{{ url('/login') }}"
+   class="btn"
+   style="background-color: rgb(235, 82, 214); color: rgb(13, 14, 13); font-size: 14px; border: 1px solid rgb(247, 243, 243);">
   Iniciar sesión
 </a>
-
 
       </div>
     </div>

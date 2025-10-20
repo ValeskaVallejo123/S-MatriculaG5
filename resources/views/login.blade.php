@@ -1,11 +1,13 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Usuario</title>
+  <title>Registro de Usuario - Sistema de Matrícula</title>
 
   <style>
+    /* ======== ESTILOS GENERALES ======== */
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #ffffff, #a29bfe);
@@ -15,37 +17,41 @@
       height: 100vh;
       margin: 0;
       padding: 20px;
-      font-size: 18px;
       color: #2d3436;
     }
 
+    /* ======== CONTENEDOR DEL FORMULARIO ======== */
     .form-container {
       background-color: rgb(110, 26, 189);
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       width: 400px;
+      color: white;
+      text-align: left;
     }
 
     .form-container h2 {
       color: white;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-weight: 600;
     }
 
     label {
       display: block;
-      margin-top: 30px;
+      margin-top: 20px;
       color: white;
+      font-size: 15px;
     }
 
     input {
       width: 100%;
       padding: 10px 12px;
-      margin-top: 5px;
+      margin-top: 6px;
       box-sizing: border-box;
       border: 2px solid #dfe6e9;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 15px;
       transition: all 0.3s ease;
     }
@@ -56,10 +62,11 @@
       box-shadow: 0 0 6px rgba(9, 132, 227, 0.4);
     }
 
+    /* ======== BOTÓN DE REGISTRO ======== */
     button {
       width: 100%;
-      padding: 10px;
-      margin-top: 20px;
+      padding: 12px;
+      margin-top: 25px;
       background-color: #ffb703;
       color: white;
       border: none;
@@ -75,18 +82,25 @@
       transform: scale(1.03);
     }
 
+    /* ======== ENLACES Y MENSAJES ======== */
     p {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 20px;
+      font-size: 15px;
       color: white;
     }
 
-    .error {
-      color: #ffcccc;
-      font-size: 14px;
-      margin-top: 5px;
+    a {
+      color: #ffeaa7;
+      text-decoration: underline;
+      transition: color 0.3s ease;
     }
 
+    a:hover {
+      color: #fdcb6e;
+    }
+
+    /* ======== BOTÓN DE RECUPERACIÓN ======== */
     .recover-btn {
       display: inline-block;
       width: 100%;
@@ -105,25 +119,37 @@
       background-color: #5a4edb;
       transform: scale(1.03);
     }
+
+    /* ======== MENSAJE DE ERROR ======== */
+    .error {
+      color: #ffcccc;
+      font-size: 14px;
+      margin-top: 6px;
+      line-height: 1.3;
+    }
   </style>
 </head>
 <body>
   <div class="form-container">
     <h2>Registrarme</h2>
+
+    <!-- ======== FORMULARIO DE REGISTRO ======== -->
     <form id="registerForm">
-      <label for="name">Nombre:</label>
-      <input type="text" id="name" name="name" required>
+      <label for="name">Nombre completo:</label>
+      <input type="text" id="name" name="name" placeholder="Ej. María López" required>
 
       <label for="email">Correo electrónico:</label>
-      <input type="email" id="email" name="email" required>
+      <input type="email" id="email" name="email" placeholder="Ej. maria@gmail.com" required>
 
       <label for="password">Contraseña:</label>
-      <input type="password" id="password" name="password" required>
+      <input type="password" id="password" name="password" placeholder="********" required>
+
       <div id="passwordError" class="error"></div>
 
       <button type="submit">Registrarme</button>
     </form>
 
+    <!-- ======== ENLACES ======== -->
     <p>¿Ya tienes una cuenta?
       <a href="{{ url('/login') }}">Iniciar sesión</a>
     </p>
@@ -133,7 +159,7 @@
   </div>
 
   <script>
-    // Función para validar seguridad de contraseña
+    /* ======== VALIDACIÓN DE CONTRASEÑA SEGURA ======== */
     function validarContrasena(password, name, email) {
       const errors = [];
 
@@ -149,7 +175,7 @@
       if (!/[0-9]/.test(password)) {
         errors.push("Debe incluir al menos un número.");
       }
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
         errors.push("Debe incluir al menos un carácter especial.");
       }
       if (password.toLowerCase().includes(name.toLowerCase()) ||
@@ -160,9 +186,10 @@
       return errors;
     }
 
-    // Validar al enviar formulario
+    /* ======== EVENTO DE ENVÍO DEL FORMULARIO ======== */
     document.getElementById('registerForm').addEventListener('submit', function(event) {
       event.preventDefault();
+
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
@@ -175,7 +202,8 @@
       } else {
         errorDiv.innerHTML = "";
         alert('✅ Registro exitoso. Contraseña segura.');
-        // Aquí puedes enviar los datos al servidor (Laravel o API)
+        // Aquí puedes conectar con Laravel o tu API backend
+        // Ejemplo: enviar datos con fetch('/register', { method: 'POST', body: new FormData(this) })
       }
     });
   </script>
