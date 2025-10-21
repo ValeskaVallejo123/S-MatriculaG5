@@ -17,13 +17,16 @@
                     Sistema Escolar
                 </a>
                 <div class="flex gap-6">
-                    <a href="{{ route('admins.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
-                         Administradores
-                    </a>
-                    <a href="{{ route('estudiantes.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
-                         Estudiantes
-                    </a>
-                </div>
+    <a href="{{ route('admins.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
+         Administradores
+    </a>
+    <a href="{{ route('estudiantes.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
+         Estudiantes
+    </a>
+    <a href="{{ route('profesores.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
+         Profesores
+    </a>
+</div>
             </div>
         </div>
     </nav>
