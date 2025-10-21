@@ -1,67 +1,58 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subir Documento</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <h1 class="mb-4">Subir Documento</h1>
+@extends('layouts.app')
 
-    {{-- Mensaje de éxito --}}
-    @if(session('success'))
-        <div class="alert alert-success">
-            Documento subido: <strong>{{ session('success') }}</strong>
-        </div>
-    @endif
+@section('title', 'Subir Documentos')
 
-    {{-- Previsualización del documento seleccionado --}}
-    @isset($nombreArchivo)
-        <div class="alert alert-info">
-            <p>Documento seleccionado: <strong>{{ $nombreArchivo }}</strong></p>
-            <form action="{{ route('documentos.store') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-success">Aceptar y Subir Documento</button>
-                <a href="{{ route('documentos.create') }}" class="btn btn-secondary">Cancelar</a>
-            </form>
-        </div>
-    @endisset
+@section('content')
+    <div class="container mt-5">
+        <h2>Subir Documentos del Estudiante</h2>
 
-    {{-- Formulario para seleccionar archivo y escribir correos --}}
-    @empty($nombreArchivo)
-        <form action="{{ route('documentos.preview') }}" method="POST" enctype="multipart/form-data">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>@foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach</ul>
+            </div>
+        @endif
+
+        <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+
             <div class="mb-3">
-                <label for="padre_email" class="form-label">Correo del Padre</label>
-                <input type="email" name="padre_email" class="form-control" required>
+                <label for="nombre_estudiante" class="form-label">Nombre del Estudiante</label>
+                <input type="text" name="nombre_estudiante" id="nombre_estudiante" class="form-control" required>
             </div>
 
             <div class="mb-3">
-                <label for="estudiante_email" class="form-label">Correo del Estudiante</label>
-                <input type="email" name="estudiante_email" class="form-control" required>
+                <label for="acta_nacimiento" class="form-label">Acta de Nacimiento</label>
+                <input type="file" name="acta_nacimiento" id="acta_nacimiento" class="form-control" required>
             </div>
 
             <div class="mb-3">
-                <label for="archivo" class="form-label">Archivo</label>
-                <input type="file" name="archivo" class="form-control" accept=".jpg,.png,.pdf" required>
-                <div class="form-text">Formatos permitidos: JPG, PNG, PDF. Máx. 5MB.</div>
+                <label for="calificaciones" class="form-label">Calificaciones</label>
+                <input type="file" name="calificaciones" id="calificaciones" class="form-control" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">Ver Documento Seleccionado</button>
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a href="{{ route('documentos.index') }}" class="btn btn-secondary">Volver</a>
         </form>
-    @endempty
+    </div>
+@endsection
 
-    {{-- Último documento subido --}}
-    @isset($ultimoDocumento)
-        <hr>
-        <h2>Documento Subido</h2>
-        <p><strong>{{ $ultimoDocumento->nombre }}</strong> ({{ strtoupper($ultimoDocumento->tipo) }})</p>
-    @endisset
-</div>
-</body>
-</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

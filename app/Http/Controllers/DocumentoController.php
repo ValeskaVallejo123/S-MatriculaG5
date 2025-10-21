@@ -2,75 +2,106 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Documento;
-use App\Models\Estudiante;
-use App\Models\Padre;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentoController extends Controller
 {
-    public function create(Request $request)
+    public function index()
     {
-        // Traer último documento subido
-        $ultimoDocumento = Documento::latest()->first();
-        return view('Documentos.createDocumento', compact('ultimoDocumento'));
+        $documentos = Documento::all();
+        return view('Documentos.indexDocumento', compact('documentos'));
     }
 
-    public function preview(Request $request)
+    public function create()
     {
-        $request->validate([
-            'archivo' => 'required|file|mimes:jpg,png,pdf|max:5120',
-            'padre_email' => 'required|email',
-            'estudiante_email' => 'required|email',
-        ]);
-
-        // Guardar temporalmente el archivo en storage/app/temp
-        $archivoTemp = $request->file('archivo')->store('temp');
-
-        // Guardar la ruta temporal y correos en la sesión
-        $request->session()->put('archivo_temp_path', $archivoTemp);
-        $request->session()->put('padre_email', $request->padre_email);
-        $request->session()->put('estudiante_email', $request->estudiante_email);
-
-        $nombreArchivo = $request->file('archivo')->getClientOriginalName();
-
-        return view('Documentos.createDocumento', compact('nombreArchivo'));
+        return view('Documentos.createDocumento');
     }
-
 
     public function store(Request $request)
     {
-        $archivoTempPath = $request->session()->get('archivo_temp_path');
-        $padre_email = $request->session()->get('padre_email');
-        $estudiante_email = $request->session()->get('estudiante_email');
-
-        // Crear registros de padre y estudiante si no existen
-        $padre = Padre::firstOrCreate(['correo' => $padre_email], ['nombre' => 'Desconocido', 'apellido' => 'Desconocido']);
-        $estudiante = Estudiante::firstOrCreate(['correo' => $estudiante_email], ['nombre' => 'Desconocido', 'apellido' => 'Desconocido']);
-
-        // Mover el archivo de temp a storage/app/public/documentos
-        $archivoNombre = basename($archivoTempPath);
-        $rutaFinal = Storage::disk('public')->putFileAs('documentos', storage_path('app/' . $archivoTempPath), $archivoNombre);
-
-        // Guardar en BD
-        $documento = Documento::create([
-            'estudiante_id' => $estudiante->id,
-            'padre_id' => $padre->id,
-            'nombre' => $archivoNombre,
-            'tipo' => pathinfo($archivoNombre, PATHINFO_EXTENSION),
-            'tamano' => Storage::disk('public')->size('documentos/' . $archivoNombre),
-            'ruta' => 'documentos/' . $archivoNombre,
+        $request->validate([
+            'nombre_estudiante' => 'required|string|max:255',
+            'acta_nacimiento' => 'required|mimes:png,jpg,pdf|max:5120',
+            'calificaciones' => 'required|mimes:png,jpg,pdf|max:5120',
         ]);
 
-        // Limpiar sesión y temp
-        Storage::delete($archivoTempPath);
-        $request->session()->forget(['archivo_temp_path','padre_email','estudiante_email']);
+        // Guardar archivos en carpetas separadas dentro de /storage/app/public/documentos/
+        $actaPath = $request->file('acta_nacimiento')->store('documentos/actas', 'public');
+        $calificacionesPath = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
 
-        return redirect()->route('documentos.create')->with('success', $documento->nombre);
+        Documento::create([
+            'nombre_estudiante' => $request->nombre_estudiante,
+            'acta_nacimiento' => $actaPath,
+            'calificaciones' => $calificacionesPath,
+        ]);
+
+        return redirect()->route('documentos.index')->with('success', 'Documentos guardados correctamente.');
     }
 
+    public function edit($id)
+    {
+        $documento = Documento::findOrFail($id);
+        return view('Documentos.editDocumento', compact('documento'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $documento = Documento::findOrFail($id);
+
+        $request->validate([
+            'nombre_estudiante' => 'required|string|max:255',
+            'acta_nacimiento' => 'nullable|mimes:png,jpg,pdf|max:5120',
+            'calificaciones' => 'nullable|mimes:png,jpg,pdf|max:5120',
+        ]);
+
+        // Si se sube una nueva acta, eliminar la anterior y guardar la nueva
+        if ($request->hasFile('acta_nacimiento')) {
+            Storage::disk('public')->delete($documento->acta_nacimiento);
+            $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('documentos/actas', 'public');
+        }
+
+        // Si se suben nuevas calificaciones, eliminar las anteriores y guardar las nuevas
+        if ($request->hasFile('calificaciones')) {
+            Storage::disk('public')->delete($documento->calificaciones);
+            $documento->calificaciones = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
+        }
+
+        $documento->nombre_estudiante = $request->nombre_estudiante;
+        $documento->save();
+
+        return redirect()->route('documentos.index')->with('success', 'Documentos actualizados correctamente.');
+    }
+
+    public function destroy($id)
+    {
+        $documento = Documento::findOrFail($id);
+
+        Storage::disk('public')->delete([$documento->acta_nacimiento, $documento->calificaciones]);
+        $documento->delete();
+
+        return redirect()->route('documentos.index')->with('success', 'Documentos eliminados correctamente.');
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\DocumentoController;
+
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,3 +25,5 @@ Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admins.
 Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admins.destroy');
 */
 
+//Rutas subir documentos
+Route::resource('documentos', DocumentoController::class);
