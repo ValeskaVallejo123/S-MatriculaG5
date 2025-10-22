@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfesorController;
+use App\Http\Controllers\MatriculaController;
 
 
 // Ruta principal - redirige a admins
@@ -44,7 +45,27 @@ Route::prefix('password')->name('password.')->group(function () {
 Route::resource('admins', AdminController::class);
 Route::resource('estudiantes', EstudianteController::class);
 Route::resource('profesores', ProfesorController::class)->parameter('profesores', 'profesor');
+// Rutas de Matrículas
+Route::resource('matriculas', MatriculaController::class);
 
+// Rutas adicionales para matrículas (si las necesitas)
+Route::prefix('matriculas')->name('matriculas.')->group(function () {
+    // Aprobar matrícula
+    Route::patch('/{matricula}/aprobar', [MatriculaController::class, 'aprobar'])
+        ->name('aprobar');
+    
+    // Rechazar matrícula
+    Route::patch('/{matricula}/rechazar', [MatriculaController::class, 'rechazar'])
+        ->name('rechazar');
+    
+    // Cancelar matrícula
+    Route::patch('/{matricula}/cancelar', [MatriculaController::class, 'cancelar'])
+        ->name('cancelar');
+    
+    // Descargar documento
+    Route::get('/{matricula}/documento/{tipo}', [MatriculaController::class, 'descargarDocumento'])
+        ->name('descargar-documento');
+});
 // O si prefieres definirlas manualmente:
 /*
 Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
