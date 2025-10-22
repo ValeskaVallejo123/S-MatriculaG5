@@ -56,6 +56,7 @@
                     </div>
                 </a>
 
+
                 <!-- Menú de Navegación -->
                 <div class="hidden md:flex gap-2">
                     <a href="{{ route('admins.index') }}" class="group flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold transition-all hover:bg-indigo-50 {{ request()->routeIs('admins.*') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:text-indigo-600' }}">
@@ -112,6 +113,19 @@
                     </svg>
                     Profesores
                 </a>
+
+                <div class="flex gap-6">
+    <a href="{{ route('admins.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
+         Administradores
+    </a>
+    <a href="{{ route('estudiantes.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
+         Estudiantes
+    </a>
+    <a href="{{ route('profesores.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
+         Profesores
+    </a>
+</div>
+
             </div>
         </div>
     </nav>

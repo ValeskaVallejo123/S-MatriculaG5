@@ -50,6 +50,7 @@ class ProfesorController extends Controller
     }
 
     public function edit(Profesor $profesor)
+<<<<<<< HEAD
 {
     // Define las opciones para los selects
     $especialidades = [
@@ -174,6 +175,37 @@ class ProfesorController extends Controller
     return redirect()->route('profesores.index')
         ->with('success', 'Profesor actualizado exitosamente');
 }
+=======
+    {
+        $especialidades = Profesor::especialidades();
+        $tiposContrato = Profesor::tiposContrato();
+        return view('profesores.edit', compact('profesor', 'especialidades', 'tiposContrato'));
+    }
+
+    public function update(Request $request, Profesor $profesor)
+    {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'email' => 'nullable|email|unique:profesores,email,' . $profesor->id,
+            'telefono' => 'nullable|string|max:20',
+            'dni' => 'required|string|unique:profesores,dni,' . $profesor->id,
+            'fecha_nacimiento' => 'required|date',
+            'direccion' => 'nullable|string',
+            'especialidad' => 'required|string',
+            'salario' => 'nullable|numeric|min:0',
+            'tipo_contrato' => 'required|in:tiempo_completo,medio_tiempo,por_horas',
+            'fecha_ingreso' => 'required|date',
+            'estado' => 'required|in:activo,inactivo,licencia',
+            'observaciones' => 'nullable|string',
+        ]);
+
+        $profesor->update($validated);
+
+        return redirect()->route('profesores.index')
+            ->with('success', 'Profesor actualizado exitosamente');
+    }
+>>>>>>> dev/valeska
 
     public function destroy(Profesor $profesor)
     {

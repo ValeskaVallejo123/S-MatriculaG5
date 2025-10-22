@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto">
+
     <!-- Header Section -->
     <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -25,6 +26,13 @@
                 Nuevo Estudiante
             </a>
         </div>
+
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800"> Estudiantes</h1>
+        <a href="{{ route('estudiantes.create') }}" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-semibold shadow">
+            + Nuevo Estudiante
+        </a>
+
     </div>
 
     <!-- Stats Cards -->
