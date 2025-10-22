@@ -4,6 +4,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\CambiarContraseniaController;
 
 
 use Illuminate\Support\Facades\Route;
@@ -76,3 +77,11 @@ Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('adm
 
 //Rutas subir documentos
 Route::resource('documentos', DocumentoController::class);
+
+//Rutas Cambiar contrasenia
+// Mostrar el formulario para cambiar la contraseña
+Route::get('/cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
+    ->name('cambiar_contrasenia.edit');
+// Procesar el cambio de contraseña
+Route::put('/cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
+    ->name('cambiar_contrasenia.update');
