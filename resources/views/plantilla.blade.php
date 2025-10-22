@@ -18,7 +18,7 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    color: white;
+    color: rgb(14, 13, 13);
     padding: 80px 0 60px;
 }
 
@@ -31,7 +31,7 @@
     }
 
     .hero span {
-      color: #ffd700;
+      color: #f7f746;
       font-family: 'Pacifico', cursive;
       font-size: 2rem;
     }
@@ -42,7 +42,7 @@
     }
 
     .btn-yellow {
-      background-color: #ffb703;
+      background-color: #130e01;
       border: none;
       color: #fff;
       font-weight: bold;
@@ -170,32 +170,31 @@
 </head>
 <body>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <h1>Sistema de Matrícula <br><span>Escuela Gabriela Mistral</span></h1>
-      <p>Plataforma integral para el registro y gestión de matrículas estudiantiles.
-      Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El Paraíso.</p>
-
-      <div class="mt-4">
-<<<<<<< HEAD
-
-<a href="{{ url('/login') }}"
-   class="btn"
-   style="background-color: rgb(235, 82, 214); color: rgb(13, 14, 13); font-size: 14px; border: 1px solid rgb(247, 243, 243);">
-  Iniciar sesión
-</a>
-
-=======
-        <button class="btn btn-yellow me-2"> Iniciar Matrícula</button>
-        <button class="btn btn-outline-light">⚙️ Panel Administrativo</button>
->>>>>>> dev/valeska
-      </div>
+<!-- HERO -->
+<section class="hero" style="
+    background-image: url('{{ asset('imagenes/centroEd.jpg') }}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 100px 0;
+    color: white;
+">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; text-align: left;">
+    <h1>Sistema de Matrícula <br><span>Escuela Gabriela Mistral</span></h1>
+    <p>
+      Plataforma integral para el registro y gestión de matrículas estudiantiles.
+      Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El Paraíso.
+    </p>
+    <div class="mt-4">
+      <a href="{{ url('/login') }}"
+         class="btn"
+         style="background-color: rgb(235, 82, 214); color: rgb(13, 14, 13); font-size: 18px; border: 1px solid rgb(247, 243, 243);">
+        Iniciar sesión
+      </a>
     </div>
-  </section>
+  </div>
+</section>
 
-    </div>
-  </section>
 
   <!-- ESTADÍSTICAS -->
   <section class="stats container text-center">
@@ -285,14 +284,15 @@
   </section>
 
   <!-- UBICACIÓN Y CONTACTO -->
-  <section class="contact-section">
-    <div class="container">
-      <h3>Ubicación y Contacto</h3>
-      <div class="row g-4 align-items-stretch">
-        <div class="col-md-6">
-          <img src="{{ asset('imagenes/centroEd.jpg') }}" alt="Centro Educativo" class="img-fluid rounded mb-3">
-          <iframe src="https://www.google.com/maps?q=Danlí,%20El%20Paraíso&output=embed"></iframe>
-        </div>
+<section class="contact-section">
+  <div class="container">
+    <h3>Ubicación y Contacto</h3>
+    <div class="row g-4 align-items-stretch">
+      <!-- Imagen de la escuela -->
+      <div class="col-md-6">
+        <img src="{{ asset('imagenes/centroEd.jpg') }}" alt="Centro Educativo" class="img-fluid rounded mb-3">
+        <iframe src="https://www.google.com/maps?q=Danlí,%20El%20Paraíso&output=embed"></iframe>
+      </div>
         <div class="col-md-6">
           <div class="contact-box">
             <h5>Escuela Gabriela Mistral</h5>

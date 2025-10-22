@@ -10,6 +10,7 @@ Route::get('/', function () {
     return view('plantilla');
 });
 
+
 Route::get('/login', function () {
     return view('login');
 })->name('login');
@@ -18,7 +19,7 @@ Route::get('/login', function () {
 
 
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return redirect()->route('admins.index');
 });
 
