@@ -13,6 +13,7 @@ Route::get('/', function () {
 
 
 
-
-
-
+// web.php
+Route::post('/fechas', function () {
+    return view('fechas');
+});
