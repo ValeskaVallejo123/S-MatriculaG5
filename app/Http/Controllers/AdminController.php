@@ -30,24 +30,59 @@ class AdminController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:255|min:3',
-            'email' => 'required|email|unique:admins,email',
-            'password' => 'required|confirmed|min:8',
-            'permisos' => 'nullable|array',
-        ]);
+{
+    $validated = $request->validate([
+        'nombre' => [
+            'required',
+            'string',
+            'min:3',
+            'max:50',
+            'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/' // Solo letras y espacios
+        ],
+        'email' => [
+            'required',
+            'email',
+            'max:100',
+            'unique:admins,email',
+            'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'
+        ],
+        'password' => [
+            'required',
+            'confirmed',
+            'min:8',
+            'max:50',
+            'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/' // Mayúscula, minúscula, número y carácter especial
+        ],
+        'permisos' => 'nullable|array',
+    ], [
+        // Mensajes personalizados
+        'nombre.required' => 'El nombre es obligatorio',
+        'nombre.min' => 'El nombre debe tener al menos 3 caracteres',
+        'nombre.max' => 'El nombre no puede exceder 50 caracteres',
+        'nombre.regex' => 'El nombre solo puede contener letras y espacios',
+        
+        'email.required' => 'El email es obligatorio',
+        'email.email' => 'Debe ser un email válido',
+        'email.unique' => 'Este email ya está registrado',
+        'email.max' => 'El email no puede exceder 100 caracteres',
+        
+        'password.required' => 'La contraseña es obligatoria',
+        'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+        'password.max' => 'La contraseña no puede exceder 50 caracteres',
+        'password.confirmed' => 'Las contraseñas no coinciden',
+        'password.regex' => 'La contraseña debe contener al menos: una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&#)',
+    ]);
 
-        Admin::create([
-            'nombre' => $validated['nombre'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'permisos' => $validated['permisos'] ?? [],
-        ]);
+    Admin::create([
+        'nombre' => $validated['nombre'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+        'permisos' => $validated['permisos'] ?? [],
+    ]);
 
-        return redirect()->route('admins.index')
-            ->with('success', 'Administrador creado exitosamente');
-    }
+    return redirect()->route('admins.index')
+        ->with('success', 'Administrador creado exitosamente');
+}
 
     public function show(Admin $admin)
     {
@@ -71,10 +106,43 @@ class AdminController extends Controller
     public function update(Request $request, Admin $admin)
 {
     $validated = $request->validate([
-        'nombre' => 'required|string|max:255|min:3',
-        'email' => 'required|email|unique:admins,email,' . $admin->id,
-        'password' => 'nullable|confirmed|min:8',
+        'nombre' => [
+            'required',
+            'string',
+            'min:3',
+            'max:50',
+            'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/'
+        ],
+        'email' => [
+            'required',
+            'email',
+            'max:100',
+            'unique:admins,email,' . $admin->id,
+            'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'
+        ],
+        'password' => [
+            'nullable',
+            'confirmed',
+            'min:8',
+            'max:50',
+            'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/'
+        ],
         'permisos' => 'nullable|array',
+    ], [
+        'nombre.required' => 'El nombre es obligatorio',
+        'nombre.min' => 'El nombre debe tener al menos 3 caracteres',
+        'nombre.max' => 'El nombre no puede exceder 50 caracteres',
+        'nombre.regex' => 'El nombre solo puede contener letras y espacios',
+        
+        'email.required' => 'El email es obligatorio',
+        'email.email' => 'Debe ser un email válido',
+        'email.unique' => 'Este email ya está registrado',
+        'email.max' => 'El email no puede exceder 100 caracteres',
+        
+        'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+        'password.max' => 'La contraseña no puede exceder 50 caracteres',
+        'password.confirmed' => 'Las contraseñas no coinciden',
+        'password.regex' => 'La contraseña debe contener al menos: una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&#)',
     ]);
 
     $admin->update([
