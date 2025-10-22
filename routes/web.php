@@ -19,7 +19,7 @@ Route::get('/login', function () {
 
 
 
-/*Route::get('/', function () {
+Route::get('/', function () {
     return redirect()->route('admins.index');
 });
 
@@ -40,4 +40,3 @@ Route::get('/admins/{admin}/edit', [AdminController::class, 'edit'])->name('admi
 Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admins.update');
 Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admins.destroy');
 */
-
