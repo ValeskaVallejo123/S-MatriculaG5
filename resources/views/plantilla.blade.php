@@ -196,6 +196,9 @@
 </section>
 
 
+    </div>
+  </section>
+
   <!-- ESTADÍSTICAS -->
   <section class="stats container text-center">
     <div class="row g-4">

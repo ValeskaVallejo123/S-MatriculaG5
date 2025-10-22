@@ -1,0 +1,441 @@
+@extends('layouts.app')
+
+@section('title', 'Nueva Matrícula')
+
+@section('content')
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl shadow-lg mb-4">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Formulario de Matrícula</h1>
+            <p class="text-gray-600">Complete todos los datos para matricular al estudiante</p>
+        </div>
+
+        <!-- Información de documentos -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-lg">
+            <div class="flex">
+                <svg class="w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <div class="text-sm text-blue-800">
+                    <p class="font-semibold mb-1">Documentos Obligatorios:</p>
+                    <p>Foto estudiante, Acta nacimiento, DNI estudiante, DNI padre/tutor</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <form action="{{ route('matriculas.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            @csrf
+
+            <!-- Card 1: Información del Padre/Tutor -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        Información del Padre/Tutor
+                    </h2>
+                </div>
+                
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Nombre Padre -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Nombre <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="padre_nombre" value="{{ old('padre_nombre') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_nombre') border-red-400 @enderror"
+                            placeholder="Nombre del padre/tutor" required>
+                        @error('padre_nombre')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Apellido Padre -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Apellido <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="padre_apellido" value="{{ old('padre_apellido') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_apellido') border-red-400 @enderror"
+                            placeholder="Apellido del padre/tutor" required>
+                        @error('padre_apellido')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- DNI Padre -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Número de Identidad <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="padre_dni" value="{{ old('padre_dni') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_dni') border-red-400 @enderror"
+                            placeholder="0000000000000" pattern="[0-9]{13}" maxlength="13" required>
+                        @error('padre_dni')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Parentesco -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Parentesco <span class="text-red-500">*</span>
+                        </label>
+                        <select name="padre_parentesco" id="padre_parentesco"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_parentesco') border-red-400 @enderror"
+                            required onchange="toggleOtroParentesco()">
+                            <option value="">Seleccione</option>
+                            @foreach($parentescos as $key => $label)
+                                <option value="{{ $key }}" {{ old('padre_parentesco') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('padre_parentesco')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Otro Parentesco (oculto) -->
+                    <div id="otro_parentesco_div" class="md:col-span-2 hidden">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Especifique el parentesco <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="padre_parentesco_otro" value="{{ old('padre_parentesco_otro') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Ej: Primo, Hermano, etc.">
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Correo Electrónico <span class="text-red-500"></span>
+                        </label>
+                        <input type="email" name="padre_email" value="{{ old('padre_email') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_email') border-red-400 @enderror"
+                            placeholder="ejemplo@correo.com">
+                        @error('padre_email')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Teléfono <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="padre_telefono" value="{{ old('padre_telefono') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_telefono') border-red-400 @enderror"
+                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8" required>
+                        @error('padre_telefono')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Teléfono Secundario -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Teléfono Secundario
+                        </label>
+                        <input type="text" name="padre_telefono_secundario" value="{{ old('padre_telefono_secundario') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8">
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Dirección <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="padre_direccion" rows="2"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_direccion') border-red-400 @enderror"
+                            placeholder="Dirección completa de residencia" required>{{ old('padre_direccion') }}</textarea>
+                        @error('padre_direccion')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Ocupación -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Ocupación</label>
+                        <input type="text" name="padre_ocupacion" value="{{ old('padre_ocupacion') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Profesión u ocupación">
+                    </div>
+
+                    <!-- Lugar de Trabajo -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Lugar de Trabajo</label>
+                        <input type="text" name="padre_lugar_trabajo" value="{{ old('padre_lugar_trabajo') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Nombre de la empresa">
+                    </div>
+
+                    <!-- Teléfono Trabajo -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Teléfono de Trabajo</label>
+                        <input type="text" name="padre_telefono_trabajo" value="{{ old('padre_telefono_trabajo') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Información del Estudiante -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        Información del Estudiante
+                    </h2>
+                </div>
+                
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Nombre Estudiante -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Nombre <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="estudiante_nombre" value="{{ old('estudiante_nombre') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_nombre') border-red-400 @enderror"
+                            placeholder="Nombre del estudiante" required>
+                        @error('estudiante_nombre')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Apellido Estudiante -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Apellido <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="estudiante_apellido" value="{{ old('estudiante_apellido') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_apellido') border-red-400 @enderror"
+                            placeholder="Apellido del estudiante" required>
+                        @error('estudiante_apellido')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- DNI Estudiante -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Número de Identidad <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="estudiante_dni" value="{{ old('estudiante_dni') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_dni') border-red-400 @enderror"
+                            placeholder="0000000000000" pattern="[0-9]{13}" maxlength="13" required>
+                        @error('estudiante_dni')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Fecha Nacimiento -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Fecha de Nacimiento <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" name="estudiante_fecha_nacimiento" value="{{ old('estudiante_fecha_nacimiento') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_fecha_nacimiento') border-red-400 @enderror"
+                            required>
+                        @error('estudiante_fecha_nacimiento')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Email Estudiante -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Correo Electrónico
+                        </label>
+                        <input type="email" name="estudiante_email" value="{{ old('estudiante_email') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <!-- Teléfono Estudiante -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Teléfono
+                        </label>
+                        <input type="text" name="estudiante_telefono" value="{{ old('estudiante_telefono') }}"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8">
+                    </div>
+
+                    <!-- Grado -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Grado <span class="text-red-500">*</span>
+                        </label>
+                        <select name="estudiante_grado"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_grado') border-red-400 @enderror"
+                            required>
+                            <option value="">Seleccione el grado</option>
+                            @foreach($grados as $grado)
+                                <option value="{{ $grado }}" {{ old('estudiante_grado') == $grado ? 'selected' : '' }}>{{ $grado }}</option>
+                            @endforeach
+                        </select>
+                        @error('estudiante_grado')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Sección -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Sección <span class="text-red-500">*</span>
+                        </label>
+                        <select name="estudiante_seccion"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_seccion') border-red-400 @enderror"
+                            required>
+                            <option value="">Seleccione la sección</option>
+                            @foreach($secciones as $seccion)
+                                <option value="{{ $seccion }}" {{ old('estudiante_seccion') == $seccion ? 'selected' : '' }}>{{ $seccion }}</option>
+                            @endforeach
+                        </select>
+                        @error('estudiante_seccion')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Documentos -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-600 to-amber-700 px-6 py-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        Documentos Requeridos
+                    </h2>
+                </div>
+                
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Foto Estudiante -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Foto del Estudiante <span class="text-red-500">*</span>
+                        </label>
+                        <input type="file" name="foto_estudiante" accept="image/jpeg,image/jpg,image/png"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('foto_estudiante') border-red-400 @enderror"
+                            required>
+                        <p class="text-xs text-gray-500 mt-1">JPG/PNG, máx. 2MB</p>
+                        @error('foto_estudiante')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Acta Nacimiento -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Acta de Nacimiento <span class="text-red-500">*</span>
+                        </label>
+                        <input type="file" name="acta_nacimiento" accept="application/pdf,image/jpeg,image/jpg,image/png"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('acta_nacimiento') border-red-400 @enderror"
+                            required>
+                        <p class="text-xs text-gray-500 mt-1">PDF/JPG/PNG, máx. 5MB</p>
+                        @error('acta_nacimiento')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- DNI Estudiante -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Foto DNI del Estudiante <span class="text-red-500">*</span>
+                        </label>
+                        <input type="file" name="foto_dni_estudiante" accept="image/jpeg,image/jpg,image/png"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('foto_dni_estudiante') border-red-400 @enderror"
+                            required>
+                        <p class="text-xs text-gray-500 mt-1">JPG/PNG, máx. 2MB</p>
+                        @error('foto_dni_estudiante')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- DNI Padre -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Foto DNI del Padre/Tutor <span class="text-red-500">*</span>
+                        </label>
+                        <input type="file" name="foto_dni_padre" accept="image/jpeg,image/jpg,image/png"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('foto_dni_padre') border-red-400 @enderror"
+                            required>
+                        <p class="text-xs text-gray-500 mt-1">JPG/PNG, máx. 2MB</p>
+                        @error('foto_dni_padre')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Certificado Estudios (Opcional) -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Certificado de Estudios
+                        </label>
+                        <input type="file" name="certificado_estudios" accept="application/pdf,image/jpeg,image/jpg,image/png"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        <p class="text-xs text-gray-500 mt-1">Opcional - PDF/JPG/PNG, máx. 5MB</p>
+                    </div>
+
+                    <!-- Constancia Conducta (Opcional) -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            Constancia de Conducta
+                        </label>
+                        <input type="file" name="constancia_conducta" accept="application/pdf,image/jpeg,image/jpg,image/png"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        <p class="text-xs text-gray-500 mt-1">Opcional - PDF/JPG/PNG, máx. 5MB</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button type="submit"
+                    class="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-4 rounded-xl font-semibold hover:from-teal-700 hover:to-teal-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Registrar Matrícula
+                </button>
+                <a href="{{ route('matriculas.index') }}"
+                    class="flex-1 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300 hover:bg-gray-50 transition-all flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleOtroParentesco() {
+    const select = document.getElementById('padre_parentesco');
+    const otroDiv = document.getElementById('otro_parentesco_div');
+    
+    if (select.value === 'otro') {
+        otroDiv.classList.remove('hidden');
+    } else {
+        otroDiv.classList.add('hidden');
+    }
+}
+
+// Ejecutar al cargar si ya está seleccionado "otro"
+document.addEventListener('DOMContentLoaded', function() {
+    toggleOtroParentesco();
+});
+</script>
+@endsection
