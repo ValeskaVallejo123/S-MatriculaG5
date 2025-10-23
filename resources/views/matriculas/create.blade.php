@@ -5,7 +5,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-6xl mx-auto px-4">
-        
+
         <!-- Header -->
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl shadow-lg mb-4">
@@ -15,19 +15,6 @@
             </div>
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Formulario de Matrícula</h1>
             <p class="text-gray-600">Complete todos los datos para matricular al estudiante</p>
-        </div>
-
-        <!-- Información de documentos -->
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-lg">
-            <div class="flex">
-                <svg class="w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                </svg>
-                <div class="text-sm text-blue-800">
-                    <p class="font-semibold mb-1">Documentos Obligatorios:</p>
-                    <p>Foto estudiante, Acta nacimiento, DNI estudiante, DNI padre/tutor</p>
-                </div>
-            </div>
         </div>
 
         <!-- Formulario -->
@@ -44,12 +31,12 @@
                         Información del Padre/Tutor
                     </h2>
                 </div>
-                
+
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Nombre Padre -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Nombre <span class="text-red-500">*</span>
+                            Nombre Completo <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="padre_nombre" value="{{ old('padre_nombre') }}"
                             class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_nombre') border-red-400 @enderror"
@@ -62,7 +49,7 @@
                     <!-- Apellido Padre -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Apellido <span class="text-red-500">*</span>
+                            Apellidos <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="padre_apellido" value="{{ old('padre_apellido') }}"
                             class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_apellido') border-red-400 @enderror"
@@ -75,80 +62,62 @@
                     <!-- DNI Padre -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Número de Identidad <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="padre_dni" value="{{ old('padre_dni') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_dni') border-red-400 @enderror"
-                            placeholder="0000000000000" pattern="[0-9]{13}" maxlength="13" required>
-                        @error('padre_dni')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
+                         Número de Identidad <span class="text-red-500">*</span>
+                         </label>
+                            <input type="text" name="padre_dni" value="{{ old('padre_dni') }}"
+                                 class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_dni') border-red-400 @enderror"
+                                    placeholder="0000-0000-00000" pattern="[0-9]{4}-[0-9]{4}-[0-9]{5}" required>
+                                @error('padre_dni')
+                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
                     </div>
 
                     <!-- Parentesco -->
+
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Parentesco <span class="text-red-500">*</span>
+                          Parentesco <span class="text-red-500">*</span>
                         </label>
-                        <select name="padre_parentesco" id="padre_parentesco"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_parentesco') border-red-400 @enderror"
-                            required onchange="toggleOtroParentesco()">
-                            <option value="">Seleccione</option>
-                            @foreach($parentescos as $key => $label)
-                                <option value="{{ $key }}" {{ old('padre_parentesco') == $key ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                        @error('padre_parentesco')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
+                            <select name="padre_parentesco" id="padre_parentesco"
+                                class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_parentesco') border-red-400 @enderror"
+                                required onchange="toggleOtroParentesco()">
+                                <option value="">Seleccione</option>
+                                <option value="Padre" {{ old('padre_parentesco') == 'Padre' ? 'selected' : '' }}>Padre</option>
+                                <option value="Madre" {{ old('padre_parentesco') == 'Madre' ? 'selected' : '' }}>Madre</option>
+                                <option value="Encargado" {{ old('padre_parentesco') == 'Encargado' ? 'selected' : '' }}>Encargado</option>
+                            </select>
+                            @error('padre_parentesco')
+                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
                     </div>
 
-                    <!-- Otro Parentesco (oculto) -->
-                    <div id="otro_parentesco_div" class="md:col-span-2 hidden">
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Especifique el parentesco <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="padre_parentesco_otro" value="{{ old('padre_parentesco_otro') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="Ej: Primo, Hermano, etc.">
-                    </div>
+<!-- Teléfono -->
+<div>
+    <label class="block text-sm font-semibold text-gray-700 mb-1">
+        Teléfono <span class="text-red-500">*</span>
+    </label>
+    <input type="text" name="padre_telefono" value="{{ old('padre_telefono') }}"
+        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_telefono') border-red-400 @enderror"
+        placeholder="0000-0000" pattern="[0-9]{4}-[0-9]{4}" maxlength="9" required>
+    @error('padre_telefono')
+        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+    @enderror
+</div>
 
-                    <!-- Email -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Correo Electrónico <span class="text-red-500"></span>
-                        </label>
-                        <input type="email" name="padre_email" value="{{ old('padre_email') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_email') border-red-400 @enderror"
-                            placeholder="ejemplo@correo.com">
-                        @error('padre_email')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
 
-                    <!-- Teléfono -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Teléfono <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="padre_telefono" value="{{ old('padre_telefono') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_telefono') border-red-400 @enderror"
-                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8" required>
-                        @error('padre_telefono')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
 
-                    <!-- Teléfono Secundario -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Teléfono Secundario
-                        </label>
-                        <input type="text" name="padre_telefono_secundario" value="{{ old('padre_telefono_secundario') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8">
-                    </div>
-
+<!-- Teléfono Secundario-->
+<div>
+    <label class="block text-sm font-semibold text-gray-700 mb-1">
+        Teléfono Secundario <span class="text-red-500">*</span>
+    </label>
+    <input type="text" name="padre_telefono" value="{{ old('padre_telefono') }}"
+        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_telefono') border-red-400 @enderror"
+        placeholder="0000-0000" pattern="[0-9]{4}-[0-9]{4}" maxlength="9" required>
+    @error('padre_telefono')
+        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+    @enderror
+</div>
                     <!-- Dirección -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
@@ -178,13 +147,20 @@
                             placeholder="Nombre de la empresa">
                     </div>
 
-                    <!-- Teléfono Trabajo -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Teléfono de Trabajo</label>
-                        <input type="text" name="padre_telefono_trabajo" value="{{ old('padre_telefono_trabajo') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8">
-                    </div>
+
+<!-- Teléfono -->
+<div>
+    <label class="block text-sm font-semibold text-gray-700 mb-1">
+        Teléfono de Trabajo<span class="text-red-500">*</span>
+    </label>
+    <input type="text" name="padre_telefono" value="{{ old('padre_telefono') }}"
+        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_telefono') border-red-400 @enderror"
+        placeholder="0000-0000" pattern="[0-9]{4}-[0-9]{4}" maxlength="9" required>
+    @error('padre_telefono')
+        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+    @enderror
+</div>
+
                 </div>
             </div>
 
@@ -198,12 +174,12 @@
                         Información del Estudiante
                     </h2>
                 </div>
-                
+
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Nombre Estudiante -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Nombre <span class="text-red-500">*</span>
+                            Nombre Completo <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="estudiante_nombre" value="{{ old('estudiante_nombre') }}"
                             class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_nombre') border-red-400 @enderror"
@@ -216,7 +192,7 @@
                     <!-- Apellido Estudiante -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Apellido <span class="text-red-500">*</span>
+                            Apellidos <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="estudiante_apellido" value="{{ old('estudiante_apellido') }}"
                             class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_apellido') border-red-400 @enderror"
@@ -227,14 +203,30 @@
                     </div>
 
                     <!-- DNI Estudiante -->
+                   <div>
+    <label class="block text-sm font-semibold text-gray-700 mb-1">
+        Número de Identidad <span class="text-red-500">*</span>
+    </label>
+    <input type="text" name="padre_dni" value="{{ old('padre_dni') }}"
+        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_dni') border-red-400 @enderror"
+        placeholder="0000-0000-00000" pattern="[0-9]{4}-[0-9]{4}-[0-9]{5}" required>
+    @error('padre_dni')
+        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+    @enderror
+</div>
+                    <!-- Sexo Estudiante -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Número de Identidad <span class="text-red-500">*</span>
+                            Genero <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="estudiante_dni" value="{{ old('estudiante_dni') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_dni') border-red-400 @enderror"
-                            placeholder="0000000000000" pattern="[0-9]{13}" maxlength="13" required>
-                        @error('estudiante_dni')
+                        <select name="estudiante_sexo"
+                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_sexo') border-red-400 @enderror"
+                            required>
+                            <option value="">Seleccione el genero</option>
+                            <option value="Masculino" {{ old('estudiante_sexo') == 'Masculino' ? 'selected' : '' }}>Masculino</option>
+                            <option value="Femenino" {{ old('estudiante_sexo') == 'Femenino' ? 'selected' : '' }}>Femenino</option>
+                        </select>
+                        @error('estudiante_sexo')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
@@ -252,43 +244,23 @@
                         @enderror
                     </div>
 
-                    <!-- Email Estudiante -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Correo Electrónico
-                        </label>
-                        <input type="email" name="estudiante_email" value="{{ old('estudiante_email') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            placeholder="correo@ejemplo.com">
-                    </div>
-
-                    <!-- Teléfono Estudiante -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Teléfono
-                        </label>
-                        <input type="text" name="estudiante_telefono" value="{{ old('estudiante_telefono') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8">
-                    </div>
-
                     <!-- Grado -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Grado <span class="text-red-500">*</span>
-                        </label>
-                        <select name="estudiante_grado"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_grado') border-red-400 @enderror"
-                            required>
-                            <option value="">Seleccione el grado</option>
-                            @foreach($grados as $grado)
-                                <option value="{{ $grado }}" {{ old('estudiante_grado') == $grado ? 'selected' : '' }}>{{ $grado }}</option>
-                            @endforeach
-                        </select>
-                        @error('estudiante_grado')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+<div>
+    <label class="block text-sm font-semibold text-gray-700 mb-1">
+        Grado <span class="text-red-500">*</span>
+    </label>
+    <select name="estudiante_grado"
+        class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 @error('estudiante_grado') border-red-400 @enderror"
+        required>
+        <option value="">Seleccione el grado</option>
+        @foreach(['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Séptimo', 'Octavo', 'Noveno'] as $grado)
+            <option value="{{ $grado }}" {{ old('estudiante_grado') == $grado ? 'selected' : '' }}>{{ $grado }}</option>
+        @endforeach
+    </select>
+    @error('estudiante_grado')
+        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+    @enderror
+</div>
 
                     <!-- Sección -->
                     <div>
@@ -320,7 +292,7 @@
                         Documentos Requeridos
                     </h2>
                 </div>
-                
+
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Foto Estudiante -->
                     <div>
@@ -346,20 +318,6 @@
                             required>
                         <p class="text-xs text-gray-500 mt-1">PDF/JPG/PNG, máx. 5MB</p>
                         @error('acta_nacimiento')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- DNI Estudiante -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Foto DNI del Estudiante <span class="text-red-500">*</span>
-                        </label>
-                        <input type="file" name="foto_dni_estudiante" accept="image/jpeg,image/jpg,image/png"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('foto_dni_estudiante') border-red-400 @enderror"
-                            required>
-                        <p class="text-xs text-gray-500 mt-1">JPG/PNG, máx. 2MB</p>
-                        @error('foto_dni_estudiante')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
@@ -425,7 +383,7 @@
 function toggleOtroParentesco() {
     const select = document.getElementById('padre_parentesco');
     const otroDiv = document.getElementById('otro_parentesco_div');
-    
+
     if (select.value === 'otro') {
         otroDiv.classList.remove('hidden');
     } else {
