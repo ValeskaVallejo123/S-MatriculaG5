@@ -5,10 +5,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfesorController;
-<<<<<<< HEAD
+
 use App\Http\Controllers\MatriculaController;
-=======
->>>>>>> dev/valeska
+
 
 
 // Ruta principal - redirige a admins
@@ -47,15 +46,16 @@ Route::prefix('password')->name('password.')->group(function () {
 // Rutas de recursos (CRUD completo)
 Route::resource('admins', AdminController::class);
 Route::resource('estudiantes', EstudianteController::class);
-<<<<<<< HEAD
+
 Route::resource('profesores', ProfesorController::class)->parameter('profesores', 'profesor');
 // Rutas de Matrículas
 Route::resource('matriculas', MatriculaController::class);
-=======
+
 Route::resource('profesores', ProfesorController::class)->parameters([
     'profesores' => 'profesor'
 ]);
->>>>>>> dev/valeska
+
+Route::resource('admins', AdminController::class);
 
 // Rutas adicionales para matrículas (si las necesitas)
 Route::prefix('matriculas')->name('matriculas.')->group(function () {
