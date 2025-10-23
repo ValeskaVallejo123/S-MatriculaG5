@@ -12,23 +12,14 @@ Route::get('/', function () {
     return view('plantilla');
 });
 
-
 Route::get('/login', function () {
     return view('login');
 })->name('login');
 
-
-
-
-
-Route::get('/', function () {
+/*Route::get('/', function () {
     return redirect()->route('admins.index');
-});
+});*/
 
-// Ruta de login
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
 
 // Rutas de recuperación de contraseña
 Route::prefix('password')->name('password.')->group(function () {
