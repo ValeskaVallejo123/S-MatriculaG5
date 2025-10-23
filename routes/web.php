@@ -4,6 +4,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CursoController;
 
 Route::get('/', function () {
     return redirect()->route('admins.index');
@@ -33,6 +34,15 @@ Route::post('/password/restablecer', [PasswordResetController::class, 'resetPass
 // (Opcional) Vista informativa o de confirmación general
 Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
     ->name('password.recuperar');
+
+Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
+    Route::get('/', [CursoController::class, 'index'])->name('index');       // Lista de cupos máximos
+    Route::get('/create', [CursoController::class, 'create'])->name('create'); // Formulario para crear cupo
+    Route::post('/', [CursoController::class, 'store'])->name('store');        // Guardar cupo máximo
+    Route::get('/{id}/edit', [CursoController::class, 'edit'])->name('edit');  // Editar cupo
+    Route::put('/{id}', [CursoController::class, 'update'])->name('update');   // Actualizar cupo
+    Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy'); // Eliminar cupo
+});
 
 
 
