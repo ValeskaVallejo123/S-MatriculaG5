@@ -87,6 +87,7 @@ class AdminController extends Controller
     public function show(Admin $admin)
     {
         return view('admins.show', compact('admin'));
+        
     }
 
     public function edit(Admin $admin)

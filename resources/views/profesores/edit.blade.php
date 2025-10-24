@@ -3,107 +3,12 @@
 @section('title', 'Editar Profesor')
 
 @section('content')
-<<<<<<< HEAD
-<div class="min-h-screen py-12">
-    <div class="max-w-5xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl shadow-lg mb-6">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-            </div>
-            <h1 class="text-4xl font-bold text-gray-900 mb-3">Editar Profesor</h1>
-            <p class="text-lg text-gray-600">Actualice la información del profesor</p>
-            <div class="w-24 h-1 bg-purple-600 mx-auto mt-4 rounded-full"></div>
-        </div>
 
-        <!-- Form Card -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
-            <!-- Card Header -->
-            <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-8 py-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-xl font-semibold text-white">Información del Profesor</h2>
-                        <p class="text-purple-100 text-sm mt-1">Modifique los campos que desea actualizar</p>
-                    </div>
-                    <div class="bg-purple-500 bg-opacity-50 px-4 py-2 rounded-lg">
-                        <p class="text-white text-sm font-medium">ID: #{{ $profesor->id }}</p>
-
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto py-8">
     <div class="bg-white rounded-lg shadow p-8">
-        <h1 class="text-3xl font-bold mb-6 text-gray-800"> Editar Profesor</h1>
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">Editar Profesor</h1>
         
         <form action="{{ route('profesores.update', $profesor) }}" method="POST" class="space-y-6">
-            @csrf
-            @method('PUT')
-
-            <!-- Información Personal -->
-            <div class="border-b pb-4">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Información Personal</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-2">Nombre *</label>
-                        <input 
-                            type="text" 
-                            name="nombre" 
-                            value="{{ old('nombre', $profesor->nombre) }}"
-                            class="w-full px-4 py-2 border rounded @error('nombre') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('nombre')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Apellido *</label>
-                        <input 
-                            type="text" 
-                            name="apellido" 
-                            value="{{ old('apellido', $profesor->apellido) }}"
-                            class="w-full px-4 py-2 border rounded @error('apellido') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('apellido')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">DNI *</label>
-                        <input 
-                            type="text" 
-                            name="dni" 
-                            value="{{ old('dni', $profesor->dni) }}"
-                            class="w-full px-4 py-2 border rounded @error('dni') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('dni')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Fecha de Nacimiento *</label>
-                        <input 
-                            type="date" 
-                            name="fecha_nacimiento" 
-                            value="{{ old('fecha_nacimiento', optional($profesor->fecha_nacimiento)->format('Y-m-d')) }}"
-                            class="w-full px-4 py-2 border rounded @error('fecha_nacimiento') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('fecha_nacimiento')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form Body -->
-            <form action="{{ route('profesores.update', $profesor) }}" method="POST" class="p-8">
                 @csrf
                 @method('PUT')
 
@@ -188,7 +93,7 @@
                             <!-- DNI -->
                             <div>
                                 <label for="dni" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Número de Identidad
+                                    DNI
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
@@ -203,13 +108,13 @@
                                         name="dni" 
                                         value="{{ old('dni', $profesor->dni) }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('dni') border-red-400 bg-red-50 @enderror"
-                                        placeholder="0000000000000"
+                                        placeholder="Ingrese el DNI"
                                         required
-                                        pattern="[0-9]{13}"
-                                        maxlength="13"
+                                        minlength="8"
+                                        maxlength="15"
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Exactamente 13 dígitos. Ej: 0801199012345</p>
+                                <p class="text-xs text-gray-500 mt-2 ml-1">8-15 caracteres. Solo números</p>
                                 @error('dni')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -224,6 +129,7 @@
                             <div>
                                 <label for="fecha_nacimiento" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Fecha de Nacimiento
+                                    <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -235,11 +141,11 @@
                                         type="date" 
                                         id="fecha_nacimiento"
                                         name="fecha_nacimiento" 
-                                        value="{{ old('fecha_nacimiento', $profesor->fecha_nacimiento ? $profesor->fecha_nacimiento->format('Y-m-d') : '') }}"
+                                        value="{{ old('fecha_nacimiento', optional($profesor->fecha_nacimiento)->format('Y-m-d')) }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('fecha_nacimiento') border-red-400 bg-red-50 @enderror"
+                                        required
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional</p>
                                 @error('fecha_nacimiento')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -262,7 +168,8 @@
                             <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Correo Electrónico
+                                    Email
+                                    <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -276,11 +183,10 @@
                                         name="email" 
                                         value="{{ old('email', $profesor->email) }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('email') border-red-400 bg-red-50 @enderror"
-                                        placeholder="profesor@correo.com"
-                                        maxlength="100"
+                                        placeholder="ejemplo@correo.com"
+                                        required
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Máximo 100 caracteres</p>
                                 @error('email')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -308,12 +214,9 @@
                                         name="telefono" 
                                         value="{{ old('telefono', $profesor->telefono) }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('telefono') border-red-400 bg-red-50 @enderror"
-                                        placeholder="00000000"
-                                        pattern="[0-9]{8}"
-                                        maxlength="8"
+                                        placeholder="+504 1234-5678"
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Exactamente 8 dígitos. Ej: 99887766</p>
                                 @error('telefono')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -327,10 +230,10 @@
                             <!-- Dirección -->
                             <div class="md:col-span-2">
                                 <label for="direccion" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Dirección de Residencia
+                                    Dirección
                                 </label>
                                 <div class="relative">
-                                    <div class="absolute top-4 left-0 pl-4 pointer-events-none">
+                                    <div class="absolute top-3 left-0 pl-4 pointer-events-none">
                                         <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -339,13 +242,11 @@
                                     <textarea 
                                         id="direccion"
                                         name="direccion" 
-                                        rows="3"
-                                        maxlength="200"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('direccion') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ingrese la dirección completa del profesor"
+                                        rows="2"
+                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all resize-none @error('direccion') border-red-400 bg-red-50 @enderror"
+                                        placeholder="Ingrese la dirección completa"
                                     >{{ old('direccion', $profesor->direccion) }}</textarea>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Máximo 200 caracteres</p>
                                 @error('direccion')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -369,32 +270,28 @@
                             <div>
                                 <label for="especialidad" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Especialidad
+                                    <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                                         </svg>
                                     </div>
                                     <select 
                                         id="especialidad"
                                         name="especialidad" 
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all appearance-none @error('especialidad') border-red-400 bg-red-50 @enderror"
+                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('especialidad') border-red-400 bg-red-50 @enderror"
+                                        required
                                     >
-                                        <option value="">Seleccione la especialidad</option>
+                                        <option value="">Seleccione una especialidad</option>
                                         @foreach($especialidades as $especialidad)
                                             <option value="{{ $especialidad }}" {{ old('especialidad', $profesor->especialidad) == $especialidad ? 'selected' : '' }}>
                                                 {{ $especialidad }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional</p>
                                 @error('especialidad')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -409,6 +306,7 @@
                             <div>
                                 <label for="tipo_contrato" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Tipo de Contrato
+                                    <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -419,22 +317,17 @@
                                     <select 
                                         id="tipo_contrato"
                                         name="tipo_contrato" 
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all appearance-none @error('tipo_contrato') border-red-400 bg-red-50 @enderror"
+                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('tipo_contrato') border-red-400 bg-red-50 @enderror"
+                                        required
                                     >
-                                        <option value="">Seleccione el tipo de contrato</option>
-                                        @foreach($tipos_contrato as $key => $label)
+                                        <option value="">Seleccione un tipo</option>
+                                        @foreach($tiposContrato as $key => $label)
                                             <option value="{{ $key }}" {{ old('tipo_contrato', $profesor->tipo_contrato) == $key ? 'selected' : '' }}>
                                                 {{ $label }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional</p>
                                 @error('tipo_contrato')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -448,24 +341,25 @@
                             <!-- Salario -->
                             <div>
                                 <label for="salario" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Salario Mensual
+                                    Salario (Lps)
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <span class="text-purple-500 font-semibold">Lps</span>
+                                        <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
                                     </div>
                                     <input 
                                         type="number" 
                                         id="salario"
                                         name="salario" 
                                         value="{{ old('salario', $profesor->salario) }}"
-                                        class="w-full pl-16 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('salario') border-red-400 bg-red-50 @enderror"
-                                        placeholder="0.00"
                                         step="0.01"
                                         min="0"
+                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('salario') border-red-400 bg-red-50 @enderror"
+                                        placeholder="0.00"
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Formato decimal: 15000.00</p>
                                 @error('salario')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -480,6 +374,7 @@
                             <div>
                                 <label for="fecha_ingreso" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Fecha de Ingreso
+                                    <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -491,11 +386,11 @@
                                         type="date" 
                                         id="fecha_ingreso"
                                         name="fecha_ingreso" 
-                                        value="{{ old('fecha_ingreso', $profesor->fecha_ingreso ? $profesor->fecha_ingreso->format('Y-m-d') : '') }}"
+                                        value="{{ old('fecha_ingreso', optional($profesor->fecha_ingreso)->format('Y-m-d')) }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('fecha_ingreso') border-red-400 bg-red-50 @enderror"
+                                        required
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional</p>
                                 @error('fecha_ingreso')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -507,9 +402,9 @@
                             </div>
 
                             <!-- Estado -->
-                            <div class="md:col-span-2">
+                            <div>
                                 <label for="estado" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Estado Laboral
+                                    Estado
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
@@ -521,18 +416,13 @@
                                     <select 
                                         id="estado"
                                         name="estado" 
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all appearance-none @error('estado') border-red-400 bg-red-50 @enderror" 
+                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('estado') border-red-400 bg-red-50 @enderror"
                                         required
                                     >
                                         <option value="activo" {{ old('estado', $profesor->estado) == 'activo' ? 'selected' : '' }}>Activo</option>
-                                        <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>En Licencia</option>
                                         <option value="inactivo" {{ old('estado', $profesor->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+                                        <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>Licencia</option>
                                     </select>
-                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
                                 </div>
                                 @error('estado')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
@@ -549,29 +439,27 @@
                     <!-- Sección: Observaciones -->
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-purple-100">
-                            Información Adicional
+                            Observaciones
                         </h3>
                         
                         <div>
                             <label for="observaciones" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Observaciones
+                                Comentarios adicionales
                             </label>
                             <div class="relative">
-                                <div class="absolute top-4 left-0 pl-4 pointer-events-none">
+                                <div class="absolute top-3 left-0 pl-4 pointer-events-none">
                                     <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
                                     </svg>
                                 </div>
                                 <textarea 
                                     id="observaciones"
                                     name="observaciones" 
                                     rows="4"
-                                    maxlength="500"
-                                    class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('observaciones') border-red-400 bg-red-50 @enderror"
-                                    placeholder="Información adicional relevante sobre el profesor (certificaciones, logros, notas especiales, etc.)"
+                                    class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all resize-none @error('observaciones') border-red-400 bg-red-50 @enderror"
+                                    placeholder="Información adicional sobre el profesor..."
                                 >{{ old('observaciones', $profesor->observaciones) }}</textarea>
                             </div>
-                            <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Máximo 500 caracteres</p>
                             @error('observaciones')
                                 <p class="mt-2 text-sm text-red-600 flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -584,203 +472,33 @@
                     </div>
                 </div>
 
-                <!-- Botones de acción -->
-                <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t-2 border-gray-100">
-                    <button 
-                        type="submit"
-                        class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
-                    >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Actualizar Información
-                    </button>
-                    <a 
-                        href="{{ route('profesores.index') }}"
-                        class="flex-1 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center"
-                    >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        Cancelar
-                    </a>
+                <!-- Botones de Acción -->
+                <div class="mt-10 pt-8 border-t-2 border-gray-100">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button 
+                            type="submit" 
+                            class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 focus:ring-4 focus:ring-purple-300 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        >
+                            <span class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Actualizar Profesor
+                            </span>
+                        </button>
+                        <a 
+                            href="{{ route('profesores.index') }}" 
+                            class="flex-1 bg-gray-100 text-gray-700 py-4 px-6 rounded-xl font-semibold hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 transition-all text-center flex items-center justify-center"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Cancelar
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
-
-        <!-- Nota informativa -->
-        <div class="mt-6 bg-purple-50 border border-purple-200 rounded-xl p-4">
-            <div class="flex items-start">
-                <svg class="w-5 h-5 text-purple-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                </svg>
-                <div class="text-sm text-purple-800">
-                    <p class="font-semibold mb-1">Importante</p>
-                    <p>Los cambios realizados se aplicarán inmediatamente. Asegúrese de verificar toda la información antes de actualizar.</p>
-                </div>
-            </div>
-        </div>
-
-            <!-- Información de Contacto -->
-            <div class="border-b pb-4">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Información de Contacto</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-2">Email</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            value="{{ old('email', $profesor->email) }}"
-                            class="w-full px-4 py-2 border rounded @error('email') border-red-500 @enderror"
-                        >
-                        @error('email')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Teléfono</label>
-                        <input 
-                            type="text" 
-                            name="telefono" 
-                            value="{{ old('telefono', $profesor->telefono) }}"
-                            class="w-full px-4 py-2 border rounded @error('telefono') border-red-500 @enderror"
-                        >
-                        @error('telefono')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="block font-semibold mb-2">Dirección</label>
-                        <textarea 
-                            name="direccion" 
-                            rows="2"
-                            class="w-full px-4 py-2 border rounded @error('direccion') border-red-500 @enderror"
-                        >{{ old('direccion', $profesor->direccion) }}</textarea>
-                        @error('direccion')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            <!-- Información Profesional -->
-            <div class="border-b pb-4">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Información Profesional</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-2">Especialidad *</label>
-                        <select 
-                            name="especialidad" 
-                            class="w-full px-4 py-2 border rounded @error('especialidad') border-red-500 @enderror" 
-                            required
-                        >
-                            <option value="">Seleccione...</option>
-                            @foreach($especialidades as $especialidad)
-                                <option value="{{ $especialidad }}" {{ old('especialidad', $profesor->especialidad) == $especialidad ? 'selected' : '' }}>
-                                    {{ $especialidad }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('especialidad')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Tipo de Contrato *</label>
-                        <select 
-                            name="tipo_contrato" 
-                            class="w-full px-4 py-2 border rounded @error('tipo_contrato') border-red-500 @enderror" 
-                            required
-                        >
-                            <option value="">Seleccione...</option>
-                            @foreach($tiposContrato as $key => $label)
-                                <option value="{{ $key }}" {{ old('tipo_contrato', $profesor->tipo_contrato) == $key ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('tipo_contrato')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Salario (Lps)</label>
-                        <input 
-                            type="number" 
-                            name="salario" 
-                            value="{{ old('salario', $profesor->salario) }}"
-                            step="0.01"
-                            min="0"
-                            class="w-full px-4 py-2 border rounded @error('salario') border-red-500 @enderror"
-                        >
-                        @error('salario')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Fecha de Ingreso *</label>
-                        <input 
-                            type="date" 
-                            name="fecha_ingreso" 
-                            value="{{ old('fecha_ingreso', optional($profesor->fecha_ingreso)->format('Y-m-d')) }}"
-                            class="w-full px-4 py-2 border rounded @error('fecha_ingreso') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('fecha_ingreso')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Estado *</label>
-                        <select 
-                            name="estado" 
-                            class="w-full px-4 py-2 border rounded @error('estado') border-red-500 @enderror" 
-                            required
-                        >
-                            <option value="activo" {{ old('estado', $profesor->estado) == 'activo' ? 'selected' : '' }}>Activo</option>
-                            <option value="inactivo" {{ old('estado', $profesor->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
-                            <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>Licencia</option>
-                        </select>
-                        @error('estado')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            <!-- Observaciones -->
-            <div>
-                <label class="block font-semibold mb-2">Observaciones</label>
-                <textarea 
-                    name="observaciones" 
-                    rows="3"
-                    class="w-full px-4 py-2 border rounded @error('observaciones') border-red-500 @enderror"
-                    placeholder="Información adicional sobre el profesor..."
-                >{{ old('observaciones', $profesor->observaciones) }}</textarea>
-                @error('observaciones')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Botones -->
-            <div class="flex gap-4 pt-4">
-                <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">
-                    Actualizar Profesor
-                </button>
-                <a href="{{ route('profesores.index') }}" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center leading-[3rem]">
-                    Cancelar
-                </a>
-            </div>
-        </form>
-
     </div>
-</div>
+
 @endsection
