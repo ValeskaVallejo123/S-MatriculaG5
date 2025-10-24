@@ -60,9 +60,10 @@
 
 <div class="container">
     <div class="form-container">
-        <h4 class="text-center mb-4">Actualizar cupos</h4>
+        <h4 class="text-center mb-4 fw-bold">Actualizar cupos</h4>
 
-        @if (session('success'))
+
+    @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>

@@ -58,9 +58,10 @@
 
 <div class="container">
     <div class="table-container">
-        <h2 class="mb-4 text-center">Listado de cupos</h2>
+        <h2 class="mb-4 text-center fw-bold">Listado de cupos</h2>
 
-        @if(session('success'))
+
+    @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
