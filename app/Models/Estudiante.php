@@ -46,7 +46,7 @@ class Estudiante extends Model
             '1ro Secundaria',
             '2do Secundaria',
             '3ro Secundaria',
-            
+
         ];
     }
 
@@ -55,4 +55,10 @@ class Estudiante extends Model
     {
         return ['A', 'B', 'C', 'D', 'E'];
     }
+
+    public function documentos()
+    {
+        return $this->hasMany(Documento::class, 'estudiante_id');
+    }
+
 }
