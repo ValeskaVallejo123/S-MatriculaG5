@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Editar Curso - Escuela Gabriela Mistral</title>
+    <title>Actualizar cupos - Escuela Gabriela Mistral</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -60,7 +60,7 @@
 
 <div class="container">
     <div class="form-container">
-        <h4 class="text-center mb-4">Editar cupos</h4>
+        <h4 class="text-center mb-4">Actualizar cupos</h4>
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show text-center" role="alert">

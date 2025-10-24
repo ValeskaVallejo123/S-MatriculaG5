@@ -92,7 +92,7 @@
                         <td>{{ $curso->jornada ?? '-' }}</td>
                         <td>{{ $curso->seccion ?? '-' }}</td>
                         <td>
-                            <a href="{{ route('cupos_maximos.edit', $curso->id) }}" class="btn btn-sm btn-yellow">Editar
+                            <a href="{{ route('cupos_maximos.edit', $curso->id) }}" class="btn btn-sm btn-yellow">Actualizar
                             </a>
                         </td>
                     </tr>
