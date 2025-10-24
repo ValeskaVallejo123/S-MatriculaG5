@@ -12,6 +12,8 @@ use App\Http\Controllers\MatriculaController;
 
 use App\Http\Controllers\CursoController;
 
+
+
 Route::get('/', function () {
     return redirect()->route('admins.index');
 });
