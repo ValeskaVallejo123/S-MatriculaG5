@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
 
+
 use App\Http\Controllers\ProfesorController;
 
 use App\Http\Controllers\MatriculaController;
@@ -79,4 +80,6 @@ Route::get('/admins/{admin}/edit', [AdminController::class, 'edit'])->name('admi
 Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admins.update');
 Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admins.destroy');
 */
+
+
 
