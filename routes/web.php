@@ -4,14 +4,9 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\ProfesorController;
-
 use App\Http\Controllers\MatriculaController;
-
-
 use App\Http\Controllers\CursoController;
-
 use App\Http\Controllers\CambiarContraseniaController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\ObservacionController;
@@ -28,7 +23,6 @@ Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'
 //rutas observaciones
 Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
-
 Route::get('/', function () {
     return redirect()->route('admins.index');
 });
@@ -36,7 +30,6 @@ Route::get('/', function () {
 Route::get('/', function () {
     return view('plantilla'); // o tu vista principal
 });
-
 
 // Mostrar formulario para solicitar el enlace de recuperación
 Route::get('/password/solicitar', [PasswordResetController::class, 'showForgotForm'])
@@ -68,8 +61,6 @@ Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
 });
 
 
-
-
 Route::resource('admins', AdminController::class);
 Route::resource('estudiantes', EstudianteController::class);
 
@@ -86,6 +77,7 @@ Route::resource('admins', AdminController::class);
 
 
 
+
 // O si prefieres definirlas manualmente:
 /*
 Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
@@ -95,5 +87,11 @@ Route::get('/admins/{admin}', [AdminController::class, 'show'])->name('admins.sh
 Route::get('/admins/{admin}/edit', [AdminController::class, 'edit'])->name('admins.edit');
 Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admins.update');
 Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admins.destroy');
+
 */
+
+
+
+
+
 
