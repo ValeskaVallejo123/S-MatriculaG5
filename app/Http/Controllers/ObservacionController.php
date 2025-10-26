@@ -12,14 +12,46 @@ class ObservacionController extends Controller
     /**
      * Muestra el listado de observaciones
      */
-    public function index()
+    public function index(Request $request)
     {
-        $observaciones = Observacion::with(['estudiante', 'profesor'])
-            ->latest()
-            ->paginate(10);
+        $query = Observacion::with(['estudiante', 'profesor'])->latest();
 
-        return view('observaciones.indexObservacion', compact('observaciones'));
+        // Filtro por nombre del estudiante
+        if ($request->filled('nombre')) {
+            $query->whereHas('estudiante', function ($q) use ($request) {
+                $q->where('nombre', 'like', '%' . $request->nombre . '%');
+            });
+        }
+
+        // Filtro por tipo de observación
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+
+        // Filtro por fecha desde
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('created_at', '>=', $request->fecha_desde);
+        }
+
+        // Filtro por fecha hasta
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('created_at', '<=', $request->fecha_hasta);
+        }
+
+        $observaciones = $query->paginate(10)->withQueryString();
+
+        return view('observaciones.indexObservacion', compact('observaciones'))
+            ->with([
+                'filtros' => [
+                    'nombre' => $request->nombre,
+                    'tipo' => $request->tipo,
+                    'fecha_desde' => $request->fecha_desde,
+                    'fecha_hasta' => $request->fecha_hasta,
+                ]
+            ]);
     }
+
+
 
     /**
      * Muestra el formulario para crear una nueva observación
@@ -27,7 +59,7 @@ class ObservacionController extends Controller
     public function create()
     {
         $estudiantes = Estudiante::orderBy('nombre')->get();
-        $profesores = Profesor::orderBy('nombre')->get(); // si quieres que el profe se seleccione manualmente
+        $profesores = Profesor::orderBy('nombre')->get();
 
         return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
     }

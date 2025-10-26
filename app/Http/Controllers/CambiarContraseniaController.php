@@ -8,12 +8,17 @@ use Illuminate\Support\Facades\Auth;
 
 class CambiarContraseniaController extends Controller
 {
+    // Constructor opcional: quitamos el middleware auth
+    public function __construct()
+    {
+        // $this->middleware('auth'); // Comentado para permitir acceso sin login
+    }
+
     /**
      * Mostrar el formulario para cambiar la contraseña
      */
     public function edit()
     {
-        // Ajusta la ruta de la vista según la carpeta dentro de resources/views
         return view('cambiarcontrasenia.editContrasenia');
     }
 
@@ -22,6 +27,15 @@ class CambiarContraseniaController extends Controller
      */
     public function update(Request $request)
     {
+        $user = Auth::user();
+
+        // Verifica si hay usuario autenticado
+        if (!$user) {
+            return redirect()->back()->withErrors([
+                'general' => 'No hay usuario autenticado. Esta acción requiere autenticación.'
+            ]);
+        }
+
         // Validación de campos
         $request->validate([
             'current_password' => ['required'],
@@ -32,8 +46,6 @@ class CambiarContraseniaController extends Controller
             'new_password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
             'new_password.confirmed' => 'La confirmación no coincide con la nueva contraseña.',
         ]);
-
-        $user = Auth::user();
 
         // Verifica si la contraseña actual es correcta
         if (!Hash::check($request->current_password, $user->password)) {
@@ -47,6 +59,7 @@ class CambiarContraseniaController extends Controller
         return back()->with('success', '¡Tu contraseña ha sido cambiada correctamente!');
     }
 }
+
 
 
 

@@ -9,7 +9,7 @@ class Observacion extends Model
 {
     use HasFactory;
 
-    // Forzar el nombre de la tabla
+
     protected $table = 'observaciones';
 
     protected $fillable = [

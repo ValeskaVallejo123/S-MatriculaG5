@@ -20,7 +20,7 @@
             </div>
         @endif
 
-        <form action="{{ route('cambiar_contrasenia.update') }}" method="POST" class="space-y-4">
+        <form action="{{ route('cambiarcontrasenia.update') }}" method="POST" class="space-y-4">
             @csrf
             @method('PUT')
 
@@ -51,3 +51,4 @@
         </form>
     </div>
 @endsection
+

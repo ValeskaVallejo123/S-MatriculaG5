@@ -35,6 +35,53 @@
             </div>
         @endif
 
+        <!-- Filtros -->
+        <div class="bg-white rounded-2xl shadow-md border border-gray-100 mb-8 p-6">
+            <form method="GET" action="{{ route('observaciones.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Filtro Nombre -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Estudiante</label>
+                    <input type="text" name="nombre" value="{{ $filtros['nombre'] ?? '' }}"
+                           placeholder="Buscar por nombre"
+                           class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- Filtro Tipo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Observación</label>
+                    <select name="tipo" class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Todos</option>
+                        <option value="positivo" @selected(($filtros['tipo'] ?? '') === 'positivo')>Positivo</option>
+                        <option value="negativo" @selected(($filtros['tipo'] ?? '') === 'negativo')>Negativo</option>
+                    </select>
+                </div>
+
+                <!-- Filtro Fecha Inicio -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" value="{{ $filtros['fecha_inicio'] ?? '' }}"
+                           class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- Filtro Fecha Fin -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+                    <input type="date" name="fecha_fin" value="{{ $filtros['fecha_fin'] ?? '' }}"
+                           class="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- Botones -->
+                <div class="md:col-span-4 flex items-end gap-2">
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 font-semibold shadow-md">
+                        Filtrar
+                    </button>
+                    <a href="{{ route('observaciones.index') }}" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 font-semibold shadow-md text-center">
+                        Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+
         <!-- Table Card -->
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
             <!-- Table Header -->
@@ -115,4 +162,5 @@
         </div>
     </div>
 @endsection
+
 
