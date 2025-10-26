@@ -95,7 +95,8 @@
 
 <div class="container">
     <div class="form-container">
-        <h4 class="text-center mb-4">Registrar nuevo cupos
+        <h4 class="text-center mb-4 fw-bold">Registrar nuevos cupos</h4>
+
         </h4>
 
         @if (session('success'))

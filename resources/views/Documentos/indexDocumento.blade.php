@@ -26,7 +26,7 @@
             </a>
         </div>
 
-        {{-- Tabla refinada --}}
+        {{-- Tabla --}}
         <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
             <table class="min-w-full table-auto">
                 <thead class="bg-blue-600 text-white text-center">

@@ -104,7 +104,7 @@
 
                 if (errorMessage) {
                     e.preventDefault();
-                    alert(errorMessage); // Puedes reemplazar por modal si quieres
+                    alert(errorMessage);
                 }
             });
         });
