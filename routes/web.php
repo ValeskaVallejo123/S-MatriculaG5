@@ -12,6 +12,21 @@ use App\Http\Controllers\MatriculaController;
 
 use App\Http\Controllers\CursoController;
 
+use App\Http\Controllers\CambiarContraseniaController;
+use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\ObservacionController;
+
+//RUTAS DOCUMENTOS
+Route::resource('documentos', DocumentoController::class);
+//RUTAS CAMBIAR CONTRASENIA
+// Mostrar el formulario para cambiar la contraseña
+Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
+    ->name('cambiarcontrasenia.edit');
+// Actualizar la contraseña
+Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
+    ->name('cambiarcontrasenia.update');
+//rutas observaciones
+Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
 
 Route::get('/', function () {
