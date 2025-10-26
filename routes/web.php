@@ -82,6 +82,7 @@ Route::resource('admins', AdminController::class);
 
 
 
+
 // O si prefieres definirlas manualmente:
 /*
 Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
