@@ -4,15 +4,26 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\ProfesorController;
-
 use App\Http\Controllers\MatriculaController;
-
-
 use App\Http\Controllers\CursoController;
+use App\Http\Controllers\CambiarContraseniaController;
+use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\ObservacionController;
 
-
+//RUTAS DOCUMENTOS
+Route::resource('documentos', DocumentoController::class);
+//RUTAS CAMBIAR CONTRASENIA
+// Mostrar formulario para cambiar contraseña
+Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
+    ->name('cambiarcontrasenia.edit')
+    ->middleware('auth');
+// Actualizar la contraseña
+Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
+    ->name('cambiarcontrasenia.update')
+    ->middleware('auth');
+//rutas observaciones
+Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
 Route::get('/', function () {
     return redirect()->route('admins.index');
@@ -71,6 +82,7 @@ Route::resource('admins', AdminController::class);
 
 
 
+
 // O si prefieres definirlas manualmente:
 /*
 Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
@@ -81,4 +93,3 @@ Route::get('/admins/{admin}/edit', [AdminController::class, 'edit'])->name('admi
 Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admins.update');
 Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admins.destroy');
 */
-
