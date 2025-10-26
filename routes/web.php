@@ -14,14 +14,12 @@ use App\Http\Controllers\ObservacionController;
 //RUTAS DOCUMENTOS
 Route::resource('documentos', DocumentoController::class);
 //RUTAS CAMBIAR CONTRASENIA
-// Mostrar formulario para cambiar contraseña
+// Mostrar el formulario para cambiar la contraseña
 Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
-    ->name('cambiarcontrasenia.edit')
-    ->middleware('auth');
+    ->name('cambiarcontrasenia.edit');
 // Actualizar la contraseña
 Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
-    ->name('cambiarcontrasenia.update')
-    ->middleware('auth');
+    ->name('cambiarcontrasenia.update');
 //rutas observaciones
 Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
