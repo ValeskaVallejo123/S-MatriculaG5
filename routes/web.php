@@ -14,12 +14,14 @@ use App\Http\Controllers\ObservacionController;
 //RUTAS DOCUMENTOS
 Route::resource('documentos', DocumentoController::class);
 //RUTAS CAMBIAR CONTRASENIA
-// Mostrar el formulario para cambiar la contraseña
+// Mostrar formulario para cambiar contraseña
 Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
-    ->name('cambiarcontrasenia.edit');
+    ->name('cambiarcontrasenia.edit')
+    ->middleware('auth');
 // Actualizar la contraseña
 Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
-    ->name('cambiarcontrasenia.update');
+    ->name('cambiarcontrasenia.update')
+    ->middleware('auth');
 //rutas observaciones
 Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
@@ -30,6 +32,7 @@ Route::get('/', function () {
 Route::get('/', function () {
     return view('plantilla'); // o tu vista principal
 });
+
 
 // Mostrar formulario para solicitar el enlace de recuperación
 Route::get('/password/solicitar', [PasswordResetController::class, 'showForgotForm'])
@@ -59,6 +62,8 @@ Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
     Route::put('/{id}', [CursoController::class, 'update'])->name('update');   // Actualizar cupo
     Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy'); // Eliminar cupo
 });
+
+
 
 
 Route::resource('admins', AdminController::class);

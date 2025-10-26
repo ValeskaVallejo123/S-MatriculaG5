@@ -25,15 +25,14 @@
                 </svg>
                 <div class="text-sm text-blue-800">
                     <p class="font-semibold mb-1">Documentos Obligatorios:</p>
-                    <p>Foto estudiante, Acta nacimiento, DNI estudiante, DNI padre/tutor</p>
+                    <p>Los documentos se subirán después de registrar la matrícula</p>
                 </div>
             </div>
         </div>
 
         <!-- Formulario -->
-        <form action="{{ route('matriculas.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('matriculas.store') }}" method="POST" class="space-y-6">
             @csrf
-
             <!-- Card 1: Información del Padre/Tutor -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4">
@@ -139,51 +138,17 @@
                         @enderror
                     </div>
 
-                    <!-- Teléfono Secundario -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Teléfono Secundario
-                        </label>
-                        <input type="text" name="padre_telefono_secundario" value="{{ old('padre_telefono_secundario') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8">
-                    </div>
-
                     <!-- Dirección -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
                             Dirección <span class="text-red-500">*</span>
                         </label>
-                        <textarea name="padre_direccion" rows="2"
+                        <textarea name="padre_direccion" rows="3"
                             class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('padre_direccion') border-red-400 @enderror"
-                            placeholder="Dirección completa de residencia" required>{{ old('padre_direccion') }}</textarea>
+                            placeholder="Dirección completa del padre/tutor" required>{{ old('padre_direccion') }}</textarea>
                         @error('padre_direccion')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
-                    </div>
-
-                    <!-- Ocupación -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Ocupación</label>
-                        <input type="text" name="padre_ocupacion" value="{{ old('padre_ocupacion') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="Profesión u ocupación">
-                    </div>
-
-                    <!-- Lugar de Trabajo -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Lugar de Trabajo</label>
-                        <input type="text" name="padre_lugar_trabajo" value="{{ old('padre_lugar_trabajo') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="Nombre de la empresa">
-                    </div>
-
-                    <!-- Teléfono Trabajo -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Teléfono de Trabajo</label>
-                        <input type="text" name="padre_telefono_trabajo" value="{{ old('padre_telefono_trabajo') }}"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="00000000" pattern="[0-9]{8}" maxlength="8">
                     </div>
                 </div>
             </div>
@@ -198,7 +163,7 @@
                         Información del Estudiante
                     </h2>
                 </div>
-                
+
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Nombre Estudiante -->
                     <div>
@@ -310,9 +275,10 @@
                 </div>
             </div>
 
+
             <!-- Card 3: Documentos -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-amber-600 to-amber-700 px-6 py-4">
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
                     <h2 class="text-xl font-bold text-white flex items-center">
                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -321,85 +287,68 @@
                     </h2>
                 </div>
                 
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Foto Estudiante -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Foto del Estudiante <span class="text-red-500">*</span>
-                        </label>
-                        <input type="file" name="foto_estudiante" accept="image/jpeg,image/jpg,image/png"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('foto_estudiante') border-red-400 @enderror"
-                            required>
-                        <p class="text-xs text-gray-500 mt-1">JPG/PNG, máx. 2MB</p>
-                        @error('foto_estudiante')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
+                <div class="p-6">
+                    <!-- Lista de documentos requeridos -->
+                    <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm font-semibold text-gray-700 mb-3">Documentos que deberá proporcionar:</p>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 text-purple-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Fotografía del estudiante
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 text-purple-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Acta de nacimiento del estudiante
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 text-purple-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Calificaciones Anteriores
+                            </li>
+                            
+                        </ul>
                     </div>
 
-                    <!-- Acta Nacimiento -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Acta de Nacimiento <span class="text-red-500">*</span>
-                        </label>
-                        <input type="file" name="acta_nacimiento" accept="application/pdf,image/jpeg,image/jpg,image/png"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('acta_nacimiento') border-red-400 @enderror"
-                            required>
-                        <p class="text-xs text-gray-500 mt-1">PDF/JPG/PNG, máx. 5MB</p>
-                        @error('acta_nacimiento')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- Botón para subir documentos -->
+                    <button type="button" id="btnSubirDocumentos"
+                        class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group">
+                        <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Subir Documentos
+                    </button>
 
-                    <!-- DNI Estudiante -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Foto DNI del Estudiante <span class="text-red-500">*</span>
-                        </label>
-                        <input type="file" name="foto_dni_estudiante" accept="image/jpeg,image/jpg,image/png"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('foto_dni_estudiante') border-red-400 @enderror"
-                            required>
-                        <p class="text-xs text-gray-500 mt-1">JPG/PNG, máx. 2MB</p>
-                        @error('foto_dni_estudiante')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- DNI Padre -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Foto DNI del Padre/Tutor <span class="text-red-500">*</span>
-                        </label>
-                        <input type="file" name="foto_dni_padre" accept="image/jpeg,image/jpg,image/png"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('foto_dni_padre') border-red-400 @enderror"
-                            required>
-                        <p class="text-xs text-gray-500 mt-1">JPG/PNG, máx. 2MB</p>
-                        @error('foto_dni_padre')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Certificado Estudios (Opcional) -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Certificado de Estudios
-                        </label>
-                        <input type="file" name="certificado_estudios" accept="application/pdf,image/jpeg,image/jpg,image/png"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
-                        <p class="text-xs text-gray-500 mt-1">Opcional - PDF/JPG/PNG, máx. 5MB</p>
-                    </div>
-
-                    <!-- Constancia Conducta (Opcional) -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Constancia de Conducta
-                        </label>
-                        <input type="file" name="constancia_conducta" accept="application/pdf,image/jpeg,image/jpg,image/png"
-                            class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
-                        <p class="text-xs text-gray-500 mt-1">Opcional - PDF/JPG/PNG, máx. 5MB</p>
+                    <!-- Nota informativa -->
+                    <div class="mt-4 flex items-start bg-blue-50 p-3 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        <p class="text-xs text-blue-800">
+                             Se aceptan formatos: PDF, JPG, PNG (máx. 5MB por archivo).
+                        </p>
                     </div>
                 </div>
             </div>
 
+            <!-- Alerta para Documentos -->
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-lg">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-amber-600 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-bold text-amber-900 mb-1">Documentos Requeridos</h3>
+                        <p class="text-sm text-amber-800 mb-3">
+                            Después de registrar la matrícula, deberá subir los documentos obligatorios (Foto estudiante, Acta de nacimiento y calificaciones del estudiante del año anterior).
+                        </p>
+                    </div>
+                </div>
+            </div>
             <!-- Botones de Acción -->
             <div class="flex flex-col sm:flex-row gap-4">
                 <button type="submit"
@@ -436,6 +385,15 @@ function toggleOtroParentesco() {
 // Ejecutar al cargar si ya está seleccionado "otro"
 document.addEventListener('DOMContentLoaded', function() {
     toggleOtroParentesco();
+});
+
+// Event listener para el botón de subir documentos
+
+document.getElementById('btnSubirDocumentos').addEventListener('click', function() {
+    // AQUÍ PUEDES VINCULAR TU FUNCIÓN PARA SUBIR DOCUMENTOS
+    // Por ejemplo: abrirModalDocumentos() o redirigir a otra página
+    console.log('Botón de Subir Documentos clickeado');
+    // Tu código aquí...
 });
 </script>
 @endsection
