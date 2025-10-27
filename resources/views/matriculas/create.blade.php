@@ -5,7 +5,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-6xl mx-auto px-4">
-        
+
         <!-- Header -->
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl shadow-lg mb-4">
@@ -43,7 +43,7 @@
                         Información del Padre/Tutor
                     </h2>
                 </div>
-                
+
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Nombre Padre -->
                     <div>
@@ -286,7 +286,6 @@
                         Documentos Requeridos
                     </h2>
                 </div>
-                
                 <div class="p-6">
                     <!-- Lista de documentos requeridos -->
                     <div class="mb-6 bg-gray-50 p-4 rounded-lg">
@@ -310,7 +309,6 @@
                                 </svg>
                                 Calificaciones Anteriores
                             </li>
-                            
                         </ul>
                     </div>
 
@@ -374,7 +372,7 @@
 function toggleOtroParentesco() {
     const select = document.getElementById('padre_parentesco');
     const otroDiv = document.getElementById('otro_parentesco_div');
-    
+
     if (select.value === 'otro') {
         otroDiv.classList.remove('hidden');
     } else {

@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistema de Matrícula - Escuela Gabriela Mistral</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet" />
+
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f5f7ff;
     }
 
@@ -18,31 +18,35 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    color: white;
+    color: rgb(14, 13, 13);
     padding: 80px 0 60px;
 }
 
 .hero[style*="background-image"] {
     background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), var(--bg-url);
 }
-    .hero h1 {
+    .hero h1 { // Estilo para el título principal
       font-size: 2.8rem;
       font-weight: 700;
+      color:rgb(240, 247, 240)
     }
 
     .hero span {
-      color: #ffd700;
-      font-family: 'Pacifico', cursive;
+      color: #080800;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-size: 2rem;
     }
 
     .hero p {
       max-width: 600px;
       margin-top: 10px;
+     font-size: 1.2rem;
+     color: rgb(12, 12, 12);
+     line-height: 1.6;
     }
 
     .btn-yellow {
-      background-color: #ffb703;
+      background-color: #130e01;
       border: none;
       color: #fff;
       font-weight: bold;
@@ -170,52 +174,52 @@
 </head>
 <body>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <h1>Sistema de Matrícula <br><span>Escuela Gabriela Mistral</span></h1>
-      <p>Plataforma integral para el registro y gestión de matrículas estudiantiles.
-      Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El Paraíso.</p>
+<!-- HERO -->
+<section class="hero" style="
+    position: relative;
+    background-image: url('{{ asset('imagenes/fondo.jpg') }}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 100px 20px;
+    color: white;
+    overflow: hidden;
+">
 
-      <div class="mt-4">
-        <button class="btn btn-yellow me-2">Iniciar Matrícula</button>
-        <button class="btn btn-outline-light">Panel Administrativo</button>
-      </div>
-    </div>
-  </section>
+  <!-- Capa semitransparente -->
+  <div style="
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4); /* Negro con 40% transparencia */
+      z-index: 1;
+  "></div>
 
-    </div>
-  </section>
+  <div class="container" style="
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: left;
+      position: relative;
+      z-index: 2;
+      font-family: Arial, sans-serif; /* fuente del sistema */
+  ">
+    <h1 style="color: #f9f9f9;">Sistema de Matrícula <br><span>Escuela Gabriela Mistral</span></h1>
+    <p style="color: #f9f9f9;">
+      Plataforma integral para el registro y gestión de matrículas estudiantiles.
+      Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El Paraíso.
+    </p>
 
-  <!-- ESTADÍSTICAS -->
-  <section class="stats container text-center">
-    <div class="row g-4">
-      <div class="col-md-3">
-        <div class="stat-card">
-          <h3>0</h3>
-          <p>Estudiantes Matriculados</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <h3>0</h3>
-          <p>Profesores Activos</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <h3>0</h3>
-          <p>Aulas Disponibles</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <h3>0</h3>
-          <p>Grados Ofrecidos</p>
-        </div>
-      </div>
+    <div class="mt-4">
+      <a href="{{ url('/login') }}"
+         class="btn"
+         style="background-color: rgb(235, 82, 214); color: rgb(13, 14, 13); font-size: 18px; border: 1px solid rgb(247, 243, 243);">
+        Iniciar sesión
+      </a>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- CALENDARIO -->
   <section class="container">
@@ -228,61 +232,46 @@
     </div>
   </section>
 
-  <!-- MISIÓN Y VISIÓN -->
-  <section class="mision-vision container my-5">
-    <div class="row justify-content-center text-center">
-      <div class="col-md-8 mb-4">
-        <h3 class="fw-bold text-primary">Misión</h3>
-        <p>
-          Somos una institución pionera responsable de formar y transformar a la niñez municipal,
-          Departamental y Nacional, ofreciendo una Educación Básica de calidad en un clima de
-          respeto, disciplina y compañerismo, con el propósito de lograr en los alumnos las competencias
-          necesarias para adaptarse a la época de cambios que exige la sociedad y el mundo actual.
-        </p>
-      </div>
-      <div class="col-md-8">
-        <h3 class="fw-bold text-success">Visión</h3>
-        <p>
-          Ser una institución líder en la formación de la niñez Hondureña;
-          incorporando diversos conocimientos y tecnología de acorde con las necesidades básicas;
-          con el fin de lograr en los educandos: "Excelente calidad educativa, valores éticos, morales y espirituales",
-          capacidad de análisis, sentimientos de identidad nacional y una actitud crítica positiva
-          que les permita enfrentar los actuales y futuros retos que el mundo y la sociedad demandan.
-        </p>
-      </div>
-    </div>
-  </section>
+ <!-- PROCESO DE MATRÍCULA -->
+<section class="process">
+  <div class="container text-center">
+    <h2>Proceso de Matrícula</h2>
+    <p>Sigue estos simples pasos para completar la matrícula</p>
 
-  <!-- PROCESO DE MATRÍCULA -->
-  <section class="process">
-    <div class="container">
-      <h2>Proceso de Matrícula</h2>
-      <p>Sigue estos simples pasos para completar la matrícula</p>
+    <div class="row justify-content-center mt-4">
 
-      <div class="row justify-content-center">
-        <div class="col-md-4 process-step">
-          <div class="step-number">1</div>
-          <h5>Matrícula Completa</h5>
-          <p>Completa toda la información del estudiante, datos del responsable, selección de grado y profesor en un solo paso.</p>
-        </div>
-        <div class="col-md-4 process-step">
-          <div class="step-number" style="background-color:#d4fcd4; color:#2e7d32;">2</div>
-          <h5>Confirmación</h5>
-          <p>Revisa toda la información y recibe la confirmación de matrícula con el número de registro.</p>
-        </div>
+      <!-- Paso 1: Matrícula Completa -->
+      <div class="col-md-4 process-step">
+        <div class="step-number">1</div>
+        <h5>Matrícula Completa</h5>
+        <p>Completa toda la información del estudiante, datos del responsable, selección de grado y profesor en un solo paso.</p>
+
+        <!-- BOTÓN PARA FORMULARIO DE MATRÍCULA -->
+        <a href="{{ route('estudiantes.create') }}" class="btn btn-success mt-2">
+          Ir al formulario
+        </a>
       </div>
+
+      <!-- Paso 2: Confirmación -->
+      <div class="col-md-4 process-step">
+        <div class="step-number" style="background-color:#d4fcd4; color:#2e7d32;">2</div>
+        <h5>Confirmación</h5>
+        <p>Revisa toda la información y recibe la confirmación de matrícula con el número de registro.</p>
     </div>
-  </section>
+  </div>
+</section>
+
 
   <!-- UBICACIÓN Y CONTACTO -->
-  <section class="contact-section">
-    <div class="container">
-      <h3>Ubicación y Contacto</h3>
-      <div class="row g-4 align-items-stretch">
-        <div class="col-md-6">
-          <img src="{{ asset('imagenes/centroEd.jpg') }}" alt="Centro Educativo" class="img-fluid rounded mb-3">
-          <iframe src="https://www.google.com/maps?q=Danlí,%20El%20Paraíso&output=embed"></iframe>
-        </div>
+<section class="contact-section">
+  <div class="container">
+    <h3>Ubicación y Contacto</h3>
+    <div class="row g-4 align-items-stretch">
+      <!-- Imagen de la escuela -->
+      <div class="col-md-6">
+
+        <iframe src="https://www.google.com/maps?q=Danlí,%20El%20Paraíso&output=embed"></iframe>
+      </div>
         <div class="col-md-6">
           <div class="contact-box">
             <h5>Escuela Gabriela Mistral</h5>

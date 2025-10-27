@@ -35,6 +35,7 @@ class Estudiante extends Model
 
     // Opciones de grados
     public static function grados()
+<<<<<<< HEAD
     {
         return [
             '1ro Primaria',
@@ -60,5 +61,25 @@ class Estudiante extends Model
     {
         return $this->hasMany(Documento::class, 'estudiante_id');
     }
+=======
+{
+    return [
+        '1ro Primaria',
+        '2do Primaria',
+        '3ro Primaria',
+        '4to Primaria',
+        '5to Primaria',
+        '6to Primaria',
+        '1ro Secundaria',
+        '2do Secundaria',
+        '3ro Secundaria',
+    ];
+}
+
+public static function secciones()
+{
+    return ['A', 'B', 'C'];
+}
+>>>>>>> cesia-dev
 
 }
