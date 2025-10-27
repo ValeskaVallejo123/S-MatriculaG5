@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use App\Models\BuscarEstudiante;
 
-class EstudianteController extends Controller
+class BuscarEstudianteController extends Controller
 {
     public function buscar(Request $request)
     {
@@ -12,11 +13,12 @@ class EstudianteController extends Controller
 
         $resultados = collect(); // colección vacía por defecto
         $busquedaRealizada = false;
+        $mensaje = null;
 
         if ($nombre || $dni) {
             $busquedaRealizada = true;
 
-            $estudiantes = \App\Models\Estudiante::query();
+            $estudiantes = BuscarEstudiante::query();
 
             if ($nombre) {
                 $estudiantes->whereRaw("CONCAT(nombre1, ' ', nombre2, ' ', apellido1, ' ', apellido2) LIKE ?", ["%$nombre%"]);
@@ -27,8 +29,12 @@ class EstudianteController extends Controller
             }
 
             $resultados = $estudiantes->get();
+
+            if ($resultados->isEmpty()) {
+                $mensaje = 'Estudiante no encontrado';
+            }
         }
 
-        return view('estudiantes.buscar', compact('resultados', 'busquedaRealizada'));
+        return view('estudiantes.buscar', compact('resultados', 'busquedaRealizada', 'mensaje'));
     }
 }
