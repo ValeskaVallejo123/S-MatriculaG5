@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Usuario - Sistema de Matrícula</title>
+  <title>Iniciar Sesión - Sistema de Matrícula</title>
 
   <style>
-    /* ======== ESTILOS GENERALES ======== */
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #ffffff, #a29bfe);
@@ -20,7 +18,6 @@
       color: #2d3436;
     }
 
-    /* ======== CONTENEDOR DEL FORMULARIO ======== */
     .form-container {
       background-color: rgb(110, 26, 189);
       padding: 35px;
@@ -62,7 +59,6 @@
       box-shadow: 0 0 6px rgba(9, 132, 227, 0.4);
     }
 
-    /* ======== BOTÓN DE REGISTRO ======== */
     button {
       width: 100%;
       padding: 12px;
@@ -82,7 +78,6 @@
       transform: scale(1.03);
     }
 
-    /* ======== ENLACES Y MENSAJES ======== */
     p {
       text-align: center;
       margin-top: 20px;
@@ -100,7 +95,6 @@
       color: #fdcb6e;
     }
 
-    /* ======== BOTÓN DE RECUPERACIÓN ======== */
     .recover-btn {
       display: inline-block;
       width: 100%;
@@ -120,7 +114,6 @@
       transform: scale(1.03);
     }
 
-    /* ======== MENSAJE DE ERROR ======== */
     .error {
       color: #ffcccc;
       font-size: 14px;
@@ -131,81 +124,68 @@
 </head>
 <body>
   <div class="form-container">
-    <h2>Registrarme</h2>
+    <h2>Iniciar Sesión</h2>
 
-    <!-- ======== FORMULARIO DE REGISTRO ======== -->
-    <form id="registerForm">
-      <label for="name">Nombre completo:</label>
-      <input type="text" id="name" name="name" placeholder="Ej. María López" required>
+    {{-- FORMULARIO DE LOGIN --}}
+<form >
+ <input type="email" id="email" name="email" placeholder="Ej. juan.perez@gm.hn" required>
+  @error('email')
+    <div class="error">{{ $message }}</div>
+  @enderror
 
-      <label for="email">Correo electrónico:</label>
-      <input type="email" id="email" name="email" placeholder="Ej. maria@gmail.com" required>
+  <label for="password">Contraseña:</label>
+  <input type="password" id="password" name="password" placeholder="********" required>
+  <div class="toggle-password" onclick="togglePassword()"></div>
+  
+  @error('password')
+    <div class="error">{{ $message }}</div>
+  @enderror
+  <div id="clientErrors" class="client-error" style="display:none;"></div>
 
-      <label for="password">Contraseña:</label>
-      <input type="password" id="password" name="password" placeholder="********" required>
+  <button type="submit">Registrarme</button>
+</form>
 
-      <div id="passwordError" class="error"></div>
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+  }
 
-      <button type="submit">Registrarme</button>
-    </form>
+  (function(){
+    const form = document.getElementById('loginForm');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const clientErrors = document.getElementById('clientErrors');
 
-    <!-- ======== ENLACES ======== -->
-    <p>¿Ya tienes una cuenta?
-      <a href="{{ url('/login') }}">Iniciar sesión</a>
-    </p>
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    <p>¿Olvidaste tu contraseña?</p>
-    <a href="{{ url('/password/reset') }}" class="recover-btn">Recuperar contraseña</a>
-  </div>
-
-  <script>
-    /* ======== VALIDACIÓN DE CONTRASEÑA SEGURA ======== */
-    function validarContrasena(password, name, email) {
+    form.addEventListener('submit', function(e){
       const errors = [];
 
-      if (password.length < 8) {
-        errors.push("Debe tener al menos 8 caracteres.");
-      }
-      if (!/[A-Z]/.test(password)) {
-        errors.push("Debe tener al menos una letra mayúscula.");
-      }
-      if (!/[a-z]/.test(password)) {
-        errors.push("Debe tener al menos una letra minúscula.");
-      }
-      if (!/[0-9]/.test(password)) {
-        errors.push("Debe incluir al menos un número.");
-      }
-      if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password)) {
-        errors.push("Debe incluir al menos un carácter especial.");
-      }
-      if (password.toLowerCase().includes(name.toLowerCase()) ||
-          password.toLowerCase().includes(email.toLowerCase())) {
-        errors.push("No debe contener tu nombre o correo electrónico.");
+      if(!emailRegex.test(email.value.trim())){
+        errors.push('Introduce un correo válido.');
       }
 
-      return errors;
-    }
+      if(!passwordRegex.test(password.value)){
+        errors.push('La contraseña debe tener mínimo 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial.');
+      }
 
-    /* ======== EVENTO DE ENVÍO DEL FORMULARIO ======== */
-    document.getElementById('registerForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const errorDiv = document.getElementById('passwordError');
-
-      const errores = validarContrasena(password, name, email);
-
-      if (errores.length > 0) {
-        errorDiv.innerHTML = errores.join("<br>");
+      if(errors.length){
+        e.preventDefault();
+        clientErrors.innerHTML = errors.map(err => '<div>• ' + err + '</div>').join('');
+        clientErrors.style.display = 'block';
       } else {
-        errorDiv.innerHTML = "";
-        alert('✅ Registro exitoso. Contraseña segura.');
-        // Aquí puedes conectar con Laravel o tu API backend
-        // Ejemplo: enviar datos con fetch('/register', { method: 'POST', body: new FormData(this) })
+        clientErrors.style.display = 'none';
       }
     });
-  </script>
+  })();
+</script>
+
+    {{-- boton de recuperar contraseña --}}
+    <p>¿Olvidaste tu contraseña?</p>
+    <a href="{{ route('password.solicitar') }}" class="recover-btn">Recuperar Contraseña</a>
+
+  </div>
 </body>
 </html>

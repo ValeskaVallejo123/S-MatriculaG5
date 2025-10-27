@@ -32,7 +32,7 @@
     }
 
     .hero span {
-      color: #0f0f01;
+      color: #080800;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-size: 2rem;
     }
@@ -206,7 +206,7 @@
       font-family: Arial, sans-serif; /* fuente del sistema */
   ">
     <h1 style="color: #f9f9f9;">Sistema de Matrícula <br><span>Escuela Gabriela Mistral</span></h1>
-    <p style="color: #f1f1f1;">
+    <p style="color: #f9f9f9;">
       Plataforma integral para el registro y gestión de matrículas estudiantiles.
       Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El Paraíso.
     </p>
