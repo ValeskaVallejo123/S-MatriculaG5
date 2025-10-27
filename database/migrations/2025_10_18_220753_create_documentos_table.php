@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('documentos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre_estudiante');
+            $table->string('foto')->nullable(); // nueva columna para la foto
             $table->string('acta_nacimiento')->nullable();
             $table->string('calificaciones')->nullable();
             $table->timestamps();
@@ -25,14 +26,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('documentos', function (Blueprint $table) {
-            $table->dropForeign(['estudiante_id']);
-            $table->dropForeign(['padre_id']);
-        });
-
         Schema::dropIfExists('documentos');
     }
 };
+
 
 
 
