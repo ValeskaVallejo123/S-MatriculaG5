@@ -17,13 +17,15 @@ class MatriculaController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // Estadísticas
-        $total = Matricula::count();
-        $pendientes = Matricula::where('estado', 'pendiente')->count();
-        $aprobadas = Matricula::where('estado', 'aprobada')->count();
-        $rechazadas = Matricula::where('estado', 'rechazada')->count();
+        // Estadísticas agrupadas en un arreglo
+        $counts = [
+            'total' => Matricula::count(),
+            'pendiente' => Matricula::where('estado', 'pendiente')->count(),
+            'aprobada' => Matricula::where('estado', 'aprobada')->count(),
+            'rechazada' => Matricula::where('estado', 'rechazada')->count(),
+        ];
 
-        return view('matriculas.index', compact('matriculas', 'total', 'pendientes', 'aprobadas', 'rechazadas'));
+        return view('matriculas.index', compact('matriculas', 'counts'));
     }
 
     // Formulario para crear matrícula
@@ -32,15 +34,7 @@ class MatriculaController extends Controller
         $estudiantes = Estudiante::orderBy('nombre', 'asc')->get();
         $padres = Padre::orderBy('nombre', 'asc')->get();
 
-        // Definir parentescos
-        $parentescos = [
-            'padre' => 'Padre',
-            'madre' => 'Madre',
-            'tutor' => 'Tutor',
-            'otro' => 'Otro',
-        ];
-
-        // Definir grados y secciones
+        $parentescos = ['padre' => 'Padre', 'madre' => 'Madre', 'tutor' => 'Tutor', 'otro' => 'Otro'];
         $grados = ['1ro', '2do', '3ro', '4to', '5to', '6to'];
         $secciones = ['A', 'B', 'C', 'D'];
 
@@ -136,14 +130,7 @@ class MatriculaController extends Controller
     {
         $estudiantes = Estudiante::orderBy('nombre', 'asc')->get();
         $padres = Padre::orderBy('nombre', 'asc')->get();
-
-        $parentescos = [
-            'padre' => 'Padre',
-            'madre' => 'Madre',
-            'tutor' => 'Tutor',
-            'otro' => 'Otro',
-        ];
-
+        $parentescos = ['padre' => 'Padre', 'madre' => 'Madre', 'tutor' => 'Tutor', 'otro' => 'Otro'];
         $grados = ['1ro', '2do', '3ro', '4to', '5to', '6to'];
         $secciones = ['A', 'B', 'C', 'D'];
 
@@ -182,5 +169,16 @@ class MatriculaController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Ocurrió un error al eliminar la matrícula.']);
         }
+    }
+
+    // Confirmar matrícula (Nueva funcionalidad)
+    public function confirmar(Matricula $matricula)
+    {
+        if ($matricula->estado === 'pendiente') {
+            $matricula->update(['estado' => 'aprobada']);
+            return redirect()->back()->with('success', 'La matrícula se ha confirmado correctamente.');
+        }
+
+        return redirect()->back()->with('error', 'Esta matrícula no puede ser confirmada.');
     }
 }
