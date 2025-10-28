@@ -35,23 +35,30 @@ class Estudiante extends Model
 
     // Opciones de grados
     public static function grados()
-{
-    return [
-        '1ro Primaria',
-        '2do Primaria',
-        '3ro Primaria',
-        '4to Primaria',
-        '5to Primaria',
-        '6to Primaria',
-        '1ro Secundaria',
-        '2do Secundaria',
-        '3ro Secundaria',
-    ];
-}
+    {
+        return [
+            '1ro Primaria',
+            '2do Primaria',
+            '3ro Primaria',
+            '4to Primaria',
+            '5to Primaria',
+            '6to Primaria',
+            '1ro Secundaria',
+            '2do Secundaria',
+            '3ro Secundaria',
 
-public static function secciones()
-{
-    return ['A', 'B', 'C'];
-}
+        ];
+    }
+
+    // Opciones de secciones
+    public static function secciones()
+    {
+        return ['A', 'B', 'C', 'D', 'E'];
+    }
+
+    public function documentos()
+    {
+        return $this->hasMany(Documento::class, 'estudiante_id');
+    }
 
 }

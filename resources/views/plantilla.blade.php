@@ -13,36 +13,32 @@
     }
 
     /* ======= SECCIÓN HERO ======= */
-   .hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45));
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: rgb(14, 13, 13);
-    padding: 80px 0 60px;
-}
+    .hero {
+      background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45));
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: rgb(14, 13, 13);
+      padding: 80px 0 60px;
+    }
 
-.hero[style*="background-image"] {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), var(--bg-url);
-}
-    .hero h1 { // Estilo para el título principal
+    .hero h1 {
       font-size: 2.8rem;
       font-weight: 700;
-      color:rgb(240, 247, 240)
+      color: rgb(240, 247, 240);
     }
 
     .hero span {
       color: #080800;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-size: 2rem;
     }
 
     .hero p {
       max-width: 600px;
       margin-top: 10px;
-     font-size: 1.2rem;
-     color: rgb(12, 12, 12);
-     line-height: 1.6;
+      font-size: 1.2rem;
+      color: rgb(12, 12, 12);
+      line-height: 1.6;
     }
 
     .btn-yellow {
@@ -193,7 +189,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.4); /* Negro con 40% transparencia */
+      background-color: rgba(0, 0, 0, 0.4);
       z-index: 1;
   "></div>
 
@@ -203,7 +199,7 @@
       text-align: left;
       position: relative;
       z-index: 2;
-      font-family: Arial, sans-serif; /* fuente del sistema */
+      font-family: Arial, sans-serif;
   ">
     <h1 style="color: #f9f9f9;">Sistema de Matrícula <br><span>Escuela Gabriela Mistral</span></h1>
     <p style="color: #f9f9f9;">
@@ -221,18 +217,18 @@
   </div>
 </section>
 
-  <!-- CALENDARIO -->
-  <section class="container">
-    <div class="calendar mt-5">
-      <div>
-        <h4>Calendario Académico 2026</h4>
-        <p>Fechas importantes del año escolar</p>
-      </div>
-      <button class="btn btn-calendar">Ver Calendario</button>
+<!-- CALENDARIO -->
+<section class="container">
+  <div class="calendar mt-5">
+    <div>
+      <h4>Calendario Académico 2026</h4>
+      <p>Fechas importantes del año escolar</p>
     </div>
-  </section>
+    <button class="btn btn-calendar">Ver Calendario</button>
+  </div>
+</section>
 
- <!-- PROCESO DE MATRÍCULA -->
+<!-- PROCESO DE MATRÍCULA -->
 <section class="process">
   <div class="container text-center">
     <h2>Proceso de Matrícula</h2>
@@ -247,7 +243,7 @@
         <p>Completa toda la información del estudiante, datos del responsable, selección de grado y profesor en un solo paso.</p>
 
         <!-- BOTÓN PARA FORMULARIO DE MATRÍCULA -->
-        <a href="{{ route('estudiantes.create') }}" class="btn btn-success mt-2">
+        <a href="{{ route('matriculas.index') }}" class="btn btn-success mt-2">
           Ir al formulario
         </a>
       </div>
@@ -257,44 +253,41 @@
         <div class="step-number" style="background-color:#d4fcd4; color:#2e7d32;">2</div>
         <h5>Confirmación</h5>
         <p>Revisa toda la información y recibe la confirmación de matrícula con el número de registro.</p>
+      </div>
+
     </div>
   </div>
 </section>
 
-
-  <!-- UBICACIÓN Y CONTACTO -->
+<!-- UBICACIÓN Y CONTACTO -->
 <section class="contact-section">
   <div class="container">
     <h3>Ubicación y Contacto</h3>
     <div class="row g-4 align-items-stretch">
-      <!-- Imagen de la escuela -->
       <div class="col-md-6">
-
         <iframe src="https://www.google.com/maps?q=Danlí,%20El%20Paraíso&output=embed"></iframe>
       </div>
-        <div class="col-md-6">
-          <div class="contact-box">
-            <h5>Escuela Gabriela Mistral</h5>
-            <div class="contact-info mt-3">
-              <p><strong>Dirección:</strong> Barrio El Centro, Calle Principal, Danlí, El Paraíso, Honduras</p>
-              <p><strong>Teléfono:</strong> +504 2763-4567</p>
-              <p><strong>Celular:</strong> +504 9876-5432</p>
-              <p><strong>Horarios de Atención:</strong><br>
-                Lunes a Viernes: 7:00 AM - 4:00 PM<br>
-              </p>
-              <hr>
-              <p><strong>Horarios Específicos:</strong><br>
-                Secretaría Académica: 8:00 AM - 4:00 PM<br>
-                Matrículas (Enero-Febrero): 8:00 AM - 4:00 PM<br>
-                Dirección: 9:00 AM - 3:00 PM
-              </p>
-            </div>
+      <div class="col-md-6">
+        <div class="contact-box">
+          <h5>Escuela Gabriela Mistral</h5>
+          <div class="contact-info mt-3">
+            <p><strong>Dirección:</strong> Barrio El Centro, Calle Principal, Danlí, El Paraíso, Honduras</p>
+            <p><strong>Teléfono:</strong> +504 2763-4567</p>
+            <p><strong>Celular:</strong> +504 9876-5432</p>
+            <p><strong>Horarios de Atención:</strong><br>Lunes a Viernes: 7:00 AM - 4:00 PM</p>
+            <hr>
+            <p><strong>Horarios Específicos:</strong><br>
+              Secretaría Académica: 8:00 AM - 4:00 PM<br>
+              Matrículas (Enero-Febrero): 8:00 AM - 4:00 PM<br>
+              Dirección: 9:00 AM - 3:00 PM
+            </p>
           </div>
         </div>
       </div>
     </div>
-  </section>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

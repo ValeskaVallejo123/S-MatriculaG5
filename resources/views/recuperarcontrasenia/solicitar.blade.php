@@ -68,6 +68,7 @@
             padding: 10px 14px;
             font-size: 1rem;
             transition: all 0.3s ease-in-out;
+            width: 100%;
         }
 
         .form-control:focus {
@@ -75,15 +76,16 @@
             box-shadow: 0 0 0 0.2rem rgba(255, 183, 3, 0.25);
         }
 
-        /* ---- BOTÓN ---- */
         .btn-yellow {
             background-color: #ffb703;
             border: none;
             color: #fff;
             font-weight: 600;
             padding: 10px 0;
+            width: 100%;
             border-radius: 8px;
             transition: all 0.3s ease;
+            margin-top: 15px;
         }
 
         .btn-yellow:hover {
@@ -92,12 +94,20 @@
             box-shadow: 0 4px 10px rgba(244, 161, 0, 0.3);
         }
 
-        /* ---- ALERTAS ---- */
         .alert-success {
             border-radius: 8px;
             background-color: #d4edda;
             border: 1px solid #c3e6cb;
             color: #155724;
+            margin-bottom: 15px;
+        }
+
+        .alert-danger {
+            border-radius: 8px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            margin-bottom: 15px;
         }
 
         .text-small {
@@ -113,7 +123,6 @@
             text-decoration: underline;
             color: #333;
         }
-
     </style>
 </head>
 <body>
@@ -134,17 +143,18 @@
             @if (session('status'))
                 <div class="alert alert-success text-center">{{ session('status') }}</div>
             @endif
+
             <form method="POST" action="{{ route('password.enviar') }}">
-    @csrf
-    <label>Correo electrónico</label>
-    <input type="email" name="email" required>
-    <button type="submit">Enviar enlace de recuperación</button>
-</form>
-@if(session('status'))
-    <div>{{ session('status') }}</div>
-@endif
-
-
+                @csrf
+                <div class="mb-3">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ old('email') }}" required placeholder="Ingresa tu correo">
+                    @error('email')
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-yellow">Enviar enlace de recuperación</button>
+            </form>
 
             <div class="text-center mt-3">
                 <a href="{{ url('/login') }}" class="text-small">← Volver al inicio de sesión</a>

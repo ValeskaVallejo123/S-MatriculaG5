@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('parentesco_otro', 50)->nullable();
             
             // Información de Contacto
-            $table->string('email', 100)->unique();
+            $table->string('correo', 100)->unique();
             $table->string('telefono', 8);
             $table->string('telefono_secundario', 8)->nullable();
             $table->string('direccion', 200);
@@ -41,4 +41,21 @@ return new class extends Migration
     {
         Schema::dropIfExists('padres');
     }
+};
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('padres', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->string('apellido');
+            $table->string('correo')->unique();
+            $table->string('telefono')->nullable();
+            $table->string('direccion')->nullable();
+            $table->timestamps();
+        });
+    }
+
+   
 };

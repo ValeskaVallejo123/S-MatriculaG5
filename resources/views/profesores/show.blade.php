@@ -122,9 +122,9 @@
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha de Nacimiento</p>
                                 @if($profesor->fecha_nacimiento)
                                     <p class="text-lg font-semibold text-gray-900">{{ $profesor->fecha_nacimiento->format('d/m/Y') }}</p>
-                                    <p class="text-sm text-purple-600 font-medium">{{ $profesor->fecha_nacimiento->age }} años de edad</p>
+                                    <p class="text-xs text-purple-600 font-medium">{{ $profesor->fecha_nacimiento->age }} años</p>
                                 @else
-                                    <p class="text-lg text-gray-400 italic">No registrada</p>
+                                    <p class="text-lg font-semibold text-gray-500">No registrada</p>
                                 @endif
                             </div>
                         </div>
@@ -133,8 +133,8 @@
                     <!-- Información de Contacto -->
                     <div>
                         <div class="flex items-center gap-3 mb-6">
-                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center">
-                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
                             </div>
@@ -142,28 +142,16 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl border border-gray-200">
                             <div class="space-y-1">
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Correo Electrónico</p>
-                                @if($profesor->email)
-                                    <p class="text-lg font-semibold text-gray-900">{{ $profesor->email }}</p>
-                                @else
-                                    <p class="text-lg text-gray-400 italic">No registrado</p>
-                                @endif
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</p>
+                                <p class="text-lg font-semibold text-gray-900 break-all">{{ $profesor->email ?? 'No registrado' }}</p>
                             </div>
                             <div class="space-y-1">
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Teléfono</p>
-                                @if($profesor->telefono)
-                                    <p class="text-lg font-semibold text-gray-900 font-mono">{{ $profesor->telefono }}</p>
-                                @else
-                                    <p class="text-lg text-gray-400 italic">No registrado</p>
-                                @endif
+                                <p class="text-lg font-semibold text-gray-900 font-mono">{{ $profesor->telefono ?? 'No registrado' }}</p>
                             </div>
                             <div class="md:col-span-2 space-y-1">
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Dirección de Residencia</p>
-                                @if($profesor->direccion)
-                                    <p class="text-lg font-semibold text-gray-900">{{ $profesor->direccion }}</p>
-                                @else
-                                    <p class="text-lg text-gray-400 italic">No registrada</p>
-                                @endif
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Dirección</p>
+                                <p class="text-lg font-semibold text-gray-900">{{ $profesor->direccion ?? 'No registrada' }}</p>
                             </div>
                         </div>
                     </div>
@@ -188,25 +176,17 @@
                                 <p class="text-lg font-semibold text-gray-900">{{ $profesor->tipo_contrato ? ucwords(str_replace('_', ' ', $profesor->tipo_contrato)) : 'No especificado' }}</p>
                             </div>
                             <div class="space-y-1">
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Salario Mensual</p>
-                                @if($profesor->salario)
-                                    <p class="text-lg font-semibold text-green-600">Lps {{ number_format($profesor->salario, 2) }}</p>
-                                @else
-                                    <p class="text-lg text-gray-400 italic">No especificado</p>
-                                @endif
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Salario</p>
+                                <p class="text-lg font-semibold text-gray-900">{{ $profesor->salario ? 'Lps ' . number_format($profesor->salario, 2) : 'No especificado' }}</p>
                             </div>
                             <div class="space-y-1">
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha de Ingreso</p>
                                 @if($profesor->fecha_ingreso)
                                     <p class="text-lg font-semibold text-gray-900">{{ $profesor->fecha_ingreso->format('d/m/Y') }}</p>
-                                    <p class="text-sm text-purple-600 font-medium">{{ $profesor->fecha_ingreso->diffForHumans() }}</p>
+                                    <p class="text-xs text-purple-600 font-medium">{{ $profesor->fecha_ingreso->diffForHumans() }}</p>
                                 @else
-                                    <p class="text-lg text-gray-400 italic">No registrada</p>
+                                    <p class="text-lg font-semibold text-gray-500">No registrada</p>
                                 @endif
-                            </div>
-                            <div class="space-y-1">
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Estado Laboral</p>
-                                <p class="text-lg font-semibold text-gray-900">{{ $profesor->estado ? ucfirst($profesor->estado) : 'No especificado' }}</p>
                             </div>
                         </div>
                     </div>
@@ -217,13 +197,13 @@
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center">
                                 <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
                                 </svg>
                             </div>
                             <h2 class="text-2xl font-bold text-gray-800">Observaciones</h2>
                         </div>
-                        <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-6 rounded-2xl border-2 border-amber-200">
-                            <p class="text-gray-800 leading-relaxed">{{ $profesor->observaciones }}</p>
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl border border-gray-200">
+                            <p class="text-gray-700 leading-relaxed">{{ $profesor->observaciones }}</p>
                         </div>
                     </div>
                     @endif
@@ -231,9 +211,9 @@
                     <!-- Información del Sistema -->
                     <div>
                         <div class="flex items-center gap-3 mb-6">
-                            <div class="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                            <div class="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl flex items-center justify-center">
                                 <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
                             <h2 class="text-2xl font-bold text-gray-800">Información del Sistema</h2>
@@ -242,209 +222,55 @@
                             <div class="space-y-1">
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha de Registro</p>
                                 <p class="text-lg font-semibold text-gray-900">{{ $profesor->created_at ? $profesor->created_at->format('d/m/Y H:i') : 'No disponible' }}</p>
-                                @if($profesor->created_at)
-                                    <p class="text-sm text-gray-500">{{ $profesor->created_at->diffForHumans() }}</p>
-                                @endif
                             </div>
                             <div class="space-y-1">
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Última Actualización</p>
                                 <p class="text-lg font-semibold text-gray-900">{{ $profesor->updated_at ? $profesor->updated_at->format('d/m/Y H:i') : 'No disponible' }}</p>
-                                @if($profesor->updated_at)
-                                    <p class="text-sm text-gray-500">{{ $profesor->updated_at->diffForHumans() }}</p>
-                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Botones de Acción -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-10 pt-8 border-t-2 border-gray-100">
-                    <a href="{{ route('profesores.edit', $profesor) }}" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                        Editar
-                    </a>
-                    <a href="{{ route('profesores.index') }}" class="inline-flex items-center justify-center gap-2 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        Volver
-                    </a>
-                    <form action="{{ route('profesores.destroy', $profesor) }}" method="POST" onsubmit="return confirm('¿Está seguro de eliminar al profesor {{ $profesor->nombre_completo }}?\n\nEsta acción no se puede deshacer y se eliminará toda su información laboral.')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white py-4 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                <div class="mt-10 pt-8 border-t-2 border-gray-200">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a 
+                            href="{{ route('profesores.edit', $profesor) }}" 
+                            class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 focus:ring-4 focus:ring-blue-300 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center flex items-center justify-center"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
-                            Eliminar
-                        </button>
-                    </form>
-
-<div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-white">{{ $profesor->nombre_completo }}</h1>
-                    <p class="text-purple-100 mt-1">{{ $profesor->especialidad ?? 'Sin especialidad' }}</p>
-                </div>
-                <div>
-                    @if($profesor->estado === 'activo')
-                        <span class="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-semibold">✓ Activo</span>
-                    @elseif($profesor->estado === 'licencia')
-                        <span class="px-4 py-2 bg-yellow-500 text-white rounded-full text-sm font-semibold">⚠ Licencia</span>
-                    @else
-                        <span class="px-4 py-2 bg-red-500 text-white rounded-full text-sm font-semibold">✗ Inactivo</span>
-                    @endif
-
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Nota Informativa -->
-        <div class="mt-6 bg-purple-50 border border-purple-200 rounded-xl p-4">
-            <div class="flex items-start">
-                <svg class="w-5 h-5 text-purple-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                </svg>
-                <div class="text-sm text-purple-800">
-                    <p class="font-semibold mb-1">Información Completa del Profesor</p>
-                    <p>Todos los datos mostrados corresponden al registro actual del profesor en el sistema. Para realizar cambios, utilice el botón "Editar".</p>
-                </div>
-            </div>
-
-        <!-- Body -->
-        <div class="p-8">
-            <!-- Información Personal -->
-            <div class="mb-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"> Información Personal</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Nombre</p>
-                        <p class="text-gray-900">{{ $profesor->nombre ?? 'N/A' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Apellido</p>
-                        <p class="text-gray-900">{{ $profesor->apellido ?? 'N/A' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">DNI</p>
-                        <p class="text-gray-900">{{ $profesor->dni ?? 'N/A' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Fecha de Nacimiento</p>
-                        @if($profesor->fecha_nacimiento)
-                            <p class="text-gray-900">{{ $profesor->fecha_nacimiento->format('d/m/Y') }}</p>
-                            <p class="text-xs text-gray-500">{{ $profesor->fecha_nacimiento->age }} años</p>
-                        @else
-                            <p class="text-gray-900">No registrada</p>
-                        @endif
+                            Editar Profesor
+                        </a>
+                        <a 
+                            href="{{ route('profesores.index') }}" 
+                            class="flex-1 bg-gray-100 text-gray-700 py-4 px-6 rounded-xl font-semibold hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 transition-all text-center flex items-center justify-center"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Volver a la Lista
+                        </a>
+                        <form action="{{ route('profesores.destroy', $profesor) }}" method="POST" class="flex-1">
+                            @csrf
+                            @method('DELETE')
+                            <button 
+                                type="submit" 
+                                onclick="return confirm('¿Estás seguro de eliminar a {{ $profesor->nombre_completo }}?')"
+                                class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 focus:ring-4 focus:ring-red-300 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
+                            >
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Eliminar
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
-
-            <!-- Información de Contacto -->
-            <div class="mb-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"> Información de Contacto</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Email</p>
-                        <p class="text-gray-900">{{ $profesor->email ?? 'No registrado' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Teléfono</p>
-                        <p class="text-gray-900">{{ $profesor->telefono ?? 'No registrado' }}</p>
-                    </div>
-                    <div class="md:col-span-2">
-                        <p class="text-sm text-gray-500 font-semibold">Dirección</p>
-                        <p class="text-gray-900">{{ $profesor->direccion ?? 'No registrada' }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Información Profesional -->
-            <div class="mb-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"> Información Profesional</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Especialidad</p>
-                        <p class="text-gray-900">{{ $profesor->especialidad ?? 'No especificada' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Tipo de Contrato</p>
-                        <p class="text-gray-900">{{ $profesor->tipo_contrato ? ucwords(str_replace('_', ' ', $profesor->tipo_contrato)) : 'No especificado' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Salario</p>
-                        <p class="text-gray-900">{{ $profesor->salario ? 'Lps ' . number_format($profesor->salario, 2) : 'No especificado' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Fecha de Ingreso</p>
-                        @if($profesor->fecha_ingreso)
-                            <p class="text-gray-900">{{ $profesor->fecha_ingreso->format('d/m/Y') }}</p>
-                            <p class="text-xs text-gray-500">{{ $profesor->fecha_ingreso->diffForHumans() }}</p>
-                        @else
-                            <p class="text-gray-900">No registrada</p>
-                        @endif
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Estado</p>
-                        <p class="text-gray-900">{{ $profesor->estado ? ucfirst($profesor->estado) : 'No especificado' }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Observaciones -->
-            @if($profesor->observaciones)
-            <div class="mb-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"> Observaciones</h2>
-                <div class="bg-gray-50 p-4 rounded">
-                    <p class="text-gray-700">{{ $profesor->observaciones }}</p>
-                </div>
-            </div>
-            @endif
-
-            <!-- Información del Sistema -->
-            <div class="mb-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2"> Información del Sistema</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Fecha de Registro</p>
-                        <p class="text-gray-900">{{ $profesor->created_at ? $profesor->created_at->format('d/m/Y H:i') : 'No disponible' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-semibold">Última Actualización</p>
-                        <p class="text-gray-900">{{ $profesor->updated_at ? $profesor->updated_at->format('d/m/Y H:i') : 'No disponible' }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Botones de Acción -->
-            <div class="flex gap-4 pt-4 border-t">
-                <a href="{{ route('profesores.edit', $profesor) }}" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 text-center">
-                    Editar Profesor
-                </a>
-                <a href="{{ route('profesores.index') }}" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center">
-                    Volver a la Lista
-                </a>
-                <form action="{{ route('profesores.destroy', $profesor) }}" method="POST" class="flex-1">
-                    @csrf
-                    @method('DELETE')
-                    <button 
-                        type="submit" 
-                        onclick="return confirm('¿Estás seguro de eliminar a {{ $profesor->nombre_completo }}?')"
-                        class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700"
-                    >
-                        Eliminar
-                    </button>
-                </form>
-            </div>
-
         </div>
     </div>
 </div>
+
 @endsection

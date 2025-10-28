@@ -92,7 +92,7 @@
         </div>
     </div>
 
-    {{-- Validación frontend de archivos --}}
+    {{-- Validación de archivos --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');

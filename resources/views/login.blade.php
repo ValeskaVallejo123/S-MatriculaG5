@@ -163,12 +163,24 @@
     @endif
 
     {{-- FORMULARIO DE LOGIN --}}
-    <form method="POST" action="{{ route('login') }}">
+    <form >
       @csrf
-    <input type="email" name="email" placeholder="Correo" required>
-    <input type="password" name="password" placeholder="Contraseña" required>
-    <button type="submit">Iniciar Sesión</button>
 
+      <label for="email">Correo electrónico:</label>
+      <input type="email" id="email" name="email" placeholder="Ej. juan.perez@gm.hn" required value="{{ old('email') }}">
+      @error('email')
+        <div class="error">{{ $message }}</div>
+      @enderror
+
+      <label for="password">Contraseña:</label>
+      <input type="password" id="password" name="password" placeholder="********" required>
+      @error('password')
+        <div class="error">{{ $message }}</div>
+      @enderror
+
+      <div id="clientErrors" class="client-error" style="display:none;"></div>
+
+      <button type="submit">Iniciar Sesión</button>
     </form>
 
     {{-- BOTÓN DE RECUPERAR CONTRASEÑA --}}
@@ -184,7 +196,7 @@
       const clientErrors = document.getElementById('clientErrors');
 
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-      const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       form.addEventListener('submit', function(e) {
         const errors = [];
@@ -209,4 +221,4 @@
   </script>
 </body>
 </html>
-
+<!DOCTYPE html>
