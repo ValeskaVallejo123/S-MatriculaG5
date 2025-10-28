@@ -1,19 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-
-Route::get('/', function () {
-    return view('welcome'); // o tu vista principal
-});
-
-Route::get('/', function () {
-    return view('plantilla'); // o tu vista principal
-});
-
-
-
 // web.php
-Route::post('/fechas', function () {
-    return view('fechas');
-});
+use App\Http\Controllers\PlantillaController;
+
+// Página principal → Mostrar fechas
+
+Route::get('/', function () {
+    // Si quieres usar la misma vista que plantilla/index
+    return view('plantilla'); 
+})->name('home');

@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sistema de Matrícula - Escuela Gabriela Mistral</title>
+    <title>@yield('titulo'  )Sistema de Matrícula - Escuela Gabriela Mistral</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap"
-        rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script> 
+    
     <style>
-        /* Estilos del sistema de matrícula original */
+        /* Estilos principales */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f5f7ff;
@@ -19,13 +17,11 @@
 
         /* ======= SECCIÓN HERO ======= */
         .hero {
-            /* Usamos una imagen de placeholder para garantizar que el archivo compile sin un servidor local */
+            /* Se asume que '{{ asset('imagenes/centroEd.jpg') }}' es una ruta válida en tu entorno de desarrollo/framework (ej. Laravel) */
             background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-                url('https://placehold.co/1200x400/3f51b5/ffffff?text=ESCUELA+GABRIELA+MISTRAL') center/cover no-repeat;
+                        url('{{ asset('imagenes/centroEd.jpg') }}') center/cover no-repeat;
             color: white;
             padding: 80px 0 60px;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
         }
 
         .hero h1 {
@@ -39,23 +35,16 @@
             font-size: 2rem;
         }
 
-        .hero p {
-            max-width: 600px;
-            margin-top: 10px;
-        }
-
         .btn-yellow {
             background-color: #ffb703;
             border: none;
             color: #fff;
             font-weight: bold;
-            transition: background-color 0.3s, transform 0.3s;
         }
 
         .btn-yellow:hover {
             background-color: #f4a100;
             color: white;
-            transform: translateY(-2px);
         }
 
         .stats {
@@ -67,16 +56,15 @@
             border-radius: 10px;
             padding: 25px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transition: 0.3s;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
-        /* Contenedor del Calendario: Púrpura */
+        /* Estilos del Calendario (si no se usa la estructura antigua) */
         .calendar-container {
             background-color: #673ab7;
             color: white;
@@ -85,35 +73,25 @@
             margin-top: 40px;
             box-shadow: 0 5px 15px rgba(103, 58, 183, 0.5);
         }
-
-        /* Diseño de la lista de fechas dentro del calendario */
+        
         #schedule-list {
             margin-top: 20px;
             padding: 10px 0;
             border-top: 1px dashed rgba(255, 255, 255, 0.4);
         }
-
+        
         .schedule-item {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .schedule-item:last-child {
-            border-bottom: none;
-        }
-
+        
         .schedule-grade {
             font-weight: 600;
             color: #ffd700;
-            /* Amarillo */
         }
-
-        .schedule-dates {
-            font-size: 0.95rem;
-        }
-
+        
         .btn-calendar {
             background-color: #9575cd;
             color: white;
@@ -121,11 +99,7 @@
             transition: 0.3s;
         }
 
-        .btn-calendar:hover {
-            background-color: #7e57c2;
-        }
-
-        /* ======= PROCESO DE MATRÍCULA (Se mantiene igual) ======= */
+        /* ======= PROCESO DE MATRÍCULA ======= */
         .process {
             background-color: #fff;
             padding: 70px 0;
@@ -134,16 +108,6 @@
         .process h2 {
             font-weight: 700;
             margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .process p {
-            text-align: center;
-            margin-bottom: 40px;
-            color: #666;
-        }
-
-        .process-step {
             text-align: center;
         }
 
@@ -158,19 +122,35 @@
             margin: 0 auto 10px;
         }
 
-        .process-step h5 {
-            font-weight: 600;
+        /* ======= UBICACIÓN Y CONTACTO ======= */
+        .contact-section {
+            background-color: #f9faff;
+            padding: 60px 0;
         }
 
-        /* Estilos para la nueva vista de Cronograma (adaptada a Bootstrap/Tema claro) */
+        .contact-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        iframe {
+            border: 0;
+            border-radius: 10px;
+            width: 100%;
+            height: 350px;
+        }
+        
+        /* Estilos necesarios para la vista del cronograma (si se implementa) */
         #cronograma-view {
-            display: none;
-            /* Inicialmente oculto */
+            display: none; /* Oculto por defecto */
             padding: 40px;
             background-color: white;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             margin: 20px auto;
+            max-width: 800px;
         }
 
         .cronograma-title {
@@ -185,45 +165,23 @@
 
         .form-control-cronograma {
             border-color: #9575cd;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .form-control-cronograma:focus {
-            border-color: #673ab7;
-            box-shadow: 0 0 0 0.25rem rgba(103, 58, 183, 0.25);
-        }
-
-        .btn-save-cronograma {
-            background-color: #3f51b5;
-            border: none;
-            color: white;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        .btn-save-cronograma:hover {
-            background-color: #303f9f;
-            color: white;
-            transform: translateY(-1px);
         }
     </style>
 </head>
-
 <body>
+  <div class="container">
+    @yield('contenido')
 
     <div id="main-view">
-
         <section class="hero">
             <div class="container">
                 <h1>Sistema de Matrícula <br><span>Escuela Gabriela Mistral</span></h1>
                 <p>Plataforma integral para el registro y gestión de matrículas estudiantiles.
-                    Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El
-                    Paraíso.</p>
-
+                Simplificamos el proceso de inscripción para padres de familia y administradores en Danlí, El Paraíso.</p>
+        
                 <div class="mt-4">
                     <button class="btn btn-yellow me-2">🔑 Iniciar Matrícula</button>
-                    <button class="btn btn-outline-light" onclick=""> Panel Administrativo /
-                        Fechas</button>
+                    <button class="btn btn-outline-light" onclick="showCronogramaView()">⚙️ Panel Administrativo / Fechas</button>
                 </div>
             </div>
         </section>
@@ -231,49 +189,41 @@
         <section class="stats container text-center">
             <div class="row g-4">
                 <div class="col-md-3">
-                    <div class="stat-card">
-                        <h3>0</h3>
-                        <p>Estudiantes Matriculados</p>
-                    </div>
+                    <div class="stat-card"><h3>0</h3><p>Estudiantes Matriculados</p></div>
                 </div>
                 <div class="col-md-3">
-                    <div class="stat-card">
-                        <h3>0</h3>
-                        <p>Profesores Activos</p>
-                    </div>
+                    <div class="stat-card"><h3>0</h3><p>Profesores Activos</p></div>
                 </div>
                 <div class="col-md-3">
-                    <div class="stat-card">
-                        <h3>0</h3>
-                        <p>Aulas Disponibles</p>
-                    </div>
+                    <div class="stat-card"><h3>0</h3><p>Aulas Disponibles</p></div>
                 </div>
                 <div class="col-md-3">
-                    <div class="stat-card">
-                        <h3>0</h3>
-                        <p>Grados Ofrecidos</p>
-                    </div>
+                    <div class="stat-card"><h3>0</h3><p>Grados Ofrecidos</p></div>
                 </div>
             </div>
         </section>
 
         <section class="container">
-            <div class="calendar-container">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h4>Calendario Académico 2026</h4>
-                        <p>Fechas importantes del año escolar</p>
-                    </div>
-                    <button class="btn btn-calendar" onclick="showCronogramaView()">📅 Configurar Fechas</button>
-                </div>
-
-                <div id="schedule-list">
-                    <p class="text-center mt-3 text-white-50" id="no-dates-message">
-                        Cargando cronograma... (Presiona "Configurar Fechas" para ingresar los datos)
-                    </p>
-                </div>
+    <div class="calendar-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h4>Cronograma de Matrícula 2026</h4>
+                <p>Fechas importantes del proceso de inscripción</p>
             </div>
-        </section>
+            <div class="d-flex align-items-center gap-2"> 
+                <button class="btn btn-calendar" onclick="showCronogramaView()">📅 Configurar Fechas</button>
+                <button class="btn btn-danger" onclick="clearSchedule()">🗑️ Quitar Cronograma</button>
+            </div>
+            </div>
+        
+        <div id="schedule-list">
+            <p class="text-center mt-3 text-white-50" id="no-dates-message">
+                Cargando cronograma...
+            </p>
+        </div>
+        </div>
+</section>
+
 
         <section class="process">
             <div class="container">
@@ -284,14 +234,12 @@
                     <div class="col-md-4 process-step">
                         <div class="step-number">1</div>
                         <h5>Matrícula Completa</h5>
-                        <p>Completa toda la información del estudiante, datos del responsable, selección de grado y
-                            profesor en un solo paso.</p>
+                        <p>Completa toda la información del estudiante, datos del responsable, selección de grado y profesor en un solo paso.</p>
                     </div>
                     <div class="col-md-4 process-step">
                         <div class="step-number" style="background-color:#d4fcd4; color:#2e7d32;">2</div>
                         <h5>Confirmación</h5>
-                        <p>Revisa toda la información y recibe la confirmación de matrícula con el número de registro.
-                        </p>
+                        <p>Revisa toda la información y recibe la confirmación de matrícula con el número de registro.</p>
                     </div>
                 </div>
             </div>
@@ -302,18 +250,14 @@
                 <h3>Ubicación y Contacto</h3>
                 <div class="row g-4 align-items-stretch">
                     <div class="col-md-6">
-                        <img src="https://placehold.co/600x350/9575cd/ffffff?text=ESC+GABRIELA+MISTRAL"
-                            alt="Centro Educativo" class="img-fluid rounded mb-3">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15582.52041285406!2d-86.5866779!3d14.0458631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f780e9a7e6d2b59%3A0x67623328e4414522!2sDanl%C3%AD%2C%20El%20Para%C3%ADso%2C%20Honduras!5e0!3m2!1sen!2sus!4v1633512000000"
-                            width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                        <img src="{{ asset('imagenes/centroEd.jpg') }}" alt="Centro Educativo" class="img-fluid rounded mb-3">
+                        <iframe src="https://www.google.com/maps?q=Danlí,%20El%20Paraíso&output=embed"></iframe>
                     </div>
                     <div class="col-md-6">
                         <div class="contact-box">
                             <h5>Escuela Gabriela Mistral</h5>
                             <div class="contact-info mt-3">
-                                <p><strong>Dirección:</strong> Barrio El Centro, Calle Principal, Danlí, El Paraíso,
-                                    Honduras</p>
+                                <p><strong>Dirección:</strong> Barrio El Centro, Calle Principal, Danlí, El Paraíso, Honduras</p>
                                 <p><strong>Teléfono:</strong> +504 2763-4567</p>
                                 <p><strong>Celular:</strong> +504 9876-5432</p>
                                 <p><strong>Horarios de Atención:</strong><br>
@@ -331,29 +275,26 @@
                 </div>
             </div>
         </section>
-
+        
     </div>
-
-    <div id="cronograma-view" class="container max-w-4xl">
+    
+    <div id="cronograma-view" class="container">
         <h2 class="cronograma-title text-center mb-4">Configuración del Cronograma de Matrícula 2026 📅</h2>
         <p class="text-center text-muted mb-5">Ingresa las fechas de inicio y fin para cada grado escolar.</p>
 
         <form id="cronograma-form">
             <div class="row g-4">
-
                 <div class="col-md-6">
                     <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">LUNES (1er grado)</label>
+                        <label class="form-label form-label-cronograma">1er grado</label>
                         <div class="row g-2">
                             <div class="col">
-                                <label for="lunes-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="lunes-inicio" name="lunes_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-01-05">
+                                <label for="lunes-inicio" class="form-label small">Inicio (Lunes):</label>
+                                <input type="date" id="lunes-inicio" name="lunes_inicio" class="form-control form-control-cronograma" required value="2026-01-05">
                             </div>
                             <div class="col">
-                                <label for="lunes-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="lunes-fin" name="lunes_fin"
-                                    class="form-control form-control-cronograma" required value="2026-01-09">
+                                <label for="lunes-fin" class="form-label small">Fin (lunes):</label>
+                                <input type="date" id="lunes-fin" name="lunes_fin" class="form-control form-control-cronograma" required value="2026-01-09">
                             </div>
                         </div>
                     </div>
@@ -361,17 +302,31 @@
 
                 <div class="col-md-6">
                     <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">MARTES (2do grado)</label>
+                        <label class="form-label form-label-cronograma">2do grado</label>
                         <div class="row g-2">
                             <div class="col">
-                                <label for="martes-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="martes-inicio" name="martes_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-01-12">
+                                <label for="martes-inicio" class="form-label small">Inicio (Martes):</label>
+                                <input type="date" id="martes-inicio" name="martes_inicio" class="form-control form-control-cronograma" required value="2026-01-12">
                             </div>
                             <div class="col">
-                                <label for="martes-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="martes-fin" name="martes_fin"
-                                    class="form-control form-control-cronograma" required value="2026-01-16">
+                                <label for="martes-fin" class="form-label small">Fin (Martes):</label>
+                                <input type="date" id="martes-fin" name="martes_fin" class="form-control form-control-cronograma" required value="2026-01-16">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3 p-3 border rounded">
+                        <label class="form-label form-label-cronograma">3er grado</label>
+                        <div class="row g-2">
+                            <div class="col">
+                                <label for="miercoles-inicio" class="form-label small">Inicio (miercoles):</label>
+                                <input type="date" id="miercoles-inicio" name="miercoles_inicio" class="form-control form-control-cronograma" required value="2026-01-19">
+                            </div>
+                            <div class="col">
+                                <label for="miercoles-fin" class="form-label small">Fin (Miercoles):</label>
+                                <input type="date" id="miercoles-fin" name="miercoles_fin" class="form-control form-control-cronograma" required value="2026-01-23">
                             </div>
                         </div>
                     </div>
@@ -379,17 +334,15 @@
 
                 <div class="col-md-6">
                     <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">MIÉRCOLES (3er grado)</label>
+                        <label class="form-label form-label-cronograma">4to grado</label>
                         <div class="row g-2">
                             <div class="col">
-                                <label for="miercoles-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="miercoles-inicio" name="miercoles_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-01-19">
+                                <label for="jueves-inicio" class="form-label small">Inicio (Jueves):</label>
+                                <input type="date" id="jueves-inicio" name="jueves_inicio" class="form-control form-control-cronograma" required value="2026-01-26">
                             </div>
                             <div class="col">
-                                <label for="miercoles-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="miercoles-fin" name="miercoles_fin"
-                                    class="form-control form-control-cronograma" required value="2026-01-23">
+                                <label for="jueves-fin" class="form-label small">Fin (Jueves):</label>
+                                <input type="date" id="jueves-fin" name="jueves_fin" class="form-control form-control-cronograma" required value="2026-01-30">
                             </div>
                         </div>
                     </div>
@@ -397,17 +350,15 @@
 
                 <div class="col-md-6">
                     <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">JUEVES (4to grado)</label>
+                        <label class="form-label form-label-cronograma">5to grado</label>
                         <div class="row g-2">
                             <div class="col">
-                                <label for="jueves-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="jueves-inicio" name="jueves_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-01-26">
+                                <label for="viernes-inicio" class="form-label small">Inicio (Viernes):</label>
+                                <input type="date" id="viernes-inicio" name="viernes_inicio" class="form-control form-control-cronograma" required value="2026-02-02">
                             </div>
                             <div class="col">
-                                <label for="jueves-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="jueves-fin" name="jueves_fin"
-                                    class="form-control form-control-cronograma" required value="2026-01-30">
+                                <label for="viernes-fin" class="form-label small">Fin (Viernes):</label>
+                                <input type="date" id="viernes-fin" name="viernes_fin" class="form-control form-control-cronograma" required value="2026-02-06">
                             </div>
                         </div>
                     </div>
@@ -415,17 +366,15 @@
 
                 <div class="col-md-6">
                     <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">VIERNES (5to grado)</label>
+                        <label class="form-label form-label-cronograma">6to grado</label>
                         <div class="row g-2">
                             <div class="col">
-                                <label for="viernes-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="viernes-inicio" name="viernes_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-02-02">
+                                <label for="sabado-inicio" class="form-label small">Inicio (Savado):</label>
+                                <input type="date" id="sabado-inicio" name="sabado_inicio" class="form-control form-control-cronograma" required value="2026-02-09">
                             </div>
                             <div class="col">
-                                <label for="viernes-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="viernes-fin" name="viernes_fin"
-                                    class="form-control form-control-cronograma" required value="2026-02-06">
+                                <label for="sabado-fin" class="form-label small">Fin (Savado):</label>
+                                <input type="date" id="sabado-fin" name="sabado_fin" class="form-control form-control-cronograma" required value="2026-02-13">
                             </div>
                         </div>
                     </div>
@@ -433,17 +382,15 @@
 
                 <div class="col-md-6">
                     <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">SÁBADO (6to grado)</label>
+                        <label class="form-label form-label-cronograma">7mo grado</label>
                         <div class="row g-2">
                             <div class="col">
-                                <label for="sabado-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="sabado-inicio" name="sabado_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-02-09">
+                                <label for="lunes2-inicio" class="form-label small">Inicio (Lunes):</label>
+                                <input type="date" id="lunes2-inicio" name="lunes2_inicio" class="form-control form-control-cronograma" required value="2026-02-09">
                             </div>
                             <div class="col">
-                                <label for="sabado-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="sabado-fin" name="sabado_fin"
-                                    class="form-control form-control-cronograma" required value="2026-02-13">
+                                <label for="lunes2-fin" class="form-label small">Fin (Lunes):</label>
+                                <input type="date" id="lunes2-fin" name="lunes2-fin" class="form-control form-control-cronograma" required value="2026-02-13">
                             </div>
                         </div>
                     </div>
@@ -451,17 +398,15 @@
 
                 <div class="col-md-6">
                     <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">LUNES (7mo grado)</label>
+                        <label class="form-label form-label-cronograma">8vo grado</label>
                         <div class="row g-2">
                             <div class="col">
-                                <label for="septimo-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="septimo-inicio" name="septimo_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-02-16">
+                                <label for="martes2-inicio" class="form-label small">Inicio (Martes):</label>
+                                <input type="date" id="martes2-inicio" name="martes2_inicio" class="form-control form-control-cronograma" required value="2026-02-09">
                             </div>
                             <div class="col">
-                                <label for="septimo-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="septimo-fin" name="septimo_fin"
-                                    class="form-control form-control-cronograma" required value="2026-02-20">
+                                <label for="martes2-fin" class="form-label small">Fin (Martes):</label>
+                                <input type="date" id="martes2-fin" name="martes2_fin" class="form-control form-control-cronograma" required value="2026-02-13">
                             </div>
                         </div>
                     </div>
@@ -469,43 +414,23 @@
 
                 <div class="col-md-6">
                     <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">MARTES (8vo grado)</label>
+                        <label class="form-label form-label-cronograma">9no grado</label>
                         <div class="row g-2">
                             <div class="col">
-                                <label for="octavo-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="octavo-inicio" name="octavo_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-02-23">
+                                <label for="miercoles2-inicio" class="form-label small">Inicio (Miercoles):</label>
+                                <input type="date" id="miercoles2-inicio" name="miercoles2_inicio" class="form-control form-control-cronograma" required value="2026-02-09">
                             </div>
                             <div class="col">
-                                <label for="octavo-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="octavo-fin" name="octavo_fin"
-                                    class="form-control form-control-cronograma" required value="2026-02-27">
+                                <label for="miercoles2-fin" class="form-label small">Fin (Miercoles):</label>
+                                <input type="date" id="miercoles2-fin" name="miercoles2_fin" class="form-control form-control-cronograma" required value="2026-02-13">
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-6">
-                    <div class="mb-3 p-3 border rounded">
-                        <label class="form-label form-label-cronograma">MIÉRCOLES (9no grado)</label>
-                        <div class="row g-2">
-                            <div class="col">
-                                <label for="noveno-inicio" class="form-label small">Inicio:</label>
-                                <input type="date" id="noveno-inicio" name="noveno_inicio"
-                                    class="form-control form-control-cronograma" required value="2026-03-02">
-                            </div>
-                            <div class="col">
-                                <label for="noveno-fin" class="form-label small">Fin:</label>
-                                <input type="date" id="noveno-fin" name="noveno_fin"
-                                    class="form-control form-control-cronograma" required value="2026-03-06">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                
             </div>
-
-            <button type="submit" class="btn btn-save-cronograma w-100 p-3 mt-4">
+            
+            <button type="submit" class="btn btn-primary w-100 p-3 mt-4">
                 💾 Guardar Cronograma y Regresar
             </button>
             <button type="button" class="btn btn-outline-secondary w-100 p-3 mt-2" onclick="showMainView()">
@@ -515,51 +440,71 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    
     <script>
-        // Función para formatear la fecha a un formato legible (ej: 10 de enero de 2026)
+        /**
+         * Función para formatear una fecha de 'YYYY-MM-DD' a un formato legible en español.
+         * @param {string} dateString - La cadena de fecha en formato 'YYYY-MM-DD'.
+         * @returns {string} La fecha formateada o 'N/A'.
+         */
+        // ... (dentro de la etiqueta <script>)
+/**
+ * Elimina las fechas del cronograma del almacenamiento local.
+ */
+function clearSchedule() {
+    if (confirm("¿Estás seguro que deseas eliminar el cronograma de matrícula? Esta acción es irreversible.")) {
+        localStorage.removeItem('enrollmentDates');
+        alert("🗑️ Cronograma eliminado con éxito.");
+        showMainView(); // Recargar la vista principal para mostrar el cambio
+    }
+}
+
+// ... (El resto de tu script existente, incluyendo window.onload)
+
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const date = new Date(dateString + 'T00:00:00'); // Añadir T00:00:00 para evitar problemas de zona horaria
+            // Añadir T00:00:00 para evitar problemas de zona horaria con las fechas ISO
+            const date = new Date(dateString + 'T00:00:00');
             return date.toLocaleDateString('es-ES', options);
         }
 
-        // Datos clave-valor de Grado a Día para el Cronograma
+        /**
+         * Mapeo de grados a claves de almacenamiento, esencial para la lógica.
+         * Se adaptan las etiquetas a los días que usaste en el formulario anterior.
+         */
         const scheduleMap = [
-            { key: 'lunes', label: '1er Grado (Lunes)' },
-            { key: 'martes', label: '2do Grado (Martes)' },
-            { key: 'miercoles', label: '3er Grado (Miércoles)' },
-            { key: 'jueves', label: '4to Grado (Jueves)' },
-            { key: 'viernes', label: '5to Grado (Viernes)' },
-            { key: 'sabado', label: '6to Grado (Sábado)' },
-            { key: 'septimo', label: '7mo Grado (Lunes)' }, // AÑADIDO
-            { key: 'octavo', label: '8vo Grado (Martes)' }, // AÑADIDO
-            { key: 'noveno', label: '9no Grado (Miércoles)' }, // AÑADIDO
+            { key: 'lunes', label: '1er Grado (Semana 1)' },
+            { key: 'martes', label: '2do Grado (Semana 2)' },
+            { key: 'miercoles', label: '3er Grado (Semana 3)' },
+            { key: 'jueves', label: '4to Grado (Semana 4)' },
+            { key: 'viernes', label: '5to Grado (Semana 5)' },
+            { key: 'sabado', label: '6to Grado (Semana 6)' },
+            { key: 'lunes2', label: '7mo Grado (Semana 7)' },
+            { key: 'martes2', label: '8vo Grado (Semana 8)' },
+            { key: 'miercoles2', label: '9no Grado (Semana 9)' }    
         ];
 
-        // Función para cargar los datos del cronograma en la vista principal
+        /**
+         * Carga las fechas de matrícula desde el almacenamiento local (localStorage)
+         * y las renderiza en el contenedor principal ('schedule-list').
+         */
         function loadScheduleToMainView() {
             const listContainer = document.getElementById('schedule-list');
             const noDatesMessage = document.getElementById('no-dates-message');
-            // Obtener datos de localStorage o usar datos por defecto (si no hay datos)
             const savedDates = JSON.parse(localStorage.getItem('enrollmentDates'));
 
-            listContainer.innerHTML = ''; // Limpiar lista
+            if (listContainer) listContainer.innerHTML = ''; // Limpiar lista
 
             if (!savedDates || Object.keys(savedDates).length === 0) {
-                listContainer.innerHTML = `
-                    <p class="text-center mt-3 text-white-50">
-                        Aún no se ha cargado el cronograma de matrícula. Por favor, configura las fechas.
-                    </p>
-                `;
+                if (listContainer) {
+                    listContainer.innerHTML = `<p class="text-center mt-3 text-white-50">Aún no se ha cargado el cronograma de matrícula.</p>`;
+                }
                 return;
             }
 
-            // Ocultar el mensaje de "no-dates" si hay datos
             if (noDatesMessage) noDatesMessage.style.display = 'none';
 
-            // Iterar sobre el mapa para generar la lista
             scheduleMap.forEach(item => {
                 const startKey = item.key + '_inicio';
                 const endKey = item.key + '_fin';
@@ -567,20 +512,25 @@
                 const startDate = formatDate(savedDates[startKey]);
                 const endDate = formatDate(savedDates[endKey]);
 
-                const listItem = document.createElement('div');
-                listItem.className = 'schedule-item';
-                listItem.innerHTML = `
-                    <div class="schedule-grade">${item.label}</div>
-                    <div class="schedule-dates">
-                        Del <strong class="text-white">${startDate}</strong>
-                        al <strong class="text-white">${endDate}</strong>
-                    </div>
-                `;
-                listContainer.appendChild(listItem);
+                if (listContainer) {
+                    const listItem = document.createElement('div');
+                    listItem.className = 'schedule-item'; 
+                    listItem.innerHTML = `
+                        <div class="schedule-grade">${item.label}</div>
+                        <div class="schedule-dates">
+                            Del <strong class="text-white">${startDate}</strong>
+                            al <strong class="text-white">${endDate}</strong>
+                        </div>
+                    `;
+                    listContainer.appendChild(listItem);
+                }
             });
         }
 
-        // Función para guardar los datos del formulario
+        /**
+         * Guarda los datos del formulario de cronograma en el almacenamiento local.
+         * @param {Event} event - El evento de envío del formulario.
+         */
         function saveSchedule(event) {
             event.preventDefault(); // Detener el envío normal del formulario
 
@@ -588,48 +538,37 @@
             const formData = new FormData(form);
             const dates = {};
 
-            // Mapear los datos del formulario a un objeto simple
             for (const [key, value] of formData.entries()) {
                 dates[key] = value;
             }
 
-            // Guardar el objeto en localStorage
             localStorage.setItem('enrollmentDates', JSON.stringify(dates));
-
-            // Opcional: Cargar los datos guardados de nuevo en el formulario por si el usuario vuelve
-            loadScheduleToForm();
-
-            // Mostrar un mensaje de éxito (simulando un modal o alerta elegante)
-            alert("✅ Cronograma de matrícula guardado con éxito y actualizado en la vista principal.");
-
-            // Regresar a la vista principal para ver los cambios
-            showMainView();
+            
+            alert("✅ Cronograma de matrícula guardado con éxito.");
+            
+            showMainView(); // Regresar a la vista principal para ver los cambios
         }
 
-        // Función para cargar los datos guardados en el formulario de Cronograma
+        /**
+         * Carga las fechas guardadas en el almacenamiento local de vuelta al formulario de Cronograma.
+         */
         function loadScheduleToForm() {
             const savedDates = JSON.parse(localStorage.getItem('enrollmentDates'));
             if (savedDates) {
                 scheduleMap.forEach(item => {
                     const startKey = item.key + '_inicio';
                     const endKey = item.key + '_fin';
-
-                    // Si el dato existe en el almacenamiento, lo cargamos
-                    // Se usa un try-catch para evitar errores si no se encuentran los IDs (aunque no debería pasar con el código corregido)
-                    try {
-                        if (savedDates[startKey]) {
-                            document.getElementById(item.key + '-inicio').value = savedDates[startKey];
-                        }
-                        if (savedDates[endKey]) {
-                            document.getElementById(item.key + '-fin').value = savedDates[endKey];
-                        }
-                    } catch (e) {
-                        console.error(`Error al cargar datos para ${item.key}: ${e.message}`);
+                    
+                    if (savedDates[startKey]) {
+                        document.getElementById(item.key + '-inicio').value = savedDates[startKey];
+                    }
+                    if (savedDates[endKey]) {
+                        document.getElementById(item.key + '-fin').value = savedDates[endKey];
                     }
                 });
             }
         }
-
+        
         // Funciones de navegación (simulación de cambio de página)
         function showCronogramaView() {
             loadScheduleToForm(); // Cargar datos antes de mostrar el formulario
@@ -643,33 +582,33 @@
             document.getElementById('cronograma-view').style.display = 'none';
         }
 
-        // --- Inicialización ---
-        window.onload = function () {
-            // Asignar el listener al formulario
-            document.getElementById('cronograma-form').addEventListener('submit', saveSchedule);
-
-            // Cargar los datos al inicio y mostrar la vista principal
-            showMainView();
-        };
-
+        // --- Inicialización y Carga de Datos por Defecto ---
+        
         // Simular una carga inicial de datos por defecto si no existen
         if (!localStorage.getItem('enrollmentDates')) {
-            const defaultDates = {
+             const defaultDates = {
                 "lunes_inicio": "2026-01-05", "lunes_fin": "2026-01-09",
                 "martes_inicio": "2026-01-12", "martes_fin": "2026-01-16",
                 "miercoles_inicio": "2026-01-19", "miercoles_fin": "2026-01-23",
                 "jueves_inicio": "2026-01-26", "jueves_fin": "2026-01-30",
                 "viernes_inicio": "2026-02-02", "viernes_fin": "2026-02-06",
                 "sabado_inicio": "2026-02-09", "sabado_fin": "2026-02-13",
-                // FECHAS POR DEFECTO PARA LOS NUEVOS GRADOS
-                "septimo_inicio": "2026-02-16", "septimo_fin": "2026-02-20",
-                "octavo_inicio": "2026-02-23", "octavo_fin": "2026-02-27",
-                "noveno_inicio": "2026-03-02", "noveno_fin": "2026-03-06"
-            };
-            localStorage.setItem('enrollmentDates', JSON.stringify(defaultDates));
+                "lunes2_inicio": "2026-02-16", "lunes2_fin": "2026-02-20",
+                "martes2_inicio": "2026-02-23", "martes2_fin": "2026-02-27",
+                "miercoles2_inicio": "2026-03-02", "miercoles2_fin": "2026-03-06"
+             };
+             localStorage.setItem('enrollmentDates', JSON.stringify(defaultDates));
         }
 
-    </script>
-</body>
+        window.onload = function() {
+            // Asignar el listener al formulario
+            document.getElementById('cronograma-form').addEventListener('submit', saveSchedule);
+            
+            // Cargar los datos al inicio y mostrar la vista principal
+            showMainView();
+        };
 
+    </script>
+    </div>
+</body>
 </html>
