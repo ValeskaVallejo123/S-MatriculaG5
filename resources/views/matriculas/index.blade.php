@@ -315,9 +315,4 @@ document.addEventListener('keydown', function(e) {
         closeModal();
     }
 });
-</script>
-<<<<<<< HEAD
-@endpush
-=======
-@endpush
->>>>>>> cesia-dev
+

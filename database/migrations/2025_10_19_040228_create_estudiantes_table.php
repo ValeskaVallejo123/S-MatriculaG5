@@ -4,15 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-<<<<<<< HEAD
-return new class extends Migration {
-    public function up(): void
-=======
 return new class extends Migration
 {
-
-public function up(): void
->>>>>>> cesia-dev
+    public function up(): void
     {
         Schema::create('estudiantes', function (Blueprint $table) {
             $table->id();
@@ -32,14 +26,11 @@ public function up(): void
             $table->enum('estado', ['activo', 'inactivo'])->default('activo');
             $table->text('observaciones')->nullable();
 
-<<<<<<< HEAD
             // Campos agregados para subir documentos
             $table->unsignedBigInteger('padre_id')->nullable();
             $table->string('genero')->nullable();
             $table->string('foto')->nullable();
 
-=======
->>>>>>> cesia-dev
             $table->timestamps();
 
             // Relación con la tabla padres
@@ -49,7 +40,6 @@ public function up(): void
                 ->onDelete('cascade');
         });
     }
-
 
     public function down(): void
     {

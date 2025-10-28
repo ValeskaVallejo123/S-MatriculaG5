@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\Estudiante;
-use App\Models\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PasswordResetController extends Controller
 {
     /**
-     * Muestra el formulario para solicitar el enlace de recuperación.
+     * Mostrar formulario para solicitar enlace de recuperación
      */
     public function showForgotForm()
     {
@@ -21,53 +23,62 @@ class PasswordResetController extends Controller
     }
 
     /**
-     * Envía el enlace de recuperación al correo del usuario.
+     * Enviar enlace de recuperación de contraseña
      */
     public function sendResetLink(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:user,email',
+            'email' => 'required|email',
         ], [
-            'email.required' => 'El correo es obligatorio.',
-            'email.email' => 'El formato del correo no es válido.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Debes ingresar un correo electrónico válido.',
         ]);
 
         $email = $request->email;
 
-        // Verificar si el correo existe en alguna de las tablas
-        $existsInUsers = User::where('email', $email)->exists();
-        $existsInAdmins = Admin::where('email', $email)->exists();
-        $existsInEstudiantes = Estudiante::where('email', $email)->exists();
-
-        if (!($existsInUsers || $existsInAdmins || $existsInEstudiantes)) {
-            return back()->withErrors(['email' => 'El correo ingresado no está registrado en el sistema.']);
+        // Verificar si el correo existe en cualquier tipo de usuario
+        if (!User::where('email', $email)->exists() &&
+            !Admin::where('email', $email)->exists() &&
+            !Estudiante::where('email', $email)->exists()) {
+            return back()->withErrors(['email' => 'El correo no está registrado en el sistema.']);
         }
 
-        // Generar token y guardarlo
-        $reset = PasswordReset::generateToken($email);
+        // Crear token aleatorio y guardar hasheado en DB
+        $token = Str::random(64);
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => Carbon::now()
+            ]
+        );
 
-        // Enlace de recuperación
-        $link = url('/password/restablecer/' . $reset->token);
+        // Generar enlace de restablecimiento
+        $link = url('/recuperarcontrasenia/restablecer/' . $token . '?email=' . urlencode($email));
 
-        // Enviar correo usando tu plantilla personalizada
+        // Enviar correo
         Mail::send('emails.recuperar_contrasenia', ['link' => $link], function ($message) use ($email) {
             $message->to($email)
-                ->subject('Recuperar contraseña - Escuela Gabriela Mistral');
+                    ->subject('Recuperar contraseña - Escuela Gabriela Mistral');
         });
 
         return back()->with('status', 'Se ha enviado un enlace de recuperación a tu correo.');
     }
 
     /**
-     * Muestra el formulario para establecer una nueva contraseña.
+     * Mostrar formulario para restablecer contraseña
      */
     public function showResetForm($token)
     {
-        return view('recuperarcontrasenia.restablecer', ['token' => $token]);
+        $email = request()->query('email');
+        return view('recuperarcontrasenia.restablecer', [
+            'token' => $token,
+            'email' => $email
+        ]);
     }
 
     /**
-     * Guarda la nueva contraseña del usuario, administrador o estudiante.
+     * Procesar restablecimiento de contraseña
      */
     public function resetPassword(Request $request)
     {
@@ -75,34 +86,48 @@ class PasswordResetController extends Controller
             'token' => 'required',
             'email' => 'required|email',
             'password' => 'required|min:6|confirmed',
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Debes ingresar un correo electrónico válido.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
         ]);
 
-        // Buscar registro en tabla password_resets
-        $reset = PasswordReset::where('email', $request->email)
-            ->where('token', $request->token)
-            ->first();
+        $record = DB::table('password_resets')->where('email', $request->email)->first();
 
-        if (!$reset) {
-            return back()->withErrors(['email' => 'El token es inválido o ha expirado.']);
+        // Verificar token y existencia
+        if (!$record || !Hash::check($request->token, $record->token)) {
+            return back()->withErrors(['email' => 'El token es inválido.']);
+        }
+
+        // Verificar expiración (60 minutos)
+        if (Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+            return back()->withErrors(['email' => 'El token ha expirado. Solicita uno nuevo.']);
         }
 
         $email = $request->email;
         $newPassword = Hash::make($request->password);
 
-        // Buscar en cada tabla y actualizar
+        // Actualizar contraseña según tipo de usuario
         if ($user = User::where('email', $email)->first()) {
-            $user->update(['password' => $newPassword]);
+            $user->password = $newPassword;
+            $user->save();
         } elseif ($admin = Admin::where('email', $email)->first()) {
-            $admin->update(['password' => $newPassword]);
+            $admin->password = $newPassword;
+            $admin->save();
         } elseif ($estudiante = Estudiante::where('email', $email)->first()) {
-            $estudiante->update(['password' => $newPassword]);
+            $estudiante->password = $newPassword;
+            $estudiante->save();
         } else {
-            return back()->withErrors(['email' => 'No se encontró ninguna cuenta asociada a este correo.']);
+            return back()->withErrors(['email' => 'No se encontró el usuario.']);
         }
 
         // Eliminar token usado
-        $reset->delete();
+        DB::table('password_resets')->where('email', $email)->delete();
 
-        return redirect('/login')->with('status', 'Tu contraseña se ha restablecido correctamente.');
+        return redirect()->route('login')
+            ->with('status', 'Tu contraseña se ha restablecido correctamente. Ahora puedes iniciar sesión.');
     }
 }
+        
