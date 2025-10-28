@@ -5,13 +5,6 @@ use App\Http\Controllers\BuscarEstudianteController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\PeriodoAcademicoController;
 
-Route::get('/', function () {
-    return view('welcome'); // o tu vista principal
-});
-
-Route::get('/', function () {
-    return view('plantilla'); // o tu vista principal
-});
 //muestra la vista de buscar estudiante
 Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
 //  muestra la vista de buscar solicitud de matricula
