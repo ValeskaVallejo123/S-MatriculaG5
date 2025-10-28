@@ -60,8 +60,7 @@
     <div class="table-container">
         <h2 class="mb-4 text-center fw-bold">Listado de cupos</h2>
 
-
-    @if(session('success'))
+        @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
@@ -73,18 +72,18 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-primary text-center">
-                <tr>
-                    <th>#</th>
-                    <th>Nombre</th>
-                    <th>Cupo Máximo</th>
-                    <th>Jornada</th>
-                    <th>Sección</th>
-                    <th>Acciones</th>
-                </tr>
+            <table class="table table-bordered table-hover align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Cupo Máximo</th>
+                        <th>Jornada</th>
+                        <th>Sección</th>
+                        <th>Acciones</th>
+                    </tr>
                 </thead>
-                <tbody class="text-center">
+                <tbody>
                 @foreach($cursos as $curso)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
@@ -93,8 +92,13 @@
                         <td>{{ $curso->jornada ?? '-' }}</td>
                         <td>{{ $curso->seccion ?? '-' }}</td>
                         <td>
-                            <a href="{{ route('cupos_maximos.edit', $curso->id) }}" class="btn btn-sm btn-yellow">Actualizar
-                            </a>
+                            <a href="{{ route('cupos_maximos.edit', $curso->id) }}" class="btn btn-sm btn-yellow">Actualizar</a>
+
+                            <form action="{{ route('cupos_maximos.destroy', $curso->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-red" onclick="return confirm('¿Está seguro que desea eliminar este cupo?')">Eliminar</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
@@ -113,3 +117,4 @@
 </script>
 </body>
 </html>
+

@@ -9,11 +9,10 @@ class Curso extends Model
 {
     use HasFactory;
 
+    // Nombre de la tabla en la base de datos
     protected $table = 'cursos';
 
-    /**
-     * Campos que se pueden asignar masivamente
-     */
+    // Columnas que se pueden asignar masivamente
     protected $fillable = [
         'nombre',
         'cupo_maximo',
@@ -21,4 +20,3 @@ class Curso extends Model
         'seccion',
     ];
 }
-
