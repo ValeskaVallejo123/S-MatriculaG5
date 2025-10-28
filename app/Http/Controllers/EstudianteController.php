@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
+
 use App\Models\Estudiante;
+use Illuminate\Http\Request;
 
 class EstudianteController extends Controller
 {
@@ -13,75 +14,38 @@ class EstudianteController extends Controller
     }
 
     public function create()
-{
-    $grados = Estudiante::grados();     // esto llama al método estático del modelo
-    $secciones = Estudiante::secciones(); // igual aquí
-    return view('estudiantes.create', compact('grados', 'secciones'));
-}
-
-    public function store(Request $request)
-    {
-        // Validación básica para que no falle
-        $validated = $request->validate([
-            'nombre' => 'required|string|min:2|max:50',
-            'apellido' => 'required|string|min:2|max:50',
-            'email' => 'nullable|email|max:100|unique:estudiantes,email',
-            'telefono' => 'nullable|string|regex:/^[0-9]{8}$/',
-            'dni' => 'required|string|regex:/^[0-9]{13}$/|unique:estudiantes,dni',
-            'fecha_nacimiento' => 'required|date|before:today',
-            'direccion' => 'nullable|string|max:200',
-            'grado' => 'required|string',
-            'seccion' => 'required|string|size:1',
-            'estado' => 'required|in:activo,inactivo',
-            'observaciones' => 'nullable|string|max:500',
-        ]);
-
-        Estudiante::create($validated);
-
-        return redirect()->route('estudiantes.index')
-            ->with('success', 'Estudiante creado exitosamente');
-    }
-
-    public function show(Estudiante $estudiante)
-    {
-        return view('estudiantes.show', compact('estudiante'));
-    }
-
-    public function edit(Estudiante $estudiante)
     {
         $grados = Estudiante::grados();
         $secciones = Estudiante::secciones();
-
-        return view('estudiantes.edit', compact('estudiante', 'grados', 'secciones'));
+        return view('estudiantes.create', compact('grados', 'secciones'));
     }
 
-    public function update(Request $request, Estudiante $estudiante)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'nombre' => 'required|string|min:2|max:50',
             'apellido' => 'required|string|min:2|max:50',
-            'email' => 'nullable|email|max:100|unique:estudiantes,email,' . $estudiante->id,
-            'telefono' => 'nullable|string|regex:/^[0-9]{8}$/',
-            'dni' => 'required|string|regex:/^[0-9]{13}$/|unique:estudiantes,dni,' . $estudiante->id,
             'fecha_nacimiento' => 'required|date|before:today',
-            'direccion' => 'nullable|string|max:200',
             'grado' => 'required|string',
             'seccion' => 'required|string|size:1',
-            'estado' => 'required|in:activo,inactivo',
-            'observaciones' => 'nullable|string|max:500',
+            'nombre_padre' => 'required|string|max:100',
+            'telefono_padre' => 'required|string|max:15',
+            'email_padre' => 'nullable|email|max:100',
+            'foto' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'dni_doc' => 'required|mimes:pdf,jpg,jpeg,png|max:4096',
         ]);
 
-        $estudiante->update($validated);
+        // Subida de archivos
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $request->file('foto')->store('fotos', 'public');
+        }
 
-        return redirect()->route('estudiantes.index')
-            ->with('success', 'Estudiante actualizado exitosamente');
-    }
+        if ($request->hasFile('dni_doc')) {
+            $validated['dni_doc'] = $request->file('dni_doc')->store('documentos', 'public');
+        }
 
-    public function destroy(Estudiante $estudiante)
-    {
-        $estudiante->delete();
+        Estudiante::create($validated);
 
-        return redirect()->route('estudiantes.index')
-            ->with('success', 'Estudiante eliminado exitosamente');
+        return redirect()->route('estudiantes.index')->with('success', 'Matrícula creada exitosamente.');
     }
 }

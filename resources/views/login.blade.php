@@ -114,11 +114,33 @@
       transform: scale(1.03);
     }
 
-    .error {
+    .error, .client-error {
       color: #ffcccc;
       font-size: 14px;
       margin-top: 6px;
       line-height: 1.3;
+    }
+
+    .server-error {
+      background-color: rgba(255, 0, 0, 0.1);
+      border: 1px solid #ffcccc;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .success-message {
+      background-color: rgba(0, 255, 0, 0.1);
+      border: 1px solid #8bc34a;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -126,66 +148,65 @@
   <div class="form-container">
     <h2>Iniciar Sesión</h2>
 
+    {{-- Mensaje de error del servidor --}}
+    @if ($errors->any())
+      <div class="server-error">
+        {{ $errors->first() }}
+      </div>
+    @endif
+
+    {{-- Mensaje de cierre de sesión exitoso --}}
+    @if (session('success'))
+      <div class="success-message">
+        {{ session('success') }}
+      </div>
+    @endif
+
     {{-- FORMULARIO DE LOGIN --}}
-<form >
- <input type="email" id="email" name="email" placeholder="Ej. juan.perez@gm.hn" required>
-  @error('email')
-    <div class="error">{{ $message }}</div>
-  @enderror
+    <form method="POST" action="{{ route('login') }}">
+      @csrf
+    <input type="email" name="email" placeholder="Correo" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <button type="submit">Iniciar Sesión</button>
 
-  <label for="password">Contraseña:</label>
-  <input type="password" id="password" name="password" placeholder="********" required>
-  <div class="toggle-password" onclick="togglePassword()"></div>
-  
-  @error('password')
-    <div class="error">{{ $message }}</div>
-  @enderror
-  <div id="clientErrors" class="client-error" style="display:none;"></div>
+    </form>
 
-  <button type="submit">Registrarme</button>
-</form>
-
-<script>
-  function togglePassword() {
-    const passwordInput = document.getElementById('password');
-    passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-  }
-
-  (function(){
-    const form = document.getElementById('loginForm');
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const clientErrors = document.getElementById('clientErrors');
-
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    form.addEventListener('submit', function(e){
-      const errors = [];
-
-      if(!emailRegex.test(email.value.trim())){
-        errors.push('Introduce un correo válido.');
-      }
-
-      if(!passwordRegex.test(password.value)){
-        errors.push('La contraseña debe tener mínimo 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial.');
-      }
-
-      if(errors.length){
-        e.preventDefault();
-        clientErrors.innerHTML = errors.map(err => '<div>• ' + err + '</div>').join('');
-        clientErrors.style.display = 'block';
-      } else {
-        clientErrors.style.display = 'none';
-      }
-    });
-  })();
-</script>
-
-    {{-- boton de recuperar contraseña --}}
+    {{-- BOTÓN DE RECUPERAR CONTRASEÑA --}}
     <p>¿Olvidaste tu contraseña?</p>
     <a href="{{ route('password.solicitar') }}" class="recover-btn">Recuperar Contraseña</a>
-
   </div>
+
+  <script>
+    (function() {
+      const form = document.getElementById('loginForm');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const clientErrors = document.getElementById('clientErrors');
+
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+      const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+
+      form.addEventListener('submit', function(e) {
+        const errors = [];
+
+        if (!emailRegex.test(email.value.trim())) {
+          errors.push('Introduce un correo electrónico válido.');
+        }
+
+        if (!passwordRegex.test(password.value)) {
+          errors.push('La contraseña debe tener mínimo 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial.');
+        }
+
+        if (errors.length) {
+          e.preventDefault();
+          clientErrors.innerHTML = errors.map(err => '<div>• ' + err + '</div>').join('');
+          clientErrors.style.display = 'block';
+        } else {
+          clientErrors.style.display = 'none';
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
+

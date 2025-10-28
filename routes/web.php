@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 // Página principal
@@ -18,11 +19,26 @@ Route::get('/', function () {
     return view('plantilla');
 });
 
-// login
+// ------------------------
+// 🔑 LOGIN
+// ------------------------
 Route::get('/login', function () {
     return view('login');
 })->name('login');
 
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect()->route('login');
+})->name('logout');
+
+// registro de usuarios
+route::get('/register',function(){
+    return view('register');
+})->name('register');
+route::get('/register',[RegisterController::class,'showRegistrationForm'])->name('register.form');
+route::post('/register',[RegisterController::class,'register'])->name('register.post');
 // ------------------------
 // 🔐 Recuperación de contraseña
 // ------------------------
@@ -45,12 +61,12 @@ Route::post('/solicitar', function (Request $request) {
         : back()->withErrors(['email' => __($status)]);
 })->name('password.enviar');
 
-// 3️⃣ Mostrar formulario para restablecer contraseña (desde el enlace del correo)
+// Mostrar formulario para restablecer contraseña
 Route::get('/restablecer/{token}', function ($token) {
     return view('recuperarcontrasenia.restablecer', ['token' => $token]);
 })->name('password.reset');
 
-// 4️⃣ Procesar el formulario POST de restablecimiento
+// Procesar el restablecimiento
 Route::post('/restablecer', function (Request $request) {
     $request->validate([
         'token' => 'required',
@@ -71,9 +87,6 @@ Route::post('/restablecer', function (Request $request) {
         ? redirect()->route('login')->with('status', 'Tu contraseña ha sido restablecida con éxito.')
         : back()->withErrors(['email' => [__($status)]]);
 })->name('password.actualizar');
-
-Route::get('/estudiantes/create', [EstudianteController::class, 'create'])->name('estudiantes.create');
-
 
 // ------------------------
 // 📘 CRUDs principales

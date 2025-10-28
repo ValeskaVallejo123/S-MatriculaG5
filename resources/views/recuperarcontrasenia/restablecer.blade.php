@@ -71,33 +71,14 @@
         <h4 class="text-center mb-4">Crea tu nueva contraseña</h4>
 
         <form method="POST" action="{{ route('password.actualizar') }}">
+    @csrf
+    <input type="hidden" name="token" value="{{ $token }}">
+    <input type="email" name="email" value="{{ $email }}" required>
+    <input type="password" name="password" placeholder="Nueva contraseña" required>
+    <input type="password" name="password_confirmation" placeholder="Confirmar contraseña" required>
+    <button type="submit">Restablecer contraseña</button>
+</form>
 
-        @csrf
-            <input type="hidden" name="token" value="{{ $token }}">
-
-            <div class="mb-3">
-                <label for="email" class="form-label">Correo electrónico</label>
-                <input type="email" name="email" id="email" class="form-control" placeholder="ejemplo@correo.com" required>
-                @error('email')
-                <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Nueva contraseña</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="********" required>
-                @error('password')
-                <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="password_confirmation" class="form-label">Confirmar nueva contraseña</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="********" required>
-            </div>
-
-            <button type="submit" class="btn btn-green w-100">Restablecer contraseña</button>
-        </form>
 
         <div class="text-center mt-3">
             <a href="{{ url('/login') }}" class="text-small">← Volver al inicio de sesión</a>

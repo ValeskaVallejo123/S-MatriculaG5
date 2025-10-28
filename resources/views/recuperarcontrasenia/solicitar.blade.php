@@ -134,19 +134,17 @@
             @if (session('status'))
                 <div class="alert alert-success text-center">{{ session('status') }}</div>
             @endif
-
             <form method="POST" action="{{ route('password.enviar') }}">
-                @csrf
-                <div class="mb-3">
-                    <label for="email" class="form-label">Correo electrónico registrado</label>
-                    <input type="email" name="email" id="email" class="form-control" placeholder="ejemplo@correo.com" required>
-                    @error('email')
-                    <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
+    @csrf
+    <label>Correo electrónico</label>
+    <input type="email" name="email" required>
+    <button type="submit">Enviar enlace de recuperación</button>
+</form>
+@if(session('status'))
+    <div>{{ session('status') }}</div>
+@endif
 
-                <button type="submit" class="btn btn-yellow w-100">Enviar enlace de recuperación</button>
-            </form>
+
 
             <div class="text-center mt-3">
                 <a href="{{ url('/login') }}" class="text-small">← Volver al inicio de sesión</a>
