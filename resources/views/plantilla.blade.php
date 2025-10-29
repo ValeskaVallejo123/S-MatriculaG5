@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistema de Matrícula - Escuela Gabriela Mistral</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Poppins', sans-serif;
       background-color: #f5f7ff;
     }
 
@@ -30,6 +30,8 @@
 
     .hero span {
       color: #080800;
+      color: #ffd700;
+      font-family: 'Pacifico', cursive;
       font-size: 2rem;
     }
 
@@ -42,6 +44,7 @@
     }
 
     .btn-yellow {
+      background-color: #ffb703;
       background-color: #130e01;
       border: none;
       color: #fff;
@@ -291,3 +294,5 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
