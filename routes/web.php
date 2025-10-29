@@ -62,12 +62,7 @@ Route::post('/logout', function () {
 Route::post('/matriculas/{matricula}/confirmar', [App\Http\Controllers\MatriculaController::class, 'confirmar'])->name('matriculas.confirmar');
 
 
-// registro de usuarios
-route::get('/register',function(){
-    return view('register');
-})->name('register');
-route::get('/register',[RegisterController::class,'showRegistrationForm'])->name('register.form');
-route::post('/register',[RegisterController::class,'register'])->name('register.post');
+
 // ------------------------
 // 🔐 Recuperación de contraseña
 // ------------------------
