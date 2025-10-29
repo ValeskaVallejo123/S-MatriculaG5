@@ -9,6 +9,9 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BuscarEstudianteController;
+use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\PeriodoAcademicoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
@@ -124,6 +127,14 @@ Route::resource('matriculas', MatriculaController::class);
 Route::get('/', function () {
     return view('plantilla'); // o tu vista principal
 });
+//muestra la vista de buscar estudiante
+Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
+//  muestra la vista de buscar solicitud de matricula
+Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('solicitud.verEstado');
+// Ruta para procesar el formulario (POST)
+Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
+// definir periodos academicos
+Route::resource('periodos-academicos', PeriodoAcademicoController::class);
 
 
 // Mostrar formulario para solicitar el enlace de recuperación
