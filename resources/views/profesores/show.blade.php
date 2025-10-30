@@ -252,19 +252,21 @@
                             </svg>
                             Volver a la Lista
                         </a>
-                        <form action="{{ route('profesores.destroy', $profesor) }}" method="POST" class="flex-1">
+                        <button 
+                            type="button"
+                            onclick="event.preventDefault(); confirmDelete();"
+                            class="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 focus:ring-4 focus:ring-red-300 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Eliminar
+                        </button>
+                        
+                        <!-- Form oculto para eliminar -->
+                        <form id="delete-form" action="{{ route('profesores.destroy', $profesor) }}" method="POST" style="display: none;">
                             @csrf
                             @method('DELETE')
-                            <button 
-                                type="submit" 
-                                onclick="return confirm('¿Estás seguro de eliminar a {{ $profesor->nombre_completo }}?')"
-                                class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 focus:ring-4 focus:ring-red-300 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
-                            >
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                                Eliminar
-                            </button>
                         </form>
                     </div>
                 </div>
@@ -272,5 +274,75 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de Confirmación Personalizado (MISMO DISEÑO DEL INDEX) -->
+<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all">
+        <!-- Header -->
+        <div class="bg-red-50 px-6 py-4 border-b border-red-100 rounded-t-xl">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Confirmar Eliminación</h3>
+                    <p class="text-xs text-gray-600">Esta acción no se puede deshacer</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Body -->
+        <div class="px-6 py-5">
+            <p class="text-gray-700 text-sm leading-relaxed">
+                ¿Está seguro que desea eliminar al profesor <strong class="text-gray-900">{{ $profesor->nombre_completo }}</strong>?
+            </p>
+            <p class="text-gray-600 text-xs mt-3">
+                Se perderán todos los datos asociados a este profesor de forma permanente.
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="bg-gray-50 px-6 py-4 rounded-b-xl flex gap-3 justify-end">
+            <button onclick="closeModal()" 
+                    class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 transition text-sm font-medium border border-gray-300">
+                Cancelar
+            </button>
+            <button onclick="submitDelete()" 
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow-sm">
+                Sí, Eliminar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete() {
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
+function submitDelete() {
+    document.getElementById('delete-form').submit();
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Cerrar con tecla ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
 
 @endsection
