@@ -25,7 +25,7 @@ use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\ObservacionController;
 
 //RUTAS DOCUMENTOS
-//Route::resource('documentos', DocumentoController::class);
+Route::resource('documentos', DocumentoController::class);
 //RUTAS CAMBIAR CONTRASENIA
 // Mostrar formulario para cambiar contraseña
 Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
