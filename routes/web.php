@@ -185,7 +185,6 @@ Route::resource('profesores', ProfesorController::class)->parameters([
     'profesores' => 'profesor'
 ]);
 
-Route::resource('admins', AdminController::class);
 
 
 
