@@ -40,7 +40,7 @@
                             <!-- Nombre -->
                             <div>
                                 <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Nombre Completo
+                                    Nombre(s)
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
@@ -55,13 +55,13 @@
                                         name="nombre" 
                                         value="{{ old('nombre') }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white outline-none transition-all @error('nombre') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ingrese el nombre completo"
+                                        placeholder="Ej: Juan Carlos"
                                         required
                                         minlength="3"
                                         maxlength="50"
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Entre 3 y 50 caracteres</p>
+                                <p class="text-xs text-gray-500 mt-2 ml-1">Ingrese uno o más nombres</p>
                                 @error('nombre')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -72,31 +72,32 @@
                                 @enderror
                             </div>
 
-                            <!-- Email -->
+                            <!-- Apellido -->
                             <div>
-                                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Correo Electrónico Institucional
+                                <label for="apellido" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Apellido(s)
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
                                     </div>
                                     <input 
-                                        type="email" 
-                                        id="email" 
-                                        name="email" 
-                                        value="{{ old('email') }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white outline-none transition-all @error('email') border-red-400 bg-red-50 @enderror"
-                                        placeholder="admin@institucion.edu"
+                                        type="text" 
+                                        id="apellido" 
+                                        name="apellido" 
+                                        value="{{ old('apellido') }}"
+                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white outline-none transition-all @error('apellido') border-red-400 bg-red-50 @enderror"
+                                        placeholder="Ej: Pérez González"
                                         required
-                                        maxlength="100"
+                                        minlength="3"
+                                        maxlength="50"
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Dirección de correo válida (máximo 100 caracteres)</p>
-                                @error('email')
+                                <p class="text-xs text-gray-500 mt-2 ml-1">Ingrese uno o más apellidos</p>
+                                @error('apellido')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
@@ -276,7 +277,7 @@
                 </svg>
                 <div class="text-sm text-blue-800">
                     <p class="font-semibold mb-1">Información importante</p>
-                    <p>El administrador recibirá un correo de confirmación con sus credenciales de acceso. Asegúrese de que la dirección de correo electrónico sea correcta y esté activa.</p>
+                    <p>El correo institucional se generará automáticamente con el formato: <strong>primernombre.primerapellido@admin.edu</strong>. Las credenciales se mostrarán al finalizar el registro.</p>
                 </div>
             </div>
         </div>
