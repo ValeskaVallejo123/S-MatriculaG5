@@ -4,25 +4,40 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6 max-w-7xl">
-    
+
     <!-- Encabezado con Acción -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Administradores</h1>
             <p class="text-sm text-gray-600 mt-0.5">Gestión de usuarios administrativos del sistema</p>
         </div>
-        <a href="{{ route('admins.create') }}" 
-           class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Nuevo Administrador
-        </a>
+
+        <!-- Contenedor de botones -->
+        <div class="flex items-center space-x-2">
+            <!-- Botón Nuevo Administrador -->
+            <a href="{{ route('admins.create') }}"
+               class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nuevo Administrador
+            </a>
+
+            <!-- Botón Llevar al formulario de Cupos -->
+            <a href="{{ route('cupos_maximos.create') }}"
+               class="inline-flex items-center justify-center gap-2 bg-amber-500 text-white px-4 py-2.5 rounded-lg hover:bg-amber-600 font-medium transition text-sm shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+                Registrar cupos maximos
+            </a>
+        </div>
     </div>
+
 
     <!-- Tarjetas de Estadísticas -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        
+
         <!-- Total -->
         <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
             <div class="flex items-center justify-between">
@@ -74,7 +89,7 @@
 
     <!-- Listado en Cards -->
     <div class="space-y-3">
-        
+
         <!-- Header del Listado -->
         <div class="bg-white rounded-lg shadow-sm px-5 py-3 border border-gray-200">
             <div class="flex items-center justify-between">
@@ -88,7 +103,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-300 transition-all">
                 <div class="p-4">
                     <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-                        
+
                         <!-- Información del Admin (Izquierda) -->
                         <div class="flex items-center gap-3 flex-1">
                             <!-- Avatar -->
@@ -97,7 +112,7 @@
                                     {{ strtoupper(substr($admin->nombre, 0, 2)) }}
                                 </span>
                             </div>
-                            
+
                             <!-- Datos -->
                             <div class="flex-1 min-w-0">
                                 <h3 class="text-base font-semibold text-gray-900 truncate">{{ $admin->nombre }}</h3>
@@ -134,11 +149,11 @@
 
                         <!-- Acciones (Derecha) -->
                         <div class="flex items-center gap-2 lg:justify-end">
-                            <a href="{{ route('admins.show', $admin) }}" 
+                            <a href="{{ route('admins.show', $admin) }}"
                                class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition text-xs font-medium border border-blue-200">
                                 Ver
                             </a>
-                            <a href="{{ route('admins.edit', $admin) }}" 
+                            <a href="{{ route('admins.edit', $admin) }}"
                                class="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition text-xs font-medium border border-amber-200">
                                 Editar
                             </a>
@@ -146,11 +161,11 @@
                                     class="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition text-xs font-medium border border-red-200">
                                 Eliminar
                             </button>
-                            
+
                             <!-- Form oculto para eliminar -->
-                            <form id="delete-form-{{ $admin->id }}" 
-                                  action="{{ route('admins.destroy', $admin) }}" 
-                                  method="POST" 
+                            <form id="delete-form-{{ $admin->id }}"
+                                  action="{{ route('admins.destroy', $admin) }}"
+                                  method="POST"
                                   style="display: none;">
                                 @csrf
                                 @method('DELETE')
@@ -169,7 +184,7 @@
                     </div>
                     <h3 class="text-base font-semibold text-gray-900 mb-1">No hay administradores</h3>
                     <p class="text-gray-500 text-sm mb-4">Agregue el primer administrador al sistema</p>
-                    <a href="{{ route('admins.create') }}" 
+                    <a href="{{ route('admins.create') }}"
                        class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -206,7 +221,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Body -->
         <div class="px-6 py-5">
             <p class="text-gray-700 text-sm leading-relaxed">
@@ -216,14 +231,14 @@
                 Se perderán todos los datos asociados a este usuario de forma permanente.
             </p>
         </div>
-        
+
         <!-- Footer -->
         <div class="bg-gray-50 px-6 py-4 rounded-b-xl flex gap-3 justify-end">
-            <button onclick="closeModal()" 
+            <button onclick="closeModal()"
                     class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 transition text-sm font-medium border border-gray-300">
                 Cancelar
             </button>
-            <button onclick="submitDelete()" 
+            <button onclick="submitDelete()"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow-sm">
                 Sí, Eliminar
             </button>

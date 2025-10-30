@@ -8,10 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #e6f0ff;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: #e6f0ff; }
         .navbar-brand { font-family: 'Pacifico', cursive; }
         .form-container {
             background-color: #fff;
@@ -22,11 +19,13 @@
             margin: 40px auto;
         }
         .btn-yellow { background-color: #ffb703; border: none; color: #fff; font-weight: bold; }
-        .btn-yellow:hover { background-color: #f4a100; color: white; }
+        .btn-yellow:hover { background-color: #f4a100; }
         .btn-red { background-color: #d90429; border: none; color: #fff; }
-        .btn-red:hover { background-color: #a1031f; color: #fff; }
+        .btn-red:hover { background-color: #a1031f; }
         .btn-blue { background-color: #4361ee; border: none; color: #fff; }
-        .btn-blue:hover { background-color: #1a42d2; color: #fff; }
+        .btn-blue:hover { background-color: #1a42d2; }
+        .btn-warning { background-color: #f0ad4e; border: none; color: #fff; }
+        .btn-warning:hover { background-color: #ec971f; }
     </style>
 </head>
 <body>
@@ -45,12 +44,8 @@
                         Cupos Máximos
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('cupos_maximos.create') }}">Registrar cupo</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('cupos_maximos.index') }}">Listado de cupos</a>
-                        </li>
+                        <li><a class="dropdown-item" href="{{ route('cupos_maximos.create') }}">Registrar cupo</a></li>
+                        <li><a class="dropdown-item" href="{{ route('cupos_maximos.index') }}">Listado de cupos</a></li>
                     </ul>
                 </li>
             </ul>
@@ -62,8 +57,7 @@
     <div class="form-container">
         <h4 class="text-center mb-4 fw-bold">Actualizar cupos</h4>
 
-
-    @if (session('success'))
+        @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
@@ -81,62 +75,74 @@
             </div>
         @endif
 
+        <!-- Form para actualizar -->
         <form id="cursoForm" method="POST" action="{{ route('cupos_maximos.update', $curso->id) }}">
             @csrf
             @method('PUT')
 
-            <div class="mb-3">
-                <label for="nombre" class="form-label fw-bold">Nombre del curso:</label>
-                <select name="nombre" id="nombre" class="form-select" required>
-                    <option value="">Seleccione un curso...</option>
-                    @foreach(['1ro Primaria','2do Primaria','3ro Primaria','4to Primaria','5to Primaria','6to Primaria','1ro Secundaria','2do Secundaria','3ro Secundaria'] as $grado)
-                        <option value="{{ $grado }}" {{ old('nombre', $curso->nombre) == $grado ? 'selected' : '' }}>{{ $grado }}</option>
-                    @endforeach
-                </select>
+            <!-- Nombre y cupo -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label fw-bold">Nombre del curso:</label>
+                    <select name="nombre" id="nombre" class="form-select form-select-sm" required>
+                        <option value="">Seleccione un curso...</option>
+                        @foreach(['1ro Primaria','2do Primaria','3ro Primaria','4to Primaria','5to Primaria','6to Primaria','1ro Secundaria','2do Secundaria','3ro Secundaria'] as $grado)
+                            <option value="{{ $grado }}" {{ old('nombre', $curso->nombre) == $grado ? 'selected' : '' }}>{{ $grado }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="cupo_maximo" class="form-label fw-bold">Cupo de estudiantes:</label>
+                    <input type="number" name="cupo_maximo" id="cupo_maximo" class="form-control form-control-sm"
+                           value="{{ old('cupo_maximo', $curso->cupo_maximo) }}" min="1" max="35" required>
+                    <small class="form-text text-muted">Ingrese un número de estudiantes (máximo 35)</small>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="cupo_maximo" class="form-label fw-bold">Cupo de estudiantes:</label>
-                <input type="number" name="cupo_maximo" id="cupo_maximo" class="form-control" min="1" required
-                       value="{{ old('cupo_maximo', $curso->cupo_maximo) }}">
-                <small class="form-text text-muted">Ingrese un número de estudiantes (máximo 35)</small>
-            </div>
+            <!-- Jornada y Sección -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="jornada" class="form-label fw-bold">Jornada:</label>
+                    <select name="jornada" id="jornada" class="form-select form-select-sm" required>
+                        <option value="">Seleccione una jornada</option>
+                        <option value="Matutina" {{ old('jornada', $curso->jornada) == 'Matutina' ? 'selected' : '' }}>Matutina</option>
+                        <option value="Vespertina" {{ old('jornada', $curso->jornada) == 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
+                    </select>
+                </div>
 
-            <div class="mb-3">
-                <label for="jornada" class="form-label fw-bold">Jornada:</label>
-                <select name="jornada" id="jornada" class="form-select" required>
-                    <option value="">Seleccione una jornada</option>
-                    <option value="Matutina" {{ old('jornada', $curso->jornada) == 'Matutina' ? 'selected' : '' }}>Matutina</option>
-                    <option value="Vespertina" {{ old('jornada', $curso->jornada) == 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="seccion" class="form-label fw-bold">Sección:</label>
-                <select name="seccion" id="seccion" class="form-select" required>
-                    <option value="">Seleccione una sección...</option>
-                    @foreach(['A','B','C','D'] as $sec)
-                        <option value="{{ $sec }}" {{ old('seccion', $curso->seccion) == $sec ? 'selected' : '' }}>{{ $sec }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{{ route('cupos_maximos.index') }}" class="btn btn-red">Cancelar</a>
-
-                <button type="submit" class="btn btn-blue">Guardar cambios</button>
+                <div class="col-md-6">
+                    <label for="seccion" class="form-label fw-bold">Sección:</label>
+                    <select name="seccion" id="seccion" class="form-select form-select-sm" required>
+                        <option value="">Seleccione una sección...</option>
+                        @foreach(['A','B','C','D'] as $sec)
+                            <option value="{{ $sec }}" {{ old('seccion', $curso->seccion) == $sec ? 'selected' : '' }}>{{ $sec }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </form>
 
-        <form class="text-center mt-3" action="{{ route('cupos_maximos.destroy', $curso->id) }}" method="POST"
-              onsubmit="return confirm('¿Estás seguro de eliminar este curso? Esta acción no se puede deshacer.');">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-yellow">Eliminar curso
-            </button>
-        </form>
+        <!-- Botones: Cancelar, Guardar cambios, Eliminar -->
+        <div class="d-flex justify-content-between mt-4 align-items-center">
+            <!-- Cancelar y Guardar -->
+            <div>
+                <a href="{{ route('cupos_maximos.index') }}" class="btn btn-red me-2">Cancelar</a>
+                <button type="submit" form="cursoForm" class="btn btn-blue">Guardar cambios</button>
+            </div>
+
+            <!-- Form separado para Eliminar -->
+            <form action="{{ route('cupos_maximos.destroy', $curso->id) }}" method="POST" class="m-0 d-inline"
+                  onsubmit="return confirm('¿Estás seguro de eliminar este curso? Esta acción no se puede deshacer.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-warning">Eliminar curso</button>
+            </form>
+        </div>
+
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
