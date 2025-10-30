@@ -75,12 +75,61 @@
     <!-- Listado en Cards -->
     <div class="space-y-3">
         
-        <!-- Header del Listado -->
-        <div class="bg-white rounded-lg shadow-sm px-5 py-3 border border-gray-200">
-            <div class="flex items-center justify-between">
-                <h2 class="text-base font-bold text-gray-800">Listado Completo</h2>
-                <span class="text-xs font-medium text-gray-600">{{ $admins->total() }} administradores</span>
+        <!-- Header del Listado CON BÚSQUEDA -->
+        <div class="bg-white rounded-lg shadow-sm px-5 py-4 border border-gray-200">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-base font-bold text-gray-800">Listado Completo</h2>
+                    <span class="text-xs font-medium text-gray-600">{{ $admins->total() }} administradores</span>
+                </div>
+                
+                <!-- Búsqueda integrada -->
+                <form action="{{ route('admins.index') }}" method="GET" class="flex gap-2 w-full lg:w-auto lg:max-w-md">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            name="busqueda" 
+                            value="{{ request('busqueda') }}"
+                            placeholder="Buscar por nombre o email..."
+                            class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
+                            autocomplete="off"
+                        >
+                    </div>
+                    
+                    <button 
+                        type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Buscar
+                    </button>
+
+                    @if(request('busqueda'))
+                        <a href="{{ route('admins.index') }}" 
+                           class="px-3 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Limpiar
+                        </a>
+                    @endif
+                </form>
             </div>
+            
+            <!-- Mensaje de resultados de búsqueda -->
+            @if(request('busqueda'))
+                <div class="mt-3 pt-3 border-t border-gray-100">
+                    <p class="text-sm text-gray-600">
+                        Mostrando resultados para: <span class="font-semibold text-gray-900">"{{ request('busqueda') }}"</span>
+                    </p>
+                </div>
+            @endif
         </div>
 
         <!-- Lista de Administradores en Cards -->
@@ -162,20 +211,34 @@
         @empty
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
                 <div class="text-center">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-base font-semibold text-gray-900 mb-1">No hay administradores</h3>
-                    <p class="text-gray-500 text-sm mb-4">Agregue el primer administrador al sistema</p>
-                    <a href="{{ route('admins.create') }}" 
-                       class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
-                        Crear Administrador
-                    </a>
+                    @if(request('busqueda'))
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-1">No se encontraron resultados</h3>
+                        <p class="text-gray-500 text-sm mb-4">No hay administradores que coincidan con "{{ request('busqueda') }}"</p>
+                        <a href="{{ route('admins.index') }}" 
+                           class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
+                            Ver todos los administradores
+                        </a>
+                    @else
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-1">No hay administradores</h3>
+                        <p class="text-gray-500 text-sm mb-4">Agregue el primer administrador al sistema</p>
+                        <a href="{{ route('admins.create') }}" 
+                           class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Crear Administrador
+                        </a>
+                    @endif
                 </div>
             </div>
         @endforelse
