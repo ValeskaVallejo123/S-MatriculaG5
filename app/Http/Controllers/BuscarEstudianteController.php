@@ -6,7 +6,7 @@ use App\Models\BuscarEstudiante;
 
 class BuscarEstudianteController extends Controller
 {
-    public function buscar(Request $request)
+    public function buscarregistro(Request $request)
     {
         $nombre = $request->input('nombre');
         $dni = $request->input('dni');
@@ -35,6 +35,6 @@ class BuscarEstudianteController extends Controller
             }
         }
 
-        return view('estudiantes.buscar', compact('resultados', 'busquedaRealizada', 'mensaje'));
+        return view('buscar.busqueda', compact('resultados', 'busquedaRealizada', 'mensaje'));
     }
 }

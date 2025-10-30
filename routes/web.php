@@ -133,7 +133,7 @@ Route::get('/', function () {
     return view('plantilla'); // o tu vista principal
 });
 //muestra la vista de buscar estudiante
-Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
+Route::get('/registroestudiantes/buscarregistro', [BuscarEstudianteController::class, 'buscarregistro'])->name('registroestudiantes.buscarregistro');
 //  muestra la vista de buscar solicitud de matricula
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('solicitud.verEstado');
 // Ruta para procesar el formulario (POST)

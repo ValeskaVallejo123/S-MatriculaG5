@@ -1,50 +1,105 @@
-<!-- Componente de Búsqueda Reutilizable -->
-<div class="mb-6">
-    <form action="{{ $route ?? '#' }}" method="GET" class="relative">
-        <div class="relative max-w-md">
-            <!-- Icono de búsqueda -->
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-            
-            <!-- Input de búsqueda -->
-            <input 
-                type="text" 
-                name="busqueda" 
-                value="{{ request('busqueda') }}"
-                placeholder="{{ $placeholder ?? 'Buscar...' }}"
-                class="w-full pl-10 pr-20 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
-                autocomplete="off"
-            >
-            
-            <!-- Botones -->
-            <div class="absolute inset-y-0 right-0 flex items-center pr-2 gap-1">
-                @if(request('busqueda'))
-                    <!-- Botón limpiar -->
-                    <a href="{{ $route ?? '#' }}" 
-                       class="p-1.5 text-gray-400 hover:text-gray-600 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+@extends('layouts.app')
+
+@section('content')
+    <div class="min-h-screen bg-gradient-to-br from-purple-200 to-blue-300 flex items-center justify-center px-4">
+        <div class="w-full max-w-lg bg-purple-600 text-white rounded-2xl shadow-2xl p-8">
+            <h2 class="text-3xl font-bold mb-6 text-center"> Buscar Registro de Estudiante</h2>
+
+            <form action="{{ route('registroestudiantes.buscarregistro') }}" method="GET" class="space-y-6">
+                <!-- Campo Nombre -->
+                <div>
+                    <label for="nombre" class="block text-sm font-semibold mb-2">Nombre completo</label>
+                    <input
+                        type="text"
+                        name="nombre"
+                        id="nombre"
+                        value="{{ request('nombre') }}"
+                        placeholder="Ej. Juan Pérez"
+                        class="w-full px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm shadow-sm"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <!-- Campo DNI -->
+                <div>
+                    <label for="dni" class="block text-sm font-semibold mb-2">DNI</label>
+                    <input
+                        type="text"
+                        name="dni"
+                        id="dni"
+                        value="{{ request('dni') }}"
+                        placeholder="Ej. 0801-1990-12345"
+                        class="w-full px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm shadow-sm"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <!-- Botón -->
+                <div class="text-center">
+                    <button
+                        type="submit"
+                        class="inline-flex items-center gap-2 px-6 py-2 bg-yellow-400 text-purple-900 font-semibold rounded-lg shadow-md hover:bg-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                    </a>
-                @endif
-                
-                <!-- Botón buscar -->
-                <button 
-                    type="submit"
-                    class="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition">
-                    Buscar
-                </button>
-            </div>
+                        Buscar
+                    </button>
+
+                    <div class="text-center mt-6">
+                        <a href="{{ route('estudiantes.index') }}"
+                           class="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-semibold border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm hover:shadow-md">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            Volver al listado
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+
+            @if($busquedaRealizada)
+                <div class="mt-8 space-y-6">
+                    @forelse($resultados as $estudiante)
+                        <div class="bg-white text-gray-800 rounded-2xl shadow-xl p-6">
+                            <h3 class="text-xl font-bold text-purple-700 mb-4"> Ficha del Estudiante</h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <p><strong>Nombre:</strong> {{ $estudiante->nombre }}</p>
+                                <p><strong>Apellido:</strong> {{ $estudiante->apellido }}</p>
+                                <p><strong>DNI:</strong> {{ $estudiante->dni }}</p>
+                                <p><strong>Fecha de nacimiento:</strong> {{ $estudiante->fecha_nacimiento->format('d/m/Y') }}</p>
+                                <p><strong>Sexo:</strong> {{ ucfirst($estudiante->sexo) }}</p>
+                                <p><strong>Correo electrónico:</strong> {{ $estudiante->email ?? 'No registrado' }}</p>
+                                <p><strong>Teléfono:</strong> {{ $estudiante->telefono ?? 'No registrado' }}</p>
+                                <p><strong>Dirección:</strong> {{ $estudiante->direccion ?? 'No registrada' }}</p>
+                                <p><strong>Grado:</strong> {{ $estudiante->grado }}</p>
+                                <p><strong>Sección:</strong> {{ $estudiante->seccion }}</p>
+                                <p><strong>Estado:</strong>
+                                    <span class="px-2 py-1 rounded-full {{ $estudiante->estado === 'activo' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                            {{ ucfirst($estudiante->estado) }}
+                        </span>
+                                </p>
+                                <p><strong>Observaciones:</strong> {{ $estudiante->observaciones ?? 'Sin observaciones' }}</p>
+                            </div>
+
+                            @if($estudiante->foto)
+                                <div class="mt-4">
+                                    <p class="font-semibold mb-2"> Foto del estudiante:</p>
+                                    <img src="{{ asset('storage/' . $estudiante->foto) }}" alt="Foto de {{ $estudiante->nombre }}" class="w-32 h-32 object-cover rounded-lg border">
+                                </div>
+                            @endif
+                        </div>
+
+                    @empty
+                        <div class="bg-red-100 text-red-700 p-4 rounded-lg text-center font-semibold">
+                            Estudiante no encontrado
+                        </div>
+                    @endforelse
+                </div>
+            @endif
+
         </div>
-    </form>
-    
-    <!-- Resultados de búsqueda -->
-    @if(request('busqueda'))
-        <div class="mt-2 text-sm text-gray-600">
-            Mostrando resultados para: <span class="font-semibold">"{{ request('busqueda') }}"</span>
-        </div>
-    @endif
-</div>
+    </div>
+@endsection
+
