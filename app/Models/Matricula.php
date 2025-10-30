@@ -17,10 +17,7 @@ class Matricula extends Model
         'padre_id',
         'anio_lectivo',
         'fecha_matricula',
-        'estado', // pendiente, aprobada, rechazada, cancelada
-        'grado',
-        'seccion',
-        'documento' // ruta del archivo subido
+        'estado', // pendiente, aprobada, rechazada
     ];
 
     protected $casts = [
@@ -55,14 +52,5 @@ class Matricula extends Model
             return $this->estudiante->nombre . ' ' . $this->estudiante->apellido;
         }
         return 'N/A';
-    }
-
-    // Método para obtener la URL del documento si existe
-    public function getDocumentoUrlAttribute()
-    {
-        if ($this->documento) {
-            return asset('storage/' . $this->documento);
-        }
-        return null;
     }
 }
