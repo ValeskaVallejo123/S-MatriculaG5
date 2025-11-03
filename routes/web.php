@@ -3,6 +3,7 @@
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\PlanEstudioController;
 use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\MatriculaController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -16,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\PlanEstudio;
 
 
 // Página principal
@@ -184,7 +186,7 @@ Route::resource('matriculas', MatriculaController::class);
 Route::resource('profesores', ProfesorController::class)->parameters([
     'profesores' => 'profesor'
 ]);
-
+Route::resource('plan_estudios', PlanEstudioController::class);
 
 
 
@@ -198,4 +200,4 @@ Route::get('/admins/{admin}', [AdminController::class, 'show'])->name('admins.sh
 Route::get('/admins/{admin}/edit', [AdminController::class, 'edit'])->name('admins.edit');
 Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admins.update');
 Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admins.destroy');
-*/
+*/   
