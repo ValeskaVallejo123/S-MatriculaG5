@@ -7,17 +7,73 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 
   <style>
-    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #ffffff, #a29bfe); color: #2d3436; }
-    .form-container { background-color: #6e1abd; padding: 25px; border-radius: 12px; max-width: 600px; margin: auto; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .form-container h2 { text-align: center; margin-bottom: 20px; font-weight: 600; }
-    label { display: block; margin-top: 15px; font-size: 16px; color: white; }
-    input { width: 100%; height: 50px; padding: 15px; margin-top: 5px; border: 2px solid #dfe6e9; border-radius: 10px; font-size: 16px; transition: all 0.3s ease; }
-    input:focus { border-color: #0984e3; outline: none; box-shadow: 0 0 6px rgba(9,132,227,0.4); }
-    .btn-oval { border-radius: 50px; padding: 12px 30px; font-weight: 600; font-size: 16px; color: #f5dfdf; background-color: #e155d1; border: none; transition: all 0.3s ease; width: 100%; }
-    .btn-oval:hover { background-color: #7e57c2; transform: translateY(-2px); }
-    .recover-btn { color: white; font-weight: bold; text-decoration: none; }
-    .recover-btn:hover { text-decoration: underline; }
-    .alert-custom { margin-top: 10px; display: none; }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #ffffff, #a29bfe);
+        color: #2d3436;
+    }
+    .form-container {
+        background-color: #6e1abd;
+        padding: 25px;
+        border-radius: 12px;
+        max-width: 600px;
+        margin: auto;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .form-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    label {
+        display: block;
+        margin-top: 15px;
+        font-size: 16px;
+        color: white;
+    }
+    input {
+        width: 100%;
+        height: 50px;
+        padding: 15px;
+        margin-top: 5px;
+        border: 2px solid #dfe6e9;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    input:focus {
+        border-color: #0984e3;
+        outline: none;
+        box-shadow: 0 0 6px rgba(9,132,227,0.4);
+    }
+    .btn-oval {
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 16px;
+        color: #f5dfdf;
+        background-color: #e155d1;
+        border: none; t
+        ransition: all 0.3s ease;
+        width: 100%;
+    }
+    .btn-oval:hover {
+        background-color: #7e57c2;
+        transform: translateY(-2px);
+    }
+    .recover-btn {
+        color: white;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    .recover-btn:hover {
+        text-decoration: underline;
+    }
+    .alert-custom {
+        margin-top: 10px;
+        display: none;
+    }
   </style>
 </head>
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -25,15 +25,19 @@ class RegisterController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'rol' => 'estudiante',
+            'password' => bcrypt($request->password),
+            'rol' => 'estudiante', // Por defecto es estudiante
         ]);
 
-        // Pasar datos al login usando sesión
-        return redirect()->route('login.show')->with([
-            'success' => 'Registro exitoso. Ahora inicia sesión.',
-            'email' => $request->email,
-            'password' => $request->password
-        ]);
+        Auth::login($user);
+
+        // Guardar correo para sugerencias internas
+        $correos = json_decode($request->cookie('correosRegistrados', '[]'), true);
+        if (!in_array($user->email, $correos)) {
+            $correos[] = $user->email;
+        }
+
+        return redirect($user->rol === 'admin' ? route('admins.index') : route('matriculas.index'))
+            ->withCookie(cookie('correosRegistrados', json_encode($correos), 525600)); // 1 año
     }
 }

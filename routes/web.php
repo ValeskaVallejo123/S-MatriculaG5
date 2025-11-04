@@ -14,49 +14,35 @@ use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\PeriodoAcademicoController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\CursoController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 
 // 🔹 RUTA PRINCIPAL
 Route::get('/', function () {
-    return view('plantilla'); // Vista principal
+    return view('plantilla');
 });
 
 // 🔹 REGISTRO
 Route::get('/register', [RegisterController::class, 'showRegister'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
 
-// 🔹 LOGIN
+// 🔹 LOGIN / LOGOUT
 Route::get('/login', [LoginController::class, 'showLogin'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
-
-// 🔹 LOGOUT
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// 🔹 RUTAS PRINCIPALES CON MIDDLEWARE AUTH
+// 🔹 RUTAS PROTEGIDAS
 Route::middleware('auth')->group(function () {
-    Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
-    Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
-
 
     // CRUDs principales
     Route::resource('admins', AdminController::class);
     Route::resource('estudiantes', EstudianteController::class);
     Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
     Route::resource('matriculas', MatriculaController::class);
+    Route::resource('observaciones', ObservacionController::class)->except(['show']);
+    Route::resource('documentos', DocumentoController::class);
 
     // Confirmación de matrícula
     Route::post('/matriculas/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('matriculas.confirmar');
-
-    // Cambio de contraseña
-    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
-    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
-
-    // Observaciones
-    Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
     // Buscar estudiante
     Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
@@ -68,7 +54,7 @@ Route::middleware('auth')->group(function () {
     // Periodos académicos
     Route::resource('periodos-academicos', PeriodoAcademicoController::class);
 
-    // Cupos máximos
+    // CUPOS MÁXIMOS
     Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
         Route::get('/', [CursoController::class, 'index'])->name('index');
         Route::get('/create', [CursoController::class, 'create'])->name('create');
@@ -78,11 +64,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
     });
 
-    // Estudiantes: crear
-    Route::get('/estudiantes/create', [EstudianteController::class, 'create'])->name('estudiantes.create');
-
-    // Documentos
-    Route::resource('documentos', DocumentoController::class);
+    // Cambiar contraseña
+    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
+    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
 });
 
 // 🔐 RECUPERACIÓN DE CONTRASEÑA
@@ -91,5 +75,13 @@ Route::post('/password/solicitar', [PasswordResetController::class, 'sendResetLi
 Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
 Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
 
-// (Opcional) Vista informativa de recuperación de contraseña
-Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
+Route::get('/matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
+Route::post('/matriculas', [MatriculaController::class, 'store'])->name('matriculas.store');
+
+Route::middleware(['auth', 'rol:admin'])->group(function () {
+    Route::resource('admins', AdminController::class);
+});
+
+Route::middleware(['auth', 'rol:estudiante'])->group(function () {
+    Route::resource('matriculas', MatriculaController::class);
+});
