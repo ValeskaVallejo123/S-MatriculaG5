@@ -7,19 +7,11 @@ use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
-     */
     public function boot()
     {
-        Schema::disableForeignKeyConstraints();
+        // Deshabilitar foreign key constraints al eliminar tablas
+        if (config('database.default') === 'mysql') {
+            Schema::defaultStringLength(191);
+        }
     }
 }
