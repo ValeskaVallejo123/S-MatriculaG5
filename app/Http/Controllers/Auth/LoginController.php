@@ -5,38 +5,47 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class LoginController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request)
     {
-        return view('auth.login');
+        return view('auth.login', [
+            'correoGuardado' => $request->cookie('correo_usuario') ?? ''
+        ]);
     }
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required','email'],
-            'password' => ['required']
+        $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        if(Auth::attempt($credentials)){
-            $request->session()->regenerate();
+        $inputEmail = $request->email;
+        $password = $request->password;
 
-            return Auth::user()->rol === 'admin'
-                ? redirect()->route('admins.index')
-                : redirect()->route('matriculas.index');
+        // Buscar usuario por coincidencia parcial del correo
+        $user = User::where('email', 'like', "%{$inputEmail}%")->first();
+
+        if($user && Hash::check($password, $user->password)){
+            Auth::login($user);
+
+            // Guardar correo en cookie para autocompletar interno
+            $cookie = cookie('correo_usuario', $user->email, 525600);
+
+            return redirect($user->rol === 'admin' ? route('admins.index') : route('matriculas.index'))
+                ->withCookie($cookie);
         }
 
-        return back()->with('error', 'Credenciales incorrectas');
+        return back()->withErrors(['email' => 'Usuario o contraseña incorrectos']);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+        return redirect()->route('login.show');
     }
 }

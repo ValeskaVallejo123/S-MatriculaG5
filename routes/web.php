@@ -94,3 +94,10 @@ Route::get('/admin', function () {
 Route::get('/estudiante', function () {
     return "¡Accediste al panel de estudiante!";
 })->middleware('rol:estudiante');
+
+Route::get('/matriculas', function () {
+    return "Bienvenido a matriculas";
+})->middleware('rol:admin');
+
+Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
+Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');

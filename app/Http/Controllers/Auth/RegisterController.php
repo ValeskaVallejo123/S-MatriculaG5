@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -17,27 +17,24 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:50',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|confirmed|min:6',
+            'password' => 'required|string|min:6|confirmed',
+            'rol' => 'required|in:admin,estudiante',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'rol' => 'estudiante', // Por defecto es estudiante
+            'password' => Hash::make($request->password),
+            'rol' => $request->rol,
         ]);
 
-        Auth::login($user);
+        // Guardar correo y contraseña en cookie temporal (solo para autocompletar interno)
+        $cookie = cookie('correo_usuario', $user->email, 525600);
 
-        // Guardar correo para sugerencias internas
-        $correos = json_decode($request->cookie('correosRegistrados', '[]'), true);
-        if (!in_array($user->email, $correos)) {
-            $correos[] = $user->email;
-        }
-
-        return redirect($user->rol === 'admin' ? route('admins.index') : route('matriculas.index'))
-            ->withCookie(cookie('correosRegistrados', json_encode($correos), 525600)); // 1 año
+        return redirect(route('login.show'))
+            ->withCookie($cookie)
+            ->with('success', 'Registro exitoso, ahora inicia sesión.');
     }
 }
