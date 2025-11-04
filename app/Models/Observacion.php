@@ -10,7 +10,7 @@ class Observacion extends Model
     use HasFactory;
 
 
-    protected $table = 'observaciones';
+    protected $table = 'observacions';
 
     protected $fillable = [
         'estudiante_id',
