@@ -35,12 +35,12 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-indigo-100">
                             Datos Personales
                         </h3>
-                        
+
                         <div class="space-y-6">
                             <!-- Nombre -->
                             <div>
                                 <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Nombre(s)
+                                    Nombre Completo
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
@@ -49,19 +49,19 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="text" 
-                                        id="nombre" 
-                                        name="nombre" 
+                                    <input
+                                        type="text"
+                                        id="nombre"
+                                        name="nombre"
                                         value="{{ old('nombre') }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white outline-none transition-all @error('nombre') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ej: Juan Carlos"
+                                        placeholder="Ingrese el nombre completo"
                                         required
                                         minlength="3"
                                         maxlength="50"
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Ingrese uno o más nombres</p>
+                                <p class="text-xs text-gray-500 mt-2 ml-1">Entre 3 y 50 caracteres</p>
                                 @error('nombre')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -72,32 +72,31 @@
                                 @enderror
                             </div>
 
-                            <!-- Apellido -->
+                            <!-- Email -->
                             <div>
-                                <label for="apellido" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Apellido(s)
+                                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Correo Electrónico Institucional
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="text" 
-                                        id="apellido" 
-                                        name="apellido" 
-                                        value="{{ old('apellido') }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white outline-none transition-all @error('apellido') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ej: Pérez González"
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        value="{{ old('email') }}"
+                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white outline-none transition-all @error('email') border-red-400 bg-red-50 @enderror"
+                                        placeholder="@admin.edu"
                                         required
-                                        minlength="3"
-                                        maxlength="50"
+                                        maxlength="100"
                                     >
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Ingrese uno o más apellidos</p>
-                                @error('apellido')
+                                <p class="text-xs text-gray-500 mt-2 ml-1">Dirección de correo válida (máximo 100 caracteres)</p>
+                                @error('email')
                                     <p class="mt-2 text-sm text-red-600 flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
@@ -114,7 +113,7 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-indigo-100">
                             Credenciales de Acceso
                         </h3>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Contraseña -->
                             <div>
@@ -128,9 +127,9 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="password" 
-                                        id="password" 
+                                    <input
+                                        type="password"
+                                        id="password"
                                         name="password"
                                         class="w-full pl-12 pr-12 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white outline-none transition-all @error('password') border-red-400 bg-red-50 @enderror"
                                         placeholder="Mínimo 8 caracteres"
@@ -138,8 +137,8 @@
                                         minlength="8"
                                         maxlength="50"
                                     >
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onclick="togglePassword('password')"
                                         class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-indigo-600 transition"
                                     >
@@ -157,39 +156,6 @@
                                         {{ $message }}
                                     </p>
                                 @enderror
-                            </div>
-
-                            <!-- Confirmar Contraseña -->
-                            <div>
-                                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Confirmar Contraseña
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="password" 
-                                        id="password_confirmation" 
-                                        name="password_confirmation"
-                                        class="w-full pl-12 pr-12 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white outline-none transition-all"
-                                        placeholder="Repita la contraseña"
-                                        required
-                                    >
-                                    <button 
-                                        type="button" 
-                                        onclick="togglePassword('password_confirmation')"
-                                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-indigo-600 transition"
-                                    >
-                                        <svg id="eye-password_confirmation" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
                             </div>
                         </div>
 
@@ -222,15 +188,15 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-indigo-100">
                             Permisos y Privilegios
                         </h3>
-                        
+
                         <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
                             <p class="text-sm text-gray-600 mb-4">Seleccione los permisos que tendrá este administrador en el sistema:</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 @foreach($permisos as $key => $label)
                                     <label class="flex items-start p-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-all group">
-                                        <input 
-                                            type="checkbox" 
-                                            name="permisos[]" 
+                                        <input
+                                            type="checkbox"
+                                            name="permisos[]"
                                             value="{{ $key }}"
                                             {{ in_array($key, old('permisos', [])) ? 'checked' : '' }}
                                             class="w-5 h-5 mt-0.5 text-indigo-600 border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 transition"
@@ -247,7 +213,7 @@
 
                 <!-- Botones de acción -->
                 <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t-2 border-gray-100">
-                    <button 
+                    <button
                         type="submit"
                         class="flex-1 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
                     >
@@ -256,7 +222,7 @@
                         </svg>
                         Crear Cuenta de Administrador
                     </button>
-                    <a 
+                    <a
                         href="{{ route('admins.index') }}"
                         class="flex-1 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center"
                     >
@@ -277,7 +243,7 @@
                 </svg>
                 <div class="text-sm text-blue-800">
                     <p class="font-semibold mb-1">Información importante</p>
-                    <p>El correo institucional se generará automáticamente con el formato: <strong>primernombre.primerapellido@admin.edu</strong>. Las credenciales se mostrarán al finalizar el registro.</p>
+                    <p>El administrador recibirá un correo de confirmación con sus credenciales de acceso. Asegúrese de que la dirección de correo electrónico sea correcta y esté activa.</p>
                 </div>
             </div>
         </div>
@@ -289,7 +255,7 @@
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
     const eye = document.getElementById('eye-' + inputId);
-    
+
     if (input.type === 'password') {
         input.type = 'text';
     } else {

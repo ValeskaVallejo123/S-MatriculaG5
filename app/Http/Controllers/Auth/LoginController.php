@@ -5,55 +5,47 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
-    // Mostrar el formulario de login
-    public function showLoginForm()
+    // Mostrar formulario de login
+    public function showLogin()
     {
-        return view('login'); // Asegúrate que resources/views/login.blade.php exista
+        return view('auth.login');
     }
 
     // Procesar login
     public function login(Request $request)
     {
-        // Validar los datos del formulario
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        // Intentar iniciar sesión
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate(); // Evitar fijación de sesión
+
+            $request->session()->regenerate();
+
+            // Obtener usuario autenticado
             $user = Auth::user();
 
-            // Redirección según dominio del correo
-            if (Str::endsWith($user->email, '@gm.hn')) {
-                return redirect()->route('matriculas.index');
-            } elseif (Str::endsWith($user->email, '@adm.hn')) {
-                return redirect()->route('admins.index');
+            // ✅ Redirección correcta según rol
+            if ($user->rol === 'admin') {
+                return redirect()->route('admins.index'); // Panel Admin
             } else {
-                Auth::logout();
-                return redirect()->route('login')->withErrors([
-                    'email' => 'Correo no autorizado para este sistema.'
-                ]);
+                return redirect()->route('matriculas.index'); // Vista Estudiante
             }
         }
 
-        // Si falla el inicio de sesión
-        return back()->withErrors([
-            'email' => 'Las credenciales ingresadas no son correctas.',
-        ])->withInput();
+        return back()->with('error', 'Correo o contraseña incorrectos.')->withInput();
     }
 
-    // Cerrar sesión
+    // Logout
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('success', 'Has cerrado sesión correctamente.');
+        return redirect()->route('login.show');
     }
 }

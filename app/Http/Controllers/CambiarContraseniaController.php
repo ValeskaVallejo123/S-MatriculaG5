@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
+
 class CambiarContraseniaController extends Controller
 {
     // Constructor opcional: quitamos el middleware auth
@@ -54,7 +55,7 @@ class CambiarContraseniaController extends Controller
 
         // Actualiza la contraseña
         $user->password = Hash::make($request->new_password);
-        $user->save();
+        //$user->save();
 
         return back()->with('success', '¡Tu contraseña ha sido cambiada correctamente!');
     }
