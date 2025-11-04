@@ -9,7 +9,7 @@
     @stack('styles')
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
-    
+
     <!-- Navegación Principal - MINIMALISTA -->
     <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div class="container mx-auto px-4">

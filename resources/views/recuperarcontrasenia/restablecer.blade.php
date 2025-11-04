@@ -64,7 +64,7 @@
                 <label for="email" class="form-label">Correo electrónico</label>
                 <input type="email" name="email" id="email"
                        class="form-control @error('email') is-invalid @enderror"
-                       placeholder="ejemplo@correo.com"
+                       placeholder="@correo.edu"
                        value="{{ old('email', $email ?? '') }}" required autofocus>
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
