@@ -77,6 +77,8 @@ Route::post('/password/restablecer', [PasswordResetController::class, 'resetPass
 
 Route::get('/matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
 Route::post('/matriculas', [MatriculaController::class, 'store'])->name('matriculas.store');
+Route::get('/matriculas', [MatriculaController::class, 'index'])->middleware('rol:admin');
+
 
 Route::middleware(['auth', 'rol:admin'])->group(function () {
     Route::resource('admins', AdminController::class);
@@ -85,3 +87,10 @@ Route::middleware(['auth', 'rol:admin'])->group(function () {
 Route::middleware(['auth', 'rol:estudiante'])->group(function () {
     Route::resource('matriculas', MatriculaController::class);
 });
+
+Route::get('/admin', function () {
+    return "¡Accediste al panel de admin!";
+})->middleware('rol:admin');
+Route::get('/estudiante', function () {
+    return "¡Accediste al panel de estudiante!";
+})->middleware('rol:estudiante');

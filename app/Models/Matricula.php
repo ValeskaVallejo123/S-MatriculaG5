@@ -12,31 +12,36 @@ class Matricula extends Model
     protected $table = 'matriculas';
 
     protected $fillable = [
-        'codigo',
+        'codigo_matricula',
         'estudiante_id',
         'padre_id',
         'anio_lectivo',
         'fecha_matricula',
-        'estado', // pendiente, aprobada, rechazada
+        'foto_estudiante',
+        'acta_nacimiento',
+        'certificado_estudios',
+        'constancia_conducta',
+        'foto_dni_estudiante',
+        'foto_dni_padre',
+        'estado',
+        'motivo_rechazo',
+        'observaciones',
     ];
 
     protected $casts = [
         'fecha_matricula' => 'datetime',
     ];
 
-    // Relación con estudiante
     public function estudiante()
     {
         return $this->belongsTo(Estudiante::class, 'estudiante_id');
     }
 
-    // Relación con padre/tutor
     public function padre()
     {
         return $this->belongsTo(Padre::class, 'padre_id');
     }
 
-    // Método para confirmar matrícula
     public function confirmar()
     {
         if ($this->estado === 'pendiente') {
@@ -45,12 +50,8 @@ class Matricula extends Model
         }
     }
 
-    // Nombre completo del estudiante
     public function getNombreCompletoAttribute()
     {
-        if ($this->estudiante) {
-            return $this->estudiante->nombre . ' ' . $this->estudiante->apellido;
-        }
-        return 'N/A';
+        return $this->estudiante?->nombre . ' ' . $this->estudiante?->apellido ?? 'N/A';
     }
 }

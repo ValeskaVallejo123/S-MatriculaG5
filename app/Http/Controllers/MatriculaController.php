@@ -25,7 +25,7 @@ class MatriculaController extends Controller
             'rechazada' => Matricula::where('estado', 'rechazada')->count(),
         ];
 
-        return view('matriculas.index', compact('matriculas', 'counts'));
+        return view('matriculas.index', compact('matriculas'));
     }
 
     // Formulario para crear matrícula
