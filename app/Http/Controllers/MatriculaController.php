@@ -25,6 +25,7 @@ class MatriculaController extends Controller
             'rechazada' => Matricula::where('estado', 'rechazada')->count(),
         ];
 
+        // PASAMOS $counts A LA VISTA
         return view('matriculas.index', compact('matriculas', 'counts'));
     }
 
@@ -45,7 +46,7 @@ class MatriculaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Validación del Padre/Tutor
+            // Padre/Tutor
             'padre_nombre' => 'required|string|max:50',
             'padre_apellido' => 'required|string|max:50',
             'padre_dni' => 'required|string|size:13',
@@ -55,7 +56,7 @@ class MatriculaController extends Controller
             'padre_telefono' => 'required|string|size:8',
             'padre_direccion' => 'required|string|max:255',
 
-            // Validación del Estudiante
+            // Estudiante
             'estudiante_nombre' => 'required|string|max:50',
             'estudiante_apellido' => 'required|string|max:50',
             'estudiante_dni' => 'required|string|size:13',
@@ -73,7 +74,6 @@ class MatriculaController extends Controller
         try {
             DB::beginTransaction();
 
-            // Crear Padre/Tutor si no existe
             $padre = Padre::firstOrCreate(
                 ['dni' => $validated['padre_dni']],
                 [
@@ -86,7 +86,6 @@ class MatriculaController extends Controller
                 ]
             );
 
-            // Crear Estudiante si no existe
             $estudiante = Estudiante::firstOrCreate(
                 ['dni' => $validated['estudiante_dni']],
                 [
@@ -100,7 +99,6 @@ class MatriculaController extends Controller
                 ]
             );
 
-            // Crear matrícula
             Matricula::create([
                 'padre_id' => $padre->id,
                 'estudiante_id' => $estudiante->id,
@@ -125,7 +123,7 @@ class MatriculaController extends Controller
         return view('matriculas.show', compact('matricula'));
     }
 
-    // Formulario para editar matrícula
+    // Editar matrícula
     public function edit(Matricula $matricula)
     {
         $estudiantes = Estudiante::orderBy('nombre', 'asc')->get();
@@ -171,7 +169,7 @@ class MatriculaController extends Controller
         }
     }
 
-    // Confirmar matrícula (Nueva funcionalidad)
+    // Confirmar matrícula
     public function confirmar(Matricula $matricula)
     {
         if ($matricula->estado === 'pendiente') {
