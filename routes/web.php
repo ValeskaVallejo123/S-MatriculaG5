@@ -33,11 +33,22 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // 🔹 RUTAS PROTEGIDAS
 Route::middleware('auth')->group(function () {
 
+    // Administradores (solo admin)
+    Route::middleware('rol:admin')->group(function () {
+        Route::resource('admins', AdminController::class);
+
+        // Matriculas solo admin
+        Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
+    });
+
+    // Matriculas para estudiantes
+    Route::middleware('rol:estudiante')->group(function () {
+        Route::resource('matriculas', MatriculaController::class)->except(['index']);
+    });
+
     // CRUDs principales
-    Route::resource('admins', AdminController::class);
     Route::resource('estudiantes', EstudianteController::class);
     Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
-    Route::resource('matriculas', MatriculaController::class);
     Route::resource('observaciones', ObservacionController::class)->except(['show']);
     Route::resource('documentos', DocumentoController::class);
 
@@ -67,6 +78,15 @@ Route::middleware('auth')->group(function () {
     // Cambiar contraseña
     Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
     Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+
+    // Paneles
+    Route::get('/admin', function () {
+        return "¡Accediste al panel de admin!";
+    })->middleware('rol:admin');
+
+    Route::get('/estudiante', function () {
+        return "¡Accediste al panel de estudiante!";
+    })->middleware('rol:estudiante');
 });
 
 // 🔐 RECUPERACIÓN DE CONTRASEÑA
@@ -75,29 +95,6 @@ Route::post('/password/solicitar', [PasswordResetController::class, 'sendResetLi
 Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
 Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
 
+// Matriculas creación/almacenamiento (no duplicadas)
 Route::get('/matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
 Route::post('/matriculas', [MatriculaController::class, 'store'])->name('matriculas.store');
-Route::get('/matriculas', [MatriculaController::class, 'index'])->middleware('rol:admin');
-
-
-Route::middleware(['auth', 'rol:admin'])->group(function () {
-    Route::resource('admins', AdminController::class);
-});
-
-Route::middleware(['auth', 'rol:estudiante'])->group(function () {
-    Route::resource('matriculas', MatriculaController::class);
-});
-
-Route::get('/admin', function () {
-    return "¡Accediste al panel de admin!";
-})->middleware('rol:admin');
-Route::get('/estudiante', function () {
-    return "¡Accediste al panel de estudiante!";
-})->middleware('rol:estudiante');
-
-Route::get('/matriculas', function () {
-    return "Bienvenido a matriculas";
-})->middleware('rol:admin');
-
-Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
-Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
