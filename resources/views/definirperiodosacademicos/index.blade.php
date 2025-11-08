@@ -1,150 +1,67 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Listado de períodos académicos</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
-        }
+@extends('layouts.app')
 
-        .contenedor {
-            max-width: 800px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 30px 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
+@section('content')
+    <div class="min-h-screen bg-[#001D39] flex items-center justify-center px-4 py-10">
+        <div class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-8">
+            <h2 class="text-3xl font-bold text-[#49769F] text-center mb-6">Períodos académicos registrados</h2>
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-        }
+            @if(session('success'))
+                <div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg text-center font-semibold mb-6">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                    <tr class="bg-[#4E8EA2] text-white text-sm uppercase">
+                        <th class="px-4 py-3">Nombre</th>
+                        <th class="px-4 py-3">Tipo</th>
+                        <th class="px-4 py-3">Inicio</th>
+                        <th class="px-4 py-3">Fin</th>
+                        <th class="px-4 py-3">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-center text-sm text-gray-700">
+                    @forelse($periodos as $periodo)
+                        <tr class="border-b hover:bg-gray-100">
+                            <td class="px-4 py-2">{{ $periodo->nombre_periodo }}</td>
+                            <td class="px-4 py-2">{{ ucfirst($periodo->tipo) }}</td>
+                            <td class="px-4 py-2">{{ \Carbon\Carbon::parse($periodo->fecha_inicio)->format('d/m/Y') }}</td>
+                            <td class="px-4 py-2">{{ \Carbon\Carbon::parse($periodo->fecha_fin)->format('d/m/Y') }}</td>
+                            <td class="px-4 py-2">
+                                <div class="flex justify-center gap-2">
+                                    <a href="{{ route('periodos-academicos.edit', $periodo->id) }}"
+                                       class="px-3 py-1 bg-[#4E8EA2] text-white rounded-md hover:bg-[#3f7c91] transition">
+                                        Editar
+                                    </a>
+                                    <form method="POST" action="{{ route('periodos-academicos.destroy', $periodo->id) }}"
+                                          onsubmit="return confirm('¿Estás seguro de que deseas eliminar este período académico?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="px-3 py-1 bg-[#6EA2B3] text-white rounded-md hover:bg-[#5a90a1] transition">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-4 text-gray-500">No hay períodos registrados aún.</td>
+                        </tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: center;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .acciones {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .acciones form {
-            display: inline;
-        }
-
-        .acciones button {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-        }
-
-        .editar { background-color: #ffc107; }
-        .eliminar { background-color: #dc3545; }
-
-        .crear {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .crear a {
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        .crear a:hover {
-            background-color: #218838;
-        }
-
-        .mensaje {
-            text-align: center;
-            color: #155724;
-            background-color: #d4edda;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-<body>
-<div class="contenedor">
-    <h2>Períodos académicos registrados</h2>
-
-    @if(session('success'))
-        <div class="mensaje">
-            {{ session('success') }}
+            <div class="text-center mt-6">
+                <a href="{{ route('periodos-academicos.create') }}"
+                   class="inline-block px-6 py-3 bg-[#001D39] text-white font-semibold rounded-lg hover:bg-[#00152c] transition">
+                    Registrar nuevo período
+                </a>
+            </div>
         </div>
-    @endif
-
-    <table>
-        <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Inicio</th>
-            <th>Fin</th>
-            <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody>
-        @forelse($periodos as $periodo)
-            <tr>
-                <td>{{ $periodo->nombre_periodo }}</td>
-                <td>{{ ucfirst($periodo->tipo) }}</td>
-                <td>{{ \Carbon\Carbon::parse($periodo->fecha_inicio)->format('d/m/Y') }}</td>
-                <td>{{ \Carbon\Carbon::parse($periodo->fecha_fin)->format('d/m/Y') }}</td>
-                <td class="acciones">
-                    <a href="{{ route('periodos-academicos.edit', $periodo->id) }}">
-                        <button class="editar">Editar</button>
-                    </a>
-                    <form method="POST" action="{{ route('periodos-academicos.destroy', $periodo->id) }}" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este período académico?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="eliminar">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5">No hay períodos registrados aún.</td>
-            </tr>
-        @endforelse
-        </tbody>
-    </table>
-
-    <div class="crear">
-        <a href="{{ route('periodos-academicos.create') }}">Registrar nuevo período</a>
     </div>
-</div>
-</body>
-</html>
+@endsection

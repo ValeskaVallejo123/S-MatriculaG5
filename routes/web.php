@@ -14,7 +14,25 @@ use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\PeriodoAcademicoController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\CursoController;
+use App\Http\Controllers\RegistrarCalificacionesController;
 use Illuminate\Support\Facades\Route;
+
+
+//la dejo aqui para probarla cuando este lista la quitare y la dejare en las rutas protegidas
+ Route::get('/registrocalificaciones', [RegistrarCalificacionesController::class, 'index'])->name('registrarcalificaciones.registrarcalificaciones');
+// Buscar estudiante
+
+
+Route::get('/registroestudiantes/buscarregistro', [BuscarEstudianteController::class, 'buscarregistro'])->name('registroestudiantes.buscarregistro');
+
+// Estado de solicitud de matrícula
+Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('solicitud.verEstado');
+Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
+
+// Periodos académicos
+Route::resource('periodos-academicos', PeriodoAcademicoController::class);
+
+
 
 // 🔹 RUTA PRINCIPAL
 Route::get('/', function () {
@@ -29,6 +47,7 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::get('/login', [LoginController::class, 'showLogin'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 
 // 🔹 RUTAS PROTEGIDAS
 Route::middleware('auth')->group(function () {
@@ -45,14 +64,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/matriculas/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('matriculas.confirmar');
 
     // Buscar estudiante
-    Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
+    // Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
 
     // Estado de solicitud de matrícula
-    Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('solicitud.verEstado');
-    Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
+   //  Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('solicitud.verEstado');
+    // Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
 
     // Periodos académicos
-    Route::resource('periodos-academicos', PeriodoAcademicoController::class);
+   // Route::resource('periodos-academicos', PeriodoAcademicoController::class);
+
+
 
     // CUPOS MÁXIMOS
     Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
