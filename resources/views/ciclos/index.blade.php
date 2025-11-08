@@ -10,6 +10,10 @@
            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition">
             + Nuevo Ciclo
         </a>
+         <a href="{{ route('plantilla') }}" 
+               class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition">
+                Volver
+            </a>
     </div>
 
     @if(session('success'))

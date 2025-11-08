@@ -740,6 +740,8 @@
           <span class="category-tag">Profesores</span>
           <span class="category-tag">Asistencias</span>
           <span class="category-tag">Reportes</span>
+          <span class="category-tag">Plan de estudios</span>
+
           <div class="feature-card">
     <div class="feature-icon">
         <i class="fas fa-calendar-alt"></i> 
@@ -771,15 +773,6 @@
       </div>
 
       <div class="features-grid">
-
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-user-plus"></i>
-          </div>
-          <h3>Matrículas Online</h3>
-          <p>Registra nuevos estudiantes de manera rápida y sencilla. Sistema automatizado con validación de datos.</p>
-          <button class="btn-feature">Acceder</button>
-        </div>
 
         <div class="feature-card">
           <div class="feature-icon">
@@ -820,14 +813,33 @@
           <button class="btn-feature">Acceder</button>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <h3>Reportes y Estadísticas</h3>
-          <p>Análisis detallados del rendimiento académico y generación de informes personalizados.</p>
-          <button class="btn-feature">Acceder</button>
-        </div>
+      <div class="feature-card">
+    <div class="feature-icon">
+        <i class="fas fa-chart-bar"></i> 
+    </div>
+    <h3>Reportes y Estadísticas</h3>
+    <p>Análisis detallados del rendimiento académico y generación de informes personalizados.</p>
+    <button class="btn-feature">Acceder</button>
+</div>
+
+<div class="feature-card">
+    <div class="feature-icon">
+        <i class="fas fa-child"></i> 
+    </div>
+    <h3>Plan de Estudios Primaria</h3>
+    <p>Consulta la estructura curricular y las asignaturas del nivel primario.</p>
+    
+    <a href="{{ route('grados.index') }}" class="btn-feature">Acceder</a>
+</div>
+<div class="feature-card">
+    <div class="feature-icon">
+        <i class="fas fa-graduation-cap"></i> 
+    </div>
+    <h3>Plan de Estudios Ciclo Básico</h3>
+    <p>Consulta la estructura curricular y las asignaturas del ciclo básico (Secundaria).</p>
+    
+<a href="{{ route('ciclos.index') }}" class="btn-feature">Acceder</a></div>
+</div>
 
       </div>
     </div>

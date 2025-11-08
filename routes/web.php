@@ -122,3 +122,10 @@ Route::get('/calendario/eventos', [CalendarioController::class, 'obtenerEventos'
 Route::post('/calendario/eventos', [CalendarioController::class, 'guardar'])->name('calendario.guardar');
 Route::put('/calendario/eventos/{evento}', [CalendarioController::class, 'actualizar'])->name('calendario.actualizar');
 Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar'])->name('calendario.eliminar');
+
+
+
+
+Route::get('/plantilla', function () {
+    return view('plantilla'); // o la vista que necesites
+})->name('plantilla');
