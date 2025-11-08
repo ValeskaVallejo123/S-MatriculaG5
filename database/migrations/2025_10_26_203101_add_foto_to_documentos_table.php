@@ -8,16 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('documentos', function (Blueprint $table) {
-            $table->string('foto')->nullable()->after('nombre_estudiante');
-        });
+        // Solo agregar la columna si no existe
+        if (!Schema::hasColumn('documentos', 'foto')) {
+            Schema::table('documentos', function (Blueprint $table) {
+                $table->string('foto')->nullable()->after('nombre_estudiante');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('documentos', function (Blueprint $table) {
-            $table->dropColumn('foto');
-        });
+        // Solo eliminar si existe
+        if (Schema::hasColumn('documentos', 'foto')) {
+            Schema::table('documentos', function (Blueprint $table) {
+                $table->dropColumn('foto');
+            });
+        }
     }
 };
-

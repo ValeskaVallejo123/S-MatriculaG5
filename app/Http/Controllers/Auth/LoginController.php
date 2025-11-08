@@ -5,55 +5,47 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class LoginController extends Controller
 {
-    // Mostrar el formulario de login
-    public function showLoginForm()
+    public function showLogin(Request $request)
     {
-        return view('login'); // Asegúrate que resources/views/login.blade.php exista
+        return view('auth.login', [
+            'correoGuardado' => $request->cookie('correo_usuario') ?? ''
+        ]);
     }
 
-    // Procesar login
     public function login(Request $request)
     {
-        // Validar los datos del formulario
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+        $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        // Intentar iniciar sesión
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate(); // Evitar fijación de sesión
-            $user = Auth::user();
+        $inputEmail = $request->email;
+        $password = $request->password;
 
-            // Redirección según dominio del correo
-            if (Str::endsWith($user->email, '@gm.hn')) {
-                return redirect()->route('matriculas.index');
-            } elseif (Str::endsWith($user->email, '@adm.hn')) {
-                return redirect()->route('admins.index');
-            } else {
-                Auth::logout();
-                return redirect()->route('login')->withErrors([
-                    'email' => 'Correo no autorizado para este sistema.'
-                ]);
-            }
+        // Buscar usuario por coincidencia parcial del correo
+        $user = User::where('email', 'like', "%{$inputEmail}%")->first();
+
+        if($user && Hash::check($password, $user->password)){
+            Auth::login($user);
+
+            // Guardar correo en cookie para autocompletar interno
+            $cookie = cookie('correo_usuario', $user->email, 525600);
+
+            return redirect($user->rol === 'admin' ? route('admins.index') : route('matriculas.index'))
+                ->withCookie($cookie);
         }
 
-        // Si falla el inicio de sesión
-        return back()->withErrors([
-            'email' => 'Las credenciales ingresadas no son correctas.',
-        ])->withInput();
+        return back()->withErrors(['email' => 'Usuario o contraseña incorrectos']);
     }
 
-    // Cerrar sesión
-    public function logout(Request $request)
+    public function logout()
     {
         Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('login')->with('success', 'Has cerrado sesión correctamente.');
+        return redirect()->route('login.show');
     }
 }
