@@ -9,7 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #e6f0ff; }
-        .navbar-brand { font-family: 'Pacifico', cursive; }
+        /* Eliminada la siguiente línea, ahora hereda Poppins: */
+        /* .navbar-brand { font-family: 'Pacifico', cursive; } */
         .form-container {
             background-color: #fff;
             border-radius: 10px;
@@ -75,12 +76,10 @@
             </div>
         @endif
 
-        <!-- Form para actualizar -->
         <form id="cursoForm" method="POST" action="{{ route('cupos_maximos.update', $curso->id) }}">
             @csrf
             @method('PUT')
 
-            <!-- Nombre y cupo -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="nombre" class="form-label fw-bold">Nombre del curso:</label>
@@ -100,7 +99,6 @@
                 </div>
             </div>
 
-            <!-- Jornada y Sección -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="jornada" class="form-label fw-bold">Jornada:</label>
@@ -123,15 +121,12 @@
             </div>
         </form>
 
-        <!-- Botones: Cancelar, Guardar cambios, Eliminar -->
         <div class="d-flex justify-content-between mt-4 align-items-center">
-            <!-- Cancelar y Guardar -->
             <div>
                 <a href="{{ route('cupos_maximos.index') }}" class="btn btn-red me-2">Cancelar</a>
                 <button type="submit" form="cursoForm" class="btn btn-blue">Guardar cambios</button>
             </div>
 
-            <!-- Form separado para Eliminar -->
             <form action="{{ route('cupos_maximos.destroy', $curso->id) }}" method="POST" class="m-0 d-inline"
                   onsubmit="return confirm('¿Estás seguro de eliminar este curso? Esta acción no se puede deshacer.');">
                 @csrf
