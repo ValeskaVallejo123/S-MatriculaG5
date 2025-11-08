@@ -738,13 +738,23 @@
           <span class="category-tag">Matrículas</span>
           <span class="category-tag">Estudiantes</span>
           <span class="category-tag">Profesores</span>
-          <a href="{{ route('calificaciones.index') }}" 
-   class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
-    <span class="category-tag">Calificaciones</span>
-</a>
           <span class="category-tag">Asistencias</span>
           <span class="category-tag">Reportes</span>
-          <span class="category-tag">Fechas importantes</span>
+          <div class="feature-card">
+    <div class="feature-icon">
+        <i class="fas fa-calendar-alt"></i> 
+    </div>
+    <h3>Calendario Académico</h3>
+    <p>Consulta las fechas importantes: clases, exámenes, festivos y periodos de matrícula.</p>
+    
+    <a href="{{ route('calendario.index') }}" 
+       class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+        <button class="btn-feature">
+            <span class="category-tag">Fechas importantes</span>
+        </button>
+    </a>
+    
+</div>
         </div>
       </div>
     </div>
@@ -790,13 +800,16 @@
         </div>
 
         <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-clipboard-list"></i>
-          </div>
-          <h3>Calificaciones</h3>
-          <p>Sistema completo para registro y consulta de notas. Generación automática de boletines.</p>
-          <button class="btn-feature">Acceder</button>
+        <div class="feature-icon">
+        <i class="fas fa-clipboard-list"></i>
         </div>
+        <h3>Calificaciones</h3>
+        <p>Sistema completo para registro y consulta de notas. Generación automática de     boletines.</p>
+    
+        <a href="{{ route('calificaciones.index') }}" class="btn-feature">
+        Acceder
+      </a>
+      </div>
 
         <div class="feature-card">
           <div class="feature-icon">

@@ -17,6 +17,7 @@ use App\Http\Controllers\PeriodoAcademicoController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\CursoController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CalendarioController;
 
 // 🔹 RUTA PRINCIPAL
 Route::get('/', function () {
@@ -113,3 +114,11 @@ Route::resource('ciclos', CicloController::class);use App\Http\Controllers\Calif
 Route::resource('calificaciones', CalificacionController::class)->parameters([
     'calificaciones' => 'calificacion', // <--- Usa 'calificacion' (singular)
 ]);
+
+
+// Rutas del calendario académico
+Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario.index');
+Route::get('/calendario/eventos', [CalendarioController::class, 'obtenerEventos'])->name('calendario.eventos');
+Route::post('/calendario/eventos', [CalendarioController::class, 'guardar'])->name('calendario.guardar');
+Route::put('/calendario/eventos/{evento}', [CalendarioController::class, 'actualizar'])->name('calendario.actualizar');
+Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar'])->name('calendario.eliminar');
