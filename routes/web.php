@@ -21,15 +21,6 @@ Route::get('/', function () {
     return view('plantilla');
 });
 
-// 🔹 REGISTRO
-Route::get('/register', [RegisterController::class, 'showRegister'])->name('register.show');
-Route::post('/register', [RegisterController::class, 'register'])->name('register');
-
-// 🔹 LOGIN / LOGOUT
-Route::get('/login', [LoginController::class, 'showLogin'])->name('login.show');
-Route::post('/login', [LoginController::class, 'login'])->name('login');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
 
 // CUPOS MÁXIMOS
 Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
@@ -40,6 +31,16 @@ Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
     Route::put('/{id}', [CursoController::class, 'update'])->name('update');
     Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
 });
+
+// 🔹 REGISTRO
+Route::get('/register', [RegisterController::class, 'showRegister'])->name('register.show');
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
+
+// 🔹 LOGIN / LOGOUT
+Route::get('/login', [LoginController::class, 'showLogin'])->name('login.show');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 
 // 🔹 RUTAS PROTEGIDAS
 Route::middleware('auth')->group(function () {
