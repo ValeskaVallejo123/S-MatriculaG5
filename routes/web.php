@@ -21,6 +21,17 @@ Route::get('/', function () {
     return view('plantilla');
 });
 
+
+// CUPOS MÁXIMOS
+Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
+    Route::get('/', [CursoController::class, 'index'])->name('index');
+    Route::get('/create', [CursoController::class, 'create'])->name('create');
+    Route::post('/', [CursoController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [CursoController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [CursoController::class, 'update'])->name('update');
+    Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
+});
+
 // 🔹 REGISTRO
 Route::get('/register', [RegisterController::class, 'showRegister'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
@@ -30,16 +41,18 @@ Route::get('/login', [LoginController::class, 'showLogin'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+
 // 🔹 RUTAS PROTEGIDAS
 Route::middleware('auth')->group(function () {
-
-    // Administradores (solo admin)
-    Route::middleware('rol:admin')->group(function () {
-        Route::resource('admins', AdminController::class);
 
         // Matriculas solo admin
         Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
     });
+
+
+// Administradores (solo admin)
+Route::middleware('rol:admin')->group(function () {
+    Route::resource('admins', AdminController::class);
 
     // Matriculas para estudiantes
     Route::middleware('rol:estudiante')->group(function () {
@@ -64,16 +77,6 @@ Route::middleware('auth')->group(function () {
 
     // Periodos académicos
     Route::resource('periodos-academicos', PeriodoAcademicoController::class);
-
-    // CUPOS MÁXIMOS
-    Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
-        Route::get('/', [CursoController::class, 'index'])->name('index');
-        Route::get('/create', [CursoController::class, 'create'])->name('create');
-        Route::post('/', [CursoController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [CursoController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [CursoController::class, 'update'])->name('update');
-        Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
-    });
 
     // Cambiar contraseña
     Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
