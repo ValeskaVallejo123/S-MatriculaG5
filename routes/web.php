@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CambiarContraseniaController;
+use App\Http\Controllers\CicloController;
+use App\Http\Controllers\GradoController;
 use App\Http\Controllers\ObservacionController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\DocumentoController;
@@ -100,4 +102,14 @@ Route::get('/matriculas', function () {
 })->middleware('rol:admin');
 
 Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
-Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
+Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');// Agregar al final del archivo o dentro del grupo middleware auth
+Route::resource('grados', GradoController::class);
+Route::resource('ciclos', CicloController::class);use App\Http\Controllers\CalificacionController;
+
+// routes/web.php
+
+// Asegúrate de que el parámetro esperado por la ruta resource sea 'calificacion' (singular correcto),
+// en lugar de la singularización incorrecta 'calificacione' que está usando.
+Route::resource('calificaciones', CalificacionController::class)->parameters([
+    'calificaciones' => 'calificacion', // <--- Usa 'calificacion' (singular)
+]);
