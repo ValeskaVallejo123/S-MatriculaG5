@@ -13,9 +13,10 @@
             background-color: #e6f0ff;
         }
 
-        .navbar-brand {
+        /* Eliminada la siguiente línea, ahora hereda Poppins (letra de molde): */
+        /* .navbar-brand {
             font-family: 'Pacifico', cursive;
-        }
+        } */
 
         .form-container {
             background-color: #fff;
@@ -117,7 +118,6 @@
         <form id="cursoForm" method="POST" action="{{ route('cupos_maximos.store') }}">
             @csrf
 
-            <!-- Nombre del curso y cupo juntos -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="nombre" class="form-label fw-bold">Nombre del curso:</label>
@@ -143,7 +143,6 @@
                 </div>
             </div>
 
-            <!-- Jornada y Sección juntos -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="jornada" class="form-label fw-bold">Jornada:</label>
@@ -176,7 +175,6 @@
         </form>
     </div>
 
-    <!-- Botón Volver a los administradores -->
     <div class="text-center mt-4 mb-5">
         <a href="{{ route('admins.index') }}" class="btn btn-secondary px-4 py-2 fw-semibold">
             <i class="bi bi-arrow-left-circle"></i> Volver a los administradores

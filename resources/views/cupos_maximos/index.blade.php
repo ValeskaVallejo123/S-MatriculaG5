@@ -10,7 +10,8 @@
 
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #e6f0ff; }
-        .navbar-brand { font-family: 'Pacifico', cursive; }
+        /* Eliminada la definición específica de fuente para navbar-brand,
+           ahora usa Poppins (letra de molde) */
         .btn-yellow { background-color: #ffb703; border: none; color: #fff; font-weight: bold; }
         .btn-yellow:hover { background-color: #f4a100; color: white; }
         .btn-blue { background-color: #4361ee; border: none; color: #fff; }
