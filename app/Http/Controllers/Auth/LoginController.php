@@ -5,55 +5,69 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
-    // Mostrar el formulario de login
+    /**
+     * Mostrar formulario de login
+     */
     public function showLoginForm()
     {
-        return view('login'); // Asegúrate que resources/views/login.blade.php exista
+        return view('auth.login');
     }
 
-    // Procesar login
+    /**
+     * Procesar el login
+     */
     public function login(Request $request)
     {
-        // Validar los datos del formulario
+        // Validar credenciales
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Debe ser un correo electrónico válido.',
+            'password.required' => 'La contraseña es obligatoria.',
         ]);
 
-        // Intentar iniciar sesión
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate(); // Evitar fijación de sesión
+        // Intentar autenticar
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
+
+            // Obtener el usuario autenticado
             $user = Auth::user();
 
-            // Redirección según dominio del correo
-            if (Str::endsWith($user->email, '@gm.hn')) {
-                return redirect()->route('matriculas.index');
-            } elseif (Str::endsWith($user->email, '@adm.hn')) {
-                return redirect()->route('admins.index');
+            // Redirigir según el rol del usuario
+            if ($user->role === 'super_admin') {
+                // Redirigir al perfil del super admin
+                return redirect()->route('superadmin.perfil')
+                    ->with('success', 'Bienvenido Super Administrador');
+            } elseif ($user->role === 'admin') {
+                return redirect()->intended('/dashboard')
+                    ->with('success', 'Bienvenido Administrador');
             } else {
-                Auth::logout();
-                return redirect()->route('login')->withErrors([
-                    'email' => 'Correo no autorizado para este sistema.'
-                ]);
+                return redirect()->intended('/dashboard')
+                    ->with('success', 'Bienvenido');
             }
         }
 
-        // Si falla el inicio de sesión
+        // Si falla la autenticación
         return back()->withErrors([
-            'email' => 'Las credenciales ingresadas no son correctas.',
-        ])->withInput();
+            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+        ])->onlyInput('email');
     }
 
-    // Cerrar sesión
+    /**
+     * Cerrar sesión
+     */
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('success', 'Has cerrado sesión correctamente.');
+
+        return redirect('/login')->with('success', 'Sesión cerrada correctamente');
     }
 }
