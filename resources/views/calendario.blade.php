@@ -43,7 +43,13 @@
 <body>
     <div class="container">
         <div class="calendar-container">
-            <h1 class="mb-4">📅 Calendario Académico</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">📅 Calendario Académico</h1>
+                <a href="{{ route('plantilla') }}"
+                   class="btn btn-secondary">
+                    Volver
+                </a>
+            </div>
             
             <div class="legend mb-3">
                 <div class="legend-item">
