@@ -24,6 +24,17 @@ Route::get('/', function () {
     return view('plantilla');
 });
 
+
+// CUPOS MÁXIMOS
+Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
+    Route::get('/', [CursoController::class, 'index'])->name('index');
+    Route::get('/create', [CursoController::class, 'create'])->name('create');
+    Route::post('/', [CursoController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [CursoController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [CursoController::class, 'update'])->name('update');
+    Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
+});
+
 // 🔹 REGISTRO
 Route::get('/register', [RegisterController::class, 'showRegister'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
@@ -33,14 +44,27 @@ Route::get('/login', [LoginController::class, 'showLogin'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+
 // 🔹 RUTAS PROTEGIDAS
 Route::middleware('auth')->group(function () {
 
-    // CRUDs principales
+        // Matriculas solo admin
+        Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
+    });
+
+
+// Administradores (solo admin)
+Route::middleware('rol:admin')->group(function () {
     Route::resource('admins', AdminController::class);
+
+    // Matriculas para estudiantes
+    Route::middleware('rol:estudiante')->group(function () {
+        Route::resource('matriculas', MatriculaController::class)->except(['index']);
+    });
+
+    // CRUDs principales
     Route::resource('estudiantes', EstudianteController::class);
     Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
-    Route::resource('matriculas', MatriculaController::class);
     Route::resource('observaciones', ObservacionController::class)->except(['show']);
     Route::resource('documentos', DocumentoController::class);
 
@@ -57,19 +81,18 @@ Route::middleware('auth')->group(function () {
     // Periodos académicos
     Route::resource('periodos-academicos', PeriodoAcademicoController::class);
 
-    // CUPOS MÁXIMOS
-    Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
-        Route::get('/', [CursoController::class, 'index'])->name('index');
-        Route::get('/create', [CursoController::class, 'create'])->name('create');
-        Route::post('/', [CursoController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [CursoController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [CursoController::class, 'update'])->name('update');
-        Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
-    });
-
     // Cambiar contraseña
     Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
     Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+
+    // Paneles
+    Route::get('/admin', function () {
+        return "¡Accediste al panel de admin!";
+    })->middleware('rol:admin');
+
+    Route::get('/estudiante', function () {
+        return "¡Accediste al panel de estudiante!";
+    })->middleware('rol:estudiante');
 });
 
 // 🔐 RECUPERACIÓN DE CONTRASEÑA
@@ -78,8 +101,10 @@ Route::post('/password/solicitar', [PasswordResetController::class, 'sendResetLi
 Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
 Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
 
+// Matriculas creación/almacenamiento (no duplicadas)
 Route::get('/matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
 Route::post('/matriculas', [MatriculaController::class, 'store'])->name('matriculas.store');
+
 Route::get('/matriculas', [MatriculaController::class, 'index'])->middleware('rol:admin');
 
 

@@ -17,7 +17,6 @@ class MatriculaController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // Estadísticas agrupadas en un arreglo
         $counts = [
             'total' => Matricula::count(),
             'pendiente' => Matricula::where('estado', 'pendiente')->count(),
@@ -25,15 +24,20 @@ class MatriculaController extends Controller
             'rechazada' => Matricula::where('estado', 'rechazada')->count(),
         ];
 
-        // PASAMOS $counts A LA VISTA
         return view('matriculas.index', compact('matriculas', 'counts'));
     }
 
     // Formulario para crear matrícula
     public function create()
     {
-        $estudiantes = Estudiante::orderBy('nombre', 'asc')->get();
-        $padres = Padre::orderBy('nombre', 'asc')->get();
+        // Evita errores si las tablas no existen o no hay registros
+        try {
+            $estudiantes = Estudiante::orderBy('nombre', 'asc')->get() ?? collect();
+            $padres = Padre::orderBy('nombre', 'asc')->get() ?? collect();
+        } catch (\Exception $e) {
+            $estudiantes = collect();
+            $padres = collect();
+        }
 
         $parentescos = ['padre' => 'Padre', 'madre' => 'Madre', 'tutor' => 'Tutor', 'otro' => 'Otro'];
         $grados = ['1ro', '2do', '3ro', '4to', '5to', '6to'];
@@ -69,12 +73,16 @@ class MatriculaController extends Controller
             // Matrícula
             'anio_lectivo' => 'required|date_format:Y',
             'estado' => 'required|in:pendiente,aprobada,rechazada,cancelada',
+
+            // Archivos (opcional)
+            'archivos.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
         try {
             DB::beginTransaction();
 
-            $padre = Padre::firstOrCreate(
+            // Crear o actualizar padre
+            $padre = Padre::updateOrCreate(
                 ['dni' => $validated['padre_dni']],
                 [
                     'nombre' => $validated['padre_nombre'],
@@ -86,7 +94,8 @@ class MatriculaController extends Controller
                 ]
             );
 
-            $estudiante = Estudiante::firstOrCreate(
+            // Crear o actualizar estudiante
+            $estudiante = Estudiante::updateOrCreate(
                 ['dni' => $validated['estudiante_dni']],
                 [
                     'nombre' => $validated['estudiante_nombre'],
@@ -99,7 +108,8 @@ class MatriculaController extends Controller
                 ]
             );
 
-            Matricula::create([
+            // Crear matrícula
+            $matricula = Matricula::create([
                 'padre_id' => $padre->id,
                 'estudiante_id' => $estudiante->id,
                 'grado' => $validated['estudiante_grado'],
@@ -108,75 +118,18 @@ class MatriculaController extends Controller
                 'estado' => $validated['estado'],
             ]);
 
+            // Guardar archivos (si existen)
+            if ($request->hasFile('archivos')) {
+                foreach ($request->file('archivos') as $archivo) {
+                    $archivo->store('matriculas/'.$matricula->id);
+                }
+            }
+
             DB::commit();
             return redirect()->route('matriculas.index')->with('success', 'Matrícula creada correctamente.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Ocurrió un error al guardar la matrícula.']);
+            return back()->withInput()->withErrors(['error' => 'Ocurrió un error al guardar la matrícula: '.$e->getMessage()]);
         }
-    }
-
-    // Mostrar matrícula
-    public function show(Matricula $matricula)
-    {
-        $matricula->load(['padre', 'estudiante']);
-        return view('matriculas.show', compact('matricula'));
-    }
-
-    // Editar matrícula
-    public function edit(Matricula $matricula)
-    {
-        $estudiantes = Estudiante::orderBy('nombre', 'asc')->get();
-        $padres = Padre::orderBy('nombre', 'asc')->get();
-        $parentescos = ['padre' => 'Padre', 'madre' => 'Madre', 'tutor' => 'Tutor', 'otro' => 'Otro'];
-        $grados = ['1ro', '2do', '3ro', '4to', '5to', '6to'];
-        $secciones = ['A', 'B', 'C', 'D'];
-
-        return view('matriculas.edit', compact('matricula', 'estudiantes', 'padres', 'parentescos', 'grados', 'secciones'));
-    }
-
-    // Actualizar matrícula
-    public function update(Request $request, Matricula $matricula)
-    {
-        $validated = $request->validate([
-            'padre_id' => 'required|exists:padres,id',
-            'estudiante_id' => 'required|exists:estudiantes,id',
-            'grado' => 'required|string|max:10',
-            'seccion' => 'required|string|max:2',
-            'anio_lectivo' => 'required|date_format:Y',
-            'estado' => 'required|in:pendiente,aprobada,rechazada,cancelada',
-        ]);
-
-        try {
-            DB::beginTransaction();
-            $matricula->update($validated);
-            DB::commit();
-            return redirect()->route('matriculas.index')->with('success', 'Matrícula actualizada correctamente.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Ocurrió un error al actualizar la matrícula.']);
-        }
-    }
-
-    // Eliminar matrícula
-    public function destroy(Matricula $matricula)
-    {
-        try {
-            $matricula->delete();
-            return redirect()->route('matriculas.index')->with('success', 'Matrícula eliminada correctamente.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Ocurrió un error al eliminar la matrícula.']);
-        }
-    }
-
-    // Confirmar matrícula
-    public function confirmar(Matricula $matricula)
-    {
-        if ($matricula->estado === 'pendiente') {
-            $matricula->update(['estado' => 'aprobada']);
-            return redirect()->back()->with('success', 'La matrícula se ha confirmado correctamente.');
-        }
-
-        return redirect()->back()->with('error', 'Esta matrícula no puede ser confirmada.');
     }
 }

@@ -7,8 +7,7 @@
   <title>Escuela Gabriela Mistral - Sistema Escolar</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -84,7 +83,6 @@
       overflow: hidden;
     }
 
-    /* Patrón de fondo */
     .hero-section::before {
       content: '';
       position: absolute;
@@ -99,7 +97,6 @@
       pointer-events: none;
     }
 
-    /* Elementos decorativos flotantes */
     .floating-element {
       position: absolute;
       animation: float 8s ease-in-out infinite;
@@ -108,23 +105,18 @@
     }
 
     @keyframes float {
-
-      0%,
-      100% {
+      0%, 100% {
         transform: translateY(0px) rotate(0deg);
         opacity: 0.25;
       }
-
       25% {
         transform: translateY(-15px) rotate(3deg);
         opacity: 0.35;
       }
-
       50% {
         transform: translateY(-25px) rotate(-3deg);
         opacity: 0.3;
       }
-
       75% {
         transform: translateY(-10px) rotate(2deg);
         opacity: 0.35;
@@ -254,7 +246,6 @@
       transform: scale(1.02);
     }
 
-    /* Etiquetas de categorías */
     .categories {
       text-align: center;
       margin-top: 50px;
@@ -298,7 +289,6 @@
       border-color: white;
     }
 
-    /* Imagen decorativa */
     .hero-rocket {
       position: absolute;
       bottom: 8%;
@@ -311,23 +301,18 @@
     }
 
     @keyframes rocketLaunch {
-
-      0%,
-      100% {
+      0%, 100% {
         transform: translateX(-50%) translateY(0) rotate(-5deg);
         opacity: 0.35;
       }
-
       25% {
         transform: translateX(-50%) translateY(-20px) rotate(0deg);
         opacity: 0.45;
       }
-
       50% {
         transform: translateX(-50%) translateY(-40px) rotate(5deg);
         opacity: 0.4;
       }
-
       75% {
         transform: translateX(-50%) translateY(-20px) rotate(0deg);
         opacity: 0.45;
@@ -443,6 +428,7 @@
       transition: all 0.3s ease;
       border: none;
       font-size: 0.95rem;
+      cursor: pointer;
     }
 
     .btn-feature:hover {
@@ -674,8 +660,7 @@
         Escuela Gabriela Mistral
       </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        style="background-color: rgba(255,255,255,0.3); border: none;">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="background-color: rgba(255,255,255,0.3); border: none;">
         <span class="navbar-toggler-icon" style="filter: brightness(0) invert(1);"></span>
       </button>
 
@@ -710,7 +695,6 @@
 
   <!-- ========== HERO SECTION ========== -->
   <section class="hero-section">
-    <!-- Elementos decorativos flotantes -->
     <i class="fas fa-pencil-alt floating-element pencil"></i>
     <i class="fas fa-ruler floating-element ruler"></i>
     <i class="fas fa-book floating-element book"></i>
@@ -719,7 +703,7 @@
     <i class="fas fa-microscope floating-element microscope"></i>
 
     <div class="container hero-content">
-      <h1><span>Centro de Educacion Basico</span><br>Gabriela Mistral</h1>
+      <h1><span>Centro de Educación Básico</span><br>Gabriela Mistral</h1>
       <p>
         Moderniza la administración educativa de tu institución con nuestra plataforma integral.
         Gestiona matrículas, calificaciones, asistencias y mucho más en un solo lugar.
@@ -738,25 +722,11 @@
           <span class="category-tag">Matrículas</span>
           <span class="category-tag">Estudiantes</span>
           <span class="category-tag">Profesores</span>
+          <span class="category-tag">Calificaciones</span>
           <span class="category-tag">Asistencias</span>
           <span class="category-tag">Reportes</span>
           <span class="category-tag">Plan de estudios</span>
-
-          <div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-calendar-alt"></i> 
-    </div>
-    <h3>Calendario Académico</h3>
-    <p>Consulta las fechas importantes: clases, exámenes, festivos y periodos de matrícula.</p>
-    
-    <a href="{{ route('calendario.index') }}" 
-       class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
-        <button class="btn-feature">
-            <span class="category-tag">Fechas importantes</span>
-        </button>
-    </a>
-    
-</div>
+          <span class="category-tag">Fechas importantes</span>
         </div>
       </div>
     </div>
@@ -773,6 +743,15 @@
       </div>
 
       <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h3>Matrículas Online</h3>
+          <p>Registra nuevos estudiantes de manera rápida y sencilla. Sistema automatizado con validación de datos.</p>
+          <button class="btn-feature">Acceder</button>
+        </div>
 
         <div class="feature-card">
           <div class="feature-icon">
@@ -793,16 +772,13 @@
         </div>
 
         <div class="feature-card">
-        <div class="feature-icon">
-        <i class="fas fa-clipboard-list"></i>
+          <div class="feature-icon">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+          <h3>Calificaciones</h3>
+          <p>Sistema completo para registro y consulta de notas. Generación automática de boletines.</p>
+          <a href="{{ route('calificaciones.index') }}" class="btn-feature">Acceder</a>
         </div>
-        <h3>Calificaciones</h3>
-        <p>Sistema completo para registro y consulta de notas. Generación automática de     boletines.</p>
-    
-        <a href="{{ route('calificaciones.index') }}" class="btn-feature">
-        Acceder
-      </a>
-      </div>
 
         <div class="feature-card">
           <div class="feature-icon">
@@ -813,33 +789,41 @@
           <button class="btn-feature">Acceder</button>
         </div>
 
-      <div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-chart-bar"></i> 
-    </div>
-    <h3>Reportes y Estadísticas</h3>
-    <p>Análisis detallados del rendimiento académico y generación de informes personalizados.</p>
-    <button class="btn-feature">Acceder</button>
-</div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <h3>Reportes y Estadísticas</h3>
+          <p>Análisis detallados del rendimiento académico y generación de informes personalizados.</p>
+          <button class="btn-feature">Acceder</button>
+        </div>
 
-<div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-child"></i> 
-    </div>
-    <h3>Plan de Estudios Primaria</h3>
-    <p>Consulta la estructura curricular y las asignaturas del nivel primario.</p>
-    
-    <a href="{{ route('grados.index') }}" class="btn-feature">Acceder</a>
-</div>
-<div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-graduation-cap"></i> 
-    </div>
-    <h3>Plan de Estudios Ciclo Básico</h3>
-    <p>Consulta la estructura curricular y las asignaturas del ciclo básico (Secundaria).</p>
-    
-<a href="{{ route('ciclos.index') }}" class="btn-feature">Acceder</a></div>
-</div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-child"></i>
+          </div>
+          <h3>Plan de Estudios Primaria</h3>
+          <p>Consulta la estructura curricular y las asignaturas del nivel primario.</p>
+          <a href="{{ route('grados.index') }}" class="btn-feature">Acceder</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <h3>Plan de Estudios Ciclo Básico</h3>
+          <p>Consulta la estructura curricular y las asignaturas del ciclo básico (Secundaria).</p>
+          <a href="{{ route('ciclos.index') }}" class="btn-feature">Acceder</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <h3>Calendario Académico</h3>
+          <p>Consulta las fechas importantes: clases, exámenes, festivos y periodos de matrícula.</p>
+          <a href="{{ route('calendario.index') }}" class="btn-feature">Acceder</a>
+        </div>
 
       </div>
     </div>
@@ -890,96 +874,4 @@
 
         <div class="footer-section">
           <h4><i class="fas fa-graduation-cap"></i> Gabriela Mistral</h4>
-          <p>Sistema integral de gestión escolar para instituciones educativas modernas.</p>
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-          </div>
-        </div>
-
-        <div class="footer-section">
-          <h4>Enlaces Rápidos</h4>
-          <a href="#">Inicio</a>
-          <a href="#">Nosotros</a>
-          <a href="#">Módulos</a>
-          <a href="#">Contacto</a>
-        </div>
-
-        <div class="footer-section">
-          <h4>Servicios</h4>
-          <a href="#">Matrículas</a>
-          <a href="#">Calificaciones</a>
-          <a href="#">Asistencias</a>
-          <a href="#">Reportes</a>
-        </div>
-
-        <div class="footer-section">
-          <h4>Contacto</h4>
-          <p><i class="fas fa-map-marker-alt"></i> Danlí, El Paraíso, Honduras</p>
-          <p><i class="fas fa-phone"></i> +504 2763-4567</p>
-          <p><i class="fas fa-envelope"></i> info@gabrielamistral.edu.hn</p>
-        </div>
-
-      </div>
-
-      <div class="footer-bottom">
-        <p>&copy; 2026 Escuela Gabriela Mistral. Todos los derechos reservados.</p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    // Animación de aparición suave
-    document.addEventListener('DOMContentLoaded', function () {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = '0';
-            entry.target.style.transform = 'translateY(30px)';
-            entry.target.style.transition = 'all 0.6s ease';
-
-            setTimeout(() => {
-              entry.target.style.opacity = '1';
-              entry.target.style.transform = 'translateY(0)';
-            }, 100);
-          }
-        });
-      });
-
-      document.querySelectorAll('.feature-card, .stat-item').forEach(el => {
-        observer.observe(el);
-      });
-    });
-
-    // Scroll suave
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
-
-    // Efecto en category tags
-    document.querySelectorAll('.category-tag').forEach(tag => {
-      tag.addEventListener('click', function () {
-        this.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-          this.style.transform = 'scale(1)';
-        }, 200);
-      });
-    });
-  </script>
-
-</body>
-
-</html>
+          <p>Sistema integral de gestión escolar para instituciones educativas modernas

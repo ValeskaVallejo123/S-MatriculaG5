@@ -4,25 +4,41 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6 max-w-7xl">
-    
+
     <!-- Encabezado con Acción -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Administradores</h1>
             <p class="text-sm text-gray-600 mt-0.5">Gestión de usuarios administrativos del sistema</p>
         </div>
-        <a href="{{ route('admins.create') }}" 
-           class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Nuevo Administrador
-        </a>
+
+        <!-- Contenedor de botones -->
+        <div class="flex items-center space-x-2">
+            <!-- Botón Nuevo Administrador -->
+            <a href="{{ route('admins.create') }}"
+               class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nuevo Administrador
+            </a>
+
+            <!-- Botón Llevar al formulario de Cupos -->
+            <a href="{{ route('cupos_maximos.create') }}"
+               class="inline-flex items-center justify-center gap-2 bg-amber-500 text-white px-4 py-2.5 rounded-lg hover:bg-amber-600 font-medium transition text-sm shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+                Registrar cupos maximos
+            </a>
+        </div>
     </div>
+
+
 
     <!-- Tarjetas de Estadísticas -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        
+
         <!-- Total -->
         <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
             <div class="flex items-center justify-between">
@@ -74,7 +90,7 @@
 
     <!-- Listado en Cards -->
     <div class="space-y-3">
-        
+
         <!-- Header del Listado CON BÚSQUEDA -->
         <div class="bg-white rounded-lg shadow-sm px-5 py-4 border border-gray-200">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -82,7 +98,7 @@
                     <h2 class="text-base font-bold text-gray-800">Listado Completo</h2>
                     <span class="text-xs font-medium text-gray-600">{{ $admins->total() }} administradores</span>
                 </div>
-                
+
                 <!-- Búsqueda integrada -->
                 <form action="{{ route('admins.index') }}" method="GET" class="flex gap-2 w-full lg:w-auto lg:max-w-md">
                     <div class="relative flex-1">
@@ -91,17 +107,17 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
-                        <input 
-                            type="text" 
-                            name="busqueda" 
+                        <input
+                            type="text"
+                            name="busqueda"
                             value="{{ request('busqueda') }}"
                             placeholder="Buscar por nombre o email..."
                             class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
                             autocomplete="off"
                         >
                     </div>
-                    
-                    <button 
+
+                    <button
                         type="submit"
                         class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +127,7 @@
                     </button>
 
                     @if(request('busqueda'))
-                        <a href="{{ route('admins.index') }}" 
+                        <a href="{{ route('admins.index') }}"
                            class="px-3 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -121,7 +137,7 @@
                     @endif
                 </form>
             </div>
-            
+
             <!-- Mensaje de resultados de búsqueda -->
             @if(request('busqueda'))
                 <div class="mt-3 pt-3 border-t border-gray-100">
@@ -137,7 +153,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-300 transition-all">
                 <div class="p-4">
                     <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-                        
+
                         <!-- Información del Admin (Izquierda) -->
                         <div class="flex items-center gap-3 flex-1">
                             <!-- Avatar -->
@@ -146,7 +162,7 @@
                                     {{ strtoupper(substr($admin->nombre, 0, 2)) }}
                                 </span>
                             </div>
-                            
+
                             <!-- Datos -->
                             <div class="flex-1 min-w-0">
                                 <h3 class="text-base font-semibold text-gray-900 truncate">{{ $admin->nombre }} {{ $admin->apellido }}</h3>
@@ -183,11 +199,11 @@
 
                         <!-- Acciones (Derecha) -->
                         <div class="flex items-center gap-2 lg:justify-end">
-                            <a href="{{ route('admins.show', $admin) }}" 
+                            <a href="{{ route('admins.show', $admin) }}"
                                class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition text-xs font-medium border border-blue-200">
                                 Ver
                             </a>
-                            <a href="{{ route('admins.edit', $admin) }}" 
+                            <a href="{{ route('admins.edit', $admin) }}"
                                class="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition text-xs font-medium border border-amber-200">
                                 Editar
                             </a>
@@ -195,11 +211,11 @@
                                     class="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition text-xs font-medium border border-red-200">
                                 Eliminar
                             </button>
-                            
+
                             <!-- Form oculto para eliminar -->
-                            <form id="delete-form-{{ $admin->id }}" 
-                                  action="{{ route('admins.destroy', $admin) }}" 
-                                  method="POST" 
+                            <form id="delete-form-{{ $admin->id }}"
+                                  action="{{ route('admins.destroy', $admin) }}"
+                                  method="POST"
                                   style="display: none;">
                                 @csrf
                                 @method('DELETE')
@@ -219,7 +235,7 @@
                         </div>
                         <h3 class="text-base font-semibold text-gray-900 mb-1">No se encontraron resultados</h3>
                         <p class="text-gray-500 text-sm mb-4">No hay administradores que coincidan con "{{ request('busqueda') }}"</p>
-                        <a href="{{ route('admins.index') }}" 
+                        <a href="{{ route('admins.index') }}"
                            class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
                             Ver todos los administradores
                         </a>
@@ -231,7 +247,7 @@
                         </div>
                         <h3 class="text-base font-semibold text-gray-900 mb-1">No hay administradores</h3>
                         <p class="text-gray-500 text-sm mb-4">Agregue el primer administrador al sistema</p>
-                        <a href="{{ route('admins.create') }}" 
+                        <a href="{{ route('admins.create') }}"
                            class="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -270,7 +286,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Body (con scroll) -->
         <div class="px-6 py-6 overflow-y-auto flex-1">
             <!-- Alerta de advertencia -->
@@ -306,7 +322,7 @@
                     </label>
                     <div class="flex items-center justify-between gap-3 flex-wrap">
                         <p class="text-base font-mono font-semibold text-gray-900 break-all flex-1" id="emailText">{{ session('credentials')['email'] }}</p>
-                        <button onclick="copyText('emailText')" 
+                        <button onclick="copyText('emailText')"
                                 class="px-3 py-1.5 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition text-xs font-medium whitespace-nowrap flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -327,7 +343,7 @@
                     </label>
                     <div class="flex items-center justify-between gap-3 flex-wrap">
                         <p class="text-base font-mono font-bold text-gray-900 break-all tracking-wide flex-1" id="passwordText">{{ session('credentials')['password'] }}</p>
-                        <button onclick="copyText('passwordText')" 
+                        <button onclick="copyText('passwordText')"
                                 class="px-3 py-1.5 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition text-xs font-medium whitespace-nowrap flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -346,10 +362,10 @@
                 </p>
             </div>
         </div>
-        
+
         <!-- Footer (fijo) -->
         <div class="bg-gray-50 px-6 py-4 rounded-b-xl flex justify-end flex-shrink-0 border-t border-gray-300">
-            <button onclick="closeCredentialsModal()" 
+            <button onclick="closeCredentialsModal()"
                     class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition text-sm font-semibold shadow-sm">
                 He guardado la información
             </button>
@@ -375,7 +391,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Body -->
         <div class="px-6 py-5">
             <p class="text-gray-700 text-sm leading-relaxed">
@@ -385,14 +401,14 @@
                 Se perderán todos los datos asociados a este usuario de forma permanente.
             </p>
         </div>
-        
+
         <!-- Footer -->
         <div class="bg-gray-50 px-6 py-4 rounded-b-xl flex gap-3 justify-end">
-            <button onclick="closeModal()" 
+            <button onclick="closeModal()"
                     class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 transition text-sm font-medium border border-gray-300">
                 Cancelar
             </button>
-            <button onclick="submitDelete()" 
+            <button onclick="submitDelete()"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow-sm">
                 Sí, Eliminar
             </button>
@@ -443,14 +459,14 @@ function closeCredentialsModal() {
 function copyText(elementId) {
     const element = document.getElementById(elementId);
     const text = element.textContent;
-    
+
     navigator.clipboard.writeText(text).then(function() {
         // Determinar qué mensaje mostrar
         const type = elementId === 'emailText' ? 'email' : 'password';
         const copiedMsg = document.getElementById('copied-' + type);
-        
+
         copiedMsg.classList.remove('hidden');
-        
+
         // Ocultar después de 2 segundos
         setTimeout(function() {
             copiedMsg.classList.add('hidden');
