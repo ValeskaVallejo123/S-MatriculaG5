@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Escuela Gabriela Mistral</title>
+  <title>Login - Sistema de Matrícula</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
@@ -20,7 +20,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #00508f 0%, #003b73 50%, #4ec7d2 100%);
       position: relative;
       overflow: auto;
       padding: 40px 20px;
@@ -35,9 +35,9 @@
       right: 0;
       bottom: 0;
       background-image: 
-        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        radial-gradient(circle at 20% 80%, rgba(78, 199, 210, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(78, 199, 210, 0.08) 0%, transparent 50%);
       animation: pulse 10s ease-in-out infinite;
     }
 
@@ -49,7 +49,7 @@
     /* Elementos decorativos flotantes */
     .floating-element {
       position: absolute;
-      color: rgba(255, 255, 255, 0.15);
+      color: rgba(78, 199, 210, 0.2);
       animation: float 8s ease-in-out infinite;
       font-size: 3rem;
     }
@@ -96,7 +96,7 @@
       background: white;
       width: 90%;
       max-width: 450px;
-      border-radius: 25px;
+      border-radius: 20px;
       box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
       overflow: hidden;
       position: relative;
@@ -117,7 +117,7 @@
 
     /* Header del login */
     .login-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
       padding: 45px 35px;
       text-align: center;
       color: white;
@@ -155,6 +155,11 @@
       z-index: 2;
       backdrop-filter: blur(10px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
     }
 
     .logo i {
@@ -191,7 +196,7 @@
     .form-group label {
       display: block;
       margin-bottom: 10px;
-      color: #2c3e50;
+      color: #003b73;
       font-size: 0.9rem;
       font-weight: 600;
       letter-spacing: 0.3px;
@@ -206,35 +211,48 @@
       left: 18px;
       top: 50%;
       transform: translateY(-50%);
-      color: #95a5a6;
+      color: #00508f;
       font-size: 1.1rem;
       z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    .input-wrapper input:focus ~ .input-icon {
+      color: #4ec7d2;
     }
 
     .input-wrapper input {
       width: 100%;
       padding: 15px 20px 15px 50px;
-      border: 2px solid #e0e7ff;
-      border-radius: 12px;
+      border: 2px solid #bfd9ea;
+      border-radius: 10px;
       font-size: 0.95rem;
       transition: all 0.3s ease;
       outline: none;
-      color: #2c3e50;
+      color: #003b73;
       font-family: 'Poppins', sans-serif;
       font-weight: 500;
-      background: #f8f9ff;
+      background: #f8f9fa;
     }
 
     .input-wrapper input:focus {
-      border-color: #667eea;
+      border-color: #4ec7d2;
       background: white;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+      box-shadow: 0 0 0 4px rgba(78, 199, 210, 0.15);
       transform: translateY(-2px);
     }
 
     .input-wrapper input::placeholder {
-      color: #bdc3c7;
+      color: #95a5a6;
       font-weight: 400;
+    }
+
+    .input-error {
+      color: #ef4444;
+      font-size: 0.8rem;
+      margin-top: 5px;
+      display: block;
+      font-weight: 500;
     }
 
     /* Recordarme y olvidé contraseña */
@@ -250,7 +268,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      color: #5a6c7d;
+      color: #003b73;
       cursor: pointer;
       font-weight: 500;
     }
@@ -258,19 +276,19 @@
     .remember-me input[type="checkbox"] {
       width: 18px;
       height: 18px;
-      accent-color: #667eea;
+      accent-color: #4ec7d2;
       cursor: pointer;
     }
 
     .forgot-password {
-      color: #667eea;
+      color: #00508f;
       text-decoration: none;
       font-weight: 600;
       transition: all 0.3s ease;
     }
 
     .forgot-password:hover {
-      color: #764ba2;
+      color: #4ec7d2;
       transform: translateX(3px);
     }
 
@@ -278,15 +296,15 @@
     .login-button {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
       color: white;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 1.05rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.4s ease;
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
+      box-shadow: 0 8px 25px rgba(78, 199, 210, 0.35);
       position: relative;
       overflow: hidden;
       font-family: 'Poppins', sans-serif;
@@ -310,11 +328,16 @@
 
     .login-button:hover {
       transform: translateY(-3px);
-      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.45);
+      box-shadow: 0 15px 40px rgba(78, 199, 210, 0.45);
     }
 
     .login-button:active {
       transform: translateY(-1px);
+    }
+
+    .login-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
 
     /* Divisor */
@@ -331,7 +354,7 @@
       top: 50%;
       width: 100%;
       height: 1px;
-      background: linear-gradient(to right, transparent, #e0e7ff, transparent);
+      background: linear-gradient(to right, transparent, #bfd9ea, transparent);
     }
 
     .divider span {
@@ -347,20 +370,20 @@
     /* Link de registro */
     .register-link {
       text-align: center;
-      color: #5a6c7d;
+      color: #003b73;
       font-size: 0.9rem;
       font-weight: 500;
     }
 
     .register-link a {
-      color: #667eea;
+      color: #00508f;
       text-decoration: none;
       font-weight: 700;
       transition: all 0.3s ease;
     }
 
     .register-link a:hover {
-      color: #764ba2;
+      color: #4ec7d2;
       text-decoration: underline;
     }
 
@@ -369,51 +392,15 @@
       text-align: center;
       margin-top: 30px;
       padding-top: 25px;
-      border-top: 1px solid #e0e7ff;
+      border-top: 1px solid #bfd9ea;
       color: #95a5a6;
       font-size: 0.82rem;
       font-weight: 500;
     }
 
     .footer-info i {
-      color: #f093fb;
+      color: #4ec7d2;
       margin-right: 5px;
-    }
-
-    /* Botones sociales opcionales */
-    .social-login {
-      display: flex;
-      gap: 15px;
-      margin-top: 25px;
-    }
-
-    .social-btn {
-      flex: 1;
-      padding: 12px;
-      border: 2px solid #e0e7ff;
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1.2rem;
-      color: #667eea;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .social-btn:hover {
-      background: #f8f9ff;
-      border-color: #667eea;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-    }
-
-    .social-btn span {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #5a6c7d;
     }
 
     /* Responsive */
@@ -454,24 +441,25 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
       border-radius: 5px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%);
     }
 
-    /* Alerta de error (opcional para validaciones) */
+    /* Alerta de error */
     .error-message {
-      background: #fee;
-      color: #c33;
+      background: #fee2e2;
+      color: #991b1b;
       padding: 12px 15px;
       border-radius: 10px;
       margin-bottom: 20px;
       font-size: 0.88rem;
-      border-left: 4px solid #c33;
+      border-left: 4px solid #ef4444;
       display: none;
+      font-weight: 500;
     }
 
     .error-message.show {
@@ -484,6 +472,35 @@
       25% { transform: translateX(-10px); }
       75% { transform: translateX(10px); }
     }
+
+    /* Alerta de éxito */
+    .success-message {
+      background: rgba(78, 199, 210, 0.1);
+      color: #00508f;
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 0.88rem;
+      border-left: 4px solid #4ec7d2;
+      display: none;
+      font-weight: 500;
+    }
+
+    .success-message.show {
+      display: block;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from { 
+        opacity: 0;
+        transform: translateY(-10px); 
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0); 
+      }
+    }
   </style>
 </head>
 <body>
@@ -491,8 +508,8 @@
   <!-- Elementos decorativos flotantes -->
   <i class="fas fa-graduation-cap floating-element element1"></i>
   <i class="fas fa-book floating-element element2"></i>
-  <i class="fas fa-pencil-alt floating-element element3"></i>
-  <i class="fas fa-atom floating-element element4"></i>
+  <i class="fas fa-user-graduate floating-element element3"></i>
+  <i class="fas fa-chalkboard-teacher floating-element element4"></i>
 
   <!-- Contenedor del login -->
   <div class="login-container">
@@ -500,43 +517,54 @@
     <!-- Header -->
     <div class="login-header">
       <div class="logo">
-        <i class="fas fa-graduation-cap"></i>
+        <i class="fas fa-school"></i>
       </div>
-      <h1>Sistema Escolar</h1>
+      <h1>Sistema de Matrícula</h1>
       <p>Escuela Gabriela Mistral</p>
     </div>
 
     <!-- Body del formulario -->
     <div class="login-body">
       
+      <!-- Mensaje de éxito (oculto por defecto) -->
+      <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i> Iniciando sesión...
+      </div>
+
       <!-- Mensaje de error (oculto por defecto) -->
       <div class="error-message" id="errorMessage">
         <i class="fas fa-exclamation-circle"></i> Credenciales incorrectas
       </div>
 
-      <form id="loginForm">
+      <form action="{{ route('login') }}" method="POST" id="loginForm">
+        @csrf
         
         <!-- Email -->
         <div class="form-group">
           <label for="email">Correo electrónico</label>
           <div class="input-wrapper">
-            <i class="fas fa-envelope input-icon"></i>
             <input 
               type="email" 
               id="email" 
               name="email"
+              value="{{ old('email') }}"
               placeholder="correo@ejemplo.com" 
               required
               autocomplete="email"
             >
+            <i class="fas fa-envelope input-icon"></i>
           </div>
+          @error('email')
+            <small class="input-error">
+              <i class="fas fa-exclamation-circle"></i> {{ $message }}
+            </small>
+          @enderror
         </div>
 
         <!-- Contraseña -->
         <div class="form-group">
           <label for="password">Contraseña</label>
           <div class="input-wrapper">
-            <i class="fas fa-lock input-icon"></i>
             <input 
               type="password" 
               id="password" 
@@ -545,18 +573,26 @@
               required
               autocomplete="current-password"
             >
+            <i class="fas fa-lock input-icon"></i>
           </div>
+          @error('password')
+            <small class="input-error">
+              <i class="fas fa-exclamation-circle"></i> {{ $message }}
+            </small>
+          @enderror
         </div>
 
         <!-- Recordarme y Olvidé contraseña -->
         <div class="remember-forgot">
           <label class="remember-me">
-            <input type="checkbox" id="remember" name="remember">
+            <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
             <span>Recordarme</span>
           </label>
-          <a href="#" class="forgot-password">
-            ¿Olvidaste tu contraseña?
-          </a>
+          @if (Route::has('password.request'))
+            <a href="{{ route('password.request') }}" class="forgot-password">
+              ¿Olvidaste tu contraseña?
+            </a>
+          @endif
         </div>
 
         <!-- Botón de login -->
@@ -572,19 +608,24 @@
 
       <!-- Link de registro -->
       <div class="register-link">
-        ¿No tienes cuenta? <a href="#">Solicitar acceso</a>
+        ¿No tienes cuenta? 
+        @if (Route::has('register'))
+          <a href="{{ route('register') }}">Solicitar acceso</a>
+        @else
+          <a href="#">Solicitar acceso</a>
+        @endif
       </div>
 
       <!-- Footer info -->
       <div class="footer-info">
         <i class="fas fa-shield-alt"></i>
-        © 2026 Escuela Gabriela Mistral - Danlí, El Paraíso
+        © {{ date('Y') }} Escuela Gabriela Mistral - Danlí, El Paraíso
       </div>
     </div>
 
   </div>
 
-  <script>
+ <script>
     // Animación de entrada de los inputs
     document.addEventListener('DOMContentLoaded', function() {
       const inputs = document.querySelectorAll('input');
@@ -599,35 +640,29 @@
           input.style.transform = 'translateX(0)';
         }, 300 + (index * 100));
       });
+
+      // Mostrar mensajes si existen
+      const errorMsg = document.getElementById('errorMessage');
+      const successMsg = document.getElementById('successMessage');
+
+      // Si el mensaje de error tiene contenido, mostrarlo
+      if (errorMsg && errorMsg.textContent.trim() !== '') {
+        errorMsg.classList.add('show');
+        setTimeout(() => errorMsg.classList.remove('show'), 5000);
+      }
+
+      // Si el mensaje de éxito tiene contenido, mostrarlo
+      if (successMsg && successMsg.textContent.trim() !== '') {
+        successMsg.classList.add('show');
+        setTimeout(() => successMsg.classList.remove('show'), 5000);
+      }
     });
 
-    // Validación del formulario (ejemplo básico)
+    // Efecto de loading al enviar el formulario
     document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const errorMessage = document.getElementById('errorMessage');
-
-      // Simulación de validación
-      if (email && password) {
-        // Aquí iría la lógica de autenticación real
-        console.log('Iniciando sesión...', { email, password });
-        
-        // Simular éxito después de 1 segundo
-        this.querySelector('.login-button').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando...';
-        
-        setTimeout(() => {
-          // Redirigir al dashboard o página principal
-          window.location.href = 'sistema_escolar_educature.html'; // Ajusta la ruta según tu estructura
-        }, 1500);
-      } else {
-        // Mostrar error
-        errorMessage.classList.add('show');
-        setTimeout(() => {
-          errorMessage.classList.remove('show');
-        }, 3000);
-      }
+      const button = this.querySelector('.login-button');
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando...';
+      button.disabled = true;
     });
 
     // Efecto en los inputs al escribir
@@ -641,18 +676,6 @@
         }
       });
     });
-
-    // Efecto hover en el logo
-    const logo = document.querySelector('.logo');
-    logo.addEventListener('mouseenter', function() {
-      this.style.transform = 'scale(1.1) rotate(5deg)';
-      this.style.transition = 'all 0.3s ease';
-    });
-
-    logo.addEventListener('mouseleave', function() {
-      this.style.transform = 'scale(1) rotate(0deg)';
-    });
   </script>
-
 </body>
 </html>
