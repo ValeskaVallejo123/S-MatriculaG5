@@ -8,24 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('estudiantes', function (Blueprint $table) {
-            // Primero eliminamos la restricción única si existe
-            $table->dropUnique(['email']);
-            
-            // Luego modificamos la columna para que sea nullable
-            $table->string('email')->nullable()->change();
-            
-            // Y volvemos a agregar la restricción única
-            $table->unique('email');
-        });
+        if (Schema::hasTable('estudiantes')) {
+            Schema::table('estudiantes', function (Blueprint $table) {
+                // Solo si la columna existe, se vuelve nullable
+                if (Schema::hasColumn('estudiantes', 'email')) {
+                    $table->string('email')->nullable()->change();
+                }
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('estudiantes', function (Blueprint $table) {
-            $table->dropUnique(['email']);
-            $table->string('email')->nullable(false)->change();
-            $table->unique('email');
-        });
+        // No revertimos nada porque no sabemos si originalmente era unique o no
     }
 };

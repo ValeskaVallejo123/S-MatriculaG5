@@ -4,14 +4,14 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6 max-w-7xl">
-    
+
     <!-- Encabezado con Acción -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Estudiantes</h1>
             <p class="text-sm text-gray-600 mt-0.5">Gestión de alumnos matriculados en la institución</p>
         </div>
-        <a href="{{ route('estudiantes.create') }}" 
+        <a href="{{ route('estudiantes.create') }}"
            class="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-lg hover:bg-green-700 font-medium transition text-sm shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -22,7 +22,7 @@
 
     <!-- Tarjetas de Estadísticas -->
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-        
+
         <!-- Total -->
         <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-green-500">
             <div class="flex items-center justify-between">
@@ -90,13 +90,63 @@
 
     <!-- Listado en Cards -->
     <div class="space-y-3">
-        
-        <!-- Header del Listado -->
-        <div class="bg-white rounded-lg shadow-sm px-5 py-3 border border-gray-200">
-            <div class="flex items-center justify-between">
-                <h2 class="text-base font-bold text-gray-800">Listado Completo</h2>
-                <span class="text-xs font-medium text-gray-600">{{ $estudiantes->total() }} estudiantes</span>
+
+        <!-- Header del Listado CON BÚSQUEDA -->
+        <div class="bg-white rounded-lg shadow-sm px-5 py-4 border border-gray-200">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-base font-bold text-gray-800">Listado Completo</h2>
+                    <span class="text-xs font-medium text-gray-600">{{ $estudiantes->total() }} estudiantes</span>
+                </div>
+
+                <!-- Búsqueda integrada -->
+                <form action="{{ route('estudiantes.index') }}" method="GET" class="flex gap-2 w-full lg:w-auto lg:max-w-md">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input
+                            type="text"
+                            name="busqueda"
+                            value="{{ request('busqueda') }}"
+                            placeholder="Buscar por nombre, DNI o email..."
+                            class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition flex items-center gap-2 whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Buscar
+                    </button>
+
+                    @if(request('busqueda'))
+                        <a href="{{ route('estudiantes.index') }}"
+                           class="px-3 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Limpiar
+                        </a>
+                    @endif
+                </form>
+
             </div>
+
+            <!-- Mensaje de resultados de búsqueda -->
+            @if(request('busqueda'))
+                <div class="mt-3 pt-3 border-t border-gray-100">
+                    <p class="text-sm text-gray-600">
+                        Mostrando resultados para: <span class="font-semibold text-gray-900">"{{ request('busqueda') }}"</span>
+                    </p>
+                </div>
+            @endif
         </div>
 
         <!-- Lista de Estudiantes en Cards -->
@@ -104,7 +154,7 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-green-300 transition-all">
                 <div class="p-4">
                     <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-                        
+
                         <!-- Información del Estudiante (Izquierda) -->
                         <div class="flex items-center gap-3 flex-1">
                             <!-- Avatar -->
@@ -113,7 +163,7 @@
                                     {{ strtoupper(substr($estudiante->nombre, 0, 1) . substr($estudiante->apellido ?? '', 0, 1)) }}
                                 </span>
                             </div>
-                            
+
                             <!-- Datos -->
                             <div class="flex-1 min-w-0">
                                 <h3 class="text-base font-semibold text-gray-900 truncate">{{ $estudiante->nombre_completo }}</h3>
@@ -156,11 +206,11 @@
 
                         <!-- Acciones (Derecha) -->
                         <div class="flex items-center gap-2 lg:justify-end">
-                            <a href="{{ route('estudiantes.show', $estudiante) }}" 
+                            <a href="{{ route('estudiantes.show', $estudiante) }}"
                                class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition text-xs font-medium border border-blue-200">
                                 Ver
                             </a>
-                            <a href="{{ route('estudiantes.edit', $estudiante) }}" 
+                            <a href="{{ route('estudiantes.edit', $estudiante) }}"
                                class="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition text-xs font-medium border border-amber-200">
                                 Editar
                             </a>
@@ -168,11 +218,11 @@
                                     class="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition text-xs font-medium border border-red-200">
                                 Eliminar
                             </button>
-                            
+
                             <!-- Form oculto para eliminar -->
-                            <form id="delete-form-{{ $estudiante->id }}" 
-                                  action="{{ route('estudiantes.destroy', $estudiante) }}" 
-                                  method="POST" 
+                            <form id="delete-form-{{ $estudiante->id }}"
+                                  action="{{ route('estudiantes.destroy', $estudiante) }}"
+                                  method="POST"
                                   style="display: none;">
                                 @csrf
                                 @method('DELETE')
@@ -184,20 +234,31 @@
         @empty
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
                 <div class="text-center">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-base font-semibold text-gray-900 mb-1">No hay estudiantes</h3>
-                    <p class="text-gray-500 text-sm mb-4">Agregue el primer estudiante al sistema</p>
-                    <a href="{{ route('estudiantes.create') }}" 
-                       class="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-lg hover:bg-green-700 font-medium transition text-sm shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
-                        Crear Estudiante
-                    </a>
+
+                    @if(request('busqueda'))
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-1">No se encontraron resultados</h3>
+                        <p class="text-gray-500 text-sm mb-4">No hay estudiantes que coincidan con "{{ request('busqueda') }}"</p>
+                        <a href="{{ route('estudiantes.index') }}"
+                           class="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-lg hover:bg-green-700 font-medium transition text-sm shadow-sm">
+                            Ver todos los estudiantes
+                        </a>
+                    @else
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-1">No hay estudiantes</h3>
+                        <a href="{{ route('estudiantes.create') }}"
+                           class="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-lg hover:bg-green-700 font-medium transition text-sm shadow-sm">
+
+                        </a>
+                    @endif
                 </div>
             </div>
         @endforelse
@@ -228,7 +289,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Body -->
         <div class="px-6 py-5">
             <p class="text-gray-700 text-sm leading-relaxed">
@@ -238,14 +299,14 @@
                 Se perderán todos los datos asociados a este estudiante de forma permanente.
             </p>
         </div>
-        
+
         <!-- Footer -->
         <div class="bg-gray-50 px-6 py-4 rounded-b-xl flex gap-3 justify-end">
-            <button onclick="closeModal()" 
+            <button onclick="closeModal()"
                     class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 transition text-sm font-medium border border-gray-300">
                 Cancelar
             </button>
-            <button onclick="submitDelete()" 
+            <button onclick="submitDelete()"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow-sm">
                 Sí, Eliminar
             </button>

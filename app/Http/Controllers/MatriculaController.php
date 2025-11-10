@@ -15,115 +15,121 @@ class MatriculaController extends Controller
     {
         $matriculas = Matricula::with(['padre', 'estudiante'])
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(10);
 
-        return view('matriculas.index');
+        $counts = [
+            'total' => Matricula::count(),
+            'pendiente' => Matricula::where('estado', 'pendiente')->count(),
+            'aprobada' => Matricula::where('estado', 'aprobada')->count(),
+            'rechazada' => Matricula::where('estado', 'rechazada')->count(),
+        ];
+
+        return view('matriculas.index', compact('matriculas', 'counts'));
     }
 
     // Formulario para crear matrícula
     public function create()
     {
-        return view('matriculas.create', $this->obtenerDatosRelacionados());
+        // Evita errores si las tablas no existen o no hay registros
+        try {
+            $estudiantes = Estudiante::orderBy('nombre', 'asc')->get() ?? collect();
+            $padres = Padre::orderBy('nombre', 'asc')->get() ?? collect();
+        } catch (\Exception $e) {
+            $estudiantes = collect();
+            $padres = collect();
+        }
+
+        $parentescos = ['padre' => 'Padre', 'madre' => 'Madre', 'tutor' => 'Tutor', 'otro' => 'Otro'];
+        $grados = ['1ro', '2do', '3ro', '4to', '5to', '6to'];
+        $secciones = ['A', 'B', 'C', 'D'];
+
+        return view('matriculas.create', compact('estudiantes', 'padres', 'parentescos', 'grados', 'secciones'));
     }
 
     // Guardar matrícula
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'estudiante_id' => 'required|exists:estudiantes,id',
-            'padre_id' => 'required|exists:padres,id',
-            'grado' => 'required|string|max:10',
-            'seccion' => 'required|string|max:2',
+            // Padre/Tutor
+            'padre_nombre' => 'required|string|max:50',
+            'padre_apellido' => 'required|string|max:50',
+            'padre_dni' => 'required|string|size:13',
+            'padre_parentesco' => 'required|string|in:padre,madre,tutor,otro',
+            'padre_parentesco_otro' => 'nullable|string|max:50',
+            'padre_email' => 'nullable|email|max:100',
+            'padre_telefono' => 'required|string|size:8',
+            'padre_direccion' => 'required|string|max:255',
+
+            // Estudiante
+            'estudiante_nombre' => 'required|string|max:50',
+            'estudiante_apellido' => 'required|string|max:50',
+            'estudiante_dni' => 'required|string|size:13',
+            'estudiante_fecha_nacimiento' => 'required|date',
+            'estudiante_email' => 'nullable|email|max:100',
+            'estudiante_telefono' => 'nullable|string|size:8',
+            'estudiante_grado' => 'required|string|max:10',
+            'estudiante_seccion' => 'required|string|max:2',
+
+            // Matrícula
             'anio_lectivo' => 'required|date_format:Y',
             'estado' => 'required|in:pendiente,aprobada,rechazada,cancelada',
-        ], [
-            'estudiante_id.required' => 'Debe seleccionar un estudiante.',
-            'padre_id.required' => 'Debe seleccionar un padre o tutor.',
-            'grado.required' => 'El campo grado es obligatorio.',
-            'seccion.required' => 'El campo sección es obligatorio.',
-            'anio_lectivo.required' => 'Debe ingresar el año lectivo en formato válido.',
-            'estado.required' => 'Debe seleccionar un estado.',
+
+            // Archivos (opcional)
+            'archivos.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
         try {
             DB::beginTransaction();
 
-            Matricula::create($validated);
+            // Crear o actualizar padre
+            $padre = Padre::updateOrCreate(
+                ['dni' => $validated['padre_dni']],
+                [
+                    'nombre' => $validated['padre_nombre'],
+                    'apellido' => $validated['padre_apellido'],
+                    'parentesco' => $validated['padre_parentesco'] === 'otro' ? $validated['padre_parentesco_otro'] : $validated['padre_parentesco'],
+                    'email' => $validated['padre_email'] ?? null,
+                    'telefono' => $validated['padre_telefono'],
+                    'direccion' => $validated['padre_direccion'],
+                ]
+            );
+
+            // Crear o actualizar estudiante
+            $estudiante = Estudiante::updateOrCreate(
+                ['dni' => $validated['estudiante_dni']],
+                [
+                    'nombre' => $validated['estudiante_nombre'],
+                    'apellido' => $validated['estudiante_apellido'],
+                    'fecha_nacimiento' => $validated['estudiante_fecha_nacimiento'],
+                    'email' => $validated['estudiante_email'] ?? null,
+                    'telefono' => $validated['estudiante_telefono'] ?? null,
+                    'grado' => $validated['estudiante_grado'],
+                    'seccion' => $validated['estudiante_seccion'],
+                ]
+            );
+
+            // Crear matrícula
+            $matricula = Matricula::create([
+                'padre_id' => $padre->id,
+                'estudiante_id' => $estudiante->id,
+                'grado' => $validated['estudiante_grado'],
+                'seccion' => $validated['estudiante_seccion'],
+                'anio_lectivo' => $validated['anio_lectivo'],
+                'estado' => $validated['estado'],
+            ]);
+
+            // Guardar archivos (si existen)
+            if ($request->hasFile('archivos')) {
+                foreach ($request->file('archivos') as $archivo) {
+                    $archivo->store('matriculas/'.$matricula->id);
+                }
+            }
 
             DB::commit();
-
-            return redirect()->route('matriculas.index')
-                ->with('success', 'Matrícula creada correctamente.');
+            return redirect()->route('matriculas.index')->with('success', 'Matrícula creada correctamente.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Ocurrió un error al guardar la matrícula.']);
+            return back()->withInput()->withErrors(['error' => 'Ocurrió un error al guardar la matrícula: '.$e->getMessage()]);
         }
-    }
-
-    // Mostrar matrícula
-    public function show(Matricula $matricula)
-    {
-        $matricula->load(['padre', 'estudiante']);
-        return view('matriculas.show', compact('matricula'));
-    }
-
-    // Formulario para editar matrícula
-    public function edit(Matricula $matricula)
-    {
-        return view('matriculas.edit', array_merge(['matricula' => $matricula], $this->obtenerDatosRelacionados()));
-    }
-
-    // Actualizar matrícula
-    public function update(Request $request, Matricula $matricula)
-    {
-        $validated = $request->validate([
-            'estudiante_id' => 'required|exists:estudiantes,id',
-            'padre_id' => 'required|exists:padres,id',
-            'grado' => 'required|string|max:10',
-            'seccion' => 'required|string|max:2',
-            'anio_lectivo' => 'required|date_format:Y',
-            'estado' => 'required|in:pendiente,aprobada,rechazada,cancelada',
-        ], [
-            'estudiante_id.required' => 'Debe seleccionar un estudiante.',
-            'padre_id.required' => 'Debe seleccionar un padre o tutor.',
-            'grado.required' => 'El campo grado es obligatorio.',
-            'seccion.required' => 'El campo sección es obligatorio.',
-            'anio_lectivo.required' => 'Debe ingresar el año lectivo en formato válido.',
-            'estado.required' => 'Debe seleccionar un estado.',
-        ]);
-
-        try {
-            DB::beginTransaction();
-
-            $matricula->update($validated);
-
-            DB::commit();
-
-            return redirect()->route('matriculas.index')
-                ->with('success', 'Matrícula actualizada correctamente.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Ocurrió un error al actualizar la matrícula.']);
-        }
-    }
-
-    // Eliminar matrícula
-    public function destroy(Matricula $matricula)
-    {
-        try {
-            $matricula->delete();
-            return redirect()->route('matriculas.index')->with('success', 'Matrícula eliminada correctamente.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Ocurrió un error al eliminar la matrícula.']);
-        }
-    }
-
-    // Función auxiliar para obtener estudiantes y padres
-    private function obtenerDatosRelacionados()
-    {
-        $estudiantes = Estudiante::orderBy('nombre', 'asc')->get();
-        $padres = Padre::orderBy('nombre', 'asc')->get();
-        return compact('estudiantes', 'padres');
     }
 }
-
