@@ -8,14 +8,17 @@ use Illuminate\Support\Facades\Auth;
 
 class RolMiddleware
 {
-    public function handle(Request $request, Closure $next, $rol)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
+        // Si no está autenticado
         if (!Auth::check()) {
-            return redirect()->route('login.show');
+            return redirect()->route('login')->with('error', 'Debes iniciar sesión primero.');
         }
 
         $user = Auth::user();
-        if ($user->rol !== $rol) {
+
+        // Verificar si el rol del usuario está en los roles permitidos
+        if (!in_array($user->rol, $roles)) {
             return redirect('/')->with('error', 'No tienes permisos para acceder a esta página.');
         }
 

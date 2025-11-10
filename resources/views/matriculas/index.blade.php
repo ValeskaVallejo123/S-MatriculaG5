@@ -26,12 +26,13 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Total</p>
-                    <p class="text-3xl font-bold text-blue-600">{{ $counts['total'] }}</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ $counts['total'] ?? 0 }}</p>
                     <p class="text-xs text-gray-500 mt-1">Matrículas</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                 </div>
             </div>
@@ -42,12 +43,13 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Pendientes</p>
-                    <p class="text-3xl font-bold text-yellow-600">{{ $counts['pendiente'] }}</p>
+                    <p class="text-3xl font-bold text-yellow-600">{{ $counts['pendiente'] ?? 0 }}</p>
                     <p class="text-xs text-gray-500 mt-1">En proceso</p>
                 </div>
                 <div class="w-12 h-12 bg-yellow-50 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
             </div>
@@ -58,12 +60,13 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Aprobadas</p>
-                    <p class="text-3xl font-bold text-green-600">{{ $counts['aprobada'] }}</p>
+                    <p class="text-3xl font-bold text-green-600">{{ $counts['aprobada'] ?? 0 }}</p>
                     <p class="text-xs text-gray-500 mt-1">Confirmadas</p>
                 </div>
                 <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
             </div>
@@ -74,30 +77,31 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Rechazadas</p>
-                    <p class="text-3xl font-bold text-red-600">{{ $counts['rechazada'] }}</p>
+                    <p class="text-3xl font-bold text-red-600">{{ $counts['rechazada'] ?? 0 }}</p>
                     <p class="text-xs text-gray-500 mt-1">No aprobadas</p>
                 </div>
                 <div class="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Listado en Cards -->
+    <!-- Listado de Matrículas -->
     <div class="space-y-3">
         <!-- Header del Listado -->
         <div class="bg-white rounded-lg shadow-sm px-5 py-3 border border-gray-200">
             <div class="flex items-center justify-between">
                 <h2 class="text-base font-bold text-gray-800">Listado Completo</h2>
-                <span class="text-xs font-medium text-gray-600">{{ $matriculas->total() }} matrículas</span>
+                <span class="text-xs font-medium text-gray-600">{{ $matriculas?->total() ?? 0 }} matrículas</span>
             </div>
         </div>
 
         <!-- Lista de Matrículas en Cards -->
-        @forelse($matriculas as $matricula)
+        @forelse($matriculas ?? [] as $matricula)
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-teal-300 transition-all">
                 <div class="p-4">
                     <div class="flex flex-col lg:flex-row lg:items-center gap-4">
@@ -118,10 +122,7 @@
                                 </h3>
                                 <div class="flex flex-wrap items-center gap-3 mt-1">
                                     <span class="text-xs text-gray-600 flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
-                                        </svg>
-                                        Código: <span class="font-mono font-semibold">{{ $matricula->codigo }}</span>
+                                        Código: <span class="font-mono font-semibold">{{ $matricula->codigo ?? 'N/A' }}</span>
                                     </span>
                                     @if($matricula->estudiante && $matricula->estudiante->dni)
                                         <span class="text-xs text-gray-500">•</span>
@@ -131,35 +132,10 @@
                             </div>
                         </div>
 
-                        <!-- Información Central -->
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 lg:gap-4">
-                            <div class="flex flex-col">
-                                <span class="text-xs text-gray-500 font-medium">Padre/Tutor</span>
-                                <span class="text-sm text-gray-900 font-medium">{{ $matricula->padre->nombre_completo ?? 'N/A' }}</span>
-                                <span class="text-xs text-gray-500">{{ $matricula->padre->parentesco_formateado ?? '' }}</span>
-                            </div>
-                            <div class="flex gap-2 items-center flex-wrap">
-                                @if($matricula->estudiante)
-                                    <span class="inline-block px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-md text-xs font-semibold border border-indigo-200">
-                                        {{ $matricula->estudiante->grado ?? 'N/A' }} - {{ $matricula->estudiante->seccion ?? 'N/A' }}
-                                    </span>
-                                @endif
-                                <span class="text-xs text-gray-600">
-                                    {{ $matricula->fecha_matricula ? $matricula->fecha_matricula->format('d/m/Y') : 'N/A' }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Año Lectivo -->
-                        <div class="text-center">
-                            <span class="text-xs text-gray-500 font-medium block">Año Lectivo</span>
-                            <span class="text-sm font-bold text-gray-900">{{ $matricula->anio_lectivo }}</span>
-                        </div>
-
                         <!-- Estado -->
                         <div>
                             @php
-                                $estadoColor = match($matricula->estado) {
+                                $estadoColor = match($matricula->estado ?? 'pendiente') {
                                     'pendiente' => 'yellow',
                                     'aprobada' => 'green',
                                     'rechazada' => 'red',
@@ -167,7 +143,7 @@
                                 };
                             @endphp
                             <span class="inline-block px-3 py-1 bg-{{ $estadoColor }}-50 text-{{ $estadoColor }}-700 rounded-full text-xs font-semibold border border-{{ $estadoColor }}-200">
-                                {{ ucfirst($matricula->estado) }}
+                                {{ ucfirst($matricula->estado ?? 'Pendiente') }}
                             </span>
                         </div>
 
@@ -176,7 +152,7 @@
                             <a href="{{ route('matriculas.show', $matricula) }}" class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition text-xs font-medium border border-blue-200">Ver</a>
                             <a href="{{ route('matriculas.edit', $matricula) }}" class="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition text-xs font-medium border border-amber-200">Editar</a>
 
-                            @if($matricula->estado === 'pendiente')
+                            @if(($matricula->estado ?? 'pendiente') === 'pendiente')
                                 <form action="{{ route('matriculas.confirm', $matricula) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
@@ -187,13 +163,13 @@
                                 </form>
                             @endif
 
-                            <button onclick="confirmDelete('{{ $matricula->id }}', '{{ $matricula->codigo }}')"
+                            <button onclick="confirmDelete('{{ $matricula->id }}', '{{ $matricula->codigo ?? '' }}')"
                                     class="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition text-xs font-medium border border-red-200">
                                 Eliminar
                             </button>
 
-                            <form id="delete-form-{{ $matricula->id }}"
-                                  action="{{ route('matriculas.destroy', $matricula) }}"
+                            <form id="delete-form-{{ $matricula->id ?? 0 }}"
+                                  action="{{ route('matriculas.destroy', $matricula ?? 0) }}"
                                   method="POST"
                                   style="display: none;">
                                 @csrf
@@ -205,23 +181,12 @@
             </div>
         @empty
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
                 <h3 class="text-base font-semibold text-gray-900 mb-1">No hay matrículas</h3>
                 <p class="text-gray-500 text-sm mb-4">Registre la primera matrícula al sistema</p>
-            
             </div>
         @endforelse
 
-        <!-- Paginación -->
-        @if($matriculas->hasPages())
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3">
-                {{ $matriculas->links() }}
-            </div>
-        @endif
+        
     </div>
 </div>
 
@@ -259,7 +224,7 @@
 function confirmDelete(id, code) {
     const modal = document.getElementById('deleteModal');
     modal.classList.remove('hidden');
-    document.getElementById('matriculaCode').innerText = code;
+    document.getElementById('matriculaCode').innerText = code ?? '';
 
     const btn = document.getElementById('confirmDeleteBtn');
     btn.onclick = function() {

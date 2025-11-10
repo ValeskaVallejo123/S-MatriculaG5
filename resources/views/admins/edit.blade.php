@@ -36,7 +36,7 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
                             Datos Personales
                         </h3>
-                        
+
                         <div class="space-y-6">
                             <!-- Nombre -->
                             <div>
@@ -50,10 +50,10 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         id="nombre"
-                                        name="nombre" 
+                                        name="nombre"
                                         value="{{ old('nombre', $admin->nombre) }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all @error('nombre') border-red-400 bg-red-50 @enderror"
                                         placeholder="Ingrese el nombre completo"
@@ -85,10 +85,10 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="email" 
+                                    <input
+                                        type="email"
                                         id="email"
-                                        name="email" 
+                                        name="email"
                                         value="{{ old('email', $admin->email) }}"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all @error('email') border-red-400 bg-red-50 @enderror"
                                         placeholder="admin@institucion.edu"
@@ -114,7 +114,7 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
                             Cambiar Contraseña
                         </h3>
-                        
+
                         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
                             <div class="flex items-start">
                                 <svg class="w-5 h-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -139,17 +139,17 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="password" 
-                                        id="password" 
+                                    <input
+                                        type="password"
+                                        id="password"
                                         name="password"
                                         class="w-full pl-12 pr-12 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all @error('password') border-red-400 bg-red-50 @enderror"
                                         placeholder="Mínimo 8 caracteres"
                                         minlength="8"
                                         maxlength="50"
                                     >
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onclick="togglePassword('password')"
                                         class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-amber-600 transition"
                                     >
@@ -180,15 +180,15 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                     </div>
-                                    <input 
-                                        type="password" 
-                                        id="password_confirmation" 
+                                    <input
+                                        type="password"
+                                        id="password_confirmation"
                                         name="password_confirmation"
                                         class="w-full pl-12 pr-12 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all"
                                         placeholder="Repita la contraseña"
                                     >
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onclick="togglePassword('password_confirmation')"
                                         class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-amber-600 transition"
                                     >
@@ -230,15 +230,15 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
                             Permisos y Privilegios
                         </h3>
-                        
+
                         <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
                             <p class="text-sm text-gray-600 mb-4">Seleccione los permisos que tendrá este administrador:</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 @foreach($permisos as $key => $label)
                                     <label class="flex items-start p-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition-all group">
-                                        <input 
-                                            type="checkbox" 
-                                            name="permisos[]" 
+                                        <input
+                                            type="checkbox"
+                                            name="permisos[]"
                                             value="{{ $key }}"
                                             {{ in_array($key, old('permisos', $admin->permisos ?? [])) ? 'checked' : '' }}
                                             class="w-5 h-5 mt-0.5 text-amber-600 border-gray-300 rounded focus:ring-2 focus:ring-amber-500 transition"
@@ -255,7 +255,7 @@
 
                 <!-- Botones de acción -->
                 <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t-2 border-gray-100">
-                    <button 
+                    <button
                         type="submit"
                         class="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-xl font-semibold hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
                     >
@@ -264,7 +264,7 @@
                         </svg>
                         Actualizar Información
                     </button>
-                    <a 
+                    <a
                         href="{{ route('admins.index') }}"
                         class="flex-1 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center"
                     >
@@ -297,7 +297,7 @@
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
     const eye = document.getElementById('eye-' + inputId);
-    
+
     if (input.type === 'password') {
         input.type = 'text';
     } else {
