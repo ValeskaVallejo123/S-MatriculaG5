@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Http\Controllers\CalificacionController;
 
 
 // Página principal
@@ -37,6 +38,10 @@ Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'
     ->middleware('auth');
 //rutas observaciones
 Route::resource('observaciones', ObservacionController::class)->except(['show']);
+
+//Rutas de Calificaciones
+Route::get('/indexCalificaciones', [CalificacionController::class, 'indexCalificaciones'])->name('calificaciones.index');
+
 
 Route::get('/', function () {
     return view('plantilla');

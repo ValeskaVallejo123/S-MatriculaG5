@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up()
     {
-        // Deshabilitar temporalmente foreign keys
+        //Deshabilitar temporalmente foreign keys
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         Schema::dropIfExists('estudiantes');
@@ -31,10 +31,16 @@ return new class extends Migration
             $table->string('telefono')->nullable();
             $table->enum('estado', ['pendiente', 'activo', 'inactivo'])->default('pendiente');
             $table->text('observaciones')->nullable();
-            $table->unsignedBigInteger('padre_id')->nullable();
+            $table->unsignedBigInteger('padre_id')->nullable(); // ya lo tienes
             $table->string('genero')->nullable();
             $table->string('foto')->nullable();
             $table->timestamps();
+
+            //  AGREGADO: clave foránea hacia la tabla de usuarios (padres)
+            $table->foreign('padre_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('set null'); // si se borra el padre, no borra al estudiante
         });
 
         // Rehabilitar foreign keys
@@ -48,3 +54,4 @@ return new class extends Migration
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 };
+

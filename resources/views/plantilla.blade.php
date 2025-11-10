@@ -7,7 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
+
   <style>
     * {
       margin: 0;
@@ -90,7 +90,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: 
+      background-image:
         radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
         radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
@@ -106,20 +106,20 @@
     }
 
     @keyframes float {
-      0%, 100% { 
-        transform: translateY(0px) rotate(0deg); 
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
         opacity: 0.25;
       }
-      25% { 
-        transform: translateY(-15px) rotate(3deg); 
+      25% {
+        transform: translateY(-15px) rotate(3deg);
         opacity: 0.35;
       }
-      50% { 
-        transform: translateY(-25px) rotate(-3deg); 
+      50% {
+        transform: translateY(-25px) rotate(-3deg);
         opacity: 0.3;
       }
-      75% { 
-        transform: translateY(-10px) rotate(2deg); 
+      75% {
+        transform: translateY(-10px) rotate(2deg);
         opacity: 0.35;
       }
     }
@@ -304,20 +304,20 @@
     }
 
     @keyframes rocketLaunch {
-      0%, 100% { 
-        transform: translateX(-50%) translateY(0) rotate(-5deg); 
+      0%, 100% {
+        transform: translateX(-50%) translateY(0) rotate(-5deg);
         opacity: 0.35;
       }
-      25% { 
-        transform: translateX(-50%) translateY(-20px) rotate(0deg); 
+      25% {
+        transform: translateX(-50%) translateY(-20px) rotate(0deg);
         opacity: 0.45;
       }
-      50% { 
-        transform: translateX(-50%) translateY(-40px) rotate(5deg); 
+      50% {
+        transform: translateX(-50%) translateY(-40px) rotate(5deg);
         opacity: 0.4;
       }
-      75% { 
-        transform: translateX(-50%) translateY(-20px) rotate(0deg); 
+      75% {
+        transform: translateX(-50%) translateY(-20px) rotate(0deg);
         opacity: 0.45;
       }
     }
@@ -456,7 +456,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: 
+      background-image:
         radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
       pointer-events: none;
@@ -660,12 +660,12 @@
         <i class="fas fa-graduation-cap"></i>
         Escuela Gabriela Mistral
       </a>
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
               style="background-color: rgba(255,255,255,0.3); border: none;">
         <span class="navbar-toggler-icon" style="filter: brightness(0) invert(1);"></span>
       </button>
-      
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
@@ -708,7 +708,7 @@
     <div class="container hero-content">
       <h1><span>Centro de Educacion Basico</span><br>Gabriela Mistral</h1>
       <p>
-        Moderniza la administración educativa de tu institución con nuestra plataforma integral. 
+        Moderniza la administración educativa de tu institución con nuestra plataforma integral.
         Gestiona matrículas, calificaciones, asistencias y mucho más en un solo lugar.
       </p>
 
@@ -744,7 +744,7 @@
       </div>
 
       <div class="features-grid">
-        
+
         <div class="feature-card">
           <div class="feature-icon">
             <i class="fas fa-user-plus"></i>
@@ -832,7 +832,7 @@
     <div class="container cta-content">
       <h2>¿Listo para Digitalizar tu Escuela?</h2>
       <p>
-        Únete a las instituciones educativas que ya están transformando su gestión administrativa 
+        Únete a las instituciones educativas que ya están transformando su gestión administrativa
         con nuestra plataforma. Comienza hoy mismo.
       </p>
       <a href="#" class="btn-cta">
@@ -845,7 +845,7 @@
   <footer id="contact">
     <div class="container">
       <div class="footer-content">
-        
+
         <div class="footer-section">
           <h4><i class="fas fa-graduation-cap"></i> Gabriela Mistral</h4>
           <p>Sistema integral de gestión escolar para instituciones educativas modernas.</p>
@@ -889,7 +889,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  
+
   <script>
     // Animación de aparición suave
     document.addEventListener('DOMContentLoaded', function() {
@@ -899,7 +899,7 @@
             entry.target.style.opacity = '0';
             entry.target.style.transform = 'translateY(30px)';
             entry.target.style.transition = 'all 0.6s ease';
-            
+
             setTimeout(() => {
               entry.target.style.opacity = '1';
               entry.target.style.transform = 'translateY(0)';

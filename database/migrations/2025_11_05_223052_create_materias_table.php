@@ -9,22 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('documentos', function (Blueprint $table) {
+        Schema::create('materias', function (Blueprint $table) {
             $table->id();
-            $table->string('foto')->nullable(); // columna para la foto
-            $table->string('acta_nacimiento')->nullable(); // columna para el acta
-            $table->string('calificaciones')->nullable(); // columna para las calificaciones
+            $table->string('nombre');
+            $table->string('codigo')->nullable();
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('documentos');
+        Schema::dropIfExists('materias');
     }
 };
