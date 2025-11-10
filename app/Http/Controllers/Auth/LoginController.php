@@ -5,42 +5,39 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class LoginController extends Controller
 {
-    public function showLogin(Request $request)
+    public function showLoginForm()
     {
-        return view('auth.login', [
-            'correoGuardado' => $request->cookie('correo_usuario') ?? ''
-        ]);
+        return view('auth.login');
     }
 
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
-        $inputEmail = $request->email;
-        $password = $request->password;
-
-        // Buscar usuario por coincidencia parcial del correo
-        $user = User::where('email', 'like', "%{$inputEmail}%")->first();
-
-        if($user && Hash::check($password, $user->password)){
-            Auth::login($user);
-
-            // Guardar correo en cookie para autocompletar interno
-            $cookie = cookie('correo_usuario', $user->email, 525600);
-
-            return redirect($user->rol === 'admin' ? route('admins.index') : route('matriculas.index'))
-                ->withCookie($cookie);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return back()->with('error', 'Credenciales incorrectas.');
         }
 
-        return back()->withErrors(['email' => 'Usuario o contraseña incorrectos']);
+        return $this->authenticated($request, Auth::user());
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        if (str_ends_with($user->email, '@gmail.edu')) {
+            $user->rol = 'admin';
+            $user->save();
+            return redirect()->route('admins.index');
+        }
+
+        $user->rol = 'estudiante';
+        $user->save();
+        return redirect()->route('matriculas.index');
     }
 
     public function logout()

@@ -1,4 +1,19 @@
 <?php return array (
+<<<<<<< HEAD
+=======
+  'barryvdh/laravel-dompdf' => 
+  array (
+    'aliases' => 
+    array (
+      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+    ),
+    'providers' => 
+    array (
+      0 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    ),
+  ),
+>>>>>>> cesia-dev
   'codezero/browser-locale' => 
   array (
     'providers' => 

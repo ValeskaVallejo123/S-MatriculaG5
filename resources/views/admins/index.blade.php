@@ -88,6 +88,15 @@
         </div>
     </div>
 
+        <a href="{{ route('admins.create') }}"
+           class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 font-medium transition text-sm shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nuevo Administrador
+        </a>
+    </div>
+
     <!-- Listado en Cards -->
     <div class="space-y-3">
 
@@ -96,7 +105,7 @@
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-base font-bold text-gray-800">Listado Completo</h2>
-                    <span class="text-xs font-medium text-gray-600">{{ $admins->total() }} administradores</span>
+
                 </div>
 
                 <!-- Búsqueda integrada -->
