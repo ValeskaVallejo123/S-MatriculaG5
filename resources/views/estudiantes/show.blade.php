@@ -2,254 +2,293 @@
 
 @section('title', 'Detalles del Estudiante')
 
-@section('content')
-<div class="min-h-screen py-8 bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4">
-        
-        <!-- Navegación simple -->
-        <div class="mb-6">
-            <a href="{{ route('estudiantes.index') }}" class="inline-flex items-center text-green-700 hover:text-green-900 font-medium">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Volver a Estudiantes
-            </a>
-        </div>
+@section('page-title', 'Detalles del Estudiante')
 
-        <!-- Tarjeta Principal -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-            
-            <!-- Encabezado -->
-            <div class="bg-green-600 px-6 py-6">
-                <div class="flex items-center gap-5">
-                    <!-- Iniciales -->
-                    <div class="w-20 h-20 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-                        <span class="text-green-600 font-bold text-2xl">
+@section('topbar-actions')
+    <div class="d-flex gap-2">
+        <a href="{{ route('estudiantes.edit', $estudiante) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3);">
+            <i class="fas fa-edit me-1"></i>Editar
+        </a>
+        <a href="{{ route('estudiantes.index') }}" class="btn btn-sm" style="background: white; color: #00508f; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 2px solid #00508f;">
+            <i class="fas fa-arrow-left me-1"></i>Volver
+        </a>
+    </div>
+@endsection
+
+@section('content')
+<div class="container" style="max-width: 1200px;">
+    
+    <!-- Tarjeta de Perfil -->
+    <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
+        <!-- Header con gradiente -->
+        <div style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); padding: 1.5rem;">
+            <div class="d-flex align-items-center gap-3">
+                <!-- Foto del estudiante -->
+                @if($estudiante->foto)
+                    <img src="{{ asset('storage/' . $estudiante->foto) }}" 
+                         alt="Foto de {{ $estudiante->nombre_completo }}" 
+                         style="width: 70px; height: 70px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); border: 3px solid #4ec7d2;">
+                @else
+                    <!-- Avatar con iniciales si no hay foto -->
+                    <div style="width: 70px; height: 70px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 3px solid #4ec7d2;">
+                        <span style="color: #00508f; font-weight: 800; font-size: 1.8rem;">
                             {{ strtoupper(substr($estudiante->nombre, 0, 1) . substr($estudiante->apellido ?? 'E', 0, 1)) }}
                         </span>
                     </div>
-                    
-                    <!-- Nombre y info -->
-                    <div class="flex-1">
-                        <h1 class="text-2xl font-bold text-white mb-1">
-                            {{ $estudiante->nombre_completo }}
-                        </h1>
-                        <p class="text-green-100 text-sm">{{ $estudiante->grado }} - Sección {{ $estudiante->seccion }}</p>
-                    </div>
+                @endif
+                
+                <!-- Info principal -->
+                <div class="flex-grow-1">
+                    <h2 class="mb-1 fw-bold text-white" style="font-size: 1.4rem;">
+                        {{ $estudiante->nombre_completo }}
+                    </h2>
+                    <p class="mb-0 text-white opacity-75" style="font-size: 0.9rem;">
+                        <i class="fas fa-graduation-cap me-1"></i>
+                        {{ $estudiante->grado }} - Sección {{ $estudiante->seccion }}
+                    </p>
+                </div>
 
-                    <!-- Estado -->
-                    <div>
-                        @if($estudiante->estado === 'activo')
-                            <span class="inline-block px-4 py-2 bg-white text-green-700 rounded-lg text-sm font-semibold">
-                                Activo
-                            </span>
-                        @else
-                            <span class="inline-block px-4 py-2 bg-white text-red-700 rounded-lg text-sm font-semibold">
-                                Inactivo
-                            </span>
-                        @endif
-                    </div>
+                <!-- Badge de estado -->
+                <div>
+                    @if($estudiante->estado === 'activo')
+                        <span class="badge" style="background: white; color: #00508f; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 700; border-radius: 8px; border: 2px solid #4ec7d2;">
+                            <i class="fas fa-circle" style="font-size: 0.5rem; color: #4ec7d2;"></i> Activo
+                        </span>
+                    @else
+                        <span class="badge" style="background: white; color: #ef4444; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 700; border-radius: 8px; border: 2px solid #ef4444;">
+                            <i class="fas fa-circle" style="font-size: 0.5rem;"></i> Inactivo
+                        </span>
+                    @endif
                 </div>
             </div>
+        </div>
 
-            <!-- Contenido -->
-            <div class="p-6">
-                
-                <!-- Información Personal -->
-                <div class="mb-8">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-green-600">
-                        Información Personal
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Nombre</p>
-                            <p class="text-base font-semibold text-gray-900">{{ $estudiante->nombre }}</p>
+        <!-- Contenido -->
+        <div class="card-body p-3">
+            
+            <!-- Información Personal -->
+            <div class="mb-3">
+                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
+                    <i class="fas fa-user me-2" style="font-size: 0.9rem;"></i>Información Personal
+                </h6>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Nombre</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">{{ $estudiante->nombre }}</p>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Apellido</p>
-                            <p class="text-base font-semibold text-gray-900">{{ $estudiante->apellido }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Apellido</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">{{ $estudiante->apellido }}</p>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Identificación</p>
-                            <p class="text-base font-semibold text-gray-900">{{ $estudiante->dni ?? 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">DNI</p>
+                            <p class="mb-0 fw-semibold font-monospace" style="color: #003b73; font-size: 0.9rem;">{{ $estudiante->dni ?? 'N/A' }}</p>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Fecha de Nacimiento</p>
-                            <p class="text-base font-semibold text-gray-900">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Fecha de Nacimiento</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">
                                 {{ $estudiante->fecha_nacimiento ? \Carbon\Carbon::parse($estudiante->fecha_nacimiento)->format('d/m/Y') : 'N/A' }}
                             </p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Información de Contacto -->
-                <div class="mb-8">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-600">
-                        Información de Contacto
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Correo Electrónico</p>
-                            <p class="text-base font-semibold text-gray-900 break-all">{{ $estudiante->email ?? 'N/A' }}</p>
+            <!-- Información de Contacto -->
+            <div class="mb-3">
+                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
+                    <i class="fas fa-address-book me-2" style="font-size: 0.9rem;"></i>Información de Contacto
+                </h6>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Email</p>
+                            <p class="mb-0 fw-semibold text-break" style="color: #003b73; font-size: 0.85rem;">{{ $estudiante->email ?? 'N/A' }}</p>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Teléfono</p>
-                            <p class="text-base font-semibold text-gray-900">{{ $estudiante->telefono ?? 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Teléfono</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">{{ $estudiante->telefono ?? 'N/A' }}</p>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg md:col-span-2">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Dirección</p>
-                            <p class="text-base font-semibold text-gray-900">{{ $estudiante->direccion ?? 'N/A' }}</p>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Dirección</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">{{ $estudiante->direccion ?? 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Información Académica -->
-                <div class="mb-8">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-purple-600">
-                        Información Académica
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Grado</p>
-                            <p class="text-base font-semibold text-gray-900">{{ $estudiante->grado }}</p>
+            <!-- Información Académica -->
+            <div class="mb-3">
+                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
+                    <i class="fas fa-graduation-cap me-2" style="font-size: 0.9rem;"></i>Información Académica
+                </h6>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Grado</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">{{ $estudiante->grado }}</p>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Sección</p>
-                            <p class="text-base font-semibold text-gray-900">{{ $estudiante->seccion }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Sección</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">{{ $estudiante->seccion }}</p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Observaciones -->
-                @if($estudiante->observaciones)
-                <div class="mb-8">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-amber-600">
-                        Observaciones
-                    </h2>
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <p class="text-gray-700 leading-relaxed">{{ $estudiante->observaciones }}</p>
-                    </div>
+            <!-- Observaciones -->
+            @if($estudiante->observaciones)
+            <div class="mb-3">
+                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
+                    <i class="fas fa-clipboard me-2" style="font-size: 0.9rem;"></i>Observaciones
+                </h6>
+                <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                    <p class="mb-0" style="color: #003b73; font-size: 0.9rem; line-height: 1.6;">{{ $estudiante->observaciones }}</p>
                 </div>
-                @endif
+            </div>
+            @endif
 
-                <!-- Información del Sistema -->
-                <div class="mb-6">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-gray-400">
-                        Datos del Sistema
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Fecha de Registro</p>
-                            <p class="text-base font-semibold text-gray-900">
-                                {{ $estudiante->created_at ? $estudiante->created_at->format('d/m/Y') : 'No disponible' }}
+            <!-- Información del Sistema -->
+            <div class="mb-2">
+                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
+                    <i class="fas fa-clock me-2" style="font-size: 0.9rem;"></i>Datos del Sistema
+                </h6>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Fecha de Registro</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">
+                                {{ $estudiante->created_at ? $estudiante->created_at->format('d/m/Y H:i') : 'N/A' }}
                             </p>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Última Actualización</p>
-                            <p class="text-base font-semibold text-gray-900">
-                                {{ $estudiante->updated_at ? $estudiante->updated_at->format('d/m/Y') : 'No disponible' }}
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-2" style="background: rgba(78, 199, 210, 0.08); border-radius: 8px; border-left: 3px solid #4ec7d2;">
+                            <p class="text-muted mb-0" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Última Actualización</p>
+                            <p class="mb-0 fw-semibold" style="color: #003b73; font-size: 0.9rem;">
+                                {{ $estudiante->updated_at ? $estudiante->updated_at->format('d/m/Y H:i') : 'N/A' }}
                             </p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Botones de Acción -->
-                <div class="pt-6 border-t border-gray-200">
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{{ route('estudiantes.edit', $estudiante) }}" 
-                           class="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition text-center">
-                            Editar
-                        </a>
-                        <a href="{{ route('estudiantes.index') }}" 
-                           class="flex-1 bg-gray-200 text-gray-800 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition text-center">
-                            Volver
-                        </a>
-                        <button type="button"
-                                onclick="event.preventDefault(); confirmDelete();"
-                                class="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition">
-                            Eliminar
-                        </button>
-                        
-                        <!-- Form oculto para eliminar -->
-                        <form id="delete-form" action="{{ route('estudiantes.destroy', $estudiante) }}" method="POST" style="display: none;">
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                    </div>
+            <!-- Botones de Acción -->
+            <div class="pt-3 border-top mt-3">
+                <div class="d-flex gap-2">
+                    <a href="{{ route('estudiantes.edit', $estudiante) }}" class="btn btn-sm flex-fill" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); padding: 0.6rem; border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-edit me-1"></i>Editar
+                    </a>
+                    <a href="{{ route('estudiantes.index') }}" class="btn btn-sm flex-fill" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem; border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-arrow-left me-1"></i>Volver
+                    </a>
+                    <button type="button" onclick="confirmDelete()" class="btn btn-sm flex-fill" style="border: 2px solid #ef4444; color: #ef4444; background: white; padding: 0.6rem; border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-trash me-1"></i>Eliminar
+                    </button>
+                    
+                    <!-- Form oculto para eliminar -->
+                    <form id="delete-form" action="{{ route('estudiantes.destroy', $estudiante) }}" method="POST" style="display: none;">
+                        @csrf
+                        @method('DELETE')
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal de Confirmación Personalizado -->
-<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all">
-        <!-- Header -->
-        <div class="bg-red-50 px-6 py-4 border-b border-red-100 rounded-t-xl">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                    </svg>
+<!-- Modal de Confirmación -->
+<div id="deleteModal" class="modal fade" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none; overflow: hidden;">
+            <!-- Header -->
+            <div class="modal-header border-0" style="background: rgba(239, 68, 68, 0.1); padding: 1.2rem;">
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 1.2rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0 fw-bold" style="color: #003b73;">Confirmar Eliminación</h5>
+                        <p class="mb-0 small text-muted">Esta acción no se puede deshacer</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-lg font-bold text-gray-900">Confirmar Eliminación</h3>
-                    <p class="text-xs text-gray-600">Esta acción no se puede deshacer</p>
-                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </div>
-        
-        <!-- Body -->
-        <div class="px-6 py-5">
-            <p class="text-gray-700 text-sm leading-relaxed">
-                ¿Está seguro que desea eliminar al estudiante <strong class="text-gray-900">{{ $estudiante->nombre_completo }}</strong>?
-            </p>
-            <p class="text-gray-600 text-xs mt-3">
-                Se perderán todos los datos asociados a este estudiante de forma permanente.
-            </p>
-        </div>
-        
-        <!-- Footer -->
-        <div class="bg-gray-50 px-6 py-4 rounded-b-xl flex gap-3 justify-end">
-            <button onclick="closeModal()" 
-                    class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 transition text-sm font-medium border border-gray-300">
-                Cancelar
-            </button>
-            <button onclick="submitDelete()" 
-                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow-sm">
-                Sí, Eliminar
-            </button>
+            
+            <!-- Body -->
+            <div class="modal-body" style="padding: 1.5rem;">
+                <p class="mb-2" style="color: #003b73; font-size: 0.95rem;">
+                    ¿Está seguro que desea eliminar al estudiante <strong>{{ $estudiante->nombre_completo }}</strong>?
+                </p>
+                <p class="text-muted small mb-0">
+                    Se perderán todos los datos asociados a este estudiante de forma permanente.
+                </p>
+            </div>
+            
+            <!-- Footer -->
+            <div class="modal-footer border-0" style="background: #f8f9fa; padding: 1rem 1.5rem;">
+                <button type="button" class="btn btn-sm" data-bs-dismiss="modal" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600;">
+                    Cancelar
+                </button>
+                <button type="button" onclick="submitDelete()" class="btn btn-sm" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);">
+                    Sí, Eliminar
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
+@push('scripts')
 <script>
-function confirmDelete() {
-    document.getElementById('deleteModal').classList.remove('hidden');
-}
+let deleteModal;
 
-function closeModal() {
-    document.getElementById('deleteModal').classList.add('hidden');
+document.addEventListener('DOMContentLoaded', function() {
+    deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+});
+
+function confirmDelete() {
+    deleteModal.show();
 }
 
 function submitDelete() {
     document.getElementById('delete-form').submit();
 }
-
-// Cerrar modal al hacer clic fuera
-document.getElementById('deleteModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeModal();
-    }
-});
-
-// Cerrar con tecla ESC
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeModal();
-    }
-});
 </script>
+@endpush
 
+@push('styles')
+<style>
+    .border-bottom {
+        border-color: rgba(0, 80, 143, 0.15) !important;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+    
+    button[style*="border: 2px solid #ef4444"]:hover {
+        background: #ef4444 !important;
+        color: white !important;
+    }
+    
+    a[style*="border: 2px solid #00508f"]:hover {
+        background: #00508f !important;
+        color: white !important;
+    }
+</style>
+@endpush
 @endsection

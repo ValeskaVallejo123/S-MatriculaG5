@@ -1,81 +1,179 @@
 <?php
 
-use App\Http\Controllers\Auth\RegisterController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\CambiarContraseniaController;
-use App\Http\Controllers\ObservacionController;
-use App\Http\Controllers\EstudianteController;
-use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\BuscarEstudianteController;
 use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\MatriculaController;
-use App\Http\Controllers\BuscarEstudianteController;
-use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\PeriodoAcademicoController;
-use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\CursoController;
-use App\Http\Controllers\RegistrarCalificacionesController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ObservacionController;
+use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\CambiarContraseniaController;
 
+/*
+|--------------------------------------------------------------------------
+| RUTAS PÚBLICAS (Sin autenticación requerida)
+|--------------------------------------------------------------------------
+*/
 
-//la dejo aqui para probarla cuando este lista la quitare y la dejare en las rutas protegidas
- Route::get('/registrocalificaciones', [RegistrarCalificacionesController::class, 'index'])->name('registrarcalificaciones.registrarcalificaciones');
-// Buscar estudiante
-
-
-Route::get('/registroestudiantes/buscarregistro', [BuscarEstudianteController::class, 'buscarregistro'])->name('registroestudiantes.buscarregistro');
-
-// Estado de solicitud de matrícula
-Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('solicitud.verEstado');
-Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
-
-// Periodos académicos
-Route::resource('periodos-academicos', PeriodoAcademicoController::class);
-
-
-
-// 🔹 RUTA PRINCIPAL
+// Página principal - Plantilla pública
 Route::get('/', function () {
     return view('plantilla');
-});
+})->name('home');
 
-// 🔹 REGISTRO
-Route::get('/register', [RegisterController::class, 'showRegister'])->name('register.show');
-Route::post('/register', [RegisterController::class, 'register'])->name('register');
+// Plantilla alternativa
+Route::get('/plantilla', function () {
+    return view('plantilla');
+})->name('plantilla');
 
-// 🔹 LOGIN / LOGOUT
-Route::get('/login', [LoginController::class, 'showLogin'])->name('login.show');
-Route::post('/login', [LoginController::class, 'login'])->name('login');
+// Consulta de solicitudes (PÚBLICA - cualquiera puede consultar)
+Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])
+    ->name('estado-solicitud');
+Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
+
+/*
+|--------------------------------------------------------------------------
+| AUTENTICACIÓN
+|--------------------------------------------------------------------------
+*/
+
+// Login
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+
+// Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Registro
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
-// 🔹 RUTAS PROTEGIDAS
-Route::middleware('auth')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| RECUPERACIÓN DE CONTRASEÑA
+|--------------------------------------------------------------------------
+*/
+Route::get('/password/solicitar', [PasswordResetController::class, 'showForgotForm'])
+    ->name('password.solicitar');
+Route::post('/password/solicitar', [PasswordResetController::class, 'sendResetLink'])
+    ->name('password.enviar');
+Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])
+    ->name('password.restablecer');
+Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])
+    ->name('password.actualizar');
+Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
+    ->name('password.recuperar');
 
-    // CRUDs principales
-    Route::resource('admins', AdminController::class);
+/*
+|--------------------------------------------------------------------------
+| RUTAS PROTEGIDAS - SUPER ADMINISTRADOR
+|--------------------------------------------------------------------------
+| ⚠️ IMPORTANTE: Estas rutas DEBEN ir ANTES de las rutas de admins
+| para evitar conflictos de enrutamiento
+*/
+Route::middleware(['auth', 'super_admin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    // Gestión de administradores
+    Route::get('/administradores', [SuperAdminController::class, 'index'])->name('administradores.index');
+    Route::get('/administradores/crear', [SuperAdminController::class, 'create'])->name('administradores.create');
+    Route::get('/administradores/create', [SuperAdminController::class, 'create']); // Ruta alternativa
+    Route::post('/administradores', [SuperAdminController::class, 'store'])->name('administradores.store');
+    Route::get('/administradores/{administrador}', [SuperAdminController::class, 'show'])->name('administradores.show');
+    Route::get('/administradores/{administrador}/editar', [SuperAdminController::class, 'edit'])->name('administradores.edit');
+    Route::get('/administradores/{administrador}/edit', [SuperAdminController::class, 'edit']); // Ruta alternativa
+    Route::put('/administradores/{administrador}', [SuperAdminController::class, 'update'])->name('administradores.update');
+    Route::patch('/administradores/{administrador}', [SuperAdminController::class, 'update']);
+    Route::delete('/administradores/{administrador}', [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
+
+    // Perfil de super admin
+    Route::get('/perfil', [SuperAdminController::class, 'perfil'])->name('perfil');
+    Route::put('/perfil', [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
+    Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
+});
+
+/*
+|--------------------------------------------------------------------------
+| RUTAS PROTEGIDAS (Requieren Autenticación)
+|--------------------------------------------------------------------------
+| Accesible para admins regulares y super admins
+*/
+Route::middleware(['auth'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PANEL DE ADMINISTRADORES REGULARES
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('admins')->name('admins.')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/crear', [AdminController::class, 'create'])->name('create');
+        Route::get('/create', [AdminController::class, 'create']); // Ruta alternativa
+        Route::post('/', [AdminController::class, 'store'])->name('store');
+        Route::get('/{admin}', [AdminController::class, 'show'])->name('show');
+        Route::get('/{admin}/editar', [AdminController::class, 'edit'])->name('edit');
+        Route::get('/{admin}/edit', [AdminController::class, 'edit']); // Ruta alternativa
+        Route::put('/{admin}', [AdminController::class, 'update'])->name('update');
+        Route::patch('/{admin}', [AdminController::class, 'update']);
+        Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE ESTUDIANTES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])
+        ->name('estudiantes.buscar');
     Route::resource('estudiantes', EstudianteController::class);
-    Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
+
+    // Dashboard de estudiantes
+    Route::get('/estudiantes-dashboard', function () {
+        return view('estudiantes.dashboard');
+    })->name('estudiantes.dashboard');
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE PROFESORES
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('profesores', ProfesorController::class)->parameter('profesores', 'profesor');
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE MATRÍCULAS
+    |--------------------------------------------------------------------------
+    */
     Route::resource('matriculas', MatriculaController::class);
-    Route::resource('observaciones', ObservacionController::class)->except(['show']);
-    Route::resource('documentos', DocumentoController::class);
+    Route::post('/matriculas/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])
+        ->name('matriculas.confirmar');
 
-    // Confirmación de matrícula
-    Route::post('/matriculas/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('matriculas.confirmar');
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE PERIODOS ACADÉMICOS
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('periodos-academicos', PeriodoAcademicoController::class);
 
-    // Buscar estudiante
-    // Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
-
-    // Estado de solicitud de matrícula
-   //  Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('solicitud.verEstado');
-    // Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
-
-    // Periodos académicos
-   // Route::resource('periodos-academicos', PeriodoAcademicoController::class);
-
-
-
-    // CUPOS MÁXIMOS
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE CUPOS MÁXIMOS (CURSOS)
+    |--------------------------------------------------------------------------
+    */
     Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
         Route::get('/', [CursoController::class, 'index'])->name('index');
         Route::get('/create', [CursoController::class, 'create'])->name('create');
@@ -85,40 +183,77 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
     });
 
-    // Cambiar contraseña
-    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
-    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE OBSERVACIONES
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('observaciones', ObservacionController::class)->except(['show']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE DOCUMENTOS
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('documentos', DocumentoController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CAMBIAR CONTRASEÑA
+    |--------------------------------------------------------------------------
+    */
+    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
+        ->name('cambiarcontrasenia.edit');
+    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
+        ->name('cambiarcontrasenia.update');
 });
 
-// 🔐 RECUPERACIÓN DE CONTRASEÑA
-Route::get('/password/solicitar', [PasswordResetController::class, 'showForgotForm'])->name('password.solicitar');
-Route::post('/password/solicitar', [PasswordResetController::class, 'sendResetLink'])->name('password.enviar');
-Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
-Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
+// Ruta para mostrar el formulario de login
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 
-Route::get('/matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
-Route::post('/matriculas', [MatriculaController::class, 'store'])->name('matriculas.store');
-Route::get('/matriculas', [MatriculaController::class, 'index'])->middleware('rol:admin');
+// Ruta para procesar el login
+Route::post('/login', [LoginController::class, 'login']);
+
+// Ruta para logout
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
-Route::middleware(['auth', 'rol:admin'])->group(function () {
-    Route::resource('admins', AdminController::class);
-});
+// Rutas del Super Admin (protegidas)
+Route::middleware(['auth', 'super_admin'])->prefix('superadmin')->group(function () {
 
-Route::middleware(['auth', 'rol:estudiante'])->group(function () {
+    // Perfil del Super Admin
+    Route::get('/perfil', function() {
+        return view('superadmin.perfil');
+    })->name('superadmin.perfil');
+
+    });
+
+    // Rutas de Matrículas (protegidas por autenticación)
+Route::middleware(['auth'])->group(function () {
     Route::resource('matriculas', MatriculaController::class);
 });
 
-Route::get('/admin', function () {
-    return "¡Accediste al panel de admin!";
-})->middleware('rol:admin');
-Route::get('/estudiante', function () {
-    return "¡Accediste al panel de estudiante!";
-})->middleware('rol:estudiante');
+Route::middleware(['auth'])->group(function () {
 
-Route::get('/matriculas', function () {
-    return "Bienvenido a matriculas";
-})->middleware('rol:admin');
+    // Rutas resource de matrículas
+    Route::resource('matriculas', MatriculaController::class);
 
-Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
-Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
+    // Rutas adicionales para cambiar estados
+    Route::post('matriculas/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])
+        ->name('matriculas.confirmar');
+
+    Route::post('matriculas/{matricula}/rechazar', [MatriculaController::class, 'rechazar'])
+        ->name('matriculas.rechazar');
+
+    Route::post('matriculas/{matricula}/cancelar', [MatriculaController::class, 'cancelar'])
+        ->name('matriculas.cancelar');
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Ruta para crear matrícula
+    Route::get('matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
+});
+
+Route::get('/dashboard', function () {
+    return view('plantilla');
+})->middleware('auth')->name('dashboard');

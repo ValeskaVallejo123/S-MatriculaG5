@@ -5,47 +5,69 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class LoginController extends Controller
 {
-    public function showLogin(Request $request)
+    /**
+     * Mostrar formulario de login
+     */
+    public function showLoginForm()
     {
-        return view('auth.login', [
-            'correoGuardado' => $request->cookie('correo_usuario') ?? ''
-        ]);
+        return view('auth.login');
     }
 
+    /**
+     * Procesar el login
+     */
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|string',
+        // Validar credenciales
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Debe ser un correo electrónico válido.',
+            'password.required' => 'La contraseña es obligatoria.',
         ]);
 
-        $inputEmail = $request->email;
-        $password = $request->password;
+        // Intentar autenticar
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
 
-        // Buscar usuario por coincidencia parcial del correo
-        $user = User::where('email', 'like', "%{$inputEmail}%")->first();
+            // Obtener el usuario autenticado
+            $user = Auth::user();
 
-        if($user && Hash::check($password, $user->password)){
-            Auth::login($user);
-
-            // Guardar correo en cookie para autocompletar interno
-            $cookie = cookie('correo_usuario', $user->email, 525600);
-
-            return redirect($user->rol === 'admin' ? route('admins.index') : route('matriculas.index'))
-                ->withCookie($cookie);
+            // Redirigir según el rol del usuario
+            if ($user->role === 'super_admin') {
+                // Redirigir al perfil del super admin
+                return redirect()->route('superadmin.perfil')
+                    ->with('success', 'Bienvenido Super Administrador');
+            } elseif ($user->role === 'admin') {
+                return redirect()->intended('/dashboard')
+                    ->with('success', 'Bienvenido Administrador');
+            } else {
+                return redirect()->intended('/dashboard')
+                    ->with('success', 'Bienvenido');
+            }
         }
 
-        return back()->withErrors(['email' => 'Usuario o contraseña incorrectos']);
+        // Si falla la autenticación
+        return back()->withErrors([
+            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+        ])->onlyInput('email');
     }
 
-    public function logout()
+    /**
+     * Cerrar sesión
+     */
+    public function logout(Request $request)
     {
         Auth::logout();
-        return redirect()->route('login.show');
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login')->with('success', 'Sesión cerrada correctamente');
     }
 }
