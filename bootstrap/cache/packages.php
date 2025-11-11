@@ -1,5 +1,4 @@
 <?php return array (
-<<<<<<< HEAD
   'barryvdh/laravel-dompdf' => 
   array (
     'aliases' => 
@@ -12,8 +11,6 @@
       0 => 'Barryvdh\\DomPDF\\ServiceProvider',
     ),
   ),
-=======
->>>>>>> origin/dev/valeska
   'codezero/browser-locale' => 
   array (
     'providers' => 

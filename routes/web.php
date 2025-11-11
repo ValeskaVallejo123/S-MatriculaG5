@@ -17,6 +17,12 @@ use App\Http\Controllers\ObservacionController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\CambiarContraseniaController;
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\CalificacionController;
+use App\Http\Controllers\GradoController;
+use App\Http\Controllers\CicloController;
+use App\Http\Controllers\CalendarioController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -121,4 +127,32 @@ Route::middleware(['auth'])->group(function () {
     // Cambiar contraseña
     Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
     Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+});
+
+Route::middleware(['auth', 'role:profesor'])->group(function() {
+    Route::get('/horario', [HorarioController::class, 'index'])->name('horario.index');
+    Route::get('/horario/export-pdf', [HorarioController::class, 'exportPDF'])->name('horario.exportPDF');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('calificaciones', CalificacionController::class);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('grados', GradoController::class);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('ciclos', CicloController::class);
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Vista principal del calendario
+    Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario.index');
+
+    // CRUD de eventos
+    Route::get('/calendario/eventos', [CalendarioController::class, 'obtenerEventos'])->name('calendario.eventos');
+    Route::post('/calendario/eventos', [CalendarioController::class, 'guardar'])->name('calendario.guardar');
+    Route::put('/calendario/eventos/{evento}', [CalendarioController::class, 'actualizar'])->name('calendario.actualizar');
+    Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar'])->name('calendario.eliminar');
 });
