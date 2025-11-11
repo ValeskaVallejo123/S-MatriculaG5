@@ -2,25 +2,60 @@
 
 @section('title', 'Editar Profesor')
 
+@section('page-title', 'Editar Profesor')
+
+@section('topbar-actions')
+    <a href="{{ route('profesores.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+@endsection
+
 @section('content')
+<div class="container" style="max-width: 900px;">
+    
+    <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.05) 100%);">
+        <div class="card-body p-3">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 3px solid #4ec7d2;">
+                    <span class="text-white fw-bold" style="font-size: 1.2rem;">
+                        {{ strtoupper(substr($profesor->nombre, 0, 1) . substr($profesor->apellido ?? '', 0, 1)) }}
+                    </span>
+                </div>
+                <div>
+                    <h5 class="mb-1 fw-bold" style="color: #003b73;">{{ $profesor->nombre_completo }}</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        @if($profesor->email)
+                        <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: #00508f; border: 1px solid #4ec7d2; font-size: 0.75rem; font-weight: 600;">
+                            <i class="fas fa-envelope me-1"></i>{{ $profesor->email }}
+                        </span>
+                        @endif
+                        @if($profesor->especialidad)
+                        <span class="badge" style="background: rgba(0, 80, 143, 0.15); color: #003b73; border: 1px solid #00508f; font-size: 0.75rem; font-weight: 600;">
+                            <i class="fas fa-book me-1"></i>{{ $profesor->especialidad }}
+                        </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="max-w-4xl mx-auto py-8">
-    <div class="bg-white rounded-lg shadow p-8">
-        <h1 class="text-3xl font-bold mb-6 text-gray-800">Editar Profesor</h1>
+    <div class="max-w-4xl mx-auto py-8">
+        <div class="bg-white rounded-lg shadow p-8">
+            <h1 class="text-3xl font-bold mb-6 text-gray-800">Editar Profesor</h1>
 
-        <form action="{{ route('profesores.update', $profesor) }}" method="POST" class="space-y-6">
+            <form action="{{ route('profesores.update', $profesor) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
 
                 <div class="space-y-8">
-                    <!-- Sección: Información Personal -->
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-purple-100">
                             Información Personal
                         </h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Nombre -->
                             <div>
                                 <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Nombre
@@ -55,7 +90,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Apellido -->
                             <div>
                                 <label for="apellido" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Apellido
@@ -90,7 +124,6 @@
                                 @enderror
                             </div>
 
-                            <!-- DNI -->
                             <div>
                                 <label for="dni" class="block text-sm font-semibold text-gray-700 mb-2">
                                     DNI
@@ -125,7 +158,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Fecha de Nacimiento -->
                             <div>
                                 <label for="fecha_nacimiento" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Fecha de Nacimiento
@@ -158,14 +190,12 @@
                         </div>
                     </div>
 
-                    <!-- Sección: Información de Contacto -->
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-purple-100">
                             Información de Contacto
                         </h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Email
@@ -197,7 +227,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Teléfono -->
                             <div>
                                 <label for="telefono" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Teléfono
@@ -227,7 +256,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Dirección -->
                             <div class="md:col-span-2">
                                 <label for="direccion" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Dirección
@@ -259,14 +287,12 @@
                         </div>
                     </div>
 
-                    <!-- Sección: Información Profesional -->
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-purple-100">
                             Información Profesional
                         </h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Especialidad -->
                             <div>
                                 <label for="especialidad" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Especialidad
@@ -302,7 +328,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Tipo de Contrato -->
                             <div>
                                 <label for="tipo_contrato" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Tipo de Contrato
@@ -338,7 +363,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Salario -->
                             <div>
                                 <label for="salario" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Salario (Lps)
@@ -370,7 +394,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Fecha de Ingreso -->
                             <div>
                                 <label for="fecha_ingreso" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Fecha de Ingreso
@@ -400,105 +423,20 @@
                                     </p>
                                 @enderror
                             </div>
-
-                            <!-- Estado -->
-                            <div>
-                                <label for="estado" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Estado
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <select
-                                        id="estado"
-                                        name="estado"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all @error('estado') border-red-400 bg-red-50 @enderror"
-                                        required
-                                    >
-                                        <option value="activo" {{ old('estado', $profesor->estado) == 'activo' ? 'selected' : '' }}>Activo</option>
-                                        <option value="inactivo" {{ old('estado', $profesor->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
-                                        <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>Licencia</option>
-                                    </select>
-                                </div>
-                                @error('estado')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sección: Observaciones -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-purple-100">
-                            Observaciones
-                        </h3>
-
-                        <div>
-                            <label for="observaciones" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Comentarios adicionales
-                            </label>
-                            <div class="relative">
-                                <div class="absolute top-3 left-0 pl-4 pointer-events-none">
-                                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-                                    </svg>
-                                </div>
-                                <textarea
-                                    id="observaciones"
-                                    name="observaciones"
-                                    rows="4"
-                                    class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:bg-white outline-none transition-all resize-none @error('observaciones') border-red-400 bg-red-50 @enderror"
-                                    placeholder="Información adicional sobre el profesor..."
-                                >{{ old('observaciones', $profesor->observaciones) }}</textarea>
-                            </div>
-                            @error('observaciones')
-                                <p class="mt-2 text-sm text-red-600 flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                    </svg>
-                                    {{ $message }}
-                                </p>
-                            @enderror
                         </div>
                     </div>
                 </div>
 
-                <!-- Botones de Acción -->
-                <div class="mt-10 pt-8 border-t-2 border-gray-100">
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <button
-                            type="submit"
-                            class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 focus:ring-4 focus:ring-purple-300 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                        >
-                            <span class="flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Actualizar Profesor
-                            </span>
-                        </button>
-                        <a
-                            href="{{ route('profesores.index') }}"
-                            class="flex-1 bg-gray-100 text-gray-700 py-4 px-6 rounded-xl font-semibold hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 transition-all text-center flex items-center justify-center"
-                        >
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            Cancelar
-                        </a>
-                    </div>
+                <div class="mt-8 pt-4 border-t border-gray-200 flex justify-end gap-3">
+                    <a href="{{ route('profesores.index') }}" class="px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="px-6 py-3 text-sm font-semibold text-white bg-purple-600 rounded-xl hover:bg-purple-700 transition-colors shadow-md hover:shadow-lg">
+                        <i class="fas fa-save mr-2"></i> Guardar Cambios
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-
+</div>
 @endsection

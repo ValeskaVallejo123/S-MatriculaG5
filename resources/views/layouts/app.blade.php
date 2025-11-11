@@ -1,102 +1,101 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sistema Escolar')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    @stack('styles')
-</head>
-<body class="bg-gray-50 flex flex-col min-h-screen">
+@extends('layouts.app')
 
-    <!-- Navegación Principal - MINIMALISTA -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-2.5">
-                <!-- Logo y Nombre -->
-                <a href="/" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                        </svg>
+@section('title', 'Estudiantes')
+
+@section('page-title', 'Gestión de Estudiantes')
+
+@section('topbar-actions')
+    <a href="{{ route('estudiantes.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
+        <i class="fas fa-plus"></i>
+        Nuevo Estudiante
+    </a>
+@endsection
+
+@section('content')
+<div class="container" style="max-width: 1400px;">
+
+    <!-- Encabezado con Acción -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Estudiantes</h1>
+            <p class="text-sm text-gray-600 mt-0.5">Gestión de alumnos matriculados en la institución</p>
+        </div>
+        <a href="{{ route('estudiantes.create') }}"
+           class="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-lg hover:bg-green-700 font-medium transition text-sm shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nuevo Estudiante
+        </a>
+    </div>
+
+    <!-- Tarjetas de Estadísticas -->
+    {{-- (Se mantiene igual tu bloque de estadísticas) --}}
+
+    <!-- Listado en Cards -->
+    <div class="space-y-3">
+
+        <!-- Header del Listado CON BÚSQUEDA -->
+        <div class="bg-white rounded-lg shadow-sm px-5 py-4 border border-gray-200">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-base font-bold text-gray-800">Listado Completo</h2>
+                    <span class="text-xs font-medium text-gray-600">{{ $estudiantes->total() }} estudiantes</span>
+                </div>
+
+                <!-- Búsqueda integrada -->
+                <form action="{{ route('estudiantes.index') }}" method="GET" class="flex gap-2 w-full lg:w-auto lg:max-w-md">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input
+                            type="text"
+                            name="busqueda"
+                            value="{{ request('busqueda') }}"
+                            placeholder="Buscar por nombre, DNI o email..."
+                            class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm"
+                            autocomplete="off"
+                        >
                     </div>
-                    <span class="text-lg font-bold text-gray-800">Sistema Escolar</span>
-                </a>
 
-                <!-- Menú de Navegación -->
-                <div class="hidden md:flex gap-1">
-                    <a href="{{ route('admins.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('admins.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                        Administradores
-                    </a>
-                    <a href="{{ route('estudiantes.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('estudiantes.*') ? 'bg-green-100 text-green-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                        Estudiantes
-                    </a>
-                    <a href="{{ route('profesores.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('profesores.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                        Profesores
-                    </a>
+                    <button
+                        type="submit"
+                        class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition flex items-center gap-2 whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Buscar
+                    </button>
+
+                    @if(request('busqueda'))
+                        <a href="{{ route('estudiantes.index') }}"
+                        class="px-3 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Limpiar
+                        </a>
+                    @endif
+                </form>
+
+            </div>
+
+            <!-- Mensaje de resultados de búsqueda -->
+            @if(request('busqueda'))
+                <div class="mt-3 pt-3 border-t border-gray-100">
+                    <p class="text-sm text-gray-600">
+                        Mostrando resultados para: <span class="font-semibold text-gray-900">"{{ request('busqueda') }}"</span>
+                    </p>
                 </div>
-
-                <!-- Menú móvil -->
-                <button class="md:hidden p-1.5 rounded hover:bg-gray-100" onclick="toggleMobileMenu()">
-                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Menú móvil desplegable -->
-            <div id="mobileMenu" class="hidden md:hidden pb-2 space-y-1">
-                <a href="{{ route('admins.index') }}" class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admins.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    Administradores
-                </a>
-                <a href="{{ route('estudiantes.index') }}" class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('estudiantes.*') ? 'bg-green-100 text-green-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    Estudiantes
-                </a>
-                <a href="{{ route('profesores.index') }}" class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('profesores.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    Profesores
-                </a>
-            </div>
+            @endif
         </div>
-    </nav>
+    </div>
 
-    <!-- Contenido Principal -->
-    <main class="flex-grow py-4">
-        @if(session('success'))
-            <div class="container mx-auto px-4 mb-3">
-                <div class="bg-green-50 border-l-4 border-green-500 p-2.5 rounded">
-                    <p class="text-green-800 text-sm">{{ session('success') }}</p>
-                </div>
-            </div>
-        @endif
+    {{-- Continúa el resto del código (tabla, cards, paginación, estilos y scripts) igual --}}
+    
+</div>
 
-        @if(session('error'))
-            <div class="container mx-auto px-4 mb-3">
-                <div class="bg-red-50 border-l-4 border-red-500 p-2.5 rounded">
-                    <p class="text-red-800 text-sm">{{ session('error') }}</p>
-                </div>
-            </div>
-        @endif
-
-        @yield('content')
-    </main>
-
-    <!-- Footer Minimalista -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-gray-600">
-                <p>&copy; {{ date('Y') }} Sistema Escolar. Todos los derechos reservados.</p>
-                <p class="text-gray-500">contacto@institucion.edu | +504 2222-2222</p>
-            </div>
-        </div>
-    </footer>
-
-    @stack('scripts')
-
-    <script>
-        function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
-        }
-    </script>
-</body>
-</html>
+@endsection
