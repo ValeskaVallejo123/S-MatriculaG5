@@ -11,12 +11,12 @@ return new class extends Migration
     {
         // Deshabilitar temporalmente foreign keys
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
+        
         Schema::dropIfExists('estudiantes');
-
+        
         Schema::create('estudiantes', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre1');
+             $table->string('nombre1');
             $table->string('nombre2')->nullable();
             $table->string('apellido1');
             $table->string('apellido2')->nullable();
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->string('foto')->nullable();
             $table->timestamps();
         });
-
+        
         // Rehabilitar foreign keys
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
