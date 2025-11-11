@@ -24,6 +24,7 @@
     20 => 'Illuminate\\Translation\\TranslationServiceProvider',
     21 => 'Illuminate\\Validation\\ValidationServiceProvider',
     22 => 'Illuminate\\View\\ViewServiceProvider',
+<<<<<<< HEAD
     23 => 'Barryvdh\\DomPDF\\ServiceProvider',
     24 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
     25 => 'LaravelLang\\Actions\\ServiceProvider',
@@ -44,6 +45,27 @@
     40 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     41 => 'Termwind\\Laravel\\TermwindServiceProvider',
     42 => 'App\\Providers\\AppServiceProvider',
+=======
+    23 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
+    24 => 'LaravelLang\\Actions\\ServiceProvider',
+    25 => 'LaravelLang\\Attributes\\ServiceProvider',
+    26 => 'LaravelLang\\Config\\ServiceProvider',
+    27 => 'LaravelLang\\HttpStatuses\\ServiceProvider',
+    28 => 'LaravelLang\\Lang\\ServiceProvider',
+    29 => 'LaravelLang\\Locales\\ServiceProvider',
+    30 => 'LaravelLang\\Models\\ServiceProvider',
+    31 => 'LaravelLang\\MoonShine\\ServiceProvider',
+    32 => 'LaravelLang\\Publisher\\ServiceProvider',
+    33 => 'LaravelLang\\Routes\\ServiceProvider',
+    34 => 'LaravelLang\\StarterKits\\ServiceProvider',
+    35 => 'Laravel\\Pail\\PailServiceProvider',
+    36 => 'Laravel\\Sail\\SailServiceProvider',
+    37 => 'Laravel\\Tinker\\TinkerServiceProvider',
+    38 => 'Carbon\\Laravel\\ServiceProvider',
+    39 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    40 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    41 => 'App\\Providers\\AppServiceProvider',
+>>>>>>> origin/dev/valeska
   ),
   'eager' => 
   array (
@@ -57,6 +79,7 @@
     7 => 'Illuminate\\Pagination\\PaginationServiceProvider',
     8 => 'Illuminate\\Session\\SessionServiceProvider',
     9 => 'Illuminate\\View\\ViewServiceProvider',
+<<<<<<< HEAD
     10 => 'Barryvdh\\DomPDF\\ServiceProvider',
     11 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
     12 => 'LaravelLang\\Actions\\ServiceProvider',
@@ -75,6 +98,25 @@
     25 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     26 => 'Termwind\\Laravel\\TermwindServiceProvider',
     27 => 'App\\Providers\\AppServiceProvider',
+=======
+    10 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
+    11 => 'LaravelLang\\Actions\\ServiceProvider',
+    12 => 'LaravelLang\\Attributes\\ServiceProvider',
+    13 => 'LaravelLang\\Config\\ServiceProvider',
+    14 => 'LaravelLang\\HttpStatuses\\ServiceProvider',
+    15 => 'LaravelLang\\Lang\\ServiceProvider',
+    16 => 'LaravelLang\\Locales\\ServiceProvider',
+    17 => 'LaravelLang\\Models\\ServiceProvider',
+    18 => 'LaravelLang\\MoonShine\\ServiceProvider',
+    19 => 'LaravelLang\\Publisher\\ServiceProvider',
+    20 => 'LaravelLang\\Routes\\ServiceProvider',
+    21 => 'LaravelLang\\StarterKits\\ServiceProvider',
+    22 => 'Laravel\\Pail\\PailServiceProvider',
+    23 => 'Carbon\\Laravel\\ServiceProvider',
+    24 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    25 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    26 => 'App\\Providers\\AppServiceProvider',
+>>>>>>> origin/dev/valeska
   ),
   'deferred' => 
   array (
