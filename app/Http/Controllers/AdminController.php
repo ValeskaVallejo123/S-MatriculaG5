@@ -18,13 +18,13 @@ class AdminController extends Controller
             
             $query->where(function($q) use ($busqueda) {
                 $q->where('nombre', 'LIKE', "%{$busqueda}%")
-                  ->orWhere('email', 'LIKE', "%{$busqueda}%");
+                ->orWhere('email', 'LIKE', "%{$busqueda}%");
             });
         }
 
         // Ordenar y paginar
         $admins = $query->latest()
-                       ->paginate(10)
+->paginate(10)
                        ->appends($request->all()); // Mantiene parámetros en paginación
 
         return view('admins.index', compact('admins'));
@@ -160,8 +160,7 @@ class AdminController extends Controller
         
         // Quitar acentos
         $texto = str_replace(
-            ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ñ'],
-            ['a', 'e', 'i', 'o', 'u', 'n', 'a', 'e', 'i', 'o', 'u', 'n'],
+            ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ñ'], ['a', 'e', 'i', 'o', 'u', 'n', 'a', 'e', 'i', 'o', 'u', 'n'],
             $texto
         );
         
