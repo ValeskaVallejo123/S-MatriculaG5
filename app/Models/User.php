@@ -10,64 +10,37 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-<<<<<<< HEAD
-=======
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Campos que se pueden asignar masivamente.
      */
->>>>>>> origin/dev/valeska
     protected $fillable = [
         'name',
         'email',
         'password',
-<<<<<<< HEAD
-        'rol', // El rol se asignará automáticamente
-    ];
-
-=======
-        'user_type',
-        'is_super_admin',
-        'permissions',
-        'is_protected',
+        'user_type',       // Rol principal
+        'is_super_admin',  // Bool
+        'permissions',     // Guardado como array json
+        'is_protected',    // Bool
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Campos ocultos al serializar.
      */
->>>>>>> origin/dev/valeska
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * Conversión automática de tipos de datos.
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_super_admin' => 'boolean',
+        'is_protected' => 'boolean',
+        'permissions' => 'array',
     ];
-
-    public function isAdmin(): bool
-    {
-<<<<<<< HEAD
-        return $this->rol === 'admin';
-    }
-
-    public function isEstudiante(): bool
-    {
-        return $this->rol === 'estudiante';
-=======
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_super_admin' => 'boolean',
-            'is_protected' => 'boolean',
-            'permissions' => 'array',
-        ];
->>>>>>> origin/dev/valeska
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -75,40 +48,29 @@ class User extends Authenticatable
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Verificar si el usuario es Super Administrador
-     */
     public function isSuperAdmin(): bool
     {
         return $this->is_super_admin === true && $this->user_type === 'super_admin';
     }
 
-    /**
-     * Verificar si el usuario es Administrador (incluye Super Admin)
-     */
     public function isAdmin(): bool
     {
+        // Incluye super admin
         return in_array($this->user_type, ['admin', 'super_admin']);
     }
 
-    /**
-     * Verificar si el usuario es Profesor
-     */
     public function isProfesor(): bool
     {
         return $this->user_type === 'profesor';
     }
 
-    /**
-     * Verificar si el usuario es Estudiante
-     */
     public function isEstudiante(): bool
     {
         return $this->user_type === 'estudiante';
     }
 
     /**
-     * Obtener el nombre del rol en español
+     * Nombre legible del rol
      */
     public function getRoleName(): string
     {
@@ -122,25 +84,20 @@ class User extends Authenticatable
     }
 
     /**
-     * Verificar si el usuario tiene un permiso específico
+     * Verificar permisos específicos
      */
-    public function hasPermission(string $permission): bool
+    /*public function hasPermission(string $permission): bool
     {
-        // Super admin tiene todos los permisos
         if ($this->isSuperAdmin()) {
             return true;
         }
 
-        // Verificar en el array de permisos
-        if (is_array($this->permissions)) {
-            return in_array($permission, $this->permissions);
-        }
-
-        return false;
-    }
+        // Evita errores si permissions es null
+        //return in_array($permission, $this->permissions ?? []);
+    }*/
 
     /**
-     * Verificar si el usuario está protegido (no se puede eliminar)
+     * Usuario protegido (no se puede eliminar)
      */
     public function isProtected(): bool
     {

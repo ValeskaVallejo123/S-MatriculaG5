@@ -13,7 +13,7 @@
 
 @section('content')
 <div class="container" style="max-width: 1200px;">
-    
+
     <!-- Header compacto -->
     <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px;">
         <div class="card-body p-3">
@@ -52,11 +52,11 @@
             </label>
             <div class="position-relative">
                 <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                <input type="text" 
-                       class="form-control ps-5 @error('nombre') is-invalid @enderror" 
-                       id="nombre" 
-                       name="nombre" 
-                       value="{{ old('nombre') }}" 
+                <input type="text"
+                       class="form-control ps-5 @error('nombre') is-invalid @enderror"
+                       id="nombre"
+                       name="nombre"
+                       value="{{ old('nombre') }}"
                        placeholder="Ej: Juan Carlos"
                        required
                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -75,11 +75,11 @@
             </label>
             <div class="position-relative">
                 <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                <input type="text" 
-                       class="form-control ps-5 @error('apellido') is-invalid @enderror" 
-                       id="apellido" 
-                       name="apellido" 
-                       value="{{ old('apellido') }}" 
+                <input type="text"
+                       class="form-control ps-5 @error('apellido') is-invalid @enderror"
+                       id="apellido"
+                       name="apellido"
+                       value="{{ old('apellido') }}"
                        placeholder="Ej: Pérez García"
                        required
                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -98,11 +98,11 @@
             </label>
             <div class="position-relative">
                 <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                <input type="text" 
-                       class="form-control ps-5 @error('dni') is-invalid @enderror" 
-                       id="dni" 
-                       name="dni" 
-                       value="{{ old('dni') }}" 
+                <input type="text"
+                       class="form-control ps-5 @error('dni') is-invalid @enderror"
+                       id="dni"
+                       name="dni"
+                       value="{{ old('dni') }}"
                        placeholder="Ej: 0801199512345"
                        maxlength="13"
                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -121,10 +121,10 @@
             </label>
             <div class="position-relative">
                 <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                <input type="date" 
-                       class="form-control ps-5 @error('fecha_nacimiento') is-invalid @enderror" 
-                       id="fecha_nacimiento" 
-                       name="fecha_nacimiento" 
+                <input type="date"
+                       class="form-control ps-5 @error('fecha_nacimiento') is-invalid @enderror"
+                       id="fecha_nacimiento"
+                       name="fecha_nacimiento"
                        value="{{ old('fecha_nacimiento') }}"
                        required
                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -143,8 +143,8 @@
             </label>
             <div class="position-relative">
                 <i class="fas fa-venus-mars position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                <select class="form-select ps-5 @error('sexo') is-invalid @enderror" 
-                        id="sexo" 
+                <select class="form-select ps-5 @error('sexo') is-invalid @enderror"
+                        id="sexo"
                         name="sexo"
                         required
                         style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -167,11 +167,11 @@
             </label>
             <div class="position-relative">
                 <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                <input type="email" 
-                       class="form-control ps-5 @error('email') is-invalid @enderror" 
-                       id="email" 
-                       name="email" 
-                       value="{{ old('email') }}" 
+                <input type="email"
+                       class="form-control ps-5 @error('email') is-invalid @enderror"
+                       id="email"
+                       name="email"
+                       value="{{ old('email') }}"
                        placeholder="estudiante@ejemplo.com"
                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
                 @error('email')
@@ -189,16 +189,16 @@
                     <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
                         <i class="fas fa-graduation-cap me-2" style="font-size: 0.9rem;"></i>Información Académica
                     </h6>
-                    
+
                     <div class="row g-2">
                         <!-- Grado -->
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small mb-1">
                                 Grado <span class="text-danger">*</span>
                             </label>
-                            <select 
-                                name="grado" 
-                                class="form-select form-select-sm @error('grado') is-invalid @enderror" 
+                            <select
+                                name="grado"
+                                class="form-select form-select-sm @error('grado') is-invalid @enderror"
                                 required
                             >
                                 <option value="">Seleccione</option>
@@ -218,9 +218,9 @@
                             <label class="form-label fw-semibold small mb-1">
                                 Sección <span class="text-danger">*</span>
                             </label>
-                            <select 
-                                name="seccion" 
-                                class="form-select form-select-sm @error('seccion') is-invalid @enderror" 
+                            <select
+                                name="seccion"
+                                class="form-select form-select-sm @error('seccion') is-invalid @enderror"
                                 required
                             >
                                 <option value="">Seleccione</option>
@@ -240,9 +240,9 @@
                             <label class="form-label fw-semibold small mb-1">
                                 Estado <span class="text-danger">*</span>
                             </label>
-                            <select 
-                                name="estado" 
-                                class="form-select form-select-sm @error('estado') is-invalid @enderror" 
+                            <select
+                                name="estado"
+                                class="form-select form-select-sm @error('estado') is-invalid @enderror"
                                 required
                             >
                                 <option value="activo" {{ old('estado') == 'activo' ? 'selected' : '' }}>Activo</option>
@@ -260,12 +260,12 @@
                     <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
                         <i class="fas fa-clipboard me-2" style="font-size: 0.9rem;"></i>Información Adicional
                     </h6>
-                    
+
                     <div class="row g-2">
                         <div class="col-12">
                             <label class="form-label fw-semibold small mb-1">Observaciones</label>
-                            <textarea 
-                                name="observaciones" 
+                            <textarea
+                                name="observaciones"
                                 rows="2"
                                 maxlength="500"
                                 class="form-control form-control-sm @error('observaciones') is-invalid @enderror"

@@ -90,7 +90,8 @@
                 </form>
 
                 <p class="text-center mt-3">
-                  ¿No tienes cuenta? <a href="{{ route('register.show') }}" class="recover-btn">Registrarse</a>
+                  ¿No tienes cuenta? <a href="{{ route('register') }}" class="recover-btn">Registrarse</a>
+
                 </p>
 
                 <p class="text-center mt-1">

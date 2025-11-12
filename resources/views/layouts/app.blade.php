@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sistema Escolar') - Escuela Gabriela Mistral</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <style>
         * {
             margin: 0;
@@ -427,35 +427,6 @@
 
     @stack('styles')
 </head>
-<<<<<<< HEAD
-<body class="bg-gray-50 flex flex-col min-h-screen">
-
-    <!-- Navegación Principal - MINIMALISTA -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-2.5">
-                <!-- Logo y Nombre -->
-                <a href="/" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                        </svg>
-                    </div>
-                    <span class="text-lg font-bold text-gray-800">Sistema Escolar</span>
-                </a>
-
-                <!-- Menú de Navegación -->
-                <div class="hidden md:flex gap-1">
-                    <a href="{{ route('admins.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('admins.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                        Administradores
-                    </a>
-                    <a href="{{ route('estudiantes.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('estudiantes.*') ? 'bg-green-100 text-green-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                        Estudiantes
-                    </a>
-                    <a href="{{ route('profesores.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('profesores.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                        Profesores
-                    </a>
-=======
 <body>
 
     @php
@@ -468,7 +439,7 @@
     <!-- SIDEBAR (solo para admins) -->
     @if($showSidebar)
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-    
+
     <aside class="sidebar" id="sidebar">
         <!-- Header -->
         <div class="sidebar-header">
@@ -477,7 +448,6 @@
                 <div class="logo-text">
                     <h4>Gabriela Mistral</h4>
                     <p>SISTEMA ESCOLAR</p>
->>>>>>> origin/dev/valeska
                 </div>
             </a>
         </div>
@@ -514,7 +484,7 @@
 
             <!-- Gestión de Usuarios -->
             <li class="menu-section-title">Gestión de Usuarios</li>
-            
+
             @if($isSuperAdmin)
             <li class="menu-item">
                 <a href="{{ route('admins.index') }}" class="menu-link {{ request()->routeIs('admins.*') ? 'active' : '' }}">
@@ -547,7 +517,7 @@
 
             <!-- Gestión Académica -->
             <li class="menu-section-title">Gestión Académica</li>
-            
+
             <li class="menu-item">
     <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') || request()->routeIs('matriculas.*') ? 'active' : '' }}">
         <i class="fas fa-clipboard-list"></i>
@@ -585,7 +555,7 @@
 
             <!-- Configuración -->
             <li class="menu-section-title">Sistema</li>
-            
+
             <li class="menu-item">
                 <a href="{{ route('cambiarcontrasenia.edit') }}" class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
                     <i class="fas fa-key"></i>
@@ -612,12 +582,12 @@
             </div>
             <div class="topbar-right">
                 @yield('topbar-actions')
-                
+
                 <span class="text-muted small d-none d-md-inline" style="font-size: 0.8rem;">
-                    <i class="far fa-clock"></i> 
+                    <i class="far fa-clock"></i>
                     {{ now()->locale('es')->isoFormat('D MMM') }}
                 </span>
-                
+
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn-logout">
@@ -657,7 +627,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
