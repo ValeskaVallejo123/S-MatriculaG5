@@ -2,487 +2,358 @@
 
 @section('title', 'Crear Estudiante')
 
+@section('page-title', 'Nuevo Estudiante')
+
+@section('topbar-actions')
+    <a href="{{ route('estudiantes.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+@endsection
+
 @section('content')
-<div class="min-h-screen py-12">
-    <div class="max-w-5xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-600 to-green-800 rounded-2xl shadow-lg mb-6">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                </svg>
+<div class="container" style="max-width: 1200px;">
+    
+    <!-- Header compacto -->
+    <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px;">
+        <div class="card-body p-3">
+            <div class="d-flex align-items-center">
+                <div class="icon-box me-3" style="width: 45px; height: 45px; background: rgba(78, 199, 210, 0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-user-plus text-white" style="font-size: 1.3rem;"></i>
+                </div>
+                <div class="text-white">
+                    <h5 class="mb-0 fw-bold" style="font-size: 1.1rem;">Registro de Estudiante</h5>
+                    <p class="mb-0 opacity-90" style="font-size: 0.8rem;">Complete la información requerida</p>
+                </div>
             </div>
-            <h1 class="text-4xl font-bold text-gray-900 mb-3">Registro de Estudiante</h1>
-            <p class="text-lg text-gray-600">Complete el formulario con la información del nuevo estudiante</p>
-            <div class="w-24 h-1 bg-green-600 mx-auto mt-4 rounded-full"></div>
         </div>
+    </div>
 
-        <!-- Form Card -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
-            <!-- Card Header -->
-            <div class="bg-gradient-to-r from-green-600 to-green-700 px-8 py-6">
-                <h2 class="text-xl font-semibold text-white">Información del Estudiante</h2>
-                <p class="text-green-100 text-sm mt-1">Los campos marcados con asterisco son obligatorios</p>
-            </div>
-
-            <!-- Form Body -->
-            <form action="{{ route('estudiantes.store') }}" method="POST" class="p-8">
+    <!-- Formulario compacto -->
+    <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+        <div class="card-body p-3">
+            <form action="{{ route('estudiantes.store') }}" method="POST">
                 @csrf
 
-                <div class="space-y-8">
-                    <!-- Sección: Información Personal -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-green-100">
-                            Información Personal
-                        </h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Nombre -->
-                            <div>
-                                <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Nombre
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="text" 
-                                        id="nombre"
-                                        name="nombre" 
-                                        value="{{ old('nombre') }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all @error('nombre') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ingrese el nombre"
-                                        required
-                                        minlength="2"
-                                        maxlength="50"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">2-50 caracteres. Solo letras y espacios</p>
-                                @error('nombre')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
+                <!-- Información Personal -->
+<div class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-user" style="color: white; font-size: 0.9rem;"></i>
+        </div>
+        <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información Personal</h6>
+    </div>
 
-                            <!-- Apellido -->
-                            <div>
-                                <label for="apellido" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Apellido
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="text" 
-                                        id="apellido"
-                                        name="apellido" 
-                                        value="{{ old('apellido') }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all @error('apellido') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ingrese el apellido"
-                                        required
-                                        minlength="2"
-                                        maxlength="50"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">2-50 caracteres. Solo letras y espacios</p>
-                                @error('apellido')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- DNI -->
-                            <div>
-                                <label for="dni" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Número de Identidad
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="text" 
-                                        id="dni"
-                                        name="dni" 
-                                        value="{{ old('dni') }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all @error('dni') border-red-400 bg-red-50 @enderror"
-                                        placeholder="0000000000000"
-                                        required
-                                        pattern="[0-9]{13}"
-                                        maxlength="13"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Exactamente 13 dígitos. Ej: 0801199012345</p>
-                                @error('dni')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Fecha de Nacimiento -->
-                            <div>
-                                <label for="fecha_nacimiento" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Fecha de Nacimiento
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="date" 
-                                        id="fecha_nacimiento"
-                                        name="fecha_nacimiento" 
-                                        value="{{ old('fecha_nacimiento') }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all @error('fecha_nacimiento') border-red-400 bg-red-50 @enderror"
-                                        required
-                                    >
-                                </div>
-                                @error('fecha_nacimiento')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-                        </div>
+    <div class="row g-3">
+        <!-- Nombre -->
+        <div class="col-md-6">
+            <label for="nombre" class="form-label small fw-semibold" style="color: #003b73;">
+                Nombre <span style="color: #ef4444;">*</span>
+            </label>
+            <div class="position-relative">
+                <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                <input type="text" 
+                       class="form-control ps-5 @error('nombre') is-invalid @enderror" 
+                       id="nombre" 
+                       name="nombre" 
+                       value="{{ old('nombre') }}" 
+                       placeholder="Ej: Juan Carlos"
+                       required
+                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                @error('nombre')
+                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
                     </div>
+                @enderror
+            </div>
+        </div>
 
-                    <!-- Sección: Información de Contacto -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-green-100">
-                            Información de Contacto
-                        </h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Email -->
-                            <div>
-                                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Correo Electrónico
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="email" 
-                                        id="email"
-                                        name="email" 
-                                        value="{{ old('email') }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all @error('email') border-red-400 bg-red-50 @enderror"
-                                        placeholder="estudiante@correo.com"
-                                        maxlength="100"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Máximo 100 caracteres</p>
-                                @error('email')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Teléfono -->
-                            <div>
-                                <label for="telefono" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Teléfono
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="text" 
-                                        id="telefono"
-                                        name="telefono" 
-                                        value="{{ old('telefono') }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all @error('telefono') border-red-400 bg-red-50 @enderror"
-                                        placeholder="00000000"
-                                        pattern="[0-9]{8}"
-                                        maxlength="8"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Exactamente 8 dígitos. Ej: 99887766</p>
-                                @error('telefono')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Dirección -->
-                            <div class="md:col-span-2">
-                                <label for="direccion" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Dirección de Residencia
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute top-4 left-0 pl-4 pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <textarea 
-                                        id="direccion"
-                                        name="direccion" 
-                                        rows="3"
-                                        maxlength="200"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all @error('direccion') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ingrese la dirección completa del estudiante"
-                                    >{{ old('direccion') }}</textarea>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Máximo 200 caracteres</p>
-                                @error('direccion')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-                        </div>
+        <!-- Apellido -->
+        <div class="col-md-6">
+            <label for="apellido" class="form-label small fw-semibold" style="color: #003b73;">
+                Apellido <span style="color: #ef4444;">*</span>
+            </label>
+            <div class="position-relative">
+                <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                <input type="text" 
+                       class="form-control ps-5 @error('apellido') is-invalid @enderror" 
+                       id="apellido" 
+                       name="apellido" 
+                       value="{{ old('apellido') }}" 
+                       placeholder="Ej: Pérez García"
+                       required
+                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                @error('apellido')
+                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
                     </div>
+                @enderror
+            </div>
+        </div>
 
-                    <!-- Sección: Información Académica -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-green-100">
-                            Información Académica
-                        </h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Grado -->
-                            <div>
-                                <label for="grado" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Grado
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                    </div>
-                                    <select 
-                                        id="grado"
-                                        name="grado" 
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all appearance-none @error('grado') border-red-400 bg-red-50 @enderror" 
-                                        required
-                                    >
-                                        <option value="">Seleccione el grado</option>
-                                        @foreach($grados as $grado)
-                                            <option value="{{ $grado }}" {{ old('grado') == $grado ? 'selected' : '' }}>
-                                                {{ $grado }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                @error('grado')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Sección -->
-                            <div>
-                                <label for="seccion" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Sección
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                        </svg>
-                                    </div>
-                                    <select 
-                                        id="seccion"
-                                        name="seccion" 
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all appearance-none @error('seccion') border-red-400 bg-red-50 @enderror" 
-                                        required
-                                    >
-                                        <option value="">Seleccione la sección</option>
-                                        @foreach($secciones as $seccion)
-                                            <option value="{{ $seccion }}" {{ old('seccion') == $seccion ? 'selected' : '' }}>
-                                                {{ $seccion }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                @error('seccion')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Estado -->
-                            <div>
-                                <label for="estado" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Estado
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <select 
-                                        id="estado"
-                                        name="estado" 
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all appearance-none @error('estado') border-red-400 bg-red-50 @enderror" 
-                                        required
-                                    >
-                                        <option value="activo" {{ old('estado') == 'activo' ? 'selected' : '' }}>Activo</option>
-                                        <option value="inactivo" {{ old('estado') == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
-                                    </select>
-                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                @error('estado')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-                        </div>
+        <!-- DNI -->
+        <div class="col-md-6">
+            <label for="dni" class="form-label small fw-semibold" style="color: #003b73;">
+                DNI
+            </label>
+            <div class="position-relative">
+                <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                <input type="text" 
+                       class="form-control ps-5 @error('dni') is-invalid @enderror" 
+                       id="dni" 
+                       name="dni" 
+                       value="{{ old('dni') }}" 
+                       placeholder="Ej: 0801199512345"
+                       maxlength="13"
+                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                @error('dni')
+                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
                     </div>
+                @enderror
+            </div>
+        </div>
 
-                    <!-- Sección: Observaciones -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-green-100">
-                            Información Adicional
-                        </h3>
-                        
-                        <div>
-                            <label for="observaciones" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Observaciones
+        <!-- Fecha de Nacimiento -->
+        <div class="col-md-6">
+            <label for="fecha_nacimiento" class="form-label small fw-semibold" style="color: #003b73;">
+                Fecha de Nacimiento <span style="color: #ef4444;">*</span>
+            </label>
+            <div class="position-relative">
+                <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                <input type="date" 
+                       class="form-control ps-5 @error('fecha_nacimiento') is-invalid @enderror" 
+                       id="fecha_nacimiento" 
+                       name="fecha_nacimiento" 
+                       value="{{ old('fecha_nacimiento') }}"
+                       required
+                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                @error('fecha_nacimiento')
+                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                    </div>
+                @enderror
+            </div>
+        </div>
+
+        <!-- genero -->
+        <div class="col-md-6">
+            <label for="sexo" class="form-label small fw-semibold" style="color: #003b73;">
+                Genero<span style="color: #ef4444;">*</span>
+            </label>
+            <div class="position-relative">
+                <i class="fas fa-venus-mars position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                <select class="form-select ps-5 @error('sexo') is-invalid @enderror" 
+                        id="sexo" 
+                        name="sexo"
+                        required
+                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                    <option value="">Seleccionar...</option>
+                    <option value="masculino" {{ old('sexo') == 'masculino' ? 'selected' : '' }}>Masculino</option>
+                    <option value="femenino" {{ old('sexo') == 'femenino' ? 'selected' : '' }}>Femenino</option>
+                </select>
+                @error('sexo')
+                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                    </div>
+                @enderror
+            </div>
+        </div>
+
+        <!-- Email (si lo tienes) -->
+        <div class="col-md-6">
+            <label for="email" class="form-label small fw-semibold" style="color: #003b73;">
+                Email
+            </label>
+            <div class="position-relative">
+                <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                <input type="email" 
+                       class="form-control ps-5 @error('email') is-invalid @enderror" 
+                       id="email" 
+                       name="email" 
+                       value="{{ old('email') }}" 
+                       placeholder="estudiante@ejemplo.com"
+                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                @error('email')
+                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                    </div>
+                @enderror
+            </div>
+        </div>
+    </div>
+</div>
+
+                <!-- Información Académica -->
+                <div class="mb-3">
+                    <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
+                        <i class="fas fa-graduation-cap me-2" style="font-size: 0.9rem;"></i>Información Académica
+                    </h6>
+                    
+                    <div class="row g-2">
+                        <!-- Grado -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small mb-1">
+                                Grado <span class="text-danger">*</span>
                             </label>
-                            <div class="relative">
-                                <div class="absolute top-4 left-0 pl-4 pointer-events-none">
-                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                </div>
-                                <textarea 
-                                    id="observaciones"
-                                    name="observaciones" 
-                                    rows="4"
-                                    maxlength="500"
-                                    class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all @error('observaciones') border-red-400 bg-red-50 @enderror"
-                                    placeholder="Información adicional relevante sobre el estudiante (alergias, condiciones médicas, notas especiales, etc.)"
-                                >{{ old('observaciones') }}</textarea>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-2 ml-1">Opcional. Máximo 500 caracteres</p>
-                            @error('observaciones')
-                                <p class="mt-2 text-sm text-red-600 flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                    </svg>
-                                    {{ $message }}
-                                </p>
+                            <select 
+                                name="grado" 
+                                class="form-select form-select-sm @error('grado') is-invalid @enderror" 
+                                required
+                            >
+                                <option value="">Seleccione</option>
+                                @foreach($grados as $grado)
+                                    <option value="{{ $grado }}" {{ old('grado') == $grado ? 'selected' : '' }}>
+                                        {{ $grado }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('grado')
+                                <div class="invalid-feedback small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Sección -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small mb-1">
+                                Sección <span class="text-danger">*</span>
+                            </label>
+                            <select 
+                                name="seccion" 
+                                class="form-select form-select-sm @error('seccion') is-invalid @enderror" 
+                                required
+                            >
+                                <option value="">Seleccione</option>
+                                @foreach($secciones as $seccion)
+                                    <option value="{{ $seccion }}" {{ old('seccion') == $seccion ? 'selected' : '' }}>
+                                        {{ $seccion }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('seccion')
+                                <div class="invalid-feedback small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small mb-1">
+                                Estado <span class="text-danger">*</span>
+                            </label>
+                            <select 
+                                name="estado" 
+                                class="form-select form-select-sm @error('estado') is-invalid @enderror" 
+                                required
+                            >
+                                <option value="activo" {{ old('estado') == 'activo' ? 'selected' : '' }}>Activo</option>
+                                <option value="inactivo" {{ old('estado') == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+                            </select>
+                            @error('estado')
+                                <div class="invalid-feedback small">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
                 </div>
 
-                <!-- Botones de acción -->
-                <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t-2 border-gray-100">
-                    <button 
-                        type="submit"
-                        class="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-4 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
-                    >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Registrar Estudiante
+                <!-- Información Adicional -->
+                <div class="mb-3">
+                    <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
+                        <i class="fas fa-clipboard me-2" style="font-size: 0.9rem;"></i>Información Adicional
+                    </h6>
+                    
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small mb-1">Observaciones</label>
+                            <textarea 
+                                name="observaciones" 
+                                rows="2"
+                                maxlength="500"
+                                class="form-control form-control-sm @error('observaciones') is-invalid @enderror"
+                                placeholder="Información adicional (alergias, condiciones médicas, notas especiales)"
+                                style="resize: none;"
+                            >{{ old('observaciones') }}</textarea>
+                            @error('observaciones')
+                                <div class="invalid-feedback small">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones compactos -->
+                <div class="d-flex gap-2 pt-2 border-top">
+                    <button type="submit" class="btn btn-sm fw-semibold flex-fill" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); padding: 0.6rem; border-radius: 8px;">
+                        <i class="fas fa-save me-1"></i>Registrar Estudiante
                     </button>
-                    <a 
-                        href="{{ route('estudiantes.index') }}"
-                        class="flex-1 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center"
-                    >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        Cancelar
+                    <a href="{{ route('estudiantes.index') }}" class="btn btn-sm fw-semibold flex-fill" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem; border-radius: 8px;">
+                        <i class="fas fa-times me-1"></i>Cancelar
                     </a>
                 </div>
             </form>
         </div>
+    </div>
 
-        <!-- Nota informativa -->
-        <div class="mt-6 bg-green-50 border border-green-200 rounded-xl p-4">
-            <div class="flex items-start">
-                <svg class="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                </svg>
-                <div class="text-sm text-green-800">
-                    <p class="font-semibold mb-1">Información importante</p>
-                    <p>Asegúrese de verificar todos los datos antes de registrar al estudiante. El número de identidad debe ser único en el sistema.</p>
-                </div>
+    <!-- Nota compacta -->
+    <div class="alert border-0 mt-2 py-2 px-3" style="border-radius: 8px; background: rgba(78, 199, 210, 0.1); border-left: 3px solid #4ec7d2 !important; font-size: 0.85rem;">
+        <div class="d-flex align-items-start">
+            <i class="fas fa-info-circle me-2 mt-1" style="font-size: 0.9rem; color: #00508f;"></i>
+            <div>
+                <strong style="color: #00508f;">Información importante:</strong>
+                <span class="text-muted"> Verifique todos los datos. El DNI debe ser único.</span>
             </div>
         </div>
     </div>
+
 </div>
+
+@push('styles')
+<style>
+    .form-control-sm, .form-select-sm {
+        border-radius: 6px;
+        border: 1.5px solid #e2e8f0;
+        padding: 0.5rem 0.75rem;
+        transition: all 0.3s ease;
+        font-size: 0.875rem;
+    }
+
+    .form-control-sm:focus, .form-select-sm:focus {
+        border-color: #4ec7d2;
+        box-shadow: 0 0 0 0.15rem rgba(78, 199, 210, 0.15);
+    }
+
+    .form-label {
+        color: #003b73;
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+
+    small.text-muted {
+        font-size: 0.7rem;
+        display: block;
+        margin-top: 0.15rem;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+        background: #00508f !important;
+        color: white !important;
+        transform: translateY(-2px);
+    }
+
+    button[type="submit"]:hover {
+        box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important;
+    }
+
+    .border-bottom {
+        border-color: rgba(0, 80, 143, 0.15) !important;
+    }
+
+    textarea {
+        min-height: 60px !important;
+    }
+</style>
+@endpush
 @endsection

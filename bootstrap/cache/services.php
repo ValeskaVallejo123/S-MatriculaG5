@@ -25,6 +25,9 @@
     21 => 'Illuminate\\Validation\\ValidationServiceProvider',
     22 => 'Illuminate\\View\\ViewServiceProvider',
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
     23 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
     24 => 'LaravelLang\\Actions\\ServiceProvider',
     25 => 'LaravelLang\\Attributes\\ServiceProvider',
@@ -44,6 +47,7 @@
     39 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     40 => 'Termwind\\Laravel\\TermwindServiceProvider',
     41 => 'App\\Providers\\AppServiceProvider',
+<<<<<<< HEAD
 =======
     23 => 'Barryvdh\\DomPDF\\ServiceProvider',
     24 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
@@ -66,6 +70,8 @@
     41 => 'Termwind\\Laravel\\TermwindServiceProvider',
     42 => 'App\\Providers\\AppServiceProvider',
 >>>>>>> cesia-dev
+=======
+>>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
   ),
   'eager' => 
   array (
@@ -80,6 +86,9 @@
     8 => 'Illuminate\\Session\\SessionServiceProvider',
     9 => 'Illuminate\\View\\ViewServiceProvider',
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
     10 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
     11 => 'LaravelLang\\Actions\\ServiceProvider',
     12 => 'LaravelLang\\Attributes\\ServiceProvider',
@@ -97,6 +106,7 @@
     24 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     25 => 'Termwind\\Laravel\\TermwindServiceProvider',
     26 => 'App\\Providers\\AppServiceProvider',
+<<<<<<< HEAD
 =======
     10 => 'Barryvdh\\DomPDF\\ServiceProvider',
     11 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
@@ -117,6 +127,8 @@
     26 => 'Termwind\\Laravel\\TermwindServiceProvider',
     27 => 'App\\Providers\\AppServiceProvider',
 >>>>>>> cesia-dev
+=======
+>>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
   ),
   'deferred' => 
   array (

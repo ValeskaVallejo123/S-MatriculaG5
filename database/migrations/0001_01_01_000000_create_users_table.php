@@ -9,18 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->enum('rol', ['estudiante', 'admin'])->default('estudiante'); // nuevo campo
-            $table->rememberToken();
-            $table->timestamps();
-        });
+    public function up()
+{
+    Schema::table('users', function (Blueprint $table) {
+        $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])
+              ->default('estudiante')->after('email');
+        $table->boolean('is_super_admin')->default(false)->after('user_type');
+        $table->json('permissions')->nullable()->after('is_super_admin');
+        $table->boolean('is_protected')->default(false)->after('permissions');
+    });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

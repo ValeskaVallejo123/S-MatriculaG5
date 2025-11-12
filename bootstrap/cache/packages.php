@@ -1,5 +1,6 @@
 <?php return array (
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   'barryvdh/laravel-dompdf' => 
   array (
@@ -14,6 +15,8 @@
     ),
   ),
 >>>>>>> cesia-dev
+=======
+>>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
   'codezero/browser-locale' => 
   array (
     'providers' => 
