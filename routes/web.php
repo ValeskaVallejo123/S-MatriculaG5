@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController; // Añadido para sintaxis moderna
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
@@ -21,7 +21,7 @@ use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\CambiarContraseniaController;
-use App\Http\Middleware\RolMiddleware;
+// Nota: 'use' de RolMiddleware no es necesario aquí si se usa como string en el kernel.
 
 /*
 |--------------------------------------------------------------------------
@@ -50,16 +50,18 @@ Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']
 |--------------------------------------------------------------------------
 */
 
-// Login
-// Login
-Route::get('/login', 'App\Http\Controllers\Auth\LoginController@showLoginForm')->name('login');
-Route::post('/login', 'App\Http\Controllers\Auth\LoginController@login');
+// Login (Corregido a sintaxis moderna)
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
 
-// Logout
-Route::post('/logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('logout');
+// Logout (Corregido a sintaxis moderna)
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 // Registro
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
+// NOTA: Se ha eliminado la línea duplicada Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +79,37 @@ Route::post('/password/restablecer', [PasswordResetController::class, 'resetPass
 Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
     ->name('password.recuperar');
 
+
+    Route::controller(CalendarioController::class)->group(function () {
+        // 1. Mostrar el calendario
+        Route::get('/calendario', 'index')->name('calendario.index');
+        
+        // 2. Obtener datos (normalmente para AJAX/API)
+        Route::get('/calendario/eventos', 'obtenerEventos')->name('calendario.eventos');
+        
+        // 3. Crear nuevo evento
+        Route::post('/calendario/eventos', 'guardar')->name('calendario.guardar');
+        
+        // 4. Actualizar evento (usando Route Model Binding implícito)
+        Route::put('/calendario/eventos/{evento}', 'actualizar')->name('calendario.actualizar');
+        
+        // 5. Eliminar evento (usando Route Model Binding implícito)
+        Route::delete('/calendario/eventos/{evento}', 'eliminar')->name('calendario.eliminar');
+    });
+
+    Route::resource('calificaciones', CalificacionController::class)->parameters([
+        'calificaciones' => 'calificacion',
+    ]);
+
+    Route::resource('ciclos', CicloController::class);
+    Route::resource('grados', GradoController::class);
+
+
+
+
+// Rutas de registro
+Route::get('/register', [RegisterController::class, 'show'])->name('register.show');
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
 /*
 |--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS - SUPER ADMINISTRADOR
@@ -227,32 +260,24 @@ Route::middleware(['auth'])->group(function () {
     | GESTIÓN DE GRADOS
     |--------------------------------------------------------------------------
     */
-    Route::resource('grados', GradoController::class);
 
     /*
     |--------------------------------------------------------------------------
     | GESTIÓN DE CICLOS
     |--------------------------------------------------------------------------
     */
-    Route::resource('ciclos', CicloController::class);
 
     /*
     |--------------------------------------------------------------------------
     | GESTIÓN DE CALIFICACIONES
     |--------------------------------------------------------------------------
     */
-    Route::resource('calificaciones', CalificacionController::class)->parameters([
-        'calificaciones' => 'calificacion',
-    ]);
-
+    
+    
     /*
     |--------------------------------------------------------------------------
     | CALENDARIO ACADÉMICO
     |--------------------------------------------------------------------------
     */
-    Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario.index');
-    Route::get('/calendario/eventos', [CalendarioController::class, 'obtenerEventos'])->name('calendario.eventos');
-    Route::post('/calendario/eventos', [CalendarioController::class, 'guardar'])->name('calendario.guardar');
-    Route::put('/calendario/eventos/{evento}', [CalendarioController::class, 'actualizar'])->name('calendario.actualizar');
-    Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar'])->name('calendario.eliminar');
+    
 });

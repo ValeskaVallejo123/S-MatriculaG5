@@ -8,11 +8,13 @@ use Illuminate\Http\Request;
 class GradoController extends Controller
 {
     // Mostrar todos los grados
-    public function index()
-    {
-        $grados = Grado::orderBy('id')->get();
-        return view('grados.index', compact('grados'));
-    }
+   public function index()
+{
+$grados = Grado::orderBy('id')->get();
+
+    return view('grados.index', compact('grados'));
+}
+
 
     // Mostrar formulario de creación
     public function create()
