@@ -257,3 +257,4 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/dashboard', function () {
     return view('plantilla');
 })->middleware('auth')->name('dashboard');
+

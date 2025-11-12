@@ -38,6 +38,12 @@ class LoginController extends Controller
             // Obtener el usuario autenticado
             $user = Auth::user();
 
+            // Redirección específica por correo electrónico
+            if ($user->email === 'superadmin@escuelagabrielamistral.edu.hn') {
+                return redirect()->route('estudiantes.index')
+                    ->with('success', 'Bienvenido Super Administrador');
+            }
+
             // Redirigir según el rol del usuario
             if ($user->role === 'super_admin') {
                 // Redirigir al perfil del super admin
