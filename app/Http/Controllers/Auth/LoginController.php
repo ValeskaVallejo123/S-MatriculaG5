@@ -43,9 +43,9 @@ class LoginController extends Controller
             
             // Super Administrador - @egm.edu.hn
             if (Str::endsWith($user->email, '@egm.edu.hn')) {
-                return redirect()->route('estudiantes.index')
-                    ->with('success', 'Bienvenido Super Administrador');
-            }
+    return redirect()->route('dashboard')
+        ->with('success', 'Bienvenido Super Administrador');
+}
             
             // Administrador de Área - @admin.egm.edu.hn
             elseif (Str::endsWith($user->email, '@admin.egm.edu.hn')) {
@@ -66,10 +66,10 @@ class LoginController extends Controller
             }
             
             // Estudiante - @estudiante.egm.edu.hn
-            elseif (Str::endsWith($user->email, '@estudiante.egm.edu.hn')) {
-                return redirect()->route('estudiante.dashboard')
-                    ->with('success', 'Bienvenido Estudiante');
-            }
+           if (Str::endsWith($user->email, '@egm.edu.hn')) {
+    return redirect()->route('superadmin.dashboard')
+        ->with('success', 'Bienvenido Super Administrador');
+}
             
             // Correo no autorizado
             else {

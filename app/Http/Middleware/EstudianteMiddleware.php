@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-class AdminMiddleware
+class EstudianteMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Str::endsWith(Auth::user()->email, '@admin.egm.edu.hn')) {
+        if (Auth::check() && Str::endsWith(Auth::user()->email, '@estudiante.egm.edu.hn')) {
             return $next($request);
         }
 

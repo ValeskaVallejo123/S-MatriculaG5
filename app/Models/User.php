@@ -71,10 +71,9 @@ class User extends Authenticatable
      * Verificar si el usuario es Administrador (incluye Super Admin)
      */
     public function isAdmin(): bool
-    {
-        return in_array($this->user_type, ['admin', 'super_admin']);
-    }
-
+{
+    return in_array($this->user_type, ['admin', 'super_admin']); // ← Esto usa user_type
+}
     /**
      * Verificar si el usuario es Profesor
      */

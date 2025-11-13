@@ -471,16 +471,23 @@
             </div>
         </div>
 
-        <!-- Menu -->
-        <ul class="sidebar-menu">
-            <!-- Inicio -->
+        <!-- Inicio -->
 <li class="menu-section-title">Principal</li>
 <li class="menu-item">
-    <a href="{{ route('dashboard') }}" class="menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+    <a href="{{ url('/') }}" class="menu-link">
         <i class="fas fa-home"></i>
         <span>Inicio</span>
     </a>
 </li>
+
+@if($isSuperAdmin)
+<li class="menu-item">
+    <a href="{{ route('superadmin.dashboard') }}" class="menu-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+    </a>
+</li>
+@endif
 
             <!-- Gestión de Usuarios -->
             <li class="menu-section-title">Gestión de Usuarios</li>

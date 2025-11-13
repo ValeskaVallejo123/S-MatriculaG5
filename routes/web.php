@@ -258,3 +258,10 @@ Route::get('/dashboard', function () {
     return view('plantilla');
 })->middleware('auth')->name('dashboard');
 
+// Dashboard Super Admin
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// Dashboard Super Administrador (requiere autenticación)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/superadmin/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
+});
