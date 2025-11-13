@@ -265,3 +265,4 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::middleware(['auth'])->group(function () {
     Route::get('/superadmin/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
 });
+Route::get('/profesores/dashboard', [ProfesorController::class, 'index'])->name('profesores.dashboard');
