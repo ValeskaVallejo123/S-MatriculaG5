@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -38,23 +39,44 @@ class LoginController extends Controller
             // Obtener el usuario autenticado
             $user = Auth::user();
 
-            // Redirección específica por correo electrónico
-            if ($user->email === 'superadmin@escuelagabrielamistral.edu.hn') {
+            // Redirección según el dominio del correo electrónico
+            
+            // Super Administrador - @egm.edu.hn
+            if (Str::endsWith($user->email, '@egm.edu.hn')) {
                 return redirect()->route('estudiantes.index')
                     ->with('success', 'Bienvenido Super Administrador');
             }
-
-            // Redirigir según el rol del usuario
-            if ($user->role === 'super_admin') {
-                // Redirigir al perfil del super admin
-                return redirect()->route('superadmin.perfil')
-                    ->with('success', 'Bienvenido Super Administrador');
-            } elseif ($user->role === 'admin') {
-                return redirect()->intended('/dashboard')
+            
+            // Administrador de Área - @admin.egm.edu.hn
+            elseif (Str::endsWith($user->email, '@admin.egm.edu.hn')) {
+                return redirect()->route('admin.dashboard')
                     ->with('success', 'Bienvenido Administrador');
-            } else {
-                return redirect()->intended('/dashboard')
-                    ->with('success', 'Bienvenido');
+            }
+            
+            // Profesor - @profesor.egm.edu.hn
+            elseif (Str::endsWith($user->email, '@profesor.egm.edu.hn')) {
+                return redirect()->route('profesor.dashboard')
+                    ->with('success', 'Bienvenido Profesor');
+            }
+            
+            // Padre o Tutor - @padre.egm.edu.hn
+            elseif (Str::endsWith($user->email, '@padre.egm.edu.hn')) {
+                return redirect()->route('padre.dashboard')
+                    ->with('success', 'Bienvenido Padre/Tutor');
+            }
+            
+            // Estudiante - @estudiante.egm.edu.hn
+            elseif (Str::endsWith($user->email, '@estudiante.egm.edu.hn')) {
+                return redirect()->route('estudiante.dashboard')
+                    ->with('success', 'Bienvenido Estudiante');
+            }
+            
+            // Correo no autorizado
+            else {
+                Auth::logout();
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Correo no autorizado para este sistema.'
+                ]);
             }
         }
 
