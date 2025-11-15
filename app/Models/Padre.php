@@ -14,7 +14,7 @@ class Padre extends Model
         'dni',
         'parentesco',
         'parentesco_otro',
-        'email',
+         'correo',
         'telefono',
         'telefono_secundario',
         'direccion',
@@ -62,4 +62,29 @@ class Padre extends Model
     {
         return $this->belongsToMany(Estudiante::class, 'matriculas');
     }
+
+    /**
+ * Relación con permisos
+ */
+public function permisos()
+{
+    return $this->hasMany(PadrePermiso::class);
+}
+
+/**
+ * Obtener permisos para un estudiante específico
+ */
+public function permisosParaEstudiante($estudianteId)
+{
+    return $this->permisos()->where('estudiante_id', $estudianteId)->first();
+}
+
+/**
+ * Verificar si tiene permiso para un estudiante
+ */
+public function tienePermiso($estudianteId, $permiso)
+{
+    $permisoConfig = $this->permisosParaEstudiante($estudianteId);
+    return $permisoConfig ? $permisoConfig->tienePermiso($permiso) : false;
+}
 }

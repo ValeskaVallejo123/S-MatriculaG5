@@ -11,6 +11,10 @@
         </a>
         <a href="{{ route('estudiantes.index') }}" class="btn btn-sm" style="background: white; color: #00508f; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 2px solid #00508f;">
             <i class="fas fa-arrow-left me-1"></i>Volver
+
+            <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}" class="btn btn-primary">
+    <i class="fas fa-link"></i> Vincular Padre/Tutor
+</a>
         </a>
     </div>
 @endsection

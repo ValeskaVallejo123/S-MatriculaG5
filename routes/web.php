@@ -21,7 +21,13 @@ use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\CambiarContraseniaController;
+
 // Nota: 'use' de RolMiddleware no es necesario aquí si se usa como string en el kernel.
+
+use App\Http\Controllers\PadrePermisoController;
+ use App\Http\Controllers\PadreController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -279,5 +285,115 @@ Route::middleware(['auth'])->group(function () {
     | CALENDARIO ACADÉMICO
     |--------------------------------------------------------------------------
     */
+    
+
+});
+    // Rutas adicionales para cambiar estados
+    Route::post('matriculas/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])
+        ->name('matriculas.confirmar');
+    
+    Route::post('matriculas/{matricula}/rechazar', [MatriculaController::class, 'rechazar'])
+        ->name('matriculas.rechazar');
+    
+    Route::post('matriculas/{matricula}/cancelar', [MatriculaController::class, 'cancelar'])
+        ->name('matriculas.cancelar');
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Ruta para crear matrícula
+    Route::get('matriculas/create', [MatriculaController::class, 'create'])->name('matriculas.create');
+});
+
+Route::get('/dashboard', function () {
+    return view('plantilla');
+})->middleware('auth')->name('dashboard');
+
+// Dashboard Super Admin
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// Dashboard Super Administrador (requiere autenticación)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/superadmin/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
+});
+Route::get('/profesores/dashboard', [ProfesorController::class, 'index'])->name('profesores.dashboard');
+
+
+// Grupo de rutas protegidas por autenticación
+Route::middleware(['auth'])->group(function () {
+    
+    // Índice de gestión de permisos
+    Route::get('/admins/permisos', [PadrePermisoController::class, 'index'])
+        ->name('admins.permisos.index');
+    
+    // Configurar permisos de un padre específico
+    Route::get('/admins/permisos/{padre}/configurar', [PadrePermisoController::class, 'configurar'])
+        ->name('admins.permisos.configurar');
+    
+    // Guardar configuración de permisos
+    Route::post('/admins/permisos/{padre}/guardar', [PadrePermisoController::class, 'guardar'])
+        ->name('admins.permisos.guardar');
+    
+    // Establecer permisos por defecto
+    Route::get('/admins/permisos/{padre}/{estudiante}/defecto', [PadrePermisoController::class, 'establecerDefecto'])
+        ->name('admins.permisos.defecto');
+    
+    // Eliminar configuración de permisos
+    Route::delete('/admins/permisos/{padre}/{estudiante}', [PadrePermisoController::class, 'eliminar'])
+        ->name('admins.permisos.eliminar');
+    
+    // Activar/Desactivar todos los permisos
+    Route::post('/admins/permisos/{padre}/{estudiante}/toggle', [PadrePermisoController::class, 'toggleTodos'])
+        ->name('admins.permisos.toggle');
+});
+
+// Dashboards por rol
+Route::middleware(['auth'])->group(function () {
+    
+    // Dashboard de Padres
+    Route::get('/padres/dashboard', function() {
+        return view('padres.dashboard');
+    })->name('padres.dashboard');
+    
+    // Dashboard de Estudiantes
+    Route::get('/estudiantes/dashboard', function() {
+        return view('estudiantes.dashboard');
+    })->name('estudiantes.dashboard');
+    
+    // Dashboard de Profesores
+    Route::get('/profesores/dashboard', function() {
+        return view('profesores.dashboard');
+    })->name('profesores.dashboard');
+    
+    // Dashboard de Admins (si no existe)
+    Route::get('/admin/dashboard', function() {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+    
+    // Home general (para correos públicos)
+    Route::get('/home', function() {
+        return redirect()->route('matriculas.index');
+    })->name('home');
+    
+});
+
+Route::middleware(['auth'])->group(function () {
+    
+    // Búsqueda y vinculación de padres
+    Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar');
+    Route::post('/padres/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
+    
+   
+Route::get('/padres/buscar', [PadreController::class, 'buscar']);
+});
+
+Route::middleware(['auth'])->group(function () {
+    
+    //  IMPORTANTE: Rutas personalizadas ANTES del resource
+    Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar');
+    Route::post('/padres/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
+    Route::post('/padres/desvincular', [PadreController::class, 'desvincular'])->name('padres.desvincular');
+    
+    // CRUD de Padres (esto debe ir DESPUÉS de las rutas personalizadas)
+    Route::resource('padres', PadreController::class);
     
 });

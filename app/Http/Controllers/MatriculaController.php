@@ -13,22 +13,47 @@ class MatriculaController extends Controller
     /**
      * Listado de matrículas
      */
-    public function index()
-    {
-        $matriculas = Matricula::with(['padre', 'estudiante'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-
-        // Estadísticas
-        $counts = [
-            'total' => Matricula::count(),
-            'pendiente' => Matricula::where('estado', 'pendiente')->count(),
-            'aprobada' => Matricula::where('estado', 'aprobada')->count(),
-            'rechazada' => Matricula::where('estado', 'rechazada')->count(),
-        ];
-
-        return view('matriculas.index', compact('matriculas', 'counts'));
+    public function index(Request $request)
+{
+    $query = Matricula::with(['estudiante', 'padre']);
+    
+    // Filtro de búsqueda
+    if ($request->filled('buscar')) {
+        $buscar = $request->buscar;
+        $query->whereHas('estudiante', function($q) use ($buscar) {
+            $q->where('nombre', 'like', "%{$buscar}%")
+              ->orWhere('apellido', 'like', "%{$buscar}%")
+              ->orWhere('dni', 'like', "%{$buscar}%");
+        });
     }
+    
+    // Filtro por grado
+    if ($request->filled('grado')) {
+        $query->whereHas('estudiante', function($q) use ($request) {
+            $q->where('grado', $request->grado);
+        });
+    }
+    
+    // Filtro por estado
+    if ($request->filled('estado')) {
+        $query->where('estado', $request->estado);
+    }
+    
+    // Filtro por año lectivo
+    if ($request->filled('anio')) {
+        $query->where('anio_lectivo', $request->anio);
+    }
+    
+    // Obtener matrículas paginadas
+    $matriculas = $query->latest()->paginate(15);
+    
+    // Estadísticas
+    $aprobadas = Matricula::where('estado', 'aprobada')->count();
+    $pendientes = Matricula::where('estado', 'pendiente')->count();
+    $rechazadas = Matricula::where('estado', 'rechazada')->count();
+    
+    return view('matriculas.index', compact('matriculas', 'aprobadas', 'pendientes', 'rechazadas'));
+}
 
     /**
      * Formulario para crear matrícula
