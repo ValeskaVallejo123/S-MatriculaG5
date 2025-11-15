@@ -1,337 +1,571 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard')
-@section('page-title', 'Panel de Control')
+
+@section('page-title', 'Panel de Control - Super Administrador')
 
 @section('content')
-<div class="container mx-auto px-4 py-6 max-w-7xl">
-    
-    <!-- Encabezado con Saludo -->
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">
-            Bienvenido, {{ auth()->user()->nombre ?? 'Administrador' }} 👋
-        </h1>
-        <p class="text-sm text-gray-600 mt-1">
-            Hoy es {{ \Carbon\Carbon::now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }} | {{ now()->format('h:i A') }}
-        </p>
+<div class="container-fluid" style="max-width: 1400px;">
+
+    <!-- Mensaje de bienvenida -->
+    <div class="welcome-banner mb-4" style="background: linear-gradient(135deg, #003b73 0%, #00508f 100%); border-radius: 12px; padding: 1.5rem 2rem; color: white; box-shadow: 0 4px 15px rgba(0, 59, 115, 0.2);">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-1" style="font-weight: 700;">
+                    <i class="fas fa-crown" style="color: #4ec7d2;"></i>
+                    ¡Bienvenido, {{ auth()->user()->name }}!
+                </h4>
+                <p class="mb-0" style="font-size: 0.9rem; opacity: 0.9;">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
+                    @if($periodoActual)
+                        <span class="ms-3">
+                            <i class="fas fa-circle-dot" style="color: #4ec7d2;"></i>
+                            Período Actual: <strong>{{ $periodoActual->nombre_periodo }}</strong>
+                        </span>
+                    @endif
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: white; padding: 0.5rem 1rem; font-size: 0.85rem; border: 1px solid rgba(78, 199, 210, 0.3);">
+                    <i class="fas fa-user-shield"></i> Super Administrador
+                </span>
+            </div>
+        </div>
     </div>
 
     <!-- Tarjetas de Estadísticas Principales -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        
-        <!-- Total Estudiantes -->
-        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition transform hover:-translate-y-1">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-blue-100 text-sm font-medium mb-1">Total Estudiantes</p>
-                    <p class="text-4xl font-bold">{{ $stats['total_estudiantes'] }}</p>
-                    <p class="text-blue-100 text-xs mt-2">
-                        <span class="font-semibold">+{{ $stats['estudiantes_hoy'] }}</span> nuevos hoy
-                    </p>
+    <div class="row g-3 mb-4">
+        <!-- Estudiantes -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; padding: 1.5rem; color: white; box-shadow: 0 4px 15px rgba(78, 199, 210, 0.3); position: relative; overflow: hidden;">
+                <div class="stat-icon" style="position: absolute; right: -10px; top: -10px; font-size: 6rem; opacity: 0.15;">
+                    <i class="fas fa-user-graduate"></i>
                 </div>
-                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Profesores -->
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition transform hover:-translate-y-1">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-purple-100 text-sm font-medium mb-1">Total Profesores</p>
-                    <p class="text-4xl font-bold">{{ $stats['total_profesores'] }}</p>
-                    <p class="text-purple-100 text-xs mt-2">
-                        <span class="font-semibold">+{{ $stats['profesores_hoy'] }}</span> nuevos hoy
-                    </p>
-                </div>
-                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
+                <div style="position: relative; z-index: 1;">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-box" style="background: rgba(255, 255, 255, 0.2); width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                            <i class="fas fa-user-graduate" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0" style="font-size: 0.8rem; opacity: 0.9;">Total Estudiantes</p>
+                            <h2 class="mb-0" style="font-weight: 800; font-size: 2rem;">{{ $totalEstudiantes }}</h2>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2" style="border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                        <span style="font-size: 0.85rem;">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>{{ $estudiantesActivos }}</strong> Activos
+                        </span>
+                        <a href="{{ route('estudiantes.index') }}" class="float-end text-white" style="font-size: 0.85rem; text-decoration: none;">
+                            Ver todos <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Total Matrículas -->
-        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition transform hover:-translate-y-1">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-green-100 text-sm font-medium mb-1">Total Matrículas</p>
-                    <p class="text-4xl font-bold">{{ $stats['total_matriculas'] }}</p>
-                    <p class="text-green-100 text-xs mt-2">
-                        <span class="font-semibold">+{{ $stats['matriculas_hoy'] }}</span> nuevas hoy
-                    </p>
+        <!-- Profesores -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1.5rem; color: white; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); position: relative; overflow: hidden;">
+                <div class="stat-icon" style="position: absolute; right: -10px; top: -10px; font-size: 6rem; opacity: 0.15;">
+                    <i class="fas fa-chalkboard-teacher"></i>
                 </div>
-                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Padres -->
-        <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition transform hover:-translate-y-1">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-amber-100 text-sm font-medium mb-1">Padres/Tutores</p>
-                    <p class="text-4xl font-bold">{{ $stats['total_padres'] }}</p>
-                    <p class="text-amber-100 text-xs mt-2">Registrados</p>
-                </div>
-                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Estado de Matrículas -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        
-        <!-- Pendientes -->
-        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-yellow-500 hover:shadow-md transition">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Matrículas Pendientes</p>
-                    <p class="text-3xl font-bold text-yellow-600">{{ $stats['matriculas_pendientes'] }}</p>
-                    <a href="{{ route('matriculas.index') }}?estado=pendiente" class="text-xs text-yellow-600 hover:text-yellow-800 font-medium mt-2 inline-block">
-                        Ver todas →
-                    </a>
-                </div>
-                <div class="w-14 h-14 bg-yellow-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                <div style="position: relative; z-index: 1;">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-box" style="background: rgba(255, 255, 255, 0.2); width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                            <i class="fas fa-chalkboard-teacher" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0" style="font-size: 0.8rem; opacity: 0.9;">Total Profesores</p>
+                            <h2 class="mb-0" style="font-weight: 800; font-size: 2rem;">{{ $totalProfesores }}</h2>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2" style="border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                        <span style="font-size: 0.85rem;">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>{{ $profesoresActivos }}</strong> Activos
+                        </span>
+                        <a href="{{ route('profesores.index') }}" class="float-end text-white" style="font-size: 0.85rem; text-decoration: none;">
+                            Ver todos <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Aprobadas -->
-        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500 hover:shadow-md transition">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Matrículas Aprobadas</p>
-                    <p class="text-3xl font-bold text-green-600">{{ $stats['matriculas_aprobadas'] }}</p>
-                    <a href="{{ route('matriculas.index') }}?estado=aprobada" class="text-xs text-green-600 hover:text-green-800 font-medium mt-2 inline-block">
-                        Ver todas →
-                    </a>
+        <!-- Matrículas -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 1.5rem; color: white; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3); position: relative; overflow: hidden;">
+                <div class="stat-icon" style="position: absolute; right: -10px; top: -10px; font-size: 6rem; opacity: 0.15;">
+                    <i class="fas fa-clipboard-list"></i>
                 </div>
-                <div class="w-14 h-14 bg-green-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                <div style="position: relative; z-index: 1;">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-box" style="background: rgba(255, 255, 255, 0.2); width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                            <i class="fas fa-clipboard-list" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0" style="font-size: 0.8rem; opacity: 0.9;">Total Matrículas</p>
+                            <h2 class="mb-0" style="font-weight: 800; font-size: 2rem;">{{ $totalMatriculas }}</h2>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2" style="border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                        <span style="font-size: 0.85rem;">
+                            <i class="fas fa-check-circle"></i>
+                            <strong>{{ $matriculasAprobadas }}</strong> Aprobadas
+                        </span>
+                        <a href="{{ route('matriculas.index') }}" class="float-end text-white" style="font-size: 0.85rem; text-decoration: none;">
+                            Ver todas <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Rechazadas -->
-        <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-red-500 hover:shadow-md transition">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-gray-600 uppercase mb-1">Matrículas Rechazadas</p>
-                    <p class="text-3xl font-bold text-red-600">{{ $stats['matriculas_rechazadas'] }}</p>
-                    <a href="{{ route('matriculas.index') }}?estado=rechazada" class="text-xs text-red-600 hover:text-red-800 font-medium mt-2 inline-block">
-                        Ver todas →
-                    </a>
+        <!-- Cursos -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 12px; padding: 1.5rem; color: white; box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3); position: relative; overflow: hidden;">
+                <div class="stat-icon" style="position: absolute; right: -10px; top: -10px; font-size: 6rem; opacity: 0.15;">
+                    <i class="fas fa-book-open"></i>
                 </div>
-                <div class="w-14 h-14 bg-red-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
+                <div style="position: relative; z-index: 1;">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="icon-box" style="background: rgba(255, 255, 255, 0.2); width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+                            <i class="fas fa-book-open" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0" style="font-size: 0.8rem; opacity: 0.9;">Total Cursos</p>
+                            <h2 class="mb-0" style="font-weight: 800; font-size: 2rem;">{{ $totalCursos }}</h2>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2" style="border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                        <span style="font-size: 0.85rem;">
+                            <i class="fas fa-clock"></i>
+                            Activos
+                        </span>
+                        <span class="float-end" style="font-size: 0.85rem;">
+                            <i class="fas fa-chart-line"></i> Gestión
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Grid de 2 columnas -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        
+    <!-- Tarjetas Secundarias -->
+    <div class="row g-3 mb-4">
+        <!-- Usuarios del Sistema -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #00508f;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1" style="font-size: 0.75rem;">Usuarios Sistema</p>
+                            <h4 class="mb-0" style="color: #003b73; font-weight: 700;">{{ $totalUsuarios }}</h4>
+                        </div>
+                        <div class="icon-box" style="background: rgba(0, 80, 143, 0.1); width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-users" style="font-size: 1.3rem; color: #00508f;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Administradores -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #4ec7d2;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1" style="font-size: 0.75rem;">Administradores</p>
+                            <h4 class="mb-0" style="color: #003b73; font-weight: 700;">{{ $totalAdministradores }}</h4>
+                        </div>
+                        <div class="icon-box" style="background: rgba(78, 199, 210, 0.1); width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-shield" style="font-size: 1.3rem; color: #4ec7d2;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Matrículas Pendientes -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #f59e0b;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1" style="font-size: 0.75rem;">Mat. Pendientes</p>
+                            <h4 class="mb-0" style="color: #003b73; font-weight: 700;">{{ $matriculasPendientes }}</h4>
+                        </div>
+                        <div class="icon-box" style="background: rgba(245, 158, 11, 0.1); width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-clock" style="font-size: 1.3rem; color: #f59e0b;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acción Rápida -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.05) 100%);">
+                <div class="card-body p-3">
+                    <div class="text-center">
+                        <p class="text-muted mb-2" style="font-size: 0.75rem;">Acción Rápida</p>
+                        <a href="{{ route('estudiantes.create') }}" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; font-weight: 600; padding: 0.5rem;">
+                            <i class="fas fa-plus"></i> Nuevo Estudiante
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos y Tablas -->
+    <div class="row g-3 mb-4">
         <!-- Estudiantes por Grado -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                <h2 class="text-lg font-bold text-gray-800">Estudiantes por Grado</h2>
-                <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
-                    {{ $stats['total_estudiantes'] }} Total
-                </span>
-            </div>
-            <div class="p-6">
-                @if($estudiantesPorGrado->count() > 0)
-                    <div class="space-y-3">
-                        @foreach($estudiantesPorGrado as $grado)
-                            @php
-                                $porcentaje = $stats['total_estudiantes'] > 0 ? ($grado->total / $stats['total_estudiantes']) * 100 : 0;
-                            @endphp
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm font-medium text-gray-700">{{ $grado->grado }}</span>
-                                    <span class="text-sm font-bold text-blue-600">{{ $grado->total }} estudiantes</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-blue-600 h-2.5 rounded-full transition-all" style="width: {{ $porcentaje }}%"></div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="text-center py-12">
-                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                        </svg>
-                        <p class="text-sm text-gray-500">No hay estudiantes registrados</p>
-                    </div>
-                @endif
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="mb-0" style="color: #003b73; font-weight: 700;">
+                        <i class="fas fa-chart-bar" style="color: #4ec7d2;"></i>
+                        Estudiantes por Grado
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+                    @if($estudiantesPorGrado->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <tbody>
+                              @foreach($estudiantesPorGrado as $item)
+<tr>
+    <td style="border: none; padding: 0.5rem 0;">
+        <span style="color: #003b73; font-weight: 600; font-size: 0.85rem;">{{ $item->grado }}</span>
+    </td>
+    <td style="border: none; padding: 0.5rem 0; width: 50%;">
+        @php 
+            $porcentaje = $totalEstudiantes > 0 ? round(($item->total / $totalEstudiantes) * 100) : 0;
+        @endphp
+        <div class="progress" style="height: 8px; border-radius: 10px; background: rgba(78, 199, 210, 0.1);">
+            <div class="progress-bar bg-gradient-custom" role="progressbar" aria-valuenow="<?php echo $porcentaje; ?>" aria-valuemin="0" aria-valuemax="100" style="border-radius: 10px; width: <?php echo $porcentaje; ?>%"></div>
+        </div>
+    </td>
+    <td class="text-end" style="border: none; padding: 0.5rem 0;">
+        <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; font-weight: 700;">{{ $item->total }}</span>
+    </td>
+</tr>
+@endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-3 text-muted">
+                            <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="mb-0 mt-2">No hay datos disponibles</p>
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
 
-        <!-- Actividad Reciente -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-bold text-gray-800">Actividad Reciente</h2>
-            </div>
-            <div class="p-6">
-                @if(count($actividad_reciente) > 0)
-                    <div class="space-y-4">
-                        @foreach(array_slice($actividad_reciente, 0, 5) as $actividad)
-                            <div class="flex items-start gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                                <div class="w-10 h-10 bg-{{ $actividad['color'] }}-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5 text-{{ $actividad['color'] }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-800">{{ $actividad['mensaje'] }}</p>
-                                    <p class="text-xs text-gray-500 mt-1">{{ $actividad['fecha']->diffForHumans() }}</p>
+        <!-- Estudiantes por Sección -->
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="mb-0" style="color: #003b73; font-weight: 700;">
+                        <i class="fas fa-chart-pie" style="color: #4ec7d2;"></i>
+                        Estudiantes por Sección
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+                    @if($estudiantesPorSeccion->count() > 0)
+                        <div class="row g-2">
+                            @foreach($estudiantesPorSeccion as $item)
+                            <div class="col-4">
+                                <div class="text-center p-3" style="background: rgba(78, 199, 210, 0.05); border-radius: 10px; border: 2px solid rgba(78, 199, 210, 0.2);">
+                                    <h3 class="mb-0" style="color: #00508f; font-weight: 800;">{{ $item->seccion }}</h3>
+                                    <p class="text-muted mb-0" style="font-size: 0.75rem;">Sección</p>
+                                    <h4 class="mb-0 mt-2" style="color: #003b73; font-weight: 700;">{{ $item->total }}</h4>
+                                    <small class="text-muted">estudiantes</small>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="text-center py-12">
-                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                        <p class="text-sm text-gray-500">No hay actividad reciente</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <!-- Últimas Matrículas -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 class="text-lg font-bold text-gray-800">Últimas Matrículas</h2>
-            <a href="{{ route('matriculas.index') }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                Ver todas →
-            </a>
-        </div>
-        <div class="p-6">
-            @if($ultimasMatriculas->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-gray-200">
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Estudiante</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Padre/Tutor</th>
-                                <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Grado</th>
-                                <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Estado</th>
-                                <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Fecha</th>
-                                <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($ultimasMatriculas as $matricula)
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                                    <td class="py-3 px-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <span class="text-white font-bold text-sm">
-                                                    {{ strtoupper(substr($matricula->estudiante->nombre ?? 'E', 0, 1)) }}{{ strtoupper(substr($matricula->estudiante->apellido ?? 'E', 0, 1)) }}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm font-semibold text-gray-900">{{ $matricula->estudiante->nombre_completo ?? 'N/A' }}</p>
-                                                <p class="text-xs text-gray-500">{{ $matricula->estudiante->dni ?? 'Sin DNI' }}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-4">
-                                        <p class="text-sm text-gray-700">{{ $matricula->padre->nombre_completo ?? 'N/A' }}</p>
-                                    </td>
-                                    <td class="py-3 px-4">
-                                        <p class="text-sm text-gray-700">{{ $matricula->estudiante->grado ?? 'N/A' }}</p>
-                                    </td>
-                                    <td class="py-3 px-4 text-center">
-                                        <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full
-                                            @if($matricula->estado == 'aprobada') bg-green-100 text-green-700
-                                            @elseif($matricula->estado == 'pendiente') bg-yellow-100 text-yellow-700
-                                            @else bg-red-100 text-red-700
-                                            @endif">
-                                            {{ ucfirst($matricula->estado) }}
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-4 text-center">
-                                        <p class="text-sm text-gray-600">{{ $matricula->created_at->format('d/m/Y') }}</p>
-                                    </td>
-                                    <td class="py-3 px-4 text-center">
-                                        <a href="{{ route('matriculas.show', $matricula) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                            Ver detalles
-                                        </a>
-                                    </td>
-                                </tr>
                             @endforeach
-                        </tbody>
-                    </table>
+                        </div>
+                    @else
+                        <div class="text-center py-3 text-muted">
+                            <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="mb-0 mt-2">No hay datos disponibles</p>
+                        </div>
+                    @endif
                 </div>
-            @else
-                <div class="text-center py-12">
-                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <p class="text-sm text-gray-500">No hay matrículas registradas</p>
-                </div>
-            @endif
+            </div>
         </div>
     </div>
 
-    <!-- Acciones Rápidas -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl shadow-lg p-8 text-white">
-        <h2 class="text-2xl font-bold mb-6">Acciones Rápidas</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <a href="{{ route('estudiantes.create') }}" class="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-xl p-6 text-center transition transform hover:scale-105">
-                <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                </svg>
-                <span class="text-sm font-semibold">Nuevo Estudiante</span>
-            </a>
+    <!-- Profesores por Especialidad -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="mb-0" style="color: #003b73; font-weight: 700;">
+                        <i class="fas fa-graduation-cap" style="color: #4ec7d2;"></i>
+                        Top 5 Especialidades de Profesores
+                    </h6>
+                </div>
+                <div class="card-body p-3">
+                    @if($profesoresPorEspecialidad->count() > 0)
+                        <div class="row g-2">
+                            @foreach($profesoresPorEspecialidad as $item)
+                            <div class="col-xl col-md-4 col-sm-6">
+                                <div class="p-3 text-center" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%); border-radius: 10px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                                    <i class="fas fa-book" style="font-size: 1.5rem; color: #667eea; margin-bottom: 0.5rem;"></i>
+                                    <h5 class="mb-1" style="color: #003b73; font-weight: 700;">{{ $item->total }}</h5>
+                                    <p class="mb-0 small text-muted" style="font-size: 0.75rem;">{{ $item->especialidad }}</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-3 text-muted">
+                            <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="mb-0 mt-2">No hay datos disponibles</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <a href="{{ route('matriculas.create') }}" class="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-xl p-6 text-center transition transform hover:scale-105">
-                <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <span class="text-sm font-semibold">Nueva Matrícula</span>
-            </a>
+    <!-- Últimas Actividades -->
+    <div class="row g-3">
+        <!-- Últimas Matrículas -->
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; height: 100%;">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="mb-0" style="color: #003b73; font-weight: 700;">
+                        <i class="fas fa-clipboard-list" style="color: #4ec7d2;"></i>
+                        Últimas Matrículas
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    @if($ultimasMatriculas->count() > 0)
+                        <div class="list-group list-group-flush">
+                            @foreach($ultimasMatriculas as $matricula)
+                            <div class="list-group-item border-0 py-2 px-3" style="font-size: 0.85rem;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <strong style="color: #003b73;">{{ $matricula->estudiante->nombre_completo ?? 'N/A' }}</strong>
+                                        <p class="mb-0 small text-muted">{{ $matricula->codigo }}</p>
+                                    </div>
+                                    <span class="badge rounded-pill badge-estado-{{ $matricula->estado }}">
+                                        {{ ucfirst($matricula->estado) }}
+                                    </span>
+                                </div>
+                                <small class="text-muted" style="font-size: 0.7rem;">
+                                    <i class="far fa-clock"></i>
+                                    {{ $matricula->created_at->diffForHumans() }}
+                                </small>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="mb-0 mt-2 small">No hay matrículas recientes</p>
+                        </div>
+                    @endif
+                </div>
+                <div class="card-footer bg-white border-0 py-2 text-center">
+                    <a href="{{ route('matriculas.index') }}" style="color: #00508f; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                        Ver todas las matrículas <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-            <a href="{{ route('profesores.create') }}" class="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-xl p-6 text-center transition transform hover:scale-105">
-                <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                </svg>
-                <span class="text-sm font-semibold">Nuevo Profesor</span>
-            </a>
+        <!-- Estudiantes Recientes -->
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; height: 100%;">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="mb-0" style="color: #003b73; font-weight: 700;">
+                        <i class="fas fa-user-graduate" style="color: #4ec7d2;"></i>
+                        Estudiantes Recientes
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    @if($estudiantesRecientes->count() > 0)
+                        <div class="list-group list-group-flush">
+                            @foreach($estudiantesRecientes as $estudiante)
+                            <div class="list-group-item border-0 py-2 px-3" style="font-size: 0.85rem;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="{{ asset('storage/' . $estudiante->foto) }}" 
+                                         class="rounded-circle object-fit-cover" 
+                                         style="width: 35px; height: 35px; border: 2px solid #4ec7d2;"
+                                         alt="Foto">
+                                    <div class="flex-grow-1">
+                                        <strong style="color: #003b73; font-size: 0.85rem;">{{ $estudiante->nombre_completo }}</strong>
+                                        <p class="mb-0 small text-muted">{{ $estudiante->grado }} - Sección {{ $estudiante->seccion }}</p>
+                                    </div>
+                                    <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; font-size: 0.7rem;">
+                                        {{ $estudiante->dni }}
+                                    </span>
+                                </div>
+                                <small class="text-muted" style="font-size: 0.7rem;">
+                                    <i class="far fa-clock"></i>
+                                    {{ $estudiante->created_at->diffForHumans() }}
+                                </small>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="mb-0 mt-2 small">No hay estudiantes recientes</p>
+                        </div>
+                    @endif
+                </div>
+                <div class="card-footer bg-white border-0 py-2 text-center">
+                    <a href="{{ route('estudiantes.index') }}" style="color: #00508f; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                        Ver todos los estudiantes <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-            <a href="{{ route('estudiantes.buscar') }}" class="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-xl p-6 text-center transition transform hover:scale-105">
-                <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <span class="text-sm font-semibold">Buscar Estudiante</span>
-            </a>
+        <!-- Profesores Recientes -->
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; height: 100%;">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="mb-0" style="color: #003b73; font-weight: 700;">
+                        <i class="fas fa-chalkboard-teacher" style="color: #4ec7d2;"></i>
+                        Profesores Recientes
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    @if($profesoresRecientes->count() > 0)
+                        <div class="list-group list-group-flush">
+                            @foreach($profesoresRecientes as $profesor)
+                            <div class="list-group-item border-0 py-2 px-3" style="font-size: 0.85rem;">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div>
+                                        <strong style="color: #003b73; font-size: 0.85rem;">{{ $profesor->nombre_completo }}</strong>
+                                        <p class="mb-0 small" style="color: #667eea;">
+                                            <i class="fas fa-book"></i>
+                                            {{ $profesor->especialidad }}
+                                        </p>
+                                        <small class="text-muted" style="font-size: 0.7rem;">
+                                            <i class="far fa-clock"></i>
+                                            {{ $profesor->created_at->diffForHumans() }}
+                                        </small>
+                                    </div>
+                                    <span class="badge badge-estado-{{ $profesor->estado }}">
+                                        {{ ucfirst($profesor->estado) }}
+                                    </span>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox" style="font-size: 2rem; opacity: 0.3;"></i>
+                            <p class="mb-0 mt-2 small">No hay profesores recientes</p>
+                        </div>
+                    @endif
+                </div>
+                <div class="card-footer bg-white border-0 py-2 text-center">
+                    <a href="{{ route('profesores.index') }}" style="color: #00508f; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                        Ver todos los profesores <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
 </div>
+
+@push('styles')
+<style>
+    /* Estilos para badges de estado */
+    .badge-estado-aprobada {
+        background: rgba(78, 199, 210, 0.2);
+        color: #00508f;
+        border: 1px solid #4ec7d2;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .badge-estado-pendiente {
+        background: rgba(245, 158, 11, 0.2);
+        color: #92400e;
+        border: 1px solid #f59e0b;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .badge-estado-rechazada {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #ef4444;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .badge-estado-activo {
+        background: rgba(78, 199, 210, 0.2);
+        color: #00508f;
+        border: 1px solid #4ec7d2;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .badge-estado-inactivo {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #ef4444;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    /* Animaciones y efectos */
+    .stat-card:hover {
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+    }
+
+    .icon-box {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover .icon-box {
+        transform: scale(1.1);
+    }
+
+    .list-group-item {
+        transition: all 0.2s ease;
+    }
+
+    .list-group-item:hover {
+        background-color: rgba(191, 217, 234, 0.08);
+    }
+
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stat-card, .card {
+        animation: fadeIn 0.5s ease;
+    }
+</style>
+@endpush
 @endsection
