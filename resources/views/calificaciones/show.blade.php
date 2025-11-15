@@ -2,160 +2,257 @@
 
 @section('title', 'Editar Calificación')
 
+@section('page-title', 'Editar Calificación')
+
+@section('topbar-actions')
+    <a href="{{ route('calificaciones.index') }}" class="btn-back" 
+       style="background: #e2e8f0; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 1px solid #bfd9ea; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+@endsection
+
 @section('content')
-    <div class="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto">
-            <!-- Card Contenedor Principal con estilo moderno -->
-            <div class="bg-white rounded-xl shadow-2xl overflow-hidden p-8 sm:p-10 border border-gray-100">
-                <h1 class="text-4xl font-extrabold text-indigo-700 mb-8 border-b pb-4">
-                    <i class="fas fa-edit mr-3"></i> Editar Calificación
-                </h1>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-                <form action="{{ route('calificaciones.update', $calificacion) }}" method="POST">
-                    @csrf
-                    @method('PUT')
+<div class="container" style="max-width: 900px; font-family: 'Poppins', sans-serif; margin: 0 auto; padding: 2rem 1rem;">
+    
+    <!-- Card Principal -->
+    <div style="background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0, 59, 115, 0.15); overflow: hidden; border: 1px solid #e2e8f0;">
+        
+        <!-- Header del Card -->
+        <div style="background: linear-gradient(135deg, #003b73 0%, #00508f 50%, #4ec7d2 100%); padding: 2rem; border-bottom: 3px solid #4ec7d2;">
+            <h1 style="color: white; font-size: 2rem; font-weight: 800; margin: 0; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fas fa-edit"></i> Editar Calificación
+            </h1>
+            <p style="color: rgba(255, 255, 255, 0.9); margin: 0.5rem 0 0 0; font-size: 0.95rem;">Actualice las calificaciones del estudiante</p>
+        </div>
 
-                    <!-- Sección: Datos del Alumno -->
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4 border-l-4 border-indigo-500 pl-3">
+        <!-- Cuerpo del Formulario -->
+        <div style="padding: 2.5rem;">
+            <form action="{{ route('calificaciones.update', $calificacion) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <!-- Sección: Información General -->
+                <div style="margin-bottom: 2rem;">
+                    <h2 style="color: #003b73; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; border-left: 4px solid #4ec7d2; padding-left: 0.75rem; font-family: 'Poppins', sans-serif;">
                         Información General
                     </h2>
 
-                    <div class="mb-6">
-                        <label for="nombre_alumno" class="block text-sm font-bold text-gray-700 mb-2">
-                            Nombre del Alumno <span class="text-red-500">*</span>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="nombre_alumno" style="display: block; color: #003b73; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem; font-family: 'Poppins', sans-serif;">
+                            Nombre del Alumno <span style="color: #ef4444;">*</span>
                         </label>
-                        <input type="text" name="nombre_alumno" id="nombre_alumno"
-                            value="{{ old('nombre_alumno', $calificacion->nombre_alumno) }}"
-                            placeholder="Ej: Juan Pérez López" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400
-                                                  focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150
-                                                  @error('nombre_alumno') border-red-500 ring-red-200 @enderror" required>
+                        <input type="text" 
+                               name="nombre_alumno" 
+                               id="nombre_alumno"
+                               value="{{ old('nombre_alumno', $calificacion->nombre_alumno) }}"
+                               placeholder="Ej: Juan Pérez López" 
+                               required
+                               style="width: 100%; padding: 0.875rem 1rem; border: 2px solid #bfd9ea; border-radius: 8px; font-size: 0.95rem; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; background: white; color: #003b73; @error('nombre_alumno') border-color: #ef4444; @enderror"
+                               onfocus="this.style.borderColor='#4ec7d2'; this.style.boxShadow='0 0 0 3px rgba(78, 199, 210, 0.1)';"
+                               onblur="this.style.borderColor='#bfd9ea'; this.style.boxShadow='none';">
 
                         @error('nombre_alumno')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            <p style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem; font-family: 'Poppins', sans-serif;">
+                                <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                            </p>
                         @enderror
                     </div>
+                </div>
 
-                    <!-- Sección: Calificaciones Parciales -->
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4 mt-8 border-l-4 border-indigo-500 pl-3">
-                        Calificaciones (0.00 - 100.00)
+                <!-- Sección: Calificaciones Parciales -->
+                <div style="margin-bottom: 2rem;">
+                    <h2 style="color: #003b73; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; border-left: 4px solid #4ec7d2; padding-left: 0.75rem; font-family: 'Poppins', sans-serif;">
+                        Calificaciones por Parcial (0 - 100)
                     </h2>
 
-                    <!-- Contenedor visual para los parciales -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6 p-4 bg-gray-50 rounded-lg border">
-
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.25rem; padding: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 10px; border: 2px solid #bfd9ea;">
+                        
                         <!-- Primer Parcial -->
                         <div>
-                            <label for="primer_parcial" class="block text-sm font-medium text-gray-700 mb-2">
-                                1er Parcial
+                            <label for="primer_parcial" style="display: block; color: #00508f; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem; font-family: 'Poppins', sans-serif; text-align: center;">
+                                <i class="fas fa-file-alt" style="color: #4ec7d2;"></i> 1° Parcial
                             </label>
-                            <input type="number" name="primer_parcial" id="primer_parcial"
-                                value="{{ old('primer_parcial', $calificacion->primer_parcial) }}" step="0.01" min="0"
-                                max="100" placeholder="0.00" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-center
-                                                      focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150
-                                                      @error('primer_parcial') border-red-500 ring-red-200 @enderror">
-
+                            <input type="number" 
+                                   name="primer_parcial" 
+                                   id="primer_parcial"
+                                   value="{{ old('primer_parcial', $calificacion->primer_parcial) }}"
+                                   step="0.01" 
+                                   min="0" 
+                                   max="100"
+                                   placeholder="0.00"
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #bfd9ea; border-radius: 8px; text-align: center; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; background: white; color: #003b73; @error('primer_parcial') border-color: #ef4444; @enderror"
+                                   onfocus="this.style.borderColor='#4ec7d2'; this.style.boxShadow='0 0 0 3px rgba(78, 199, 210, 0.1)';"
+                                   onblur="this.style.borderColor='#bfd9ea'; this.style.boxShadow='none';">
+                            
                             @error('primer_parcial')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                <p style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; text-align: center; font-family: 'Poppins', sans-serif;">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Segundo Parcial -->
                         <div>
-                            <label for="segundo_parcial" class="block text-sm font-medium text-gray-700 mb-2">
-                                2do Parcial
+                            <label for="segundo_parcial" style="display: block; color: #00508f; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem; font-family: 'Poppins', sans-serif; text-align: center;">
+                                <i class="fas fa-file-alt" style="color: #4ec7d2;"></i> 2° Parcial
                             </label>
-                            <input type="number" name="segundo_parcial" id="segundo_parcial"
-                                value="{{ old('segundo_parcial', $calificacion->segundo_parcial) }}" step="0.01" min="0"
-                                max="100" placeholder="0.00" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-center
-                                                      focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150
-                                                      @error('segundo_parcial') border-red-500 ring-red-200 @enderror">
-
+                            <input type="number" 
+                                   name="segundo_parcial" 
+                                   id="segundo_parcial"
+                                   value="{{ old('segundo_parcial', $calificacion->segundo_parcial) }}"
+                                   step="0.01" 
+                                   min="0" 
+                                   max="100"
+                                   placeholder="0.00"
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #bfd9ea; border-radius: 8px; text-align: center; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; background: white; color: #003b73; @error('segundo_parcial') border-color: #ef4444; @enderror"
+                                   onfocus="this.style.borderColor='#4ec7d2'; this.style.boxShadow='0 0 0 3px rgba(78, 199, 210, 0.1)';"
+                                   onblur="this.style.borderColor='#bfd9ea'; this.style.boxShadow='none';">
+                            
                             @error('segundo_parcial')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                <p style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; text-align: center; font-family: 'Poppins', sans-serif;">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Tercer Parcial -->
                         <div>
-                            <label for="tercer_parcial" class="block text-sm font-medium text-gray-700 mb-2">
-                                3er Parcial
+                            <label for="tercer_parcial" style="display: block; color: #00508f; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem; font-family: 'Poppins', sans-serif; text-align: center;">
+                                <i class="fas fa-file-alt" style="color: #4ec7d2;"></i> 3° Parcial
                             </label>
-                            <input type="number" name="tercer_parcial" id="tercer_parcial"
-                                value="{{ old('tercer_parcial', $calificacion->tercer_parcial) }}" step="0.01" min="0"
-                                max="100" placeholder="0.00" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-center
-                                                      focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150
-                                                      @error('tercer_parcial') border-red-500 ring-red-200 @enderror">
-
+                            <input type="number" 
+                                   name="tercer_parcial" 
+                                   id="tercer_parcial"
+                                   value="{{ old('tercer_parcial', $calificacion->tercer_parcial) }}"
+                                   step="0.01" 
+                                   min="0" 
+                                   max="100"
+                                   placeholder="0.00"
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #bfd9ea; border-radius: 8px; text-align: center; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; background: white; color: #003b73; @error('tercer_parcial') border-color: #ef4444; @enderror"
+                                   onfocus="this.style.borderColor='#4ec7d2'; this.style.boxShadow='0 0 0 3px rgba(78, 199, 210, 0.1)';"
+                                   onblur="this.style.borderColor='#bfd9ea'; this.style.boxShadow='none';">
+                            
                             @error('tercer_parcial')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                <p style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; text-align: center; font-family: 'Poppins', sans-serif;">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Cuarto Parcial -->
                         <div>
-                            <label for="cuarto_parcial" class="block text-sm font-medium text-gray-700 mb-2">
-                                4to Parcial
+                            <label for="cuarto_parcial" style="display: block; color: #00508f; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.85rem; font-family: 'Poppins', sans-serif; text-align: center;">
+                                <i class="fas fa-file-alt" style="color: #4ec7d2;"></i> 4° Parcial
                             </label>
-                            <input type="number" name="cuarto_parcial" id="cuarto_parcial"
-                                value="{{ old('cuarto_parcial', $calificacion->cuarto_parcial) }}" step="0.01" min="0"
-                                max="100" placeholder="0.00" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-center
-                                                      focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150
-                                                      @error('cuarto_parcial') border-red-500 ring-red-200 @enderror">
-
+                            <input type="number" 
+                                   name="cuarto_parcial" 
+                                   id="cuarto_parcial"
+                                   value="{{ old('cuarto_parcial', $calificacion->cuarto_parcial) }}"
+                                   step="0.01" 
+                                   min="0" 
+                                   max="100"
+                                   placeholder="0.00"
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #bfd9ea; border-radius: 8px; text-align: center; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; background: white; color: #003b73; @error('cuarto_parcial') border-color: #ef4444; @enderror"
+                                   onfocus="this.style.borderColor='#4ec7d2'; this.style.boxShadow='0 0 0 3px rgba(78, 199, 210, 0.1)';"
+                                   onblur="this.style.borderColor='#bfd9ea'; this.style.boxShadow='none';">
+                            
                             @error('cuarto_parcial')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                <p style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; text-align: center; font-family: 'Poppins', sans-serif;">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
+                </div>
 
-                    <!-- Sección: Recuperación -->
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4 mt-8 border-l-4 border-indigo-500 pl-3">
-                        Recuperación
+                <!-- Sección: Recuperación -->
+                <div style="margin-bottom: 2rem;">
+                    <h2 style="color: #003b73; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; border-left: 4px solid #4ec7d2; padding-left: 0.75rem; font-family: 'Poppins', sans-serif;">
+                        Examen de Recuperación
                     </h2>
 
-                    <div class="mb-8">
-                        <label for="recuperacion" class="block text-sm font-bold text-gray-700 mb-2">
+                    <div>
+                        <label for="recuperacion" style="display: block; color: #003b73; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem; font-family: 'Poppins', sans-serif;">
                             Nota de Recuperación (Opcional)
                         </label>
-                        <input type="number" name="recuperacion" id="recuperacion"
-                            value="{{ old('recuperacion', $calificacion->recuperacion) }}" step="0.01" min="0" max="100"
-                            placeholder="0.00" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm text-center
-                                                  focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150
-                                                  @error('recuperacion') border-red-500 ring-red-200 @enderror">
-                        <p class="text-sm text-gray-500 mt-2">
+                        <input type="number" 
+                               name="recuperacion" 
+                               id="recuperacion"
+                               value="{{ old('recuperacion', $calificacion->recuperacion) }}"
+                               step="0.01" 
+                               min="0" 
+                               max="100"
+                               placeholder="0.00"
+                               style="width: 100%; padding: 0.875rem 1rem; border: 2px solid #bfd9ea; border-radius: 8px; text-align: center; font-size: 1.1rem; font-weight: 600; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; background: white; color: #003b73; @error('recuperacion') border-color: #ef4444; @enderror"
+                               onfocus="this.style.borderColor='#4ec7d2'; this.style.boxShadow='0 0 0 3px rgba(78, 199, 210, 0.1)';"
+                               onblur="this.style.borderColor='#bfd9ea'; this.style.boxShadow='none';">
+                        
+                        <p style="color: #00508f; font-size: 0.85rem; margin-top: 0.5rem; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-info-circle" style="color: #4ec7d2;"></i>
                             Ingrese la nota solo si el alumno realizó el examen de recuperación.
                         </p>
 
                         @error('recuperacion')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            <p style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem; font-family: 'Poppins', sans-serif;">
+                                <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                            </p>
                         @enderror
                     </div>
+                </div>
 
-                    <!-- Aviso Importante mejorado -->
-                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-8">
-                        <p class="text-sm font-medium text-indigo-800 flex items-center">
-                            <i class="fas fa-info-circle mr-3"></i>
-                            La **Nota Final** se recalculará automáticamente al guardar los cambios en el sistema.
-                        </p>
-                    </div>
+                <!-- Aviso Importante -->
+                <div style="background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(191, 217, 234, 0.2) 100%); border: 2px solid #4ec7d2; border-radius: 10px; padding: 1.25rem; margin-bottom: 2rem;">
+                    <p style="color: #00508f; font-size: 0.95rem; font-weight: 600; margin: 0; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-calculator" style="font-size: 1.5rem; color: #4ec7d2;"></i>
+                        <span>La <strong>Nota Final</strong> se calculará automáticamente al guardar los cambios.</span>
+                    </p>
+                </div>
 
-                    <!-- Botones de Acción mejorados -->
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <button type="submit"
-                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white 
-                                                   px-6 py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 
-                                                   transition transform hover:scale-[1.01] duration-300 flex items-center justify-center">
-                            <i class="fas fa-save mr-2"></i> Actualizar Calificación
-                        </button>
-                        <a href="{{ route('calificaciones.index') }}"
-                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 
-                                              px-6 py-3 rounded-xl font-semibold text-center 
-                                              transition transform hover:scale-[1.01] duration-300 flex items-center justify-center">
-                            <i class="fas fa-arrow-left mr-2"></i> Cancelar y Volver
-                        </a>
-                    </div>
-                </form>
-            </div>
+                <!-- Botones de Acción -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <button type="submit"
+                            style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 1rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 20px rgba(78, 199, 210, 0.3); font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
+                            onmouseover="this.style.transform='translateY(-2px) scale(1.02)'; this.style.boxShadow='0 12px 30px rgba(78, 199, 210, 0.4)';"
+                            onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 20px rgba(78, 199, 210, 0.3)';">
+                        <i class="fas fa-save"></i> Actualizar Calificación
+                    </button>
+                    
+                    <a href="{{ route('calificaciones.index') }}"
+                       style="background: #e2e8f0; color: #00508f; padding: 1rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 1rem; text-decoration: none; text-align: center; transition: all 0.3s ease; border: 2px solid #bfd9ea; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
+                       onmouseover="this.style.background='#bfd9ea'; this.style.transform='translateY(-2px)';"
+                       onmouseout="this.style.background='#e2e8f0'; this.style.transform='translateY(0)';">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
+<style>
+    * {
+        font-family: 'Poppins', sans-serif !important;
+    }
+
+    body {
+        background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+    }
+
+    .btn-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);
+        background: #bfd9ea !important;
+    }
+
+    /* Animación de entrada */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .container > div {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+</style>
 @endsection

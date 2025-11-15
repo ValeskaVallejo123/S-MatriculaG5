@@ -11,7 +11,7 @@ class CicloController extends Controller
 {
     public function index()
     {
-        $ciclos = Ciclo::orderBy('created_at', 'desc')->paginate(10);
+        $ciclos = Ciclo::orderBy('created_at', 'desc')->paginate(2);
         return view('ciclos.index', compact('ciclos'));
     }
 

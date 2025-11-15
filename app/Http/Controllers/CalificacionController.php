@@ -12,7 +12,7 @@ class CalificacionController extends Controller
      */
     public function index()
     {
-        $calificaciones = Calificacion::orderBy('nombre_alumno')->get();
+        $calificaciones = Calificacion::orderBy('nombre_alumno')->paginate(2);
         return view('calificaciones.index', compact('calificaciones'));
     }
 
