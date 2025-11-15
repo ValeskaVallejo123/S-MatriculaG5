@@ -13,9 +13,10 @@
             background-color: #e6f0ff;
         }
 
-        .navbar-brand {
+        /* Eliminada la siguiente línea, ahora hereda Poppins (letra de molde): */
+        /* .navbar-brand {
             font-family: 'Pacifico', cursive;
-        }
+        } */
 
         .form-container {
             background-color: #fff;
@@ -88,7 +89,6 @@
                     </ul>
                 </li>
             </ul>
-
         </div>
     </div>
 </nav>
@@ -96,8 +96,6 @@
 <div class="container">
     <div class="form-container">
         <h4 class="text-center mb-4 fw-bold">Registrar nuevos cupos</h4>
-
-        </h4>
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
@@ -120,75 +118,88 @@
         <form id="cursoForm" method="POST" action="{{ route('cupos_maximos.store') }}">
             @csrf
 
-            <div class="mb-3">
-                <label for="nombre" class="form-label fw-bold" >Nombre del curso:
-                </label>
-                <select name="nombre" id="nombre" class="form-select" required>
-                    <option value="">Seleccione un curso...</option>
-                    <option value="1ro Primaria" {{ old('nombre') == '1ro Primaria' ? 'selected' : '' }}>1ro Primaria</option>
-                    <option value="2do Primaria" {{ old('nombre') == '2do Primaria' ? 'selected' : '' }}>2do Primaria</option>
-                    <option value="3ro Primaria" {{ old('nombre') == '3ro Primaria' ? 'selected' : '' }}>3ro Primaria</option>
-                    <option value="4to Primaria" {{ old('nombre') == '4to Primaria' ? 'selected' : '' }}>4to Primaria</option>
-                    <option value="5to Primaria" {{ old('nombre') == '5to Primaria' ? 'selected' : '' }}>5to Primaria</option>
-                    <option value="6to Primaria" {{ old('nombre') == '6to Primaria' ? 'selected' : '' }}>6to Primaria</option>
-                    <option value="1ro Secundaria" {{ old('nombre') == '1ro Secundaria' ? 'selected' : '' }}>1ro Secundaria</option>
-                    <option value="2do Secundaria" {{ old('nombre') == '2do Secundaria' ? 'selected' : '' }}>2do Secundaria</option>
-                    <option value="3ro Secundaria" {{ old('nombre') == '3ro Secundaria' ? 'selected' : '' }}>3ro Secundaria</option>
-                </select>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label fw-bold">Nombre del curso:</label>
+                    <select name="nombre" id="nombre" class="form-select form-select-sm" required>
+                        <option value="">Seleccione un curso...</option>
+                        <option value="1ro Primaria" {{ old('nombre') == '1ro Primaria' ? 'selected' : '' }}>1ro Primaria</option>
+                        <option value="2do Primaria" {{ old('nombre') == '2do Primaria' ? 'selected' : '' }}>2do Primaria</option>
+                        <option value="3ro Primaria" {{ old('nombre') == '3ro Primaria' ? 'selected' : '' }}>3ro Primaria</option>
+                        <option value="4to Primaria" {{ old('nombre') == '4to Primaria' ? 'selected' : '' }}>4to Primaria</option>
+                        <option value="5to Primaria" {{ old('nombre') == '5to Primaria' ? 'selected' : '' }}>5to Primaria</option>
+                        <option value="6to Primaria" {{ old('nombre') == '6to Primaria' ? 'selected' : '' }}>6to Primaria</option>
+                        <option value="1ro Secundaria" {{ old('nombre') == '1ro Secundaria' ? 'selected' : '' }}>1ro Secundaria</option>
+                        <option value="2do Secundaria" {{ old('nombre') == '2do Secundaria' ? 'selected' : '' }}>2do Secundaria</option>
+                        <option value="3ro Secundaria" {{ old('nombre') == '3ro Secundaria' ? 'selected' : '' }}>3ro Secundaria</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="cupo_maximo" class="form-label fw-bold">Cupo de estudiantes:</label>
+                    <input type="number" name="cupo_maximo" class="form-control form-control-sm" required
+                           value="{{ old('cupo_maximo') }}">
+                    <small class="form-text text-muted">Ingrese un número de estudiantes (máximo 35)</small>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="cupo_maximo" class="form-label fw-bold">Cupo de estudiantes:
-                </label>
-                <input type="number" name="cupo_maximo" class="form-control" min="1" required
-                       value="{{ old('cupo_maximo') }}">
-                <small class="form-text text-muted">Ingrese un número de estudiantes (máximo 35)</small>
-            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="jornada" class="form-label fw-bold">Jornada:</label>
+                    <select name="jornada" id="jornada" class="form-select form-select-sm" required>
+                        <option value="">Seleccione una jornada</option>
+                        <option value="Matutina" {{ old('jornada') == 'Matutina' ? 'selected' : '' }}>Matutina</option>
+                        <option value="Vespertina" {{ old('jornada') == 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
+                    </select>
+                </div>
 
-            <div class="mb-3">
-                <label for="jornada" class="form-label fw-bold">Jornada:
-                </label>
-                <select name="jornada" id="jornada" class="form-select" required>
-                    <option value="">Seleccione una jornada</option>
-                    <option value="Matutina" {{ old('jornada') == 'Matutina' ? 'selected' : '' }}>Matutina</option>
-                    <option value="Vespertina" {{ old('jornada') == 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="seccion" class="form-label fw-bold">Sección:
-                </label>
-                <select name="seccion" id="seccion" class="form-select" required>
-                    <option value="">Seleccione una sección...</option>
-                    <option value="A" {{ old('seccion') == 'A' ? 'selected' : '' }}>A</option>
-                    <option value="B" {{ old('seccion') == 'B' ? 'selected' : '' }}>B</option>
-                    <option value="C" {{ old('seccion') == 'C' ? 'selected' : '' }}>C</option>
-                    <option value="D" {{ old('seccion') == 'D' ? 'selected' : '' }}>D</option>
-                </select>
+                <div class="col-md-6">
+                    <label for="seccion" class="form-label fw-bold">Sección:</label>
+                    <select name="seccion" id="seccion" class="form-select form-select-sm" required>
+                        <option value="">Seleccione una sección...</option>
+                        <option value="A" {{ old('seccion') == 'A' ? 'selected' : '' }}>A</option>
+                        <option value="B" {{ old('seccion') == 'B' ? 'selected' : '' }}>B</option>
+                        <option value="C" {{ old('seccion') == 'C' ? 'selected' : '' }}>C</option>
+                        <option value="D" {{ old('seccion') == 'D' ? 'selected' : '' }}>D</option>
+                    </select>
+                </div>
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-                <a href="{{ route('cupos_maximos.index') }}" class="btn btn-red me-2">Cancelar
-                </a>
+                <a href="{{ route('cupos_maximos.index') }}" class="btn btn-red me-2">Cancelar</a>
                 <div>
-
-                    <button type="button" class="btn btn-yellow" id="btnLimpiar">Limpiar
-                    </button>
-                    <button type="submit" class="btn btn-blue">Guardar curso
-                    </button>
+                    <button type="button" class="btn btn-yellow" id="btnLimpiar">Limpiar</button>
+                    <button type="submit" class="btn btn-blue">Guardar curso</button>
                 </div>
             </div>
         </form>
+    </div>
+
+    <div class="text-center mt-4 mb-5">
+        <a href="{{ route('admins.index') }}" class="btn btn-secondary px-4 py-2 fw-semibold">
+            <i class="bi bi-arrow-left-circle"></i> Volver a los administradores
+        </a>
     </div>
 </div>
 
 <script>
     document.getElementById('btnLimpiar').addEventListener('click', function () {
         const form = document.getElementById('cursoForm');
-        form.reset();
+
+        // Limpiar campos de texto y número
+        form.querySelectorAll('input').forEach(input => input.value = '');
+
+        // Resetear selects a la opción por defecto (primer opción)
+        form.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+        // Eliminar alertas
         document.querySelectorAll('.alert').forEach(alert => alert.remove());
+
+        // Reiniciar clases de validación
+        form.querySelectorAll('input, select').forEach(el => el.classList.remove('is-invalid'));
     });
 </script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

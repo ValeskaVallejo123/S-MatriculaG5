@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sistema Escolar') - Escuela Gabriela Mistral</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <style>
         * {
             margin: 0;
@@ -429,17 +429,17 @@
 </head>
 <body>
 
-    @php
-        $userType = auth()->user()->user_type ?? 'guest';
-        $isSuperAdmin = auth()->user()->is_super_admin ?? false;
-        $isAdmin = in_array($userType, ['admin', 'super_admin']);
-        $showSidebar = $isSuperAdmin || $isAdmin;
-    @endphp
+@php
+    $userType = auth()->user()->user_type ?? 'guest';
+    $isSuperAdmin = auth()->user()->is_super_admin ?? false;
+    $isAdmin = in_array($userType, ['admin', 'super_admin']);
+    $showSidebar = $isSuperAdmin || $isAdmin;
+@endphp
 
     <!-- SIDEBAR (solo para admins) -->
-    @if($showSidebar)
+@if($showSidebar)
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-    
+
     <aside class="sidebar" id="sidebar">
         <!-- Header -->
         <div class="sidebar-header">
@@ -474,24 +474,24 @@
         <!-- Menu -->
         <ul class="sidebar-menu">
             <!-- Inicio -->
-<li class="menu-section-title">Principal</li>
-<li class="menu-item">
-    <a href="{{ route('dashboard') }}" class="menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-        <i class="fas fa-home"></i>
-        <span>Inicio</span>
-    </a>
-</li>
+            <li class="menu-section-title">Principal</li>
+            <li class="menu-item">
+                <a href="{{ route('dashboard') }}" class="menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span>
+                </a>
+            </li>
 
             <!-- Gestión de Usuarios -->
             <li class="menu-section-title">Gestión de Usuarios</li>
-            
+
             @if($isSuperAdmin)
-            <li class="menu-item">
-                <a href="{{ route('admins.index') }}" class="menu-link {{ request()->routeIs('admins.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Administradores</span>
-                </a>
-            </li>
+                <li class="menu-item">
+                    <a href="{{ route('admins.index') }}" class="menu-link {{ request()->routeIs('admins.*') ? 'active' : '' }}">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administradores</span>
+                    </a>
+                </li>
             @endif
 
             <li class="menu-item">
@@ -517,13 +517,13 @@
 
             <!-- Gestión Académica -->
             <li class="menu-section-title">Gestión Académica</li>
-            
+
             <li class="menu-item">
-    <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') || request()->routeIs('matriculas.*') ? 'active' : '' }}">
-        <i class="fas fa-clipboard-list"></i>
-        <span>Matrículas</span>
-    </a>
-</li>
+                <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') || request()->routeIs('matriculas.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Matrículas</span>
+                </a>
+            </li>
 
             <li class="menu-item">
                 <a href="{{ route('periodos-academicos.index') }}" class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
@@ -555,7 +555,7 @@
 
             <!-- Configuración -->
             <li class="menu-section-title">Sistema</li>
-            
+
             <li class="menu-item">
                 <a href="{{ route('cambiarcontrasenia.edit') }}" class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
                     <i class="fas fa-key"></i>
@@ -564,89 +564,89 @@
             </li>
         </ul>
     </aside>
-    @endif
+@endif
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
-        <!-- Topbar -->
-        <div class="topbar">
-            <div class="topbar-left">
-                @if($showSidebar)
+<!-- MAIN CONTENT -->
+<main class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            @if($showSidebar)
                 <button class="mobile-menu-btn" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
-                @endif
-                <div>
-                    <h5>@yield('page-title', 'Panel de Control')</h5>
-                </div>
+            @endif
+            <div>
+                <h5>@yield('page-title', 'Panel de Control')</h5>
             </div>
-            <div class="topbar-right">
-                @yield('topbar-actions')
-                
-                <span class="text-muted small d-none d-md-inline" style="font-size: 0.8rem;">
-                    <i class="far fa-clock"></i> 
+        </div>
+        <div class="topbar-right">
+            @yield('topbar-actions')
+
+            <span class="text-muted small d-none d-md-inline" style="font-size: 0.8rem;">
+                    <i class="far fa-clock"></i>
                     {{ now()->locale('es')->isoFormat('D MMM') }}
                 </span>
-                
-                <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn-logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Salir
-                    </button>
-                </form>
+
+            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Salir
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content-wrapper">
+        <!-- Alerts -->
+        @if(session('success'))
+            <div class="alert-custom alert-success">
+                <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
+                <div>
+                    <strong>¡Éxito!</strong>
+                    <p>{{ session('success') }}</p>
+                </div>
             </div>
-        </div>
+        @endif
 
-        <!-- Content -->
-        <div class="content-wrapper">
-            <!-- Alerts -->
-            @if(session('success'))
-                <div class="alert-custom alert-success">
-                    <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
-                    <div>
-                        <strong>¡Éxito!</strong>
-                        <p>{{ session('success') }}</p>
-                    </div>
+        @if(session('error'))
+            <div class="alert-custom alert-error">
+                <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                <div>
+                    <strong>¡Error!</strong>
+                    <p>{{ session('error') }}</p>
                 </div>
-            @endif
+            </div>
+        @endif
 
-            @if(session('error'))
-                <div class="alert-custom alert-error">
-                    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
-                    <div>
-                        <strong>¡Error!</strong>
-                        <p>{{ session('error') }}</p>
-                    </div>
-                </div>
-            @endif
+        @yield('content')
+    </div>
+</main>
 
-            @yield('content')
-        </div>
-    </main>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
 
-        // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert-custom');
-            alerts.forEach(alert => {
-                alert.style.transition = 'opacity 0.5s ease';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
-            });
-        }, 5000);
-    </script>
+    // Auto-hide alerts after 5 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert-custom');
+        alerts.forEach(alert => {
+            alert.style.transition = 'opacity 0.5s ease';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 5000);
+</script>
 
-    @stack('scripts')
+@stack('scripts')
 </body>
 </html>

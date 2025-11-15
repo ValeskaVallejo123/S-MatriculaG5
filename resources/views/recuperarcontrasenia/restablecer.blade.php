@@ -12,13 +12,14 @@
             background-color: #f5f7ff;
         }
         .hero {
-            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-            url('{{ asset('imagenes/centroEd.jpg') }}') center/cover no-repeat;
+            /* Degradado actualizado con los colores exactos de la imagen */
+            background: linear-gradient(to right, #6d6dff 0%, #8200ff 100%);
             color: white;
             padding: 80px 0;
             text-align: center;
         }
-        .hero h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; }
+        .hero h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0px; }
+        .hero p { display: none; }
         .hero span { color: #ffd700; font-family: 'Pacifico', cursive; }
         .form-container {
             background-color: #fff;
@@ -28,8 +29,16 @@
             margin: 40px auto;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .btn-green { background-color: #4caf50; border: none; color: white; font-weight: 600; }
-        .btn-green:hover { background-color: #43a047; }
+        .btn-primary-gradient { /* Clase para el botón con degradado */
+            background: linear-gradient(to right, #6d6dff 0%, #8200ff 100%); /* Colores actualizados */
+            border: none;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-primary-gradient:hover {
+            /* Un ligero oscurecimiento o ajuste para el hover basado en los nuevos colores */
+            background: linear-gradient(to right, #5c5ccf 0%, #7000dd 100%);
+        }
         .text-small { font-size: 0.9rem; color: #555; }
         .form-control.is-invalid { border-color: #dc3545; }
         .invalid-feedback { display: block; }
@@ -40,7 +49,7 @@
 <section class="hero">
     <div class="container">
         <h1>Restablecer Contraseña</h1>
-        <p>Escuela <span>Gabriela Mistral</span></p>
+        {{-- <p>Escuela <span>Gabriela Mistral</span></p> --}}
     </div>
 </section>
 
@@ -64,10 +73,10 @@
                 <label for="email" class="form-label">Correo electrónico</label>
                 <input type="email" name="email" id="email"
                        class="form-control @error('email') is-invalid @enderror"
-                       placeholder="ejemplo@correo.com"
+                       placeholder="@correo.edu"
                        value="{{ old('email', $email ?? '') }}" required autofocus>
                 @error('email')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -77,7 +86,7 @@
                        class="form-control @error('password') is-invalid @enderror"
                        placeholder="********" required>
                 @error('password')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -87,7 +96,7 @@
                        class="form-control" placeholder="********" required>
             </div>
 
-            <button type="submit" class="btn btn-green w-100">Restablecer contraseña</button>
+            <button type="submit" class="btn btn-primary-gradient w-100">Restablecer contraseña</button>
         </form>
 
         <div class="text-center mt-3">

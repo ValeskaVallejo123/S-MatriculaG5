@@ -24,6 +24,10 @@
     20 => 'Illuminate\\Translation\\TranslationServiceProvider',
     21 => 'Illuminate\\Validation\\ValidationServiceProvider',
     22 => 'Illuminate\\View\\ViewServiceProvider',
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/main
     23 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
     24 => 'LaravelLang\\Actions\\ServiceProvider',
     25 => 'LaravelLang\\Attributes\\ServiceProvider',
@@ -43,6 +47,31 @@
     39 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     40 => 'Termwind\\Laravel\\TermwindServiceProvider',
     41 => 'App\\Providers\\AppServiceProvider',
+<<<<<<< HEAD
+=======
+=======
+    23 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    24 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
+    25 => 'LaravelLang\\Actions\\ServiceProvider',
+    26 => 'LaravelLang\\Attributes\\ServiceProvider',
+    27 => 'LaravelLang\\Config\\ServiceProvider',
+    28 => 'LaravelLang\\HttpStatuses\\ServiceProvider',
+    29 => 'LaravelLang\\Lang\\ServiceProvider',
+    30 => 'LaravelLang\\Locales\\ServiceProvider',
+    31 => 'LaravelLang\\Models\\ServiceProvider',
+    32 => 'LaravelLang\\MoonShine\\ServiceProvider',
+    33 => 'LaravelLang\\Publisher\\ServiceProvider',
+    34 => 'LaravelLang\\Routes\\ServiceProvider',
+    35 => 'LaravelLang\\StarterKits\\ServiceProvider',
+    36 => 'Laravel\\Pail\\PailServiceProvider',
+    37 => 'Laravel\\Sail\\SailServiceProvider',
+    38 => 'Laravel\\Tinker\\TinkerServiceProvider',
+    39 => 'Carbon\\Laravel\\ServiceProvider',
+    40 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    41 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    42 => 'App\\Providers\\AppServiceProvider',
+>>>>>>> cesia-dev
+>>>>>>> origin/main
   ),
   'eager' => 
   array (
@@ -56,6 +85,10 @@
     7 => 'Illuminate\\Pagination\\PaginationServiceProvider',
     8 => 'Illuminate\\Session\\SessionServiceProvider',
     9 => 'Illuminate\\View\\ViewServiceProvider',
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/main
     10 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
     11 => 'LaravelLang\\Actions\\ServiceProvider',
     12 => 'LaravelLang\\Attributes\\ServiceProvider',
@@ -73,6 +106,29 @@
     24 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     25 => 'Termwind\\Laravel\\TermwindServiceProvider',
     26 => 'App\\Providers\\AppServiceProvider',
+<<<<<<< HEAD
+=======
+=======
+    10 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    11 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
+    12 => 'LaravelLang\\Actions\\ServiceProvider',
+    13 => 'LaravelLang\\Attributes\\ServiceProvider',
+    14 => 'LaravelLang\\Config\\ServiceProvider',
+    15 => 'LaravelLang\\HttpStatuses\\ServiceProvider',
+    16 => 'LaravelLang\\Lang\\ServiceProvider',
+    17 => 'LaravelLang\\Locales\\ServiceProvider',
+    18 => 'LaravelLang\\Models\\ServiceProvider',
+    19 => 'LaravelLang\\MoonShine\\ServiceProvider',
+    20 => 'LaravelLang\\Publisher\\ServiceProvider',
+    21 => 'LaravelLang\\Routes\\ServiceProvider',
+    22 => 'LaravelLang\\StarterKits\\ServiceProvider',
+    23 => 'Laravel\\Pail\\PailServiceProvider',
+    24 => 'Carbon\\Laravel\\ServiceProvider',
+    25 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    26 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    27 => 'App\\Providers\\AppServiceProvider',
+>>>>>>> cesia-dev
+>>>>>>> origin/main
   ),
   'deferred' => 
   array (

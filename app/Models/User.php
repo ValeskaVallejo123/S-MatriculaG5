@@ -2,35 +2,34 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Atributos asignables en masa
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+
+        // Campos de HEAD
         'user_type',
         'is_super_admin',
         'permissions',
         'is_protected',
+
+        // Campo de origin/main
+        'rol',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Atributos ocultos para serialización
      */
     protected $hidden = [
         'password',
@@ -38,29 +37,40 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Casts para atributos
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_super_admin' => 'boolean',
+        'is_protected' => 'boolean',
+        'permissions' => 'array',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | MÉTODOS DE ROLES (origin/main)
+    |--------------------------------------------------------------------------
+    */
+
+    public function isAdmin(): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_super_admin' => 'boolean',
-            'is_protected' => 'boolean',
-            'permissions' => 'array',
-        ];
+        return $this->rol === 'admin' || in_array($this->user_type, ['admin', 'super_admin']);
+    }
+
+    public function isEstudiante(): bool
+    {
+        return $this->rol === 'estudiante' || $this->user_type === 'estudiante';
     }
 
     /*
     |--------------------------------------------------------------------------
-    | MÉTODOS DE ROLES
+    | MÉTODOS DE ROLES (HEAD)
     |--------------------------------------------------------------------------
     */
 
     /**
-     * Verificar si el usuario es Super Administrador
+     * Verificar si es Super Administrador
      */
     public function isSuperAdmin(): bool
     {
@@ -68,15 +78,15 @@ class User extends Authenticatable
     }
 
     /**
-     * Verificar si el usuario es Administrador (incluye Super Admin)
+     * Verificar si es Administrador (incluye Super Admin)
      */
-    public function isAdmin(): bool
+    public function isAdministrador(): bool
     {
         return in_array($this->user_type, ['admin', 'super_admin']);
     }
 
     /**
-     * Verificar si el usuario es Profesor
+     * Verificar si es Profesor
      */
     public function isProfesor(): bool
     {
@@ -84,19 +94,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Verificar si el usuario es Estudiante
-     */
-    public function isEstudiante(): bool
-    {
-        return $this->user_type === 'estudiante';
-    }
-
-    /**
      * Obtener el nombre del rol en español
      */
     public function getRoleName(): string
     {
-        return match($this->user_type) {
+        return match ($this->user_type) {
             'super_admin' => 'Super Administrador',
             'admin' => 'Administrador',
             'profesor' => 'Profesor',
@@ -106,25 +108,21 @@ class User extends Authenticatable
     }
 
     /**
-     * Verificar si el usuario tiene un permiso específico
+     * Verificar si el usuario tiene un permiso
      */
     public function hasPermission(string $permission): bool
     {
-        // Super admin tiene todos los permisos
         if ($this->isSuperAdmin()) {
             return true;
         }
 
-        // Verificar en el array de permisos
-        if (is_array($this->permissions)) {
-            return in_array($permission, $this->permissions);
-        }
-
-        return false;
+        return is_array($this->permissions)
+            ? in_array($permission, $this->permissions)
+            : false;
     }
 
     /**
-     * Verificar si el usuario está protegido (no se puede eliminar)
+     * Verificar si el usuario está protegido
      */
     public function isProtected(): bool
     {
