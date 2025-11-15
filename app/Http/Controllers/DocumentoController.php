@@ -21,19 +21,20 @@ class DocumentoController extends Controller
 
     public function store(Request $request)
     {
-        // Validación de datos y archivos
         $request->validate([
             'nombre_estudiante' => 'required|string|max:255',
-            'acta_nacimiento'   => 'required|file|mimes:jpg,png,pdf|max:5120', // 5 MB
+            'foto'              => 'nullable|image|mimes:jpg,png|max:5120',
+            'acta_nacimiento'   => 'required|file|mimes:jpg,png,pdf|max:5120',
             'calificaciones'    => 'required|file|mimes:jpg,png,pdf|max:5120',
         ]);
 
-        // Guardar archivos en carpetas separadas
+        $fotoPath = $request->hasFile('foto') ? $request->file('foto')->store('documentos/foto', 'public') : null;
         $actaPath = $request->file('acta_nacimiento')->store('documentos/actas', 'public');
         $calificacionesPath = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
 
         Documento::create([
             'nombre_estudiante' => $request->nombre_estudiante,
+            'foto'              => $fotoPath,
             'acta_nacimiento'   => $actaPath,
             'calificaciones'    => $calificacionesPath,
         ]);
@@ -51,28 +52,29 @@ class DocumentoController extends Controller
     {
         $documento = Documento::findOrFail($id);
 
-        // Validación: archivos opcionales pero con restricciones
         $request->validate([
             'nombre_estudiante' => 'required|string|max:255',
+            'foto'              => 'nullable|image|mimes:jpg,png|max:5120',
             'acta_nacimiento'   => 'nullable|file|mimes:jpg,png,pdf|max:5120',
             'calificaciones'    => 'nullable|file|mimes:jpg,png,pdf|max:5120',
-            'acta_nacimiento' => 'required|file|mimes:jpg,png,pdf|max:5120', // 5 MB
-            'calificaciones'  => 'required|file|mimes:jpg,png,pdf|max:5120',
-
-
         ]);
 
-        // Actualizar acta si se sube un nuevo archivo
+        if ($request->hasFile('foto')) {
+            if (!empty($documento->foto) && Storage::disk('public')->exists($documento->foto)) {
+                Storage::disk('public')->delete($documento->foto);
+            }
+            $documento->foto = $request->file('foto')->store('documentos/foto', 'public');
+        }
+
         if ($request->hasFile('acta_nacimiento')) {
-            if ($documento->acta_nacimiento) {
+            if (!empty($documento->acta_nacimiento) && Storage::disk('public')->exists($documento->acta_nacimiento)) {
                 Storage::disk('public')->delete($documento->acta_nacimiento);
             }
             $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('documentos/actas', 'public');
         }
 
-        // Actualizar calificaciones si se sube un nuevo archivo
         if ($request->hasFile('calificaciones')) {
-            if ($documento->calificaciones) {
+            if (!empty($documento->calificaciones) && Storage::disk('public')->exists($documento->calificaciones)) {
                 Storage::disk('public')->delete($documento->calificaciones);
             }
             $documento->calificaciones = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
@@ -88,13 +90,26 @@ class DocumentoController extends Controller
     {
         $documento = Documento::findOrFail($id);
 
-        // Eliminar archivos del storage
-        Storage::disk('public')->delete([$documento->acta_nacimiento, $documento->calificaciones]);
+        // Lista de archivos a eliminar
+        $archivos = [
+            'foto' => $documento->foto,
+            'acta_nacimiento' => $documento->acta_nacimiento,
+            'calificaciones' => $documento->calificaciones,
+        ];
+
+        foreach ($archivos as $tipo => $archivo) {
+            if (!empty($archivo) && Storage::disk('public')->exists($archivo)) {
+                Storage::disk('public')->delete($archivo);
+            }
+        }
+
         $documento->delete();
 
         return redirect()->route('documentos.index')->with('success', 'Documentos eliminados correctamente.');
     }
 }
+
+
 
 
 

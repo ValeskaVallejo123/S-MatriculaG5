@@ -4,89 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sistema de Gestión Escolar')</title>
+    <title>@yield('title', 'Sistema Escolar')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     @stack('styles')
 </head>
-<body class="bg-gray-100">
-    <!-- Navegación -->
-    <nav class="bg-indigo-600 shadow-lg">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <a href="/" class="text-white text-2xl font-bold hover:text-indigo-200">
-                    Sistema Escolar
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- Navegación Principal - MINIMALISTA -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-2.5">
+                <!-- Logo y Nombre -->
+                <a href="/" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <span class="text-lg font-bold text-gray-800">Sistema Escolar</span>
                 </a>
-                <div class="flex gap-6">
-    <a href="{{ route('admins.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
-         Administradores
-    </a>
-    <a href="{{ route('estudiantes.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
-         Estudiantes
-    </a>
-    <a href="{{ route('profesores.index') }}" class="text-white hover:text-indigo-200 font-semibold transition">
-         Profesores
-    </a>
-</div>
+
+                <!-- Menú de Navegación -->
+                <div class="hidden md:flex gap-1">
+                    <a href="{{ route('admins.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('admins.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                        Administradores
+                    </a>
+                    <a href="{{ route('estudiantes.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('estudiantes.*') ? 'bg-green-100 text-green-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                        Estudiantes
+                    </a>
+                    <a href="{{ route('profesores.index') }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('profesores.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                        Profesores
+                    </a>
+                </div>
+
+                <!-- Menú móvil -->
+                <button class="md:hidden p-1.5 rounded hover:bg-gray-100" onclick="toggleMobileMenu()">
+                    <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Menú móvil desplegable -->
+            <div id="mobileMenu" class="hidden md:hidden pb-2 space-y-1">
+                <a href="{{ route('admins.index') }}" class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('admins.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                    Administradores
+                </a>
+                <a href="{{ route('estudiantes.index') }}" class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('estudiantes.*') ? 'bg-green-100 text-green-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                    Estudiantes
+                </a>
+                <a href="{{ route('profesores.index') }}" class="block px-3 py-2 rounded text-sm font-medium {{ request()->routeIs('profesores.*') ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                    Profesores
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- Contenido Principal -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Mensajes de éxito -->
+    <main class="flex-grow py-4">
         @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    <span class="font-semibold">{{ session('success') }}</span>
+            <div class="container mx-auto px-4 mb-3">
+                <div class="bg-green-50 border-l-4 border-green-500 p-2.5 rounded">
+                    <p class="text-green-800 text-sm">{{ session('success') }}</p>
                 </div>
             </div>
         @endif
 
-        <!-- Mensajes de error -->
         @if(session('error'))
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                    </svg>
-                    <span class="font-semibold">{{ session('error') }}</span>
+            <div class="container mx-auto px-4 mb-3">
+                <div class="bg-red-50 border-l-4 border-red-500 p-2.5 rounded">
+                    <p class="text-red-800 text-sm">{{ session('error') }}</p>
                 </div>
             </div>
         @endif
 
-        <!-- Errores de validación -->
-        @if($errors->any())
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow">
-                <div class="flex items-start">
-                    <svg class="w-6 h-6 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                    </svg>
-                    <div>
-                        <p class="font-semibold mb-2">Por favor corrige los siguientes errores:</p>
-                        <ul class="list-disc list-inside">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        <!-- Contenido de la página -->
         @yield('content')
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-12 py-6">
-        <div class="container mx-auto px-4 text-center">
-            <p>&copy; {{ date('Y') }} Sistema de Gestión Escolar. Todos los derechos reservados.</p>
+    <!-- Footer Minimalista -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-gray-600">
+                <p>&copy; {{ date('Y') }} Sistema Escolar. Todos los derechos reservados.</p>
+                <p class="text-gray-500">contacto@institucion.edu | +504 2222-2222</p>
+            </div>
         </div>
     </footer>
 
     @stack('scripts')
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+    </script>
 </body>
 </html>

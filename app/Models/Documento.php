@@ -11,6 +11,7 @@ class Documento extends Model
 
     protected $fillable = [
         'nombre_estudiante',
+        'foto',
         'acta_nacimiento',
         'calificaciones',
     ];

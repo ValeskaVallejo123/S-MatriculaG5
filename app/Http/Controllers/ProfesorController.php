@@ -7,9 +7,24 @@ use Illuminate\Http\Request;
 
 class ProfesorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $profesores = Profesor::latest()->paginate(10);
+        $busqueda = $request->input('busqueda');
+        
+        $profesores = Profesor::query()
+            ->when($busqueda, function ($query, $busqueda) {
+                return $query->where(function ($q) use ($busqueda) {
+                    $q->where('nombre', 'like', "%{$busqueda}%")
+                      ->orWhere('apellido', 'like', "%{$busqueda}%")
+                      ->orWhere('dni', 'like', "%{$busqueda}%")
+                      ->orWhere('email', 'like', "%{$busqueda}%")
+                      ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->appends(['busqueda' => $busqueda]);
+        
         return view('profesores.index', compact('profesores'));
     }
 
@@ -51,8 +66,10 @@ class ProfesorController extends Controller
 
     public function edit(Profesor $profesor)
     {
+        // Traemos las opciones para los selects
         $especialidades = Profesor::especialidades();
         $tiposContrato = Profesor::tiposContrato();
+
         return view('profesores.edit', compact('profesor', 'especialidades', 'tiposContrato'));
     }
 
