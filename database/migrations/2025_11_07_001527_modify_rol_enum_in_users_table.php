@@ -7,11 +7,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE users MODIFY COLUMN rol ENUM('estudiante', 'admin', 'super_admin') DEFAULT 'estudiante'");
+        // Cambiamos el nombre correcto de la columna: user_type
+        DB::statement("ALTER TABLE users MODIFY COLUMN user_type ENUM('super_admin', 'admin', 'profesor', 'estudiante') DEFAULT 'estudiante'");
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE users MODIFY COLUMN rol ENUM('estudiante', 'admin') DEFAULT 'estudiante'");
+        // Revertir al estado anterior si fuera necesario
+        DB::statement("ALTER TABLE users MODIFY COLUMN user_type ENUM('super_admin', 'admin', 'estudiante') DEFAULT 'estudiante'");
     }
 };

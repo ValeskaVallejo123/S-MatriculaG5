@@ -6,27 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // SOLO agregar los nuevos campos, sin tocar nada existente
-            $table->boolean('is_super_admin')->default(false)->after('rol');
-            $table->json('permissions')->nullable()->after('is_super_admin');
-            $table->boolean('is_protected')->default(false)->after('permissions');
+            if (!Schema::hasColumn('users', 'is_super_admin')) {
+                $table->boolean('is_super_admin')->default(false);
+            }
+
+            if (!Schema::hasColumn('users', 'permissions')) {
+                $table->json('permissions')->nullable();
+            }
+
+            if (!Schema::hasColumn('users', 'is_protected')) {
+                $table->boolean('is_protected')->default(false);
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Solo eliminar los campos que agregamos
-            $table->dropColumn(['is_super_admin', 'permissions', 'is_protected']);
+            if (Schema::hasColumn('users', 'is_super_admin')) {
+                $table->dropColumn('is_super_admin');
+            }
+
+            if (Schema::hasColumn('users', 'permissions')) {
+                $table->dropColumn('permissions');
+            }
+
+            if (Schema::hasColumn('users', 'is_protected')) {
+                $table->dropColumn('is_protected');
+            }
         });
     }
 };

@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5e6ff, #ffffff);
+            background-color: #007bff; /* Color de fondo azul */
             height: 100vh;
             display: flex;
             align-items: center;
@@ -16,29 +16,30 @@
         }
 
         .form-box {
-            background-color: #6a0dad;
+            background-color: #ffffff; /* Fondo blanco para el formulario */
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
             padding: 40px;
             width: 400px;
-            color: #fff;
+            color: #333; /* Texto oscuro para el formulario */
         }
 
         .form-box h2 {
             text-align: center;
             font-weight: bold;
             margin-bottom: 25px;
+            color: #007bff; /* Título azul */
         }
 
         label {
             font-weight: 500;
-            color: #fff;
+            color: #333; /* Etiqueta oscura */
             margin-bottom: 6px;
         }
 
         .form-control {
             border-radius: 10px;
-            border: none;
+            border: 1px solid #ced4da; /* Borde gris claro */
             padding: 12px;
             margin-bottom: 15px;
         }
@@ -47,8 +48,8 @@
             color: #aaa;
         }
 
-        .btn-rosa {
-            background-color: #f062c0;
+        .btn-azul {
+            background-color: #007bff; /* Botón azul */
             color: white;
             font-weight: bold;
             border: none;
@@ -58,8 +59,8 @@
             transition: all 0.3s ease;
         }
 
-        .btn-rosa:hover {
-            background-color: #e156b4;
+        .btn-azul:hover {
+            background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
             transform: translateY(-2px);
         }
 
@@ -74,7 +75,7 @@
         }
 
         .links a {
-            color: #fff;
+            color: #007bff; /* Enlaces azules */
             font-size: 0.9rem;
             text-decoration: none;
         }
@@ -82,7 +83,6 @@
         .links a:hover {
             text-decoration: underline;
         }
-
     </style>
 </head>
 <body>
@@ -102,7 +102,7 @@
         <div class="alert alert-danger mt-2">{{ $message }}</div>
         @enderror
 
-        <button type="submit" class="btn-rosa">Enviar enlace de recuperación</button>
+        <button type="submit" class="btn-azul">Enviar enlace de recuperación</button>
     </form>
 
     <div class="links mt-3">

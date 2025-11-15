@@ -69,11 +69,14 @@
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ]
     },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
-    },
+   "extra": {
+    "laravel": {
+        "dont-discover": [
+            "codezero/laravel-browser-locale"
+        ]
+    }
+},
+
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
