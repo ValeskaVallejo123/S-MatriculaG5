@@ -4,20 +4,17 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class SuperAdminMiddleware
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        if (!auth()->check()) {
-            return redirect()->route('login');
+        if (Auth::check() && Str::endsWith(Auth::user()->email, '@egm.edu.hn')) {
+            return $next($request);
         }
 
-        if (auth()->user()->role !== 'super_admin') {
-            abort(403, 'Acceso denegado. Solo Super Administradores pueden acceder a esta sección.');
-        }
-
-        return $next($request);
+        abort(403, 'Acceso no autorizado.');
     }
 }
