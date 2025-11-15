@@ -7,8 +7,8 @@
         <div class="content-wrapper">
 
             {{-- Encabezado --}}
-            <div class="page-header">
-                <div class=""><i class="bi bi-file-earmark-text"></i></div>
+            <div class="page-header text-center mb-4">
+                <div class="page-icon"><i class="bi bi-file-earmark-text"></i></div>
                 <h1>Documentos del Estudiante</h1>
                 <div class="header-divider"></div>
             </div>
@@ -21,9 +21,9 @@
             @endif
 
             {{-- Botón subir documentos --}}
-            <div class="flex justify-end mb-4">
-                <a href="{{ route('documentos.create') }}" class="btn-primary flex items-center gap-2">
-                    <i class="bi bi-upload"></i> Subir Nuevos Documentos
+            <div class="text-end mb-4">
+                <a href="{{ route('documentos.create') }}" class="btn-primary">
+                    <i class="bi bi-upload me-2"></i>Subir Nuevos Documentos
                 </a>
             </div>
 
@@ -32,25 +32,26 @@
                 <div class="form-card-header">
                     <h2>Documentos</h2>
                 </div>
-                <div class="form-card-body p-0 overflow-x-auto">
-                    <table class="min-w-full table-auto">
-                        <thead class="bg-blue-600 text-white text-center">
+                <div class="form-card-body p-0">
+                    <table class="table table-hover text-center align-middle mb-0">
+                        <thead class="bg-blue-600 text-white">
                         <tr>
-                            <th class="px-4 py-2 font-semibold text-sm uppercase">Foto</th>
-                            <th class="px-4 py-2 font-semibold text-sm uppercase">Acta de Nacimiento</th>
-                            <th class="px-4 py-2 font-semibold text-sm uppercase">Calificaciones</th>
-                            <th class="px-4 py-2 font-semibold text-sm uppercase">Acciones</th>
+                            <th>Foto</th>
+                            <th>Acta de Nacimiento</th>
+                            <th>Calificaciones</th>
+                            <th>Acciones</th>
                         </tr>
                         </thead>
-                        <tbody class="text-center">
+                        <tbody>
                         @forelse ($documentos as $doc)
-                            <tr class="hover:bg-blue-50 transition-colors">
-
+                            <tr>
                                 {{-- FOTO --}}
-                                <td class="px-4 py-2">
+                                <td>
                                     @if($doc->foto && file_exists(storage_path('app/public/' . $doc->foto)))
                                         <a href="{{ asset('storage/' . $doc->foto) }}" target="_blank">
-                                            <img src="{{ asset('storage/' . $doc->foto) }}" class="w-16 h-16 object-cover rounded mx-auto" alt="Foto del estudiante">
+                                            <img src="{{ asset('storage/' . $doc->foto) }}"
+                                                 alt="Foto del estudiante"
+                                                 class="miniatura">
                                         </a>
                                     @else
                                         <span class="text-gray-400">No hay foto</span>
@@ -58,10 +59,10 @@
                                 </td>
 
                                 {{-- ACTA --}}
-                                <td class="px-4 py-2">
+                                <td>
                                     @if($doc->acta_nacimiento && file_exists(storage_path('app/public/' . $doc->acta_nacimiento)))
                                         <a href="{{ asset('storage/' . $doc->acta_nacimiento) }}" target="_blank"
-                                           class="bg-blue-100 text-blue-700 px-3 py-1 rounded shadow hover:bg-blue-200 transition">
+                                           class="btn-table bg-blue-100 text-blue-700 hover:bg-blue-200">
                                             Ver Acta
                                         </a>
                                     @else
@@ -70,10 +71,10 @@
                                 </td>
 
                                 {{-- CALIFICACIONES --}}
-                                <td class="px-4 py-2">
+                                <td>
                                     @if($doc->calificaciones && file_exists(storage_path('app/public/' . $doc->calificaciones)))
                                         <a href="{{ asset('storage/' . $doc->calificaciones) }}" target="_blank"
-                                           class="bg-teal-100 text-teal-700 px-3 py-1 rounded shadow hover:bg-teal-200 transition">
+                                           class="btn-table bg-teal-100 text-teal-700 hover:bg-teal-200">
                                             Ver Calificaciones
                                         </a>
                                     @else
@@ -82,20 +83,22 @@
                                 </td>
 
                                 {{-- ACCIONES --}}
-                                <td class="px-4 py-2 flex justify-center gap-2">
-                                    <a href="{{ route('documentos.edit', $doc->id) }}"
-                                       class="bg-yellow-400 text-white px-3 py-1 rounded shadow hover:bg-yellow-500 transition flex items-center gap-1">
-                                        <i class="bi bi-pencil"></i> Editar
-                                    </a>
-                                    <form action="{{ route('documentos.destroy', $doc->id) }}" method="POST">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded shadow hover:bg-red-600 transition flex items-center gap-1"
-                                                onclick="return confirm('¿Eliminar documentos?')">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </button>
-                                    </form>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                        <a href="{{ route('documentos.edit', $doc->id) }}"
+                                           class="btn-action btn-warning text-white">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </a>
+                                        <form action="{{ route('documentos.destroy', $doc->id) }}" method="POST">
+                                            @csrf @method('DELETE')
+                                            <button type="submit"
+                                                    onclick="return confirm('¿Eliminar documentos?')"
+                                                    class="btn-action btn-danger text-white">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
-
                             </tr>
                         @empty
                             <tr>
@@ -121,39 +124,42 @@
                 color: #2c3e50;
             }
 
+            /* Centrado general */
             .main-content {
                 margin-left: 0;
                 padding: 30px;
                 min-height: 100vh;
                 display: flex;
                 justify-content: center;
+                align-items: center;
+                flex-direction: column;
             }
 
             .content-wrapper {
                 width: 100%;
-                max-width: 900px;
+                max-width: 950px;
             }
 
             .page-header {
                 text-align: center;
-                margin-bottom: 20px;
+                margin-bottom: 25px;
             }
 
             .page-icon {
-                width: 50px;
-                height: 50px;
+                width: 55px;
+                height: 55px;
                 background: linear-gradient(135deg, #00BCD4, #00ACC1);
                 border-radius: 12px;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
                 color: white;
-                font-size: 1.3rem;
+                font-size: 1.4rem;
                 margin-bottom: 10px;
             }
 
             .header-divider {
-                width: 50px;
+                width: 60px;
                 height: 3px;
                 background: linear-gradient(135deg, #00BCD4, #00ACC1);
                 margin: 10px auto 0;
@@ -179,47 +185,98 @@
                 font-weight: 700;
             }
 
-            .form-card-header p {
-                font-size: 0.7rem;
-            }
-
             .form-card-body {
                 padding: 20px;
                 overflow-x: auto;
             }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
+            /* Miniatura */
+            .miniatura {
+                width: 60px;
+                height: 60px;
+                border-radius: 8px;
+                object-fit: cover;
+                border: 2px solid #e0f7fa;
+                transition: transform 0.2s ease;
             }
 
-            th, td {
-                border-bottom: 1px solid #e0f7fa;
+            .miniatura:hover {
+                transform: scale(1.1);
             }
 
-            th {
-                padding: 12px;
-            }
-
-            td {
-                padding: 8px;
-            }
-
-            a.btn-primary {
+            /* Botones */
+            .btn-primary {
                 background: linear-gradient(135deg, #00BCD4, #00ACC1);
                 color: white;
                 font-weight: 600;
                 border-radius: 6px;
-                padding: 8px 12px;
+                padding: 8px 14px;
                 text-decoration: none;
                 display: inline-flex;
                 align-items: center;
+                gap: 6px;
+                transition: 0.3s;
+            }
+
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-table {
+                padding: 5px 10px;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                text-decoration: none;
+                display: inline-block;
+                transition: 0.2s;
+            }
+
+            .btn-action {
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.3s;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            /* Amarillo para Editar */
+            .btn-warning {
+                background-color: #facc15;
+            }
+
+            .btn-warning:hover {
+                background-color: #eab308;
+            }
+
+            /* Rojo para Eliminar */
+            .btn-danger {
+                background-color: #ef4444;
+            }
+
+            .btn-danger:hover {
+                background-color: #dc2626;
+            }
+
+            .table th, .table td {
+                vertical-align: middle;
+                padding: 12px;
             }
 
             @media (max-width: 768px) {
                 .content-wrapper {
                     width: 100%;
                     padding: 0 15px;
+                }
+
+                .miniatura {
+                    width: 50px;
+                    height: 50px;
                 }
             }
         </style>

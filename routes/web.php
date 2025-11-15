@@ -18,6 +18,7 @@ use App\Http\Controllers\ObservacionController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\CambiarContraseniaController;
+use App\Http\Controllers\CalificacionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,7 +93,7 @@ Route::middleware(['auth', 'super_admin'])->prefix('superadmin')->name('superadm
     Route::put('/administradores/{administrador}', [SuperAdminController::class, 'update'])->name('administradores.update');
     Route::patch('/administradores/{administrador}', [SuperAdminController::class, 'update']);
     Route::delete('/administradores/{administrador}', [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
-    
+
     // Perfil de super admin
     Route::get('/perfil', [SuperAdminController::class, 'perfil'])->name('perfil');
     Route::put('/perfil', [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
@@ -106,14 +107,14 @@ Route::middleware(['auth', 'super_admin'])->prefix('superadmin')->name('superadm
 | Accesible para admins regulares y super admins
 */
 Route::middleware(['auth'])->group(function () {
-    
+
     /*
     |--------------------------------------------------------------------------
     | DASHBOARD
     |--------------------------------------------------------------------------
     */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     /*
     |--------------------------------------------------------------------------
     | PANEL DE ADMINISTRADORES REGULARES
@@ -132,19 +133,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE ESTUDIANTES
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])
-        ->name('estudiantes.buscar');
-    Route::resource('estudiantes', EstudianteController::class);
-    
-    // Dashboard de estudiantes
-    Route::get('/estudiantes-dashboard', function () {
-        return view('estudiantes.dashboard');
-    })->name('estudiantes.dashboard');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -183,29 +172,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE OBSERVACIONES
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE DOCUMENTOS
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('documentos', DocumentoController::class);
-
-    /*
-    |--------------------------------------------------------------------------
-    | CAMBIAR CONTRASEÑA
-    |--------------------------------------------------------------------------
-    */
-    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
-        ->name('cambiarcontrasenia.edit');
-    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
-        ->name('cambiarcontrasenia.update');
 });
 
 // Ruta para mostrar el formulario de login
@@ -220,7 +187,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Rutas del Super Admin (protegidas)
 Route::middleware(['auth', 'super_admin'])->prefix('superadmin')->group(function () {
-    
+
     // Perfil del Super Admin
     Route::get('/perfil', function() {
         return view('superadmin.perfil');
@@ -228,23 +195,63 @@ Route::middleware(['auth', 'super_admin'])->prefix('superadmin')->group(function
 
     });
 
+/*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE OBSERVACIONES
+    |--------------------------------------------------------------------------
+    */
+Route::resource('observaciones', ObservacionController::class)->except(['show']);
+
+/*
+|--------------------------------------------------------------------------
+| GESTIÓN DE DOCUMENTOS
+|--------------------------------------------------------------------------
+*/
+Route::resource('documentos', DocumentoController::class);
+
+/*
+|--------------------------------------------------------------------------
+| CAMBIAR CONTRASEÑA
+|--------------------------------------------------------------------------
+*/
+Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
+    ->name('cambiarcontrasenia.edit');
+Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
+    ->name('cambiarcontrasenia.update');
+//Rutas de Calificaciones
+Route::get('/indexCalificaciones', [CalificacionController::class, 'indexCalificaciones'])->name('calificaciones.index');
+
+/*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE ESTUDIANTES
+    |--------------------------------------------------------------------------
+    */
+Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])
+    ->name('estudiantes.buscar');
+Route::resource('estudiantes', EstudianteController::class);
+
+// Dashboard de estudiantes
+Route::get('/estudiantes-dashboard', function () {
+    return view('estudiantes.dashboard');
+})->name('estudiantes.dashboard');
+
     // Rutas de Matrículas (protegidas por autenticación)
 Route::middleware(['auth'])->group(function () {
     Route::resource('matriculas', MatriculaController::class);
 });
 
 Route::middleware(['auth'])->group(function () {
-    
+
     // Rutas resource de matrículas
     Route::resource('matriculas', MatriculaController::class);
-    
+
     // Rutas adicionales para cambiar estados
     Route::post('matriculas/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])
         ->name('matriculas.confirmar');
-    
+
     Route::post('matriculas/{matricula}/rechazar', [MatriculaController::class, 'rechazar'])
         ->name('matriculas.rechazar');
-    
+
     Route::post('matriculas/{matricula}/cancelar', [MatriculaController::class, 'cancelar'])
         ->name('matriculas.cancelar');
 });

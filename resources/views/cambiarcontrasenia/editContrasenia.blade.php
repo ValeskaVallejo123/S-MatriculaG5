@@ -80,11 +80,13 @@
             }
 
             .main-content {
-                margin-left: 230px;
+                margin-left: 0;
                 padding: 30px;
                 min-height: 100vh;
                 display: flex;
                 justify-content: center;
+                align-items: center;
+                flex-direction: column;
             }
 
             .content-wrapper {

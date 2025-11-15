@@ -26,6 +26,13 @@
                         {{-- Información del estudiante --}}
                         <div class="form-grid">
                             <div class="form-group">
+                                <label>Nombre del Estudiante *</label>
+                                <input type="text" name="nombre_estudiante" value="{{ old('nombre_estudiante') }}"
+                                       class="form-control @error('nombre_estudiante') border-red-500 @enderror" required>
+                                @error('nombre_estudiante')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div class="form-group">
                                 <label>Foto del Estudiante *</label>
                                 <input type="file" name="foto" id="foto" accept=".jpg,.png"
                                        class="form-control @error('foto') border-red-500 @enderror" required>
@@ -232,3 +239,4 @@
         });
     </script>
 @endsection
+
