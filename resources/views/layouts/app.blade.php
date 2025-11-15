@@ -425,7 +425,7 @@
         }
     </style>
 
-    @stack('styles')
+  @stack('scripts')
 </head>
 <body>
 
@@ -439,6 +439,13 @@
     <!-- SIDEBAR (solo para admins) -->
     @if($showSidebar)
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <li class="nav-item">
+    <a href="{{ route('admins.permisos.index') }}" 
+       class="nav-link {{ request()->routeIs('admin.permisos.*') ? 'active' : '' }}">
+        <i class="fas fa-user-lock"></i>
+        <span>Permisos de Padres</span>
+    </a>
+</li>
     
     <aside class="sidebar" id="sidebar">
         <!-- Header -->
