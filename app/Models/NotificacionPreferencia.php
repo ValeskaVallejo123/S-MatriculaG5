@@ -10,6 +10,9 @@ class NotificacionPreferencia extends Model
 {
     use HasFactory;
 
+    // 🔹 Nombre EXACTO de la tabla creada en tu migración
+    protected $table = 'notificacion_preferencias';
+
     protected $fillable = [
         'user_id',
         'correo',

@@ -11,15 +11,24 @@ class CheckSuperAdmin
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Verificar si el usuario está autenticado y es super admin
-        if (!auth()->check() || !auth()->user()->isSuperAdmin()) {
+        // Si no está autenticado → prohibido
+        if (!auth()->check()) {
+            abort(403, 'No has iniciado sesión.');
+        }
+
+        // Si el usuario no es super admin → prohibido
+        if (!auth()->user()->isSuperAdmin()) {
             abort(403, 'No tienes permisos para acceder a esta sección');
         }
 
         return $next($request);
     }
 }
+
+
