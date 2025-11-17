@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Padre extends Model
 {
     protected $table = 'padres';
-    
+
     protected $fillable = [
         'nombre',
         'apellido',
         'dni',
         'parentesco',
         'parentesco_otro',
-        'email',
+         'correo',
         'telefono',
         'telefono_secundario',
         'direccion',
@@ -37,7 +37,7 @@ class Padre extends Model
         if ($this->parentesco === 'otro' && $this->parentesco_otro) {
             return ucfirst($this->parentesco_otro);
         }
-        
+
         $parentescos = [
             'padre' => 'Padre',
             'madre' => 'Madre',
@@ -48,7 +48,7 @@ class Padre extends Model
             'tia' => 'Tía',
             'otro' => 'Otro'
         ];
-        
+
         return $parentescos[$this->parentesco] ?? 'No especificado';
     }
 
@@ -62,4 +62,29 @@ class Padre extends Model
     {
         return $this->belongsToMany(Estudiante::class, 'matriculas');
     }
+
+    /**
+ * Relación con permisos
+ */
+public function permisos()
+{
+    return $this->hasMany(PadrePermiso::class);
+}
+
+/**
+ * Obtener permisos para un estudiante específico
+ */
+public function permisosParaEstudiante($estudianteId)
+{
+    return $this->permisos()->where('estudiante_id', $estudianteId)->first();
+}
+
+/**
+ * Verificar si tiene permiso para un estudiante
+ */
+public function tienePermiso($estudianteId, $permiso)
+{
+    $permisoConfig = $this->permisosParaEstudiante($estudianteId);
+    return $permisoConfig ? $permisoConfig->tienePermiso($permiso) : false;
+}
 }

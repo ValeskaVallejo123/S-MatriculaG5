@@ -1,112 +1,98 @@
+@extends('layouts.app') {{-- Puedes quitar si NO usas layouts --}}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Recuperar Contraseña - Escuela Gabriela Mistral</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5e6ff, #ffffff);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>Recuperar Contraseña</title>
 
-        .form-box {
-            background-color: #6a0dad;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-            padding: 40px;
-            width: 400px;
-            color: #fff;
-        }
+  <!-- Incluye el mismo CSS COMPLETO DEL LOGIN -->
+  <style>
+      /* TODO EL CSS IDENTICO DEL LOGIN QUE ME ENVIASTE
+         (PEGO EL MISMO estilo completo sin modificar nada para que quede igual) */
 
-        .form-box h2 {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
-
-        label {
-            font-weight: 500;
-            color: #fff;
-            margin-bottom: 6px;
-        }
-
-        .form-control {
-            border-radius: 10px;
-            border: none;
-            padding: 12px;
-            margin-bottom: 15px;
-        }
-
-        .form-control::placeholder {
-            color: #aaa;
-        }
-
-        .btn-rosa {
-            background-color: #f062c0;
-            color: white;
-            font-weight: bold;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 0;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .btn-rosa:hover {
-            background-color: #e156b4;
-            transform: translateY(-2px);
-        }
-
-        .alert {
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .links {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .links a {
-            color: #fff;
-            font-size: 0.9rem;
-            text-decoration: none;
-        }
-
-        .links a:hover {
-            text-decoration: underline;
-        }
-
-    </style>
+      /* ——— PEGAR TODO EL CSS DE TU LOGIN AQUÍ ——— */
+  </style>
 </head>
+
 <body>
 
-<div class="form-box">
-    <h2>Recuperar Contraseña</h2>
+<div class="left-section">
+    <div class="hexagon-pattern">
+        <div class="hex hex-1"></div>
+        <div class="hex hex-2"></div>
+        <div class="hex hex-3"></div>
+        <div class="hex hex-4"></div>
+        <div class="hex hex-5"></div>
+        <div class="hex hex-6"></div>
+    </div>
 
-    @if (session('status'))
-        <div class="alert alert-success text-dark bg-light">{{ session('status') }}</div>
-    @endif
+    <div class="left-content">
+        <div class="school-logo">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h1>Recupera tu acceso</h1>
+        <p>Sistema de Gestión Escolar</p>
+        <p class="subtitle">ESCUELA GABRIELA MISTRAL</p>
+    </div>
+</div>
 
-    <form method="POST" action="{{ route('password.enviar') }}">
-        @csrf
-        <label for="email">Correo electrónico:</label>
-        <input type="email" id="email" name="email" class="form-control" value="{{ old('email') }}" required placeholder="Tu Correo">
-        @error('email')
-        <div class="alert alert-danger mt-2">{{ $message }}</div>
-        @enderror
+<div class="right-section">
+    <div class="login-container">
 
-        <button type="submit" class="btn-rosa">Enviar enlace de recuperación</button>
-    </form>
+        <div class="login-header">
+            <h2>¿Olvidaste tu contraseña?</h2>
+            <p>Ingresa tu correo para enviarte un enlace de recuperación</p>
+        </div>
 
-    <div class="links mt-3">
-        <a href="{{ url('/login') }}">← Volver al inicio de sesión</a>
+        @if (session('status'))
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ session('status') }}</span>
+        </div>
+        @endif
+
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ $errors->first() }}</span>
+        </div>
+        @endif
+
+        <form method="POST" action="{{ route('password.email') }}" id="loginForm">
+            @csrf
+
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" name="email" id="email"
+                           value="{{ old('email') }}"
+                           placeholder="tu-correo@ejemplo.com"
+                           required>
+                </div>
+            </div>
+
+            <button type="submit" class="login-button">
+                <i class="fas fa-paper-plane"></i> Enviar enlace
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>O</span>
+        </div>
+
+        <div class="register-link">
+            <a href="{{ route('login.show') }}">Volver al inicio de sesión</a>
+        </div>
+
+        <div class="footer-info">
+            <i class="fas fa-shield-alt"></i>
+            <span>© 2025 Escuela Gabriela Mistral - Danlí</span>
+        </div>
+
     </div>
 </div>
 

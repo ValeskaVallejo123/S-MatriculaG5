@@ -10,7 +10,14 @@ class Horario extends Model
     use HasFactory;
 
     protected $fillable = [
-        'profesor_id', 'materia', 'seccion', 'dia', 'hora_inicio', 'hora_fin', 'salon'
+        'profesor_id',
+        'dia',
+        'hora_inicio',
+        'hora_fin',
+        'grado',
+        'seccion',
+        'aula',
+        'observaciones'
     ];
 
     public function profesor()

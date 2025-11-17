@@ -10,58 +10,145 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class HorarioController extends Controller
 {
     /**
-     * Mostrar horarios según el rol del usuario
+     * Mostrar todos los horarios según el rol con paginación
      */
-   public function index()
-{
-    $user = Auth::user();
+    public function index()
+    {
+        $user = Auth::user();
 
-    if ($user && $user->isProfesor()) {
-        // Profesor ve solo su horario
-        $horarios = Horario::where('profesor_id', $user->id)
-                            ->orderBy('dia')
-                            ->orderBy('hora_inicio')
-                            ->get();
-    } elseif ($user && ($user->isAdmin() || $user->isSuperAdmin())) {
-        // Admin ve todos los horarios
-        $horarios = Horario::orderBy('dia')
-                            ->orderBy('hora_inicio')
-                            ->get();
-    } else {
-        // Visitante no autenticado ve todos los horarios públicos
-        $horarios = Horario::orderBy('dia')
-                            ->orderBy('hora_inicio')
-                            ->get();
+        $query = Horario::with('profesor')->orderBy('dia')->orderBy('hora_inicio');
+
+        if ($user && $user->user_type === 'profesor') {
+            $query->where('profesor_id', $user->id);
+        }
+
+        // Paginación para administradores y profesores
+        $horarios = $query->paginate(10);
+
+        return view('horarios.index', compact('horarios'));
     }
-
-    return view('horarios.index', compact('horarios'));
-}
 
     /**
-     * Exportar horarios a PDF según el rol
+     * Mostrar horarios públicos o del estudiante logueado
      */
-    public function exportPDF()
-{
-    $user = Auth::user();
+    public function horarioPublico()
+    {
+        $user = Auth::user();
 
-    if ($user && $user->isProfesor()) {
-        $horarios = Horario::where('profesor_id', $user->id)
-                            ->orderBy('dia')
-                            ->orderBy('hora_inicio')
-                            ->get();
-    } elseif ($user && ($user->isAdmin() || $user->isSuperAdmin())) {
-        $horarios = Horario::orderBy('dia')
-                            ->orderBy('hora_inicio')
-                            ->get();
-    } else {
-        // Visitante no autenticado: ve todos los horarios
-        $horarios = Horario::orderBy('dia')
-                            ->orderBy('hora_inicio')
-                            ->get();
+        $query = Horario::with('profesor')->orderBy('dia')->orderBy('hora_inicio');
+
+        if ($user && $user->user_type === 'estudiante') {
+            // Filtrar solo su grado y sección
+            $query->where('grado', $user->grado)
+                  ->where('seccion', $user->seccion);
+        }
+
+        $horarios = $query->paginate(10); // Paginación opcional
+        return view('horarios.publicos', compact('horarios'));
     }
 
-    $pdf = PDF::loadView('horarios.pdf', compact('horarios', 'user'));
+    /**
+     * Exportar horarios a PDF
+     * @param int|null $profesorId
+     */
+    public function exportPDF($profesorId = null)
+    {
+        $user = Auth::user();
 
-    return $pdf->download('horarios.pdf');
-}
+        $query = Horario::with('profesor')->orderBy('dia')->orderBy('hora_inicio');
+
+        if ($user && $user->user_type === 'profesor') {
+            $query->where('profesor_id', $user->id);
+        } elseif ($user && $user->user_type === 'estudiante') {
+            // Solo sus horarios
+            $query->where('grado', $user->grado)
+                  ->where('seccion', $user->seccion);
+        } elseif ($profesorId) {
+            $query->where('profesor_id', $profesorId);
+        }
+
+        $horarios = $query->get(); // PDF no necesita paginación
+
+        return Pdf::loadView('horarios.pdf', compact('horarios', 'user'))
+                  ->download('horario.pdf');
+    }
+
+    /**
+     * Mostrar formulario para crear un horario
+     */
+    public function create()
+    {
+        return view('horarios.create');
+    }
+
+    /**
+     * Guardar un nuevo horario
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'profesor_id' => 'required|exists:profesores,id',
+            'dia' => 'required|string',
+            'hora_inicio' => 'required|date_format:H:i',
+            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
+            'grado' => 'required|string',
+            'seccion' => 'required|string',
+            'aula' => 'nullable|string',
+            'observaciones' => 'nullable|string',
+        ]);
+
+        Horario::create($request->all());
+
+        return redirect()->route('horarios.index')
+            ->with('success', 'Horario creado correctamente.');
+    }
+
+    /**
+     * Mostrar un horario específico
+     */
+    public function show(Horario $horario)
+    {
+        return view('horarios.show', compact('horario'));
+    }
+
+    /**
+     * Mostrar formulario para editar un horario
+     */
+    public function edit(Horario $horario)
+    {
+        return view('horarios.edit', compact('horario'));
+    }
+
+    /**
+     * Actualizar un horario
+     */
+    public function update(Request $request, Horario $horario)
+    {
+        $request->validate([
+            'profesor_id' => 'required|exists:profesores,id',
+            'dia' => 'required|string',
+            'hora_inicio' => 'required|date_format:H:i',
+            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
+            'grado' => 'required|string',
+            'seccion' => 'required|string',
+            'aula' => 'nullable|string',
+            'observaciones' => 'nullable|string',
+        ]);
+
+        $horario->update($request->all());
+
+        return redirect()->route('horarios.index')
+            ->with('success', 'Horario actualizado correctamente.');
+    }
+
+    /**
+     * Eliminar un horario
+     */
+    public function destroy(Horario $horario)
+    {
+        $horario->delete();
+
+        return redirect()->route('horarios.index')
+            ->with('success', 'Horario eliminado correctamente.');
+    }
 }

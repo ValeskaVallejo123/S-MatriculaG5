@@ -11,13 +11,17 @@
         </a>
         <a href="{{ route('estudiantes.index') }}" class="btn btn-sm" style="background: white; color: #00508f; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 2px solid #00508f;">
             <i class="fas fa-arrow-left me-1"></i>Volver
+
+            <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}" class="btn btn-primary">
+    <i class="fas fa-link"></i> Vincular Padre/Tutor
+</a>
         </a>
     </div>
 @endsection
 
 @section('content')
 <div class="container" style="max-width: 1200px;">
-    
+
     <!-- Tarjeta de Perfil -->
     <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
         <!-- Header con gradiente -->
@@ -25,8 +29,8 @@
             <div class="d-flex align-items-center gap-3">
                 <!-- Foto del estudiante -->
                 @if($estudiante->foto)
-                    <img src="{{ asset('storage/' . $estudiante->foto) }}" 
-                         alt="Foto de {{ $estudiante->nombre_completo }}" 
+                    <img src="{{ asset('storage/' . $estudiante->foto) }}"
+                         alt="Foto de {{ $estudiante->nombre_completo }}"
                          style="width: 70px; height: 70px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); border: 3px solid #4ec7d2;">
                 @else
                     <!-- Avatar con iniciales si no hay foto -->
@@ -36,7 +40,7 @@
                         </span>
                     </div>
                 @endif
-                
+
                 <!-- Info principal -->
                 <div class="flex-grow-1">
                     <h2 class="mb-1 fw-bold text-white" style="font-size: 1.4rem;">
@@ -65,7 +69,7 @@
 
         <!-- Contenido -->
         <div class="card-body p-3">
-            
+
             <!-- Información Personal -->
             <div class="mb-3">
                 <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
@@ -198,7 +202,7 @@
                     <button type="button" onclick="confirmDelete()" class="btn btn-sm flex-fill" style="border: 2px solid #ef4444; color: #ef4444; background: white; padding: 0.6rem; border-radius: 8px; font-weight: 600;">
                         <i class="fas fa-trash me-1"></i>Eliminar
                     </button>
-                    
+
                     <!-- Form oculto para eliminar -->
                     <form id="delete-form" action="{{ route('estudiantes.destroy', $estudiante) }}" method="POST" style="display: none;">
                         @csrf
@@ -227,7 +231,7 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            
+
             <!-- Body -->
             <div class="modal-body" style="padding: 1.5rem;">
                 <p class="mb-2" style="color: #003b73; font-size: 0.95rem;">
@@ -237,7 +241,7 @@
                     Se perderán todos los datos asociados a este estudiante de forma permanente.
                 </p>
             </div>
-            
+
             <!-- Footer -->
             <div class="modal-footer border-0" style="background: #f8f9fa; padding: 1rem 1.5rem;">
                 <button type="button" class="btn btn-sm" data-bs-dismiss="modal" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600;">
@@ -274,17 +278,17 @@ function submitDelete() {
     .border-bottom {
         border-color: rgba(0, 80, 143, 0.15) !important;
     }
-    
+
     .btn:hover {
         transform: translateY(-2px);
         transition: all 0.3s ease;
     }
-    
+
     button[style*="border: 2px solid #ef4444"]:hover {
         background: #ef4444 !important;
         color: white !important;
     }
-    
+
     a[style*="border: 2px solid #00508f"]:hover {
         background: #00508f !important;
         color: white !important;

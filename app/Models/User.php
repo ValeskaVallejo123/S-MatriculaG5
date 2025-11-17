@@ -2,29 +2,35 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * Campos que se pueden asignar masivamente.
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'user_type',       // Rol principal
-        'is_super_admin',  // Bool
-        'permissions',     // Guardado como array json
-        'is_protected',    // Bool
+        'user_type',
+        'is_super_admin',
+        'permissions',
+        'is_protected',
     ];
 
     /**
-     * Campos ocultos al serializar.
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -32,15 +38,20 @@ class User extends Authenticatable
     ];
 
     /**
-     * Conversión automática de tipos de datos.
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'is_super_admin' => 'boolean',
-        'is_protected' => 'boolean',
-        'permissions' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_super_admin' => 'boolean',
+            'is_protected' => 'boolean',
+            'permissions' => 'array',
+        ];
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -48,29 +59,39 @@ class User extends Authenticatable
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * Verificar si el usuario es Super Administrador
+     */
     public function isSuperAdmin(): bool
     {
         return $this->is_super_admin === true && $this->user_type === 'super_admin';
     }
 
+    /**
+     * Verificar si el usuario es Administrador (incluye Super Admin)
+     */
     public function isAdmin(): bool
-    {
-        // Incluye super admin
-        return in_array($this->user_type, ['admin', 'super_admin']);
-    }
-
+{
+    return in_array($this->user_type, ['admin', 'super_admin']); // ← Esto usa user_type
+}
+    /**
+     * Verificar si el usuario es Profesor
+     */
     public function isProfesor(): bool
     {
         return $this->user_type === 'profesor';
     }
 
+    /**
+     * Verificar si el usuario es Estudiante
+     */
     public function isEstudiante(): bool
     {
         return $this->user_type === 'estudiante';
     }
 
     /**
-     * Nombre legible del rol
+     * Obtener el nombre del rol en español
      */
     public function getRoleName(): string
     {
@@ -84,23 +105,40 @@ class User extends Authenticatable
     }
 
     /**
-     * Verificar permisos específicos
+     * Verificar si el usuario tiene un permiso específico
      */
-    /*public function hasPermission(string $permission): bool
+    public function hasPermission(string $permission): bool
     {
+        // Super admin tiene todos los permisos
         if ($this->isSuperAdmin()) {
             return true;
         }
 
-        // Evita errores si permissions es null
-        //return in_array($permission, $this->permissions ?? []);
-    }*/
+        // Verificar en el array de permisos
+        if (is_array($this->permissions)) {
+            return in_array($permission, $this->permissions);
+        }
+
+        return false;
+    }
 
     /**
-     * Usuario protegido (no se puede eliminar)
+     * Verificar si el usuario está protegido (no se puede eliminar)
      */
     public function isProtected(): bool
     {
         return $this->is_protected === true;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIÓN CON NOTIFICACIONES
+    |--------------------------------------------------------------------------
+    */
+
+    public function notificacionPreferencias()
+    {
+        return $this->hasOne(NotificacionPreferencia::class, 'user_id');
+    }
+
 }

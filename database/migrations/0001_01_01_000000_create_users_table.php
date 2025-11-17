@@ -10,28 +10,37 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])
-              ->default('estudiante')->after('email');
-        $table->boolean('is_super_admin')->default(false)->after('user_type');
-        $table->json('permissions')->nullable()->after('is_super_admin');
-        $table->boolean('is_protected')->default(false)->after('permissions');
-    });
+    {
+        // Crear tabla users con todos los campos
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
 
+            $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])
+                  ->default('estudiante');
+            $table->boolean('is_super_admin')->default(false);
+            $table->json('permissions')->nullable();
+            $table->boolean('is_protected')->default(false);
+
+            $table->timestamps();
+        });
+
+        // Tabla personalizada para tokens de contraseña
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
+        // Tabla para sesiones (si usas driver database)
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')
-                ->nullable()
-                ->constrained('users')
-                ->cascadeOnDelete(); // si se borra el usuario se borra la sesión también
-
+                  ->nullable()
+                  ->constrained('users')
+                  ->cascadeOnDelete();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
@@ -44,8 +53,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sessions');              // Primero sesiones
-        Schema::dropIfExists('password_reset_tokens'); // Luego los tokens
-        Schema::dropIfExists('users');                 // Último los usuarios
+        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

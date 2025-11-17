@@ -18,7 +18,7 @@ class RolMiddleware
         $user = Auth::user();
 
         // Verificar si el rol del usuario está en los roles permitidos
-        if (!in_array($user->rol, $roles)) {
+        if (!in_array($user->user_type, $roles)) {
             return redirect('/')->with('error', 'No tienes permisos para acceder a esta página.');
         }
 
