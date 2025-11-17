@@ -178,6 +178,7 @@ class AdminController extends Controller
 
     public function edit(Admin $admin)
     {
+        
         $permisos = [
             'usuarios' => 'Gestionar Usuarios',
             'estudiantes' => 'Gestionar Estudiantes',
@@ -185,7 +186,10 @@ class AdminController extends Controller
             'cursos' => 'Gestionar Cursos',
             'calificaciones' => 'Gestionar Calificaciones',
             'reportes' => 'Generar Reportes',
-            'configuracion' => 'Configuración del Sistema'
+            'configuracion' => 'Configuración del Sistema',
+            'crear' => 'Crear usuarios',
+        'editar' => 'Editar usuarios',
+        'eliminar' => 'Eliminar usuarios',
         ];
         
         return view('admins.edit', compact('admin', 'permisos'));
@@ -269,4 +273,6 @@ class AdminController extends Controller
         return redirect()->route('admins.index')
             ->with('success', 'Administrador eliminado exitosamente');
     }
+
+    
 }

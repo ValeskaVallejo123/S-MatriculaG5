@@ -1,6 +1,4 @@
 <?php return array (
-<<<<<<< HEAD
-=======
   'barryvdh/laravel-dompdf' => 
   array (
     'aliases' => 
@@ -13,7 +11,6 @@
       0 => 'Barryvdh\\DomPDF\\ServiceProvider',
     ),
   ),
->>>>>>> cesia-dev
   'codezero/browser-locale' => 
   array (
     'providers' => 
