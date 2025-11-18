@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('parentesco_otro', 50)->nullable();
 
             // Información de Contacto
-            $table->string('correo', 100)->unique();
+         $table->string('correo')->nullable();
             $table->string('telefono', 8);
             $table->string('telefono_secundario', 8)->nullable();
             $table->string('direccion', 200);

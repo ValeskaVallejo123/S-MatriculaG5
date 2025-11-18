@@ -12,7 +12,7 @@ class Matricula extends Model
     protected $table = 'matriculas';
 
     protected $fillable = [
-        'codigo',
+        'codigo_matricula',
         'estudiante_id',
         'padre_id',
         'anio_lectivo',

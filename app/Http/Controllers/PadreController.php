@@ -49,10 +49,34 @@ class PadreController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|min:2|max:50',
             'apellido' => 'required|string|min:2|max:50',
-            'dni' => 'nullable|string|max:20|unique:padres,dni',
+            'dni' => [
+                'nullable',
+                'string',
+                'max:20',
+                function ($attribute, $value, $fail) {
+                    if (!empty($value)) {
+                        $existe = Padre::where('dni', $value)->exists();
+                        if ($existe) {
+                            $fail('Este DNI ya está registrado en el sistema. Por favor, verifica o déjalo vacío si no lo tienes.');
+                        }
+                    }
+                },
+            ],
             'parentesco' => 'required|string|in:padre,madre,tutor_legal,abuelo,abuela,tio,tia,otro',
             'parentesco_otro' => 'nullable|required_if:parentesco,otro|string|max:50',
-            'correo' => 'nullable|email|max:100|unique:padres,correo',
+            'correo' => [
+                'nullable',
+                'email',
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if (!empty($value)) {
+                        $existe = Padre::where('correo', $value)->exists();
+                        if ($existe) {
+                            $fail('Este correo ya está registrado en el sistema. Por favor, usa otro correo o déjalo vacío.');
+                        }
+                    }
+                },
+            ],
             'telefono' => 'nullable|string|max:15',
             'telefono_secundario' => 'nullable|string|max:15',
             'direccion' => 'nullable|string|max:255',
@@ -63,11 +87,11 @@ class PadreController extends Controller
             'observaciones' => 'nullable|string|max:500',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
+            'nombre.min' => 'El nombre debe tener al menos 2 caracteres.',
             'apellido.required' => 'El apellido es obligatorio.',
-            'dni.unique' => 'Este DNI ya está registrado.',
-            'correo.unique' => 'Este correo ya está registrado.',
-            'correo.email' => 'Debe ser un correo electrónico válido.',
+            'apellido.min' => 'El apellido debe tener al menos 2 caracteres.',
             'parentesco.required' => 'El parentesco es obligatorio.',
+            'parentesco.in' => 'El parentesco seleccionado no es válido.',
         ]);
 
         // Estado por defecto
@@ -92,11 +116,10 @@ class PadreController extends Controller
      * Mostrar formulario de edición
      */
     public function edit($id)
-    {
-        $padre = Padre::findOrFail($id);
-        return view('padres.edit', compact('padre'));
-    }
-
+{
+    $padre = Padre::findOrFail($id);
+    return view('padres.edit', compact('padre'));
+}
     /**
      * Actualizar padre
      */
@@ -107,10 +130,38 @@ class PadreController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|min:2|max:50',
             'apellido' => 'required|string|min:2|max:50',
-            'dni' => 'nullable|string|max:20|unique:padres,dni,' . $id,
+            'dni' => [
+                'nullable',
+                'string',
+                'max:20',
+                function ($attribute, $value, $fail) use ($id) {
+                    if (!empty($value)) {
+                        $existe = Padre::where('dni', $value)
+                            ->where('id', '!=', $id)
+                            ->exists();
+                        if ($existe) {
+                            $fail('Este DNI ya está registrado por otro padre/tutor.');
+                        }
+                    }
+                },
+            ],
             'parentesco' => 'required|string|in:padre,madre,tutor_legal,abuelo,abuela,tio,tia,otro',
             'parentesco_otro' => 'nullable|required_if:parentesco,otro|string|max:50',
-            'correo' => 'nullable|email|max:100|unique:padres,correo,' . $id,
+            'correo' => [
+                'nullable',
+                'email',
+                'max:100',
+                function ($attribute, $value, $fail) use ($id) {
+                    if (!empty($value)) {
+                        $existe = Padre::where('correo', $value)
+                            ->where('id', '!=', $id)
+                            ->exists();
+                        if ($existe) {
+                            $fail('Este correo ya está registrado por otro padre/tutor.');
+                        }
+                    }
+                },
+            ],
             'telefono' => 'nullable|string|max:15',
             'telefono_secundario' => 'nullable|string|max:15',
             'direccion' => 'nullable|string|max:255',

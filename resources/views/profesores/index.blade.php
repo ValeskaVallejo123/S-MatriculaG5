@@ -140,7 +140,7 @@
 
                         <!-- Botones de Acción -->
                         <div class="btn-group" role="group">
-                            <a href="{{ route('profesores.show', $profesor) }}" 
+                            <a href="{{ route('profesores.show', $profesor->id) }}" 
                                class="btn btn-sm" 
                                style="border-radius: 6px 0 0 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
                                title="Ver"
@@ -148,7 +148,7 @@
                                onmouseout="this.style.background='white'; this.style.color='#00508f';">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ route('profesores.edit', $profesor) }}" 
+                            <a href="{{ route('profesores.edit', $profesor->id) }}" 
                                class="btn btn-sm" 
                                style="border-radius: 0; border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
                                title="Editar"
@@ -168,7 +168,7 @@
 
                         <!-- Form oculto para eliminar -->
                         <form id="delete-form-{{ $profesor->id }}" 
-                              action="{{ route('profesores.destroy', $profesor) }}" 
+                              action="{{ route('profesores.destroy', $profesor->id) }}" 
                               method="POST" 
                               class="d-none">
                             @csrf

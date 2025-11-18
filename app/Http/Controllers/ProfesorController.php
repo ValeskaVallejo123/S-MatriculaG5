@@ -28,6 +28,11 @@ class ProfesorController extends Controller
         return view('profesores.index', compact('profesores'));
     }
 
+    public function dashboard()
+{
+    return view('profesores.dashboard');
+}
+
     public function create()
     {
         $especialidades = Profesor::especialidades();
@@ -104,4 +109,6 @@ class ProfesorController extends Controller
         return redirect()->route('profesores.index')
             ->with('success', 'Profesor eliminado exitosamente');
     }
+
+    
 }

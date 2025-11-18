@@ -222,16 +222,17 @@
                                             <span class="badge bg-success">
                                                 <i class="fas fa-check-circle"></i> Ya vinculado
                                             </span>
-                                        @else
-                                            <button>
-    type="button" 
-    class="btn btn-sm btn-primary"
-    onclick="confirmarVinculacion({{ $padre->id }}, `{{ $padre->nombre }} {{ $padre->apellido }}`)"
->
-    <i class="fas fa-link"></i> Seleccionar
-</button>
-                                        @endif
-                                    @else
+                                     @else
+    <button type="button" 
+            class="btn btn-sm btn-vincular" 
+            style="border-radius: 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.3rem 0.8rem; font-size: 0.8rem; font-weight: 600;"
+            data-padre-id="{{ $padre->id }}"
+            data-padre-nombre="{{ $padre->nombre }} {{ $padre->apellido }}"
+            onmouseover="this.style.background='#00508f'; this.style.color='white';"
+            onmouseout="this.style.background='white'; this.style.color='#00508f';">
+        <i class="fas fa-link me-1"></i> Seleccionar
+    </button>
+@endif
                                         <a href="{{ route('padres.show', $padre->id) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-eye"></i> Ver
                                         </a>
