@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Escuela Gabriela Mistral - Sistema Escolar</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <style>
     * {
       margin: 0;
@@ -109,7 +111,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: 
+      background-image:
         radial-gradient(circle at 20% 80%, rgba(78, 199, 210, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(78, 199, 210, 0.12) 0%, transparent 50%),
         radial-gradient(circle at 40% 40%, rgba(191, 217, 234, 0.08) 0%, transparent 50%);
@@ -118,8 +120,15 @@
     }
 
     @keyframes pulseGlow {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
     }
 
     /* Patrón de grid decorativo */
@@ -130,7 +139,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: 
+      background-image:
         linear-gradient(rgba(78, 199, 210, 0.05) 1px, transparent 1px),
         linear-gradient(90deg, rgba(78, 199, 210, 0.05) 1px, transparent 1px);
       background-size: 60px 60px;
@@ -140,8 +149,13 @@
     }
 
     @keyframes gridMove {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(60px, 60px); }
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(60px, 60px);
+      }
     }
 
     /* Formas geométricas decorativas */
@@ -163,10 +177,23 @@
     }
 
     @keyframes floatShape {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      25% { transform: translateY(-30px) rotate(5deg); }
-      50% { transform: translateY(-60px) rotate(-5deg); }
-      75% { transform: translateY(-30px) rotate(3deg); }
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      25% {
+        transform: translateY(-30px) rotate(5deg);
+      }
+
+      50% {
+        transform: translateY(-60px) rotate(-5deg);
+      }
+
+      75% {
+        transform: translateY(-30px) rotate(3deg);
+      }
     }
 
     .shape-circle {
@@ -237,12 +264,15 @@
         transform: translateY(0) translateX(0);
         opacity: 0;
       }
+
       10% {
         opacity: 0.3;
       }
+
       90% {
         opacity: 0.3;
       }
+
       100% {
         transform: translateY(-100vh) translateX(50px);
         opacity: 0;
@@ -307,20 +337,25 @@
     }
 
     @keyframes float {
-      0%, 100% { 
-        transform: translateY(0px) rotate(0deg); 
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(0deg);
         opacity: 0.15;
       }
-      25% { 
-        transform: translateY(-15px) rotate(3deg); 
+
+      25% {
+        transform: translateY(-15px) rotate(3deg);
         opacity: 0.25;
       }
-      50% { 
-        transform: translateY(-25px) rotate(-3deg); 
+
+      50% {
+        transform: translateY(-25px) rotate(-3deg);
         opacity: 0.2;
       }
-      75% { 
-        transform: translateY(-10px) rotate(2deg); 
+
+      75% {
+        transform: translateY(-10px) rotate(2deg);
         opacity: 0.25;
       }
     }
@@ -461,20 +496,25 @@
     }
 
     @keyframes rocketLaunch {
-      0%, 100% { 
-        transform: translateX(-50%) translateY(0) rotate(-5deg); 
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0) rotate(-5deg);
         opacity: 0.2;
       }
-      25% { 
-        transform: translateX(-50%) translateY(-20px) rotate(0deg); 
+
+      25% {
+        transform: translateX(-50%) translateY(-20px) rotate(0deg);
         opacity: 0.3;
       }
-      50% { 
-        transform: translateX(-50%) translateY(-40px) rotate(5deg); 
+
+      50% {
+        transform: translateX(-50%) translateY(-40px) rotate(5deg);
         opacity: 0.25;
       }
-      75% { 
-        transform: translateX(-50%) translateY(-20px) rotate(0deg); 
+
+      75% {
+        transform: translateX(-50%) translateY(-20px) rotate(0deg);
         opacity: 0.3;
       }
     }
@@ -615,7 +655,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: 
+      background-image:
         radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
         radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
       pointer-events: none;
@@ -809,6 +849,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- ========== NAVBAR ========== -->
@@ -818,12 +859,12 @@
         <i class="fas fa-graduation-cap"></i>
         Escuela Gabriela Mistral
       </a>
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-              style="background-color: rgba(78, 199, 210, 0.3); border: none;">
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        style="background-color: rgba(78, 199, 210, 0.3); border: none;">
         <span class="navbar-toggler-icon" style="filter: brightness(0) invert(1);"></span>
       </button>
-      
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item">
@@ -879,7 +920,7 @@
     <div class="container hero-content">
       <h1><span>Centro de Educación Básico</span><br>Gabriela Mistral</h1>
       <p>
-        Sistema integral de gestión escolar para una educación moderna y eficiente. 
+        Sistema integral de gestión escolar para una educación moderna y eficiente.
         Administra matrículas, calificaciones, asistencias y mucho más en un solo lugar.
       </p>
 
@@ -906,7 +947,7 @@
       </div>
 
       <div class="features-grid">
-        
+
         <div class="feature-card">
           <div class="feature-icon">
             <i class="fas fa-file-alt"></i>
@@ -944,40 +985,45 @@
         </div>
 
         <div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-book-open"></i>
-    </div>
-    <h3>Plan de Estudios de Educación Primaria</h3>
-    <p>Desarrollo de las competencias fundamentales en Lectura, Escritura y Matemáticas,  promoviendo el aprendizaje activo y fomentando   el pensamiento crítico.</p>
-      <a href="{{ route('grados.index') }}" class="btn-feature">Explorar Materias</a>
-    </div>
+          <div class="feature-icon">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <h3>Plan de Estudios de Educación Primaria</h3>
+          <p>Desarrollo de las competencias fundamentales en Lectura, Escritura y Matemáticas, promoviendo el
+            aprendizaje activo y fomentando el pensamiento crítico.</p>
+          <a href="{{ route('grados.index') }}" class="btn-feature">Primaria</a>
+        </div>
 
         <div class="feature-card">
-      <div class="feature-icon">
-        <i class="fas fa-book-open"></i>
-      </div>
-      <h3>Plan de Estudios de Educación Secundaria</h3>
-      <p>Formación integral y especializada, enfocada en la orientación vocacional y la preparación para la educación superior o el mundo laboral.</p>
-      <a href="{{ route('ciclos.index') }}" class="btn-feature">Ver Opciones de Bachillerato</a>
-    </div>
+          <div class="feature-icon">
+            <i class="fas fa-book-open"></i>
+          </div>
+          <h3>Plan de Estudios de Educación Secundaria</h3>
+          <p>Formación integral y especializada, enfocada en la orientación vocacional y la preparación para la
+            educación superior o el mundo laboral.</p>
+          <a href="{{ route('ciclos.index') }}" class="btn-feature">Secundaria</a>
+        </div>
 
         <div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-calendar-alt"></i>
-    </div>
-    <h3>Calendario Académico Anual</h3>
-    <p>Consulte las fechas de inicio y finalización de clases, exámenes, periodos de inscripción, vacaciones y eventos especiales del ciclo escolar.</p>
-    <a href="{{route('calendario.index')}}" class="btn-feature">Descargar Calendario</a>
-    </div>
+          <div class="feature-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <h3>Calendario Académico Anual</h3>
+          <p>Consulte las fechas de inicio y finalización de clases, exámenes, periodos de inscripción, vacaciones y
+            eventos especiales del ciclo escolar.</p>
+          <!-- Para usuarios públicos -->
+        <a href="{{ route('calendario.publico') }}">Calendario Académico</a>
+        </div>
 
         <div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-poll-h"></i>
-    </div>
-    <h3>Consulta de Calificaciones y Boletas</h3>
-    <p>Acceda de forma segura al historial académico del estudiante, consulte el progreso por materia y descargue las boletas de evaluación del ciclo escolar.</p>
-    <a href="{{ route('calificaciones.index') }}" class="btn-feature">Acceder al Portal</a>
-</div>
+          <div class="feature-icon">
+            <i class="fas fa-poll-h"></i>
+          </div>
+          <h3>Consulta de Calificaciones y Boletas</h3>
+          <p>Acceda de forma segura al historial académico del estudiante, consulte el progreso por materia y descargue
+            las boletas de evaluación del ciclo escolar.</p>
+          <a href="{{ route('calificaciones.index') }}" class="btn-feature">Portal de Calificaciones</a>
+        </div>
 
         <div class="feature-card">
           <div class="feature-icon">
@@ -1021,7 +1067,7 @@
     <div class="container cta-content">
       <h2>¿Listo para Formar Parte de Nuestra Familia?</h2>
       <p>
-        Únete a la comunidad educativa Gabriela Mistral. Para más información sobre el proceso 
+        Únete a la comunidad educativa Gabriela Mistral. Para más información sobre el proceso
         de matrícula o consultas generales, contáctanos.
       </p>
       <a href="{{ route('login') }}" class="btn-cta">
@@ -1034,7 +1080,7 @@
   <footer>
     <div class="container">
       <div class="footer-content">
-        
+
         <div class="footer-section">
           <h4><i class="fas fa-graduation-cap"></i> Gabriela Mistral</h4>
           <p>Centro de Educación Básico comprometido con la formación integral de nuestros estudiantes.</p>
@@ -1076,7 +1122,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  
+
   <script>
     // Scroll suave
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1100,7 +1146,7 @@
           entry.target.style.opacity = '0';
           entry.target.style.transform = 'translateY(30px)';
           entry.target.style.transition = 'all 0.6s ease';
-          
+
           setTimeout(() => {
             entry.target.style.opacity = '1';
             entry.target.style.transform = 'translateY(0)';
@@ -1115,4 +1161,5 @@
   </script>
 
 </body>
+
 </html>

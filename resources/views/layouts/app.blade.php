@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sistema Escolar') - Escuela Gabriela Mistral</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -56,7 +58,7 @@
             background: rgba(78, 199, 210, 0.5);
         }
 
-        /* Header del Sidebar - MÁS COMPACTO */
+        /* Header del Sidebar */
         .sidebar-header {
             padding: 1.2rem 1rem;
             background: rgba(0, 0, 0, 0.2);
@@ -97,7 +99,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* User Info - MÁS COMPACTO */
+        /* User Info */
         .user-info {
             padding: 1rem;
             background: rgba(0, 0, 0, 0.15);
@@ -143,7 +145,7 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
-        /* Badge diferenciador - MÁS PEQUEÑO */
+        /* Badge diferenciador */
         .user-role-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -166,7 +168,7 @@
             border: 1px solid rgba(78, 199, 210, 0.3);
         }
 
-        /* Menu - MÁS COMPACTO */
+        /* Menu */
         .sidebar-menu {
             list-style: none;
             padding: 0.8rem 0.6rem;
@@ -239,7 +241,7 @@
             margin-left: 0;
         }
 
-        /* ========== TOPBAR - MÁS COMPACTO ========== */
+        /* ========== TOPBAR ========== */
         .topbar {
             background: white;
             padding: 1rem 1.5rem;
@@ -313,12 +315,12 @@
             box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4);
         }
 
-        /* ========== CONTENT WRAPPER - MÁS COMPACTO ========== */
+        /* ========== CONTENT WRAPPER ========== */
         .content-wrapper {
             padding: 1.5rem;
         }
 
-        /* ========== ALERTS - MÁS COMPACTOS ========== */
+        /* ========== ALERTS ========== */
         .alert-custom {
             padding: 0.8rem 1rem;
             border-radius: 8px;
@@ -336,6 +338,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -415,7 +418,6 @@
             display: block;
         }
 
-        /* Mejorar legibilidad en alertas */
         .alert-custom strong {
             font-weight: 700;
         }
@@ -425,8 +427,9 @@
         }
     </style>
 
-  @stack('scripts')
+    @stack('scripts')
 </head>
+
 <body>
 
     @php
@@ -438,146 +441,233 @@
 
     <!-- SIDEBAR (solo para admins) -->
     @if($showSidebar)
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-    <li class="nav-item">
-    <a href="{{ route('admins.permisos.index') }}" 
-       class="nav-link {{ request()->routeIs('admin.permisos.*') ? 'active' : '' }}">
-        <i class="fas fa-user-lock"></i>
-        <span>Permisos de Padres</span>
-    </a>
-</li>
-    
-    <aside class="sidebar" id="sidebar">
-        <!-- Header -->
-        <div class="sidebar-header">
-            <a href="{{ route('dashboard') }}" class="sidebar-logo">
-                <i class="fas fa-graduation-cap"></i>
-                <div class="logo-text">
-                    <h4>Gabriela Mistral</h4>
-                    <p>SISTEMA ESCOLAR</p>
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <!-- Header -->
+            <div class="sidebar-header">
+                <a href="{{ route('dashboard') }}" class="sidebar-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div class="logo-text">
+                        <h4>Gabriela Mistral</h4>
+                        <p>SISTEMA ESCOLAR</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- User Info -->
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
                 </div>
-            </a>
-        </div>
-
-        <!-- User Info -->
-        <div class="user-info">
-            <div class="user-avatar">
-                {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
+                <div class="user-details">
+                    <h6>{{ auth()->user()->name ?? 'Administrador' }}</h6>
+                    @if($isSuperAdmin)
+                        <span class="user-role-badge badge-superadmin">
+                            <i class="fas fa-crown"></i> SUPER ADMIN
+                        </span>
+                    @else
+                        <span class="user-role-badge badge-admin">
+                            <i class="fas fa-user-shield"></i> ADMIN
+                        </span>
+                    @endif
+                </div>
             </div>
-            <div class="user-details">
-                <h6>{{ auth()->user()->name ?? 'Administrador' }}</h6>
+
+            <!-- Menu -->
+            <ul class="sidebar-menu">
+
+                <!-- PRINCIPAL -->
+                <li class="menu-section-title">Principal</li>
+
+                <li class="menu-item">
+                    <a href="{{ url('/') }}" class="menu-link {{ request()->is('/') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+
                 @if($isSuperAdmin)
-                    <span class="user-role-badge badge-superadmin">
-                        <i class="fas fa-crown"></i> SUPER ADMIN
-                    </span>
+                    <li class="menu-item">
+                        <a href="{{ route('superadmin.dashboard') }}"
+                            class="menu-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
                 @else
-                    <span class="user-role-badge badge-admin">
-                        <i class="fas fa-user-shield"></i> ADMIN
-                    </span>
+                    <li class="menu-item">
+                        <a href="{{ route('dashboard') }}"
+                            class="menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
                 @endif
-            </div>
-        </div>
 
-        <!-- Inicio -->
-<li class="menu-section-title">Principal</li>
-<li class="menu-item">
-    <a href="{{ url('/') }}" class="menu-link">
-        <i class="fas fa-home"></i>
-        <span>Inicio</span>
-    </a>
-</li>
+                <!-- GESTIÓN DE USUARIOS -->
+                <li class="menu-section-title">Gestión de Usuarios</li>
 
-@if($isSuperAdmin)
-<li class="menu-item">
-    <a href="{{ route('superadmin.dashboard') }}" class="menu-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>Dashboard</span>
-    </a>
-</li>
-@endif
+                @if($isSuperAdmin)
+                    <li class="menu-item">
+                        <a href="{{ route('admins.index') }}"
+                            class="menu-link {{ request()->routeIs('admins.*') ? 'active' : '' }}">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Administradores</span>
+                        </a>
+                    </li>
+                @endif
 
-            <!-- Gestión de Usuarios -->
-            <li class="menu-section-title">Gestión de Usuarios</li>
-            
-            @if($isSuperAdmin)
-            <li class="menu-item">
-                <a href="{{ route('admins.index') }}" class="menu-link {{ request()->routeIs('admins.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Administradores</span>
-                </a>
-            </li>
-            @endif
+                <li class="menu-item">
+                    <a href="{{ route('estudiantes.index') }}"
+                        class="menu-link {{ request()->routeIs('estudiantes.index') || request()->routeIs('estudiantes.show') || request()->routeIs('estudiantes.edit') || request()->routeIs('estudiantes.create') ? 'active' : '' }}">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Estudiantes</span>
+                    </a>
+                </li>
 
-            <li class="menu-item">
-                <a href="{{ route('estudiantes.index') }}" class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-graduate"></i>
-                    <span>Estudiantes</span>
-                </a>
-            </li>
+                <li class="menu-item">
+                    <a href="{{ route('profesores.index') }}"
+                        class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Profesores</span>
+                    </a>
+                </li>
 
-            <li class="menu-item">
-                <a href="{{ route('profesores.index') }}" class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                    <span>Profesores</span>
-                </a>
-            </li>
+                <li class="menu-item">
+                    <a href="{{ route('padres.index') }}"
+                        class="menu-link {{ request()->routeIs('padres.index') || request()->routeIs('padres.show') || request()->routeIs('padres.edit') || request()->routeIs('padres.create') ? 'active' : '' }}">
+                        <i class="fas fa-user-friends"></i>
+                        <span>Padres/Tutores</span>
+                    </a>
+                </li>
 
-            <li class="menu-item">
-                <a href="{{ route('estudiantes.buscar') }}" class="menu-link {{ request()->routeIs('estudiantes.buscar') ? 'active' : '' }}">
-                    <i class="fas fa-search"></i>
-                    <span>Buscar Estudiante</span>
-                </a>
-            </li>
+                <!-- BÚSQUEDA Y VINCULACIÓN -->
+                <li class="menu-section-title">Búsqueda</li>
 
-            <!-- Gestión Académica -->
-            <li class="menu-section-title">Gestión Académica</li>
-            
-            <li class="menu-item">
-    <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') || request()->routeIs('matriculas.*') ? 'active' : '' }}">
-        <i class="fas fa-clipboard-list"></i>
-        <span>Matrículas</span>
-    </a>
-</li>
+                <li class="menu-item">
+                    <a href="{{ route('estudiantes.buscar') }}"
+                        class="menu-link {{ request()->routeIs('estudiantes.buscar') ? 'active' : '' }}">
+                        <i class="fas fa-search"></i>
+                        <span>Buscar Estudiante</span>
+                    </a>
+                </li>
 
-            <li class="menu-item">
-                <a href="{{ route('periodos-academicos.index') }}" class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Periodos Académicos</span>
-                </a>
-            </li>
+                <li class="menu-item">
+                    <a href="{{ route('padres.buscar') }}"
+                        class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
+                        <i class="fas fa-user-search"></i>
+                        <span>Buscar Padre/Tutor</span>
+                    </a>
+                </li>
 
-            <li class="menu-item">
-                <a href="{{ route('cupos_maximos.index') }}" class="menu-link {{ request()->routeIs('cupos_maximos.*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i>
-                    <span>Cupos Máximos</span>
-                </a>
-            </li>
+                <!-- GESTIÓN ACADÉMICA -->
+                <li class="menu-section-title">Gestión Académica</li>
 
-            <li class="menu-item">
-                <a href="{{ route('observaciones.index') }}" class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Observaciones</span>
-                </a>
-            </li>
+                <li class="menu-item">
+                    <a href="{{ route('matriculas.index') }}"
+                        class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Matrículas</span>
+                    </a>
+                </li>
 
-            <li class="menu-item">
-                <a href="{{ route('documentos.index') }}" class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
-                    <i class="fas fa-folder-open"></i>
-                    <span>Documentos</span>
-                </a>
-            </li>
 
-            <!-- Configuración -->
-            <li class="menu-section-title">Sistema</li>
-            
-            <li class="menu-item">
-                <a href="{{ route('cambiarcontrasenia.edit') }}" class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
-                    <i class="fas fa-key"></i>
-                    <span>Cambiar Contraseña</span>
-                </a>
-            </li>
-        </ul>
-    </aside>
+    
+    
+@can('gestionar-calendario')
+    <li class="menu-item">
+        <a href="{{ route('calendario.index') }}" 
+           class="menu-link {{ request()->routeIs('calendario.*') ? 'active' : '' }}">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Gestionar Calendario</span>
+        </a>
+    </li>
+@endcan
+    
+    
+
+
+                <li class="menu-item">
+                    <a href="{{ route('periodos-academicos.index') }}"
+                        class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Períodos Académicos</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="{{ route('cupos_maximos.index') }}"
+                        class="menu-link {{ request()->routeIs('cupos_maximos.*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        <span>Cupos Máximos</span>
+                    </a>
+                </li>
+
+                <!-- DOCUMENTACIÓN -->
+                <li class="menu-section-title">Documentación</li>
+
+                <li class="menu-item">
+                    <a href="{{ route('observaciones.index') }}"
+                        class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
+                        <i class="fas fa-sticky-note"></i>
+                        <span>Observaciones</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="{{ route('documentos.index') }}"
+                        class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Documentos</span>
+                    </a>
+                </li>
+
+                <!-- PERMISOS Y SEGURIDAD -->
+                <li class="menu-section-title">Permisos</li>
+
+                <li class="menu-item">
+                    <a href="{{ route('admins.permisos.index') }}"
+                        class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
+                        <i class="fas fa-user-lock"></i>
+                        <span>Permisos de Padres</span>
+                    </a>
+                </li>
+
+                <!-- CONFIGURACIÓN -->
+                <li class="menu-section-title">Configuración</li>
+
+                @if($isSuperAdmin)
+                    <li class="menu-item">
+                        <a href="{{ route('superadmin.perfil') }}"
+                            class="menu-link {{ request()->routeIs('superadmin.perfil') ? 'active' : '' }}">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Mi Perfil</span>
+                        </a>
+                    </li>
+                @endif
+
+                <li class="menu-item">
+                    <a href="{{ route('cambiarcontrasenia.edit') }}"
+                        class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
+                        <i class="fas fa-key"></i>
+                        <span>Cambiar Contraseña</span>
+                    </a>
+                </li>
+
+                <!-- INFORMACIÓN -->
+                <li class="menu-section-title">Ayuda</li>
+
+                <li class="menu-item">
+                    <a href="{{ route('estado-solicitud') }}"
+                        class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Estado de Solicitud</span>
+                    </a>
+                </li>
+
+            </ul>
+        </aside>
     @endif
 
     <!-- MAIN CONTENT -->
@@ -586,9 +676,9 @@
         <div class="topbar">
             <div class="topbar-left">
                 @if($showSidebar)
-                <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 @endif
                 <div>
                     <h5>@yield('page-title', 'Panel de Control')</h5>
@@ -596,12 +686,12 @@
             </div>
             <div class="topbar-right">
                 @yield('topbar-actions')
-                
+
                 <span class="text-muted small d-none d-md-inline" style="font-size: 0.8rem;">
-                    <i class="far fa-clock"></i> 
+                    <i class="far fa-clock"></i>
                     {{ now()->locale('es')->isoFormat('D MMM') }}
                 </span>
-                
+
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn-logout">
@@ -641,7 +731,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -663,4 +753,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

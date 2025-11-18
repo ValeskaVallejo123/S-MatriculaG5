@@ -2,38 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EventoAcademico;
 use Illuminate\Http\Request;
+use App\Models\EventoAcademico;
 
 class CalendarioController extends Controller
 {
-    public function index()
+    // Vista pública (solo lectura)
+    public function vistaPublica()
     {
-        return view('calendario');
+        return view('calendario', [
+            'soloLectura' => true
+        ]);
     }
 
+    // Vista privada (editable)
+    public function index()
+    {
+        return view('calendario', [
+            'soloLectura' => false
+        ]);
+    }
+
+    // Obtener todos los eventos (público)
     public function obtenerEventos()
     {
-        $eventos = EventoAcademico::all()->map(function($evento) {
+        $eventos = EventoAcademico::all()->map(function ($evento) {
             return [
                 'id' => $evento->id,
                 'title' => $evento->titulo,
-                'start' => $evento->fecha_inicio->format('Y-m-d'),
-                'end' => $evento->fecha_fin->addDay()->format('Y-m-d'),
-                'backgroundColor' => $evento->color,
-                'borderColor' => $evento->color,
-                'allDay' => $evento->todo_el_dia,
-                'extendedProps' => [
-                    'description' => $evento->descripcion,
-                    'type' => $evento->tipo
-                ]
+                'start' => $evento->fecha_inicio,
+                'end' => $evento->fecha_fin,
+                'color' => $evento->color,
+                'type' => $evento->tipo,
+                'description' => $evento->descripcion,
+                'allDay' => $evento->todo_el_dia
             ];
         });
 
         return response()->json($eventos);
     }
 
-    public function guardar(Request $request)
+    // Crear evento (solo autenticados)
+    public function store(Request $request)
     {
         $validado = $request->validate([
             'titulo' => 'required|string|max:255',
@@ -41,19 +51,20 @@ class CalendarioController extends Controller
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
             'tipo' => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
-            'color' => 'required|string'
+            'color' => 'required|string',
+            'todo_el_dia' => 'boolean'
         ]);
 
         $evento = EventoAcademico::create($validado);
 
-        return response()->json([
-            'exito' => true,
-            'evento' => $evento
-        ]);
+        return response()->json($evento, 201);
     }
 
-    public function actualizar(Request $request, EventoAcademico $evento)
+    // Actualizar evento (solo autenticados)
+    public function update(Request $request, $id)
     {
+        $evento = EventoAcademico::findOrFail($id);
+
         $validado = $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
@@ -65,18 +76,15 @@ class CalendarioController extends Controller
 
         $evento->update($validado);
 
-        return response()->json([
-            'exito' => true,
-            'evento' => $evento
-        ]);
+        return response()->json($evento);
     }
 
-    public function eliminar(EventoAcademico $evento)
+    // Eliminar evento (solo autenticados)
+    public function destroy($id)
     {
+        $evento = EventoAcademico::findOrFail($id);
         $evento->delete();
 
-        return response()->json([
-            'exito' => true
-        ]);
+        return response()->json(['message' => 'Evento eliminado correctamente']);
     }
 }
