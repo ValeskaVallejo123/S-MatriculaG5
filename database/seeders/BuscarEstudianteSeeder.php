@@ -2,17 +2,22 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Estudiante;
+use App\Models\Padre;
 
 class BuscarEstudianteSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run()
+    public function run(): void
     {
-        Estudiante::factory(1)->create();
+        // Crear algunos padres primero (opcional)
+        $padres = Padre::factory(5)->create();
+
+        // Crear estudiantes
+        Estudiante::factory(6)->create([
+            'padre_id' => function() use ($padres) {
+                return $padres->random()->id;
+            }
+        ]);
     }
 }

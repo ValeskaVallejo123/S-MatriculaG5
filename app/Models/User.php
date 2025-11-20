@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -21,10 +19,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'user_type',
-        'is_super_admin',
-        'permissions',
-        'is_protected',
+        'id_rol', 
     ];
 
     /**
@@ -47,86 +42,138 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_super_admin' => 'boolean',
-            'is_protected' => 'boolean',
-            'permissions' => 'array',
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | MÉTODOS DE ROLES
-    |--------------------------------------------------------------------------
-    */
-
     /**
-     * Verificar si el usuario es Super Administrador
+     * Relación con Rol
      */
-    public function isSuperAdmin(): bool
+    public function rol()
     {
-        return $this->is_super_admin === true && $this->user_type === 'super_admin';
-    }
-
-    /**
-     * Verificar si el usuario es Administrador (incluye Super Admin)
-     */
-    public function isAdmin(): bool
-{
-    return in_array($this->user_type, ['admin', 'super_admin']); // ← Esto usa user_type
-}
-    /**
-     * Verificar si el usuario es Profesor
-     */
-    public function isProfesor(): bool
-    {
-        return $this->user_type === 'profesor';
-    }
-
-    /**
-     * Verificar si el usuario es Estudiante
-     */
-    public function isEstudiante(): bool
-    {
-        return $this->user_type === 'estudiante';
-    }
-
-    /**
-     * Obtener el nombre del rol en español
-     */
-    public function getRoleName(): string
-    {
-        return match($this->user_type) {
-            'super_admin' => 'Super Administrador',
-            'admin' => 'Administrador',
-            'profesor' => 'Profesor',
-            'estudiante' => 'Estudiante',
-            default => 'Usuario',
-        };
+        return $this->belongsTo(Rol::class, 'id_rol');
     }
 
     /**
      * Verificar si el usuario tiene un permiso específico
+     * 
+     * @param string $nombrePermiso
+     * @return bool
      */
-    public function hasPermission(string $permission): bool
+    public function tienePermiso($nombrePermiso)
     {
-        // Super admin tiene todos los permisos
-        if ($this->isSuperAdmin()) {
-            return true;
+        // Si no tiene rol asignado, no tiene permisos
+        if (!$this->rol) {
+            return false;
         }
 
-        // Verificar en el array de permisos
-        if (is_array($this->permissions)) {
-            return in_array($permission, $this->permissions);
-        }
+        // Verificar si el rol tiene el permiso
+        return $this->rol->tienePermiso($nombrePermiso);
+    }
 
+    /**
+     * Verificar si el usuario tiene alguno de los permisos especificados
+     * 
+     * @param array $permisos
+     * @return bool
+     */
+    public function tieneAlgunPermiso(array $permisos)
+    {
+        foreach ($permisos as $permiso) {
+            if ($this->tienePermiso($permiso)) {
+                return true;
+            }
+        }
         return false;
     }
 
     /**
-     * Verificar si el usuario está protegido (no se puede eliminar)
+     * Verificar si el usuario tiene todos los permisos especificados
+     * 
+     * @param array $permisos
+     * @return bool
      */
-    public function isProtected(): bool
+    public function tieneTodosLosPermisos(array $permisos)
     {
-        return $this->is_protected === true;
+        foreach ($permisos as $permiso) {
+            if (!$this->tienePermiso($permiso)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Verificar si el usuario tiene un rol específico
+     * 
+     * @param string $nombreRol
+     * @return bool
+     */
+    public function tieneRol($nombreRol)
+    {
+        return $this->rol && $this->rol->nombre === $nombreRol;
+    }
+
+    /**
+     * Obtener todos los permisos del usuario
+     * 
+     * @return \Illuminate\Support\Collection
+     */
+    public function obtenerPermisos()
+    {
+        if (!$this->rol) {
+            return collect([]);
+        }
+
+        return $this->rol->permisos;
+    }
+
+    /**
+     * Verificar si el usuario es Super Administrador
+     * 
+     * @return bool
+     */
+    public function esSuperAdmin()
+    {
+        return $this->tieneRol('Super Administrador');
+    }
+
+    /**
+     * Verificar si el usuario es Administrador
+     * 
+     * @return bool
+     */
+    public function esAdmin()
+    {
+        return $this->tieneRol('Administrador');
+    }
+
+    /**
+     * Verificar si el usuario es Profesor
+     * 
+     * @return bool
+     */
+    public function esProfesor()
+    {
+        return $this->tieneRol('Profesor');
+    }
+
+    /**
+     * Verificar si el usuario es Estudiante
+     * 
+     * @return bool
+     */
+    public function esEstudiante()
+    {
+        return $this->tieneRol('Estudiante');
+    }
+
+    /**
+     * Verificar si el usuario es Padre/Tutor
+     * 
+     * @return bool
+     */
+    public function esPadre()
+    {
+        return $this->tieneRol('Padre');
     }
 }

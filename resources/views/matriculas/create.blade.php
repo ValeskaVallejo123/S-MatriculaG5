@@ -483,6 +483,28 @@
         </div>
 
         <div class="row g-3">
+
+        <!-- Fecha de Matrícula -->
+<div class="col-md-6">
+    <label for="fecha_matricula" class="form-label small fw-semibold" style="color: #003b73;">
+        Fecha de Matrícula <span style="color: #ef4444;">*</span>
+    </label>
+    <div class="position-relative">
+        <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+        <input type="date" 
+               class="form-control ps-5 @error('fecha_matricula') is-invalid @enderror" 
+               id="fecha_matricula" 
+               name="fecha_matricula" 
+               value="{{ old('fecha_matricula', date('Y-m-d')) }}" 
+               required
+               style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+        @error('fecha_matricula')
+            <div class="invalid-feedback" style="font-size: 0.8rem;">
+                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+            </div>
+        @enderror
+    </div>
+</div>
             <!-- Año Lectivo -->
             <div class="col-md-6">
                 <label for="anio_lectivo" class="form-label small fw-semibold" style="color: #003b73;">

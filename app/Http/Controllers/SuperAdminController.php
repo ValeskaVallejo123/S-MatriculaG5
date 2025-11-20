@@ -10,9 +10,10 @@ use Illuminate\Validation\Rule;
 
 class SuperAdminController extends Controller
 {
-    /**
-     * Mostrar lista de administradores
-     */
+    public function dashboard()
+    {
+        return view('superadmin.dashboard');
+    }
     public function index()
     {
         $administradores = User::whereIn('rol', ['admin', 'super_admin'])

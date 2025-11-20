@@ -12,13 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Agregar la nueva columna id_rol si no existe
+            // Agregar campo id_rol si no existe
             if (!Schema::hasColumn('users', 'id_rol')) {
-                $table->foreignId('id_rol')->nullable()->after('email')->constrained('roles')->onDelete('set null');
+                $table->foreignId('id_rol')->nullable()->constrained('roles')->onDelete('set null');
             }
-
-            // Opcional: Si quieres eliminar la columna role antigua
-            // Descomenta estas líneas SOLO si ya no necesitas la columna role
+            
+            // Eliminar campo role antiguo si existe (opcional)
             // if (Schema::hasColumn('users', 'role')) {
             //     $table->dropColumn('role');
             // }
@@ -31,16 +30,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Eliminar la relación y la columna
             if (Schema::hasColumn('users', 'id_rol')) {
                 $table->dropForeign(['id_rol']);
                 $table->dropColumn('id_rol');
             }
-
-            // Opcional: Restaurar la columna role si la eliminaste
-            // if (!Schema::hasColumn('users', 'role')) {
-            //     $table->string('role')->default('user');
-            // }
         });
     }
 };
