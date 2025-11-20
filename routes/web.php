@@ -29,9 +29,9 @@ use App\Http\Controllers\MateriaController;
 |--------------------------------------------------------------------------
 */
 
-// Página principal - Plantilla pública
+// Página principal
 Route::get('/', function () {
-    return view('plantilla');
+    return redirect()->route('login');
 })->name('home');
 
 // Plantilla alternativa
@@ -39,7 +39,7 @@ Route::get('/plantilla', function () {
     return view('plantilla');
 })->name('plantilla');
 
-// Consulta de solicitudes (PÚBLICA - cualquiera puede consultar)
+// Consulta de solicitudes (PÚBLICA)
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])
     ->name('estado-solicitud');
 Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
@@ -79,79 +79,56 @@ Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS PROTEGIDAS - SUPER ADMINISTRADOR
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'super_admin'])->prefix('superadmin')->name('superadmin.')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
-    // Perfil de super admin
-    Route::get('/perfil', [SuperAdminController::class, 'perfil'])->name('perfil');
-    Route::put('/perfil', [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
-    Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
-    
-    // Gestión de administradores
-    Route::get('/administradores', [SuperAdminController::class, 'index'])->name('administradores.index');
-    Route::get('/administradores/crear', [SuperAdminController::class, 'create'])->name('administradores.create');
-    Route::get('/administradores/create', [SuperAdminController::class, 'create']);
-    Route::post('/administradores', [SuperAdminController::class, 'store'])->name('administradores.store');
-    Route::get('/administradores/{administrador}', [SuperAdminController::class, 'show'])->name('administradores.show');
-    Route::get('/administradores/{administrador}/editar', [SuperAdminController::class, 'edit'])->name('administradores.edit');
-    Route::get('/administradores/{administrador}/edit', [SuperAdminController::class, 'edit']);
-    Route::put('/administradores/{administrador}', [SuperAdminController::class, 'update'])->name('administradores.update');
-    Route::patch('/administradores/{administrador}', [SuperAdminController::class, 'update']);
-    Route::delete('/administradores/{administrador}', [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
-});
-
-/*
-|--------------------------------------------------------------------------
 | RUTAS PROTEGIDAS (Requieren Autenticación)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    
+
     /*
     |--------------------------------------------------------------------------
-    | DASHBOARD GENERAL - Redirige según rol
+    | DASHBOARD GENERAL
     |--------------------------------------------------------------------------
     */
     Route::get('/dashboard', function() {
-        $user = Auth::user();
-        
-        if ($user->user_type === 'super_admin') {
-            return redirect()->route('superadmin.dashboard');
-        } elseif ($user->user_type === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->user_type === 'profesor') {
-            return redirect()->route('profesores.dashboard');
-        } else {
-            return redirect()->route('estudiantes.dashboard');
-        }
+        return view('superadmin.dashboard');
     })->name('dashboard');
-    
+
+    /*
+    |--------------------------------------------------------------------------
+    | RUTAS DE SUPER ADMINISTRADOR
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('superadmin')->name('superadmin.')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', function () {
+            return view('superadmin.dashboard');
+        })->name('dashboard');
+
+        // Perfil
+        Route::get('/perfil', [SuperAdminController::class, 'perfil'])->name('perfil');
+        Route::put('/perfil', [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
+        Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
+
+        // Gestión de administradores
+        Route::get('/administradores', [SuperAdminController::class, 'index'])->name('administradores.index');
+        Route::get('/administradores/crear', [SuperAdminController::class, 'create'])->name('administradores.create');
+        Route::post('/administradores', [SuperAdminController::class, 'store'])->name('administradores.store');
+        Route::get('/administradores/{administrador}', [SuperAdminController::class, 'show'])->name('administradores.show');
+        Route::get('/administradores/{administrador}/editar', [SuperAdminController::class, 'edit'])->name('administradores.edit');
+        Route::put('/administradores/{administrador}', [SuperAdminController::class, 'update'])->name('administradores.update');
+        Route::delete('/administradores/{administrador}', [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
+    });
+
     /*
     |--------------------------------------------------------------------------
     | DASHBOARDS POR ROL
     |--------------------------------------------------------------------------
     */
-    
-    // Dashboard de Admins
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    
-    // Dashboard de Padres
-    Route::get('/padres/dashboard', function() {
-        return view('padres.dashboard');
-    })->name('padres.dashboard');
-    
-    // Dashboard de Estudiantes
-    Route::get('/estudiantes/dashboard', function() {
-        return view('estudiantes.dashboard');
-    })->name('estudiantes.dashboard');
-    
-    // Dashboard de Profesores
+    Route::get('/padres/dashboard', function() { return view('padres.dashboard'); })->name('padres.dashboard');
+    Route::get('/estudiantes/dashboard', function() { return view('estudiantes.dashboard'); })->name('estudiantes.dashboard');
     Route::get('/profesores/dashboard', [ProfesorController::class, 'dashboard'])->name('profesores.dashboard');
-    
+
     /*
     |--------------------------------------------------------------------------
     | PANEL DE ADMINISTRADORES REGULARES
@@ -160,15 +137,12 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admins')->name('admins.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
         Route::get('/crear', [AdminController::class, 'create'])->name('create');
-        Route::get('/create', [AdminController::class, 'create']);
         Route::post('/', [AdminController::class, 'store'])->name('store');
         Route::get('/{admin}', [AdminController::class, 'show'])->name('show');
         Route::get('/{admin}/editar', [AdminController::class, 'edit'])->name('edit');
-        Route::get('/{admin}/edit', [AdminController::class, 'edit']);
         Route::put('/{admin}', [AdminController::class, 'update'])->name('update');
-        Route::patch('/{admin}', [AdminController::class, 'update']);
         Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
-        
+
         // Gestión de permisos de padres
         Route::get('/permisos', [PadrePermisoController::class, 'index'])->name('permisos.index');
         Route::get('/permisos/{padre}/configurar', [PadrePermisoController::class, 'configurar'])->name('permisos.configurar');
@@ -191,9 +165,7 @@ Route::middleware(['auth'])->group(function () {
     | GESTIÓN DE PROFESORES
     |--------------------------------------------------------------------------
     */
-    Route::resource('profesores', ProfesorController::class)->parameters([
-        'profesores' => 'profesor'
-    ]);
+    Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
 
     /*
     |--------------------------------------------------------------------------
@@ -257,23 +229,14 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
     Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
-    
+
     /*
     |--------------------------------------------------------------------------
-    | GESTIÓN DE MATERIAS Y GRADOS (Admin)
+    | GESTIÓN DE MATERIAS Y GRADOS
     |--------------------------------------------------------------------------
     */
-    Route::middleware(['admin'])->group(function () {
-        // Rutas de Materias
-        Route::resource('materias', MateriaController::class);
-        
-        // Rutas de Grados
-        Route::resource('grados', GradoController::class);
-        
-        // Rutas para asignar materias a grados
-        Route::get('grados/{grado}/asignar-materias', [GradoController::class, 'asignarMaterias'])
-             ->name('grados.asignar-materias');
-        Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])
-             ->name('grados.guardar-materias');
-    });
+    Route::resource('materias', MateriaController::class);
+    Route::resource('grados', GradoController::class);
+    Route::get('grados/{grado}/asignar-materias', [GradoController::class, 'asignarMaterias'])->name('grados.asignar-materias');
+    Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])->name('grados.guardar-materias');
 });

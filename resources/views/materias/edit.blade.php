@@ -38,10 +38,10 @@
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar nivel...</option>
                             <option value="primaria" {{ old('nivel', $materia->nivel) == 'primaria' ? 'selected' : '' }}>
-                                🎒 Primaria (1° - 6° Grado)
+                                Primaria (1° - 6° Grado)
                             </option>
                             <option value="secundaria" {{ old('nivel', $materia->nivel) == 'secundaria' ? 'selected' : '' }}>
-                                🎓 Secundaria (7° - 9° Grado)
+                                Secundaria (7° - 9° Grado)
                             </option>
                         </select>
                         @error('nivel')
@@ -94,15 +94,15 @@
                                 name="area"
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
-                            <option value="Matemáticas" {{ old('area', $materia->area) == 'Matemáticas' ? 'selected' : '' }}>📐 Matemáticas</option>
-                            <option value="Español" {{ old('area', $materia->area) == 'Español' ? 'selected' : '' }}>📖 Español</option>
-                            <option value="Ciencias Naturales" {{ old('area', $materia->area) == 'Ciencias Naturales' ? 'selected' : '' }}>🔬 Ciencias Naturales</option>
-                            <option value="Ciencias Sociales" {{ old('area', $materia->area) == 'Ciencias Sociales' ? 'selected' : '' }}>🌍 Ciencias Sociales</option>
-                            <option value="Educación Física" {{ old('area', $materia->area) == 'Educación Física' ? 'selected' : '' }}>⚽ Educación Física</option>
-                            <option value="Educación Artística" {{ old('area', $materia->area) == 'Educación Artística' ? 'selected' : '' }}>🎨 Educación Artística</option>
-                            <option value="Inglés" {{ old('area', $materia->area) == 'Inglés' ? 'selected' : '' }}>🇬🇧 Inglés</option>
-                            <option value="Informática" {{ old('area', $materia->area) == 'Informática' ? 'selected' : '' }}>💻 Informática</option>
-                            <option value="Formación Ciudadana" {{ old('area', $materia->area) == 'Formación Ciudadana' ? 'selected' : '' }}>🏛️ Formación Ciudadana</option>
+                            <option value="Matemáticas" {{ old('area', $materia->area) == 'Matemáticas' ? 'selected' : '' }}>Matemáticas</option>
+                            <option value="Español" {{ old('area', $materia->area) == 'Español' ? 'selected' : '' }}>Español</option>
+                            <option value="Ciencias Naturales" {{ old('area', $materia->area) == 'Ciencias Naturales' ? 'selected' : '' }}>Ciencias Naturales</option>
+                            <option value="Ciencias Sociales" {{ old('area', $materia->area) == 'Ciencias Sociales' ? 'selected' : '' }}>Ciencias Sociales</option>
+                            <option value="Educación Física" {{ old('area', $materia->area) == 'Educación Física' ? 'selected' : '' }}>Educación Física</option>
+                            <option value="Educación Artística" {{ old('area', $materia->area) == 'Educación Artística' ? 'selected' : '' }}>Educación Artística</option>
+                            <option value="Inglés" {{ old('area', $materia->area) == 'Inglés' ? 'selected' : '' }}>Inglés</option>
+                            <option value="Informática" {{ old('area', $materia->area) == 'Informática' ? 'selected' : '' }}>Informática</option>
+                            <option value="Formación Ciudadana" {{ old('area', $materia->area) == 'Formación Ciudadana' ? 'selected' : '' }}>Formación Ciudadana</option>
                         </select>
                         @error('area')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -160,7 +160,7 @@
 @push('styles')
 <style>
     .form-control:focus, .form-select:focus {
-        border-color: #f59e0b;
+        border-color: #0bd6f5ff;
         box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.15);
         outline: none;
     }
