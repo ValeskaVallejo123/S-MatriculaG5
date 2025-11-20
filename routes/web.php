@@ -86,12 +86,35 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | DASHBOARD GENERAL
+    | DASHBOARDS POR ROL
     |--------------------------------------------------------------------------
     */
-    Route::get('/dashboard', function() {
+    
+    // Dashboard genérico (redirige según rol)
+    Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard');
+
+    // Dashboard Super Administrador
+    Route::get('/superadmin/dashboard', function () {
         return view('superadmin.dashboard');
-    })->name('dashboard');
+    })->name('superadmin.dashboard');
+    
+    // Dashboard Administrador
+    Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
+    
+    // Dashboard Profesor
+    Route::get('/profesor/dashboard', function () {
+        return view('profesor.dashboard.index');
+    })->name('profesor.dashboard');
+    
+    // Dashboard Estudiante
+    Route::get('/estudiante/dashboard', function () {
+        return view('estudiante.dashboard.index');
+    })->name('estudiante.dashboard');
+    
+    // Dashboard Padre
+    Route::get('/padre/dashboard', function () {
+        return view('padre.dashboard.index');
+    })->name('padre.dashboard');
 
     /*
     |--------------------------------------------------------------------------
@@ -99,11 +122,6 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::prefix('superadmin')->name('superadmin.')->group(function () {
-        // Dashboard
-        Route::get('/dashboard', function () {
-            return view('superadmin.dashboard');
-        })->name('dashboard');
-
         // Perfil
         Route::get('/perfil', [SuperAdminController::class, 'perfil'])->name('perfil');
         Route::put('/perfil', [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
@@ -118,16 +136,6 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/administradores/{administrador}', [SuperAdminController::class, 'update'])->name('administradores.update');
         Route::delete('/administradores/{administrador}', [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | DASHBOARDS POR ROL
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/padres/dashboard', function() { return view('padres.dashboard'); })->name('padres.dashboard');
-    Route::get('/estudiantes/dashboard', function() { return view('estudiantes.dashboard'); })->name('estudiantes.dashboard');
-    Route::get('/profesores/dashboard', [ProfesorController::class, 'dashboard'])->name('profesores.dashboard');
 
     /*
     |--------------------------------------------------------------------------
