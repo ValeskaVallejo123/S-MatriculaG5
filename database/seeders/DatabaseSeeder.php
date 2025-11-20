@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+
         $this->call(BuscarEstudianteSeeder::class);
         // User::factory(10)->create();
 
@@ -24,6 +26,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(ProfesorSeeder::class);
+        $this->call( SuperAdminSeeder::class,);
 
     }
 

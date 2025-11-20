@@ -10,14 +10,22 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])
-              ->default('estudiante')->after('email');
-        $table->boolean('is_super_admin')->default(false)->after('user_type');
-        $table->json('permissions')->nullable()->after('is_super_admin');
-        $table->boolean('is_protected')->default(false)->after('permissions');
-    });
+    {
+
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])->default('estudiante');
+            $table->boolean('is_super_admin')->default(false);
+            $table->json('permissions')->nullable();
+            $table->boolean('is_protected')->default(false);
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
@@ -40,8 +48,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

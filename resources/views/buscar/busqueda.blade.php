@@ -8,7 +8,7 @@
             </div>
 
             <div class="px-8 py-6">
-                <form action="{{ route('registroestudiantes.buscarregistro') }}" method="GET" class="space-y-6">
+                <form action="{{ route('registroestudiantes.buscarregistro') }}" method="GET">
                     <!-- Campo Nombre -->
                     <div>
                         <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">Nombre completo</label>

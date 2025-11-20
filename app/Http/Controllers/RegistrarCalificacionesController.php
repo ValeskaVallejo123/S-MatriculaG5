@@ -1,32 +1,47 @@
 <?php
 
-namespace App\Http\Controllers;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Http\Request;
-
-use App\Models\Curso;
-use App\Models\PeriodoAcademico;
-use App\Models\Matricula;
-
-class RegistrarCalificacionesController extends Controller
+return new class extends Migration
 {
-    public function index(Request $request)
+    /**
+     * Run the migrations.
+     */
+    public function up()
     {
-        $cursos = collect([
-            (object)['id' => 1, 'nombre' => 'Matemáticas'],
-            (object)['id' => 2, 'nombre' => 'Lenguaje'],
-        ]);
+        Schema::table('users', function (Blueprint $table) {
+            $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])
+                ->default('estudiante')->after('email');
+            $table->boolean('is_super_admin')->default(false)->after('user_type');
+            $table->json('permissions')->nullable()->after('is_super_admin');
+            $table->boolean('is_protected')->default(false)->after('permissions');
+        });
 
-        $periodos = collect([
-            (object)['id' => 1, 'nombre' => '2025 - Primer Trimestre'],
-            (object)['id' => 2, 'nombre' => '2025 - Segundo Trimestre'],
-        ]);
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
 
-        $estudiantes = collect([
-            (object)['id' => 101, 'nombre' => 'Ana López'],
-            (object)['id' => 102, 'nombre' => 'Carlos Méndez'],
-        ]);
-
-        return view('registrarcalificaciones.registrarcalificaciones', compact('cursos', 'periodos', 'estudiantes'));
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
     }
-}
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
+    }
+};

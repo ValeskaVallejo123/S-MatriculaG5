@@ -10,25 +10,37 @@ class SuperAdminSeeder extends Seeder
 {
     public function run(): void
     {
+        // Super Administrador PROTEGIDO - No se puede eliminar
         User::create([
             'name' => 'Super Administrador',
-            'email' => 'admin@escuela.com',
-            'password' => Hash::make('12345678'),
-            'role' => 'super_admin',
+            'email' => 'superadmin@egm.edu.hn',
+            'password' => Hash::make('Admin123!'), // Cambia esta contraseña después
+            'user_type' => 'super_admin', // Cambié 'role' por 'user_type'
+            'is_super_admin' => true,
+            'is_protected' => true, // Protección contra eliminación
+            'email_verified_at' => now(),
         ]);
 
+        // Administrador normal
         User::create([
             'name' => 'Administrador',
-            'email' => 'admin2@escuela.com',
+            'email' => 'admin@egm.edu.hn',
             'password' => Hash::make('12345678'),
-            'role' => 'admin',
+            'user_type' => 'admin', // Cambié 'role' por 'user_type'
+            'is_super_admin' => false,
+            'is_protected' => false,
+            'email_verified_at' => now(),
         ]);
 
+        // Estudiante de prueba
         User::create([
-            'name' => 'Estudiante',
-            'email' => 'estudiante@escuela.com',
+            'name' => 'Estudiante Prueba',
+            'email' => 'estudiante@egm.edu.hn',
             'password' => Hash::make('12345678'),
-            'role' => 'estudiante',
+            'user_type' => 'estudiante', // Cambié 'role' por 'user_type'
+            'is_super_admin' => false,
+            'is_protected' => false,
+            'email_verified_at' => now(),
         ]);
     }
 }

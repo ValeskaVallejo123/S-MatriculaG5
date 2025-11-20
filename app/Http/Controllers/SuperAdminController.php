@@ -19,7 +19,7 @@ class SuperAdminController extends Controller
             ->orderBy('is_super_admin', 'desc')
             ->orderBy('name')
             ->get();
-        
+
         return view('superadmin.administradores.index', compact('administradores'));
     }
 
@@ -107,7 +107,7 @@ class SuperAdminController extends Controller
             $request->validate([
                 'password' => 'min:8|confirmed',
             ]);
-            
+
             $administrador->password = Hash::make($request->password);
             $administrador->save();
         }
@@ -157,7 +157,7 @@ class SuperAdminController extends Controller
         ]);
 
         $user = User::findOrFail(Auth::id());
-        
+
         $user->name = $request->name;
         $user->email = $request->email;
         $user->save();
