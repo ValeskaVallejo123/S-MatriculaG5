@@ -8,18 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-<<<<<<< HEAD
     /**
      * Mostrar formulario de login
      */
-=======
->>>>>>> origin/main
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-<<<<<<< HEAD
     /**
      * Procesar el login
      */
@@ -39,27 +35,87 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
 
-            // Obtener el usuario autenticado
             $user = Auth::user();
 
-            // Redirigir según el rol del usuario
-            if ($user->role === 'super_admin') {
-                // Redirigir al perfil del super admin
-                return redirect()->route('superadmin.perfil')
-                    ->with('success', 'Bienvenido Super Administrador');
-            } elseif ($user->role === 'admin') {
-                return redirect()->intended('/dashboard')
-                    ->with('success', 'Bienvenido Administrador');
-            } else {
-                return redirect()->intended('/dashboard')
-                    ->with('success', 'Bienvenido');
-            }
+            // Redirigir según el dominio del correo
+            return $this->redirectByEmailDomain($user->email);
         }
 
         // Si falla la autenticación
         return back()->withErrors([
-            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-        ])->onlyInput('email');
+            'email' => 'Las credenciales no coinciden con nuestros registros.',
+        ])->withInput($request->only('email'));
+    }
+
+    /**
+     * Redirigir según el dominio del correo electrónico
+     */
+    protected function redirectByEmailDomain($email)
+    {
+        $domain = substr(strrchr($email, "@"), 1);
+
+        switch ($domain) {
+            case 'egm.edu.hn':
+            case 'admin.egm.edu.hn':
+                return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Administrador!');
+
+            case 'profesor.egm.edu.hn':
+                return redirect()->route('profesores.dashboard')->with('success', '¡Bienvenido Profesor!');
+
+            case 'padre.egm.edu.hn':
+                return redirect()->route('padres.dashboard')->with('success', '¡Bienvenido Padre/Tutor!');
+
+            case 'estudiante.egm.edu.hn':
+                return redirect()->route('estudiantes.dashboard')->with('success', '¡Bienvenido Estudiante!');
+
+            case 'gmail.com':
+            case 'yahoo.com':
+            case 'yahoo.es':
+            case 'yahoo.com.mx':
+            case 'hotmail.com':
+            case 'outlook.com':
+            case 'live.com':
+            default:
+                return $this->redirectByUserRole();
+        }
+    }
+
+    /**
+     * Redirigir según el rol del usuario
+     */
+    protected function redirectByUserRole()
+    {
+        $user = Auth::user();
+
+        if (isset($user->rol)) {
+            switch ($user->rol) {
+                case 'super_admin':
+                case 'superadmin':
+                    return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Super Administrador!');
+
+                case 'admin':
+                case 'administrador':
+                    return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Administrador!');
+
+                case 'profesor':
+                case 'teacher':
+                    return redirect()->route('profesores.dashboard')->with('success', '¡Bienvenido Profesor!');
+
+                case 'padre':
+                case 'tutor':
+                case 'parent':
+                    return redirect()->route('padres.dashboard')->with('success', '¡Bienvenido Padre/Tutor!');
+
+                case 'estudiante':
+                case 'student':
+                    return redirect()->route('estudiantes.dashboard')->with('success', '¡Bienvenido Estudiante!');
+
+                default:
+                    return redirect()->route('home')->with('success', '¡Bienvenido!');
+            }
+        }
+
+        return redirect()->route('home')->with('success', '¡Bienvenido!');
     }
 
     /**
@@ -72,39 +128,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login')->with('success', 'Sesión cerrada correctamente');
-=======
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return back()->with('error', 'Credenciales incorrectas.');
-        }
-
-        return $this->authenticated($request, Auth::user());
-    }
-
-    protected function authenticated(Request $request, $user)
-    {
-        if (str_ends_with($user->email, '@gmail.edu')) {
-            $user->rol = 'admin';
-            $user->save();
-            return redirect()->route('admins.index');
-        }
-
-        $user->rol = 'estudiante';
-        $user->save();
-        return redirect()->route('matriculas.index');
-    }
-
-    public function logout()
-    {
-        Auth::logout();
-        return redirect()->route('login.show');
->>>>>>> origin/main
+        return redirect('/login')->with('success', 'Sesión cerrada exitosamente.');
     }
 }
