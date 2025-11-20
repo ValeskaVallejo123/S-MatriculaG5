@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Calendario Académico</title>
+    <title>Calendario Académico {{ $soloLectura ? '- Consulta Pública' : '- Administración' }}</title>
 
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         body {
@@ -179,6 +180,25 @@
         .solo-lectura {
             cursor: default !important;
         }
+
+        .btn-volver {
+            background: #e2e8f0;
+            color: #00508f;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid #bfd9ea;
+        }
+
+        .btn-volver:hover {
+            background: #cbd5e1;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -186,13 +206,23 @@
     <div class="container-fluid">
         <div class="calendar-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="mb-0">📅 Calendario Académico</h1>
-                <a href="{{ ($soloLectura ?? false) ? route('plantilla') : route('app') }}" class="btn btn-secondary">Volver</a>
+                <h1 class="mb-0">
+                    <i class="fas fa-calendar-alt"></i> 
+                    Calendario Académico
+                    @if($soloLectura)
+                        <span class="badge bg-info ms-2">Solo Lectura</span>
+                    @else
+                        <span class="badge bg-success ms-2">Modo Administrador</span>
+                    @endif
+                </h1>
+                <a href="{{ $soloLectura ? route('plantilla') : url()->previous() }}" class="btn-volver">
+    <i class="fas fa-arrow-left"></i> Volver
+</a>
             </div>
 
-            @if($soloLectura ?? false)
+            @if($soloLectura)
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Este calendario es de **solo lectura**.
+                    <i class="fas fa-info-circle"></i> Este calendario es de <strong>solo lectura</strong>.
                     Para editar eventos debe iniciar sesión como administrador.
                 </div>
             @endif
@@ -246,6 +276,7 @@
         </div>
     </div>
 
+    <!-- Modal para eventos -->
     <div class="modal fade" id="eventModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -254,8 +285,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="eventDetails">
-                        </div>
+                    <div id="eventDetails"></div>
                     <form id="eventForm" style="display: none;">
                         <input type="hidden" id="eventId">
 
@@ -304,10 +334,14 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <script>
-        const soloLectura = {{ $soloLectura ?? 'false' ? 'true' : 'false' }};
+        // Variable global desde Blade
+        const soloLectura = {{ $soloLectura ? 'true' : 'false' }};
+        
+        // URL de la API según el modo
+        const API_URL = soloLectura ? '/calendario/eventos/publico' : '/calendario/eventos';
+        const API_BASE = soloLectura ? '' : '/admin/calendario/eventos';
 
         const coloresPorTipo = {
             'clase': '#3788d8',
@@ -344,26 +378,15 @@
 
         document.addEventListener('DOMContentLoaded', async function () {
             modalEvento = new bootstrap.Modal(document.getElementById('eventModal'));
-
-            // Event listeners de Guardar y Eliminar (Solo si no es solo lectura)
-            if (!soloLectura) {
-                // Se agregan listeners al cargar la página para evitar múltiples asignaciones
-                // al abrir el modal, aunque los botones se añadan y quiten del DOM.
-                // Es un enfoque menos voluminoso que añadir/quitar en cada 'abrirModal'.
-                // La lógica dentro de `abrirModal` asegura que solo se llamen si los botones existen.
-            }
             
-            // Cargar y Renderizar
             await cargarEventos();
             renderizarVistaAño();
             inicializarFullCalendar();
         });
 
-        // --- Funciones de Fetch/API ---
-
         async function cargarEventos() {
             try {
-                const respuesta = await fetch('/calendario/eventos');
+                const respuesta = await fetch(API_URL);
                 eventos = await respuesta.json();
             } catch (error) {
                 console.error('Error al cargar eventos:', error);
@@ -371,15 +394,12 @@
             }
         }
 
-        // Se usa `updateCalendar` en lugar de `refetchEvents` en las funciones
         function updateCalendar() {
             if (calendario) {
                 calendario.refetchEvents();
             }
         }
 
-        // ... (el resto de las funciones: inicializarFullCalendar, cambiarVista, renderizarVistaAño, crearTarjetaMes, obtenerEventosPorFecha, mostrarEventosSoloLectura) ...
-        
         function inicializarFullCalendar() {
             const elementoCalendario = document.getElementById('calendar');
 
@@ -397,7 +417,12 @@
                     week: 'Semana',
                     list: 'Lista'
                 },
-                events: eventos,
+                events: function(info, successCallback, failureCallback) {
+                    fetch(API_URL)
+                        .then(response => response.json())
+                        .then(data => successCallback(data))
+                        .catch(error => failureCallback(error));
+                },
                 editable: !soloLectura,
                 selectable: !soloLectura,
                 selectMirror: !soloLectura,
@@ -564,7 +589,7 @@
                                 abrirModal(null, fechaStr, fechaStr);
                             });
                         }
-                    }
+                        }
 
                     fila.appendChild(celda);
                 }
@@ -587,13 +612,10 @@
                 const fin = evento.end ? new Date(evento.end) : inicio;
                 const fechaBuscada = new Date(fecha);
 
-                // Normaliza fechas para comparación de día completo (si no tienen hora)
                 inicio.setHours(0, 0, 0, 0);
                 fin.setHours(0, 0, 0, 0);
                 fechaBuscada.setHours(0, 0, 0, 0);
 
-                // En FullCalendar, los eventos de día completo la fecha final es el día después del evento,
-                // por lo que se ajusta la fecha final para abarcar el día completo de FullCalendar.
                 if (evento.allDay && evento.end) {
                     fin.setDate(fin.getDate() - 1);
                 }
@@ -617,10 +639,22 @@
                 const color = evento.color || coloresPorTipo[tipo];
 
                 html += `
-                    <div class="mb-3 p-3" style="border-left: 4px solid ${color}; background: #f8f9fa;">
-                        <h6 style="color: ${color};">${evento.title}</h6>
-                        <p class="mb-1"><strong>Tipo:</strong> ${tipoTextoMap[tipo] || 'Evento'}</p>
-                        ${evento.description ? `<p class="mb-0"><strong>Descripción:</strong> ${evento.description}</p>` : ''}
+                    <div class="mb-3 p-3" style="border-left: 4px solid ${color}; background: #f8f9fa; border-radius: 4px;">
+                        <h6 style="color: ${color}; margin-bottom: 8px;">
+                            <i class="fas fa-calendar-day"></i> ${evento.title}
+                        </h6>
+                        <p class="mb-1 small">
+                            <strong><i class="fas fa-tag"></i> Tipo:</strong> 
+                            <span class="badge" style="background: ${color}; color: white;">
+                                ${tipoTextoMap[tipo] || 'Evento'}
+                            </span>
+                        </p>
+                        ${evento.description ? `
+                            <p class="mb-0 small">
+                                <strong><i class="fas fa-info-circle"></i> Descripción:</strong> 
+                                ${evento.description}
+                            </p>
+                        ` : ''}
                     </div>
                 `;
             });
@@ -637,20 +671,25 @@
             const form = document.getElementById('eventForm');
             const footer = document.getElementById('modalFooter');
 
-            // Resetear el formulario para nuevos eventos o edición
             form.reset();
             document.getElementById('eventId').value = '';
 
-            // Limpiar listeners antiguos antes de establecer el HTML del footer
-            if (document.getElementById('saveBtn')) {
-                 document.getElementById('saveBtn').removeEventListener('click', guardarEvento);
+            // Limpiar listeners previos
+            const saveBtn = document.getElementById('saveBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            
+            if (saveBtn) {
+                const newSaveBtn = saveBtn.cloneNode(true);
+                saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
             }
-            if (document.getElementById('deleteBtn')) {
-                 document.getElementById('deleteBtn').removeEventListener('click', eliminarEvento);
+            
+            if (deleteBtn) {
+                const newDeleteBtn = deleteBtn.cloneNode(true);
+                deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
             }
 
             if (soloLectura) {
-                // MODO SOLO LECTURA
+                // ===== MODO SOLO LECTURA =====
                 form.style.display = 'none';
                 detalles.style.display = 'block';
                 document.getElementById('modalTitle').textContent = 'Detalles del Evento';
@@ -659,94 +698,126 @@
                 if (evento) {
                     const tipo = evento.extendedProps?.type || 'evento';
                     const start = evento.start.toLocaleDateString('es-ES');
-                    // FullCalendar tiene el día final excluyente, se ajusta para mostrar el rango correcto.
                     const end = evento.end ? new Date(evento.end.setDate(evento.end.getDate() - 1)).toLocaleDateString('es-ES') : start;
 
                     detalles.innerHTML = `
-                        <div style="border-left: 4px solid ${evento.backgroundColor}; padding-left: 15px;">
-                            <h5 style="color: ${evento.backgroundColor};">${evento.title}</h5>
-                            <p><strong>Tipo:</strong> ${tipoTextoMap[tipo]}</p>
-                            <p><strong>Fecha:</strong> ${start} ${end !== start ? ' - ' + end : ''}</p>
-                            ${evento.extendedProps?.description ? `<p><strong>Descripción:</strong> ${evento.extendedProps.description}</p>` : ''}
+                        <div style="border-left: 4px solid ${evento.backgroundColor}; padding-left: 15px; background: #f8f9fa; padding: 15px; border-radius: 4px;">
+                            <h5 style="color: ${evento.backgroundColor}; margin-bottom: 15px;">
+                                <i class="fas fa-calendar-check"></i> ${evento.title}
+                            </h5>
+                            <p class="mb-2">
+                                <strong><i class="fas fa-tag"></i> Tipo:</strong> 
+                                <span class="badge" style="background: ${evento.backgroundColor}; color: white;">
+                                    ${tipoTextoMap[tipo]}
+                                </span>
+                            </p>
+                            <p class="mb-2">
+                                <strong><i class="fas fa-calendar-alt"></i> Fecha:</strong> 
+                                ${start} ${end !== start ? ' → ' + end : ''}
+                            </p>
+                            ${evento.extendedProps?.description ? `
+                                <p class="mb-0">
+                                    <strong><i class="fas fa-info-circle"></i> Descripción:</strong><br>
+                                    ${evento.extendedProps.description}
+                                </p>
+                            ` : ''}
                         </div>
                     `;
                 } else {
-                    detalles.innerHTML = 'No se puede crear un evento en modo solo lectura.';
+                    detalles.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-lock"></i> No se puede crear un evento en modo solo lectura.
+                        </div>
+                    `;
                 }
             } else {
-                // MODO ADMINISTRADOR (EDICIÓN/CREACIÓN)
+                // ===== MODO ADMINISTRADOR =====
                 detalles.style.display = 'none';
                 form.style.display = 'block';
 
                 if (evento) {
-                    document.getElementById('modalTitle').textContent = 'Editar Evento';
+                    // EDITAR EVENTO
+                    document.getElementById('modalTitle').textContent = '✏️ Editar Evento';
                     document.getElementById('eventId').value = evento.id;
                     document.getElementById('title').value = evento.title;
                     document.getElementById('description').value = evento.extendedProps?.description || '';
                     document.getElementById('type').value = evento.extendedProps?.type || 'evento';
 
                     const start = evento.start.toISOString().split('T')[0];
-                    // Para FullCalendar, el final de un evento 'allDay' es un día después del final real
                     let endDate = evento.end ? new Date(evento.end) : new Date(evento.start);
-                    if (evento.end) endDate.setDate(endDate.getDate() - 1); // Ajuste
+                    if (evento.end) endDate.setDate(endDate.getDate() - 1);
                     const end = endDate.toISOString().split('T')[0];
                     
                     document.getElementById('start_date').value = start;
                     document.getElementById('end_date').value = end;
 
                     footer.innerHTML = `
-                        <button type="button" class="btn btn-danger" id="deleteBtn">Eliminar</button>
+                        <button type="button" class="btn btn-danger" id="deleteBtn">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="saveBtn">Guardar</button>
+                        <button type="button" class="btn btn-primary" id="saveBtn">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
                     `;
+                    
                     document.getElementById('deleteBtn').addEventListener('click', eliminarEvento);
+                    document.getElementById('saveBtn').addEventListener('click', guardarEvento);
                 } else {
-                    document.getElementById('modalTitle').textContent = 'Nuevo Evento';
+                    // CREAR EVENTO
+                    document.getElementById('modalTitle').textContent = '➕ Nuevo Evento';
                     document.getElementById('start_date').value = fechaInicio;
                     document.getElementById('end_date').value = fechaFin;
 
                     footer.innerHTML = `
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="saveBtn">Guardar</button>
+                        <button type="button" class="btn btn-primary" id="saveBtn">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
                     `;
+                    
+                    document.getElementById('saveBtn').addEventListener('click', guardarEvento);
                 }
-                
-                // El listener de guardar se añade siempre en modo admin
-                document.getElementById('saveBtn').addEventListener('click', guardarEvento);
             }
 
             modalEvento.show();
         }
 
-        // --- Funciones de Persistencia ---
+        // ===== FUNCIONES DE PERSISTENCIA =====
 
         async function guardarEvento() {
             const eventoId = document.getElementById('eventId').value;
-            const titulo = document.getElementById('title').value;
+            const titulo = document.getElementById('title').value.trim();
             const tipo = document.getElementById('type').value;
+            const fechaInicio = document.getElementById('start_date').value;
+            const fechaFin = document.getElementById('end_date').value;
 
-            // Validación simple
-            if (!titulo || !document.getElementById('start_date').value || !document.getElementById('end_date').value) {
-                alert('El título y las fechas de inicio/fin son obligatorios.');
+            // Validación
+            if (!titulo) {
+                alert('⚠️ El título es obligatorio.');
                 return;
             }
 
-            // FullCalendar espera que la fecha final sea EXCLUSIVA (el día después del último día)
-            let fechaFin = new Date(document.getElementById('end_date').value);
-            fechaFin.setDate(fechaFin.getDate() + 1); // Añade un día
+            if (!fechaInicio || !fechaFin) {
+                alert('⚠️ Las fechas de inicio y fin son obligatorias.');
+                return;
+            }
+
+            // FullCalendar espera fecha final exclusiva (día después)
+            let fechaFinAjustada = new Date(fechaFin);
+            fechaFinAjustada.setDate(fechaFinAjustada.getDate() + 1);
             
             const datos = {
                 titulo: titulo,
-                descripcion: document.getElementById('description').value,
-                fecha_inicio: document.getElementById('start_date').value,
-                // Se envía la fecha ajustada (un día después) para FullCalendar
-                fecha_fin: fechaFin.toISOString().split('T')[0], 
+                descripcion: document.getElementById('description').value.trim(),
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFinAjustada.toISOString().split('T')[0],
                 tipo: tipo,
                 color: coloresPorTipo[tipo],
                 todo_el_dia: true
             };
 
-            const url = eventoId ? `/calendario/eventos/${eventoId}` : '/calendario/eventos';
+            const url = eventoId ? `${API_BASE}/${eventoId}` : API_BASE;
             const metodo = eventoId ? 'PUT' : 'POST';
 
             try {
@@ -764,22 +835,29 @@
                     await cargarEventos();
                     renderizarVistaAño();
                     updateCalendar();
+                    
+                    // Notificación de éxito
+                    mostrarNotificacion('✅ Evento guardado exitosamente', 'success');
                 } else {
-                    alert('Error al guardar el evento. Revise la consola para más detalles.');
+                    const error = await respuesta.json();
+                    console.error('Error del servidor:', error);
+                    alert('❌ Error al guardar el evento. Verifique los datos e intente nuevamente.');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al guardar el evento.');
+                alert('❌ Error de conexión al guardar el evento.');
             }
         }
 
         async function eliminarEvento() {
             const eventoId = document.getElementById('eventId').value;
 
-            if (!confirm('¿Estás seguro de eliminar este evento?')) return;
+            if (!confirm('⚠️ ¿Está seguro de eliminar este evento?\n\nEsta acción no se puede deshacer.')) {
+                return;
+            }
 
             try {
-                const respuesta = await fetch(`/calendario/eventos/${eventoId}`, {
+                const respuesta = await fetch(`${API_BASE}/${eventoId}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -791,32 +869,32 @@
                     await cargarEventos();
                     renderizarVistaAño();
                     updateCalendar();
+                    
+                    mostrarNotificacion('🗑️ Evento eliminado exitosamente', 'danger');
                 } else {
-                    alert('Error al eliminar el evento. Revise la consola para más detalles.');
+                    alert('❌ Error al eliminar el evento.');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al eliminar el evento.');
+                alert('❌ Error de conexión al eliminar el evento.');
             }
         }
 
         async function actualizarFechasEvento(evento) {
             const tipo = evento.extendedProps?.type || 'evento';
             
-            // FullCalendar ajusta la fecha final automáticamente, aquí solo se prepara el payload
             const datos = {
                 titulo: evento.title,
                 descripcion: evento.extendedProps?.description || '',
                 fecha_inicio: evento.startStr,
-                // FullCalendar endStr ya está ajustado (es el día siguiente, lo que se espera en el backend para allDay)
-                fecha_fin: evento.endStr || evento.startStr, 
+                fecha_fin: evento.endStr || evento.startStr,
                 tipo: tipo,
                 color: evento.backgroundColor,
                 todo_el_dia: true
             };
 
             try {
-                await fetch(`/calendario/eventos/${evento.id}`, {
+                const respuesta = await fetch(`${API_BASE}/${evento.id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -825,15 +903,83 @@
                     body: JSON.stringify(datos)
                 });
 
-                await cargarEventos();
-                renderizarVistaAño();
-                updateCalendar();
+                if (respuesta.ok) {
+                    await cargarEventos();
+                    renderizarVistaAño();
+                    updateCalendar();
+                    
+                    mostrarNotificacion('📅 Fechas actualizadas', 'info');
+                } else {
+                    evento.revert();
+                    alert('❌ Error al actualizar las fechas del evento.');
+                }
             } catch (error) {
-                console.error('Error al actualizar fechas del evento:', error);
-                evento.revert(); // Revierte el cambio visual si el fetch falla
-                alert('Error al actualizar fechas del evento.');
+                console.error('Error al actualizar fechas:', error);
+                evento.revert();
+                alert('❌ Error de conexión al actualizar fechas.');
             }
         }
+
+        // ===== FUNCIÓN DE NOTIFICACIONES =====
+        function mostrarNotificacion(mensaje, tipo = 'success') {
+            const colores = {
+                success: '#28a745',
+                danger: '#dc3545',
+                info: '#17a2b8',
+                warning: '#ffc107'
+            };
+
+            const notificacion = document.createElement('div');
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colores[tipo]};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 9999;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            notificacion.textContent = mensaje;
+            
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notificacion.remove(), 300);
+            }, 3000);
+        }
+
+        // Estilos para animaciones de notificaciones
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
+
 </html>

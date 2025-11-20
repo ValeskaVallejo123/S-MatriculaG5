@@ -8,9 +8,20 @@ class Kernel extends HttpKernel
 {
     protected $routeMiddleware = [
         'rol' => \App\Http\Middleware\RolMiddleware::class,
+    
     ];
    protected $middlewareAliases = [
-    // ... otros middleware
-    'superadmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+    // ... otros middlewares
+    'admin' => \App\Http\Middleware\IsAdmin::class,
+];
+
+    protected $middlewareGroups = [
+        'web' => [
+            // ... middlewares del grupo web
+        ],
+
+        'api' => [
+            // ... middlewares del grupo api
+        ],
 ];
 }

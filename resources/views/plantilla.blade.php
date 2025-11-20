@@ -935,9 +935,20 @@
       </div>
     </div>
 
-    <i class="fas fa-rocket hero-rocket"></i>
-  </section>
+   <li class="menu-item">
+   {{-- Para usuarios no autenticados o normales --}}
+<a href="{{ route('calendario.publico') }}" class="btn btn-info">
+    <i class="fas fa-calendar"></i> Ver Calendario
+</a>
+<i class="fas fa-calendar-edit"></i>
+<div class="section-title">
+            <h2>Calendario Académico Anual</h2>
+            <p>Administra y visualiza las fechas importantes del ciclo escolar, incluyendo inicio y fin de clases,
+            exámenes, vacaciones y eventos especiales.</p>
+        </div>
+</li>
 
+        
   <!-- ========== FEATURES SECTION ========== -->
   <section class="features-section" id="modulos">
     <div class="container">
@@ -1003,27 +1014,32 @@
             educación superior o el mundo laboral.</p>
           <a href="{{ route('ciclos.index') }}" class="btn-feature">Secundaria</a>
         </div>
+         
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-calendar-alt"></i>
-          </div>
-          <h3>Calendario Académico Anual</h3>
-          <p>Consulte las fechas de inicio y finalización de clases, exámenes, periodos de inscripción, vacaciones y
-            eventos especiales del ciclo escolar.</p>
-          <!-- Para usuarios públicos -->
-        <a href="{{ route('calendario.publico') }}">Calendario Académico</a>
-        </div>
+       {{-- ENLACE PÚBLICO (visible para todos) --}}
+<div class="feature-card">
+    <div class="feature-icon">
+        <i class="fas fa-clipboard-check"></i>
+    </div>
+    <h3>Consulta de Calificaciones</h3>
+    <p>Revisa el historial académico, consulta las notas parciales y visualiza el rendimiento del estudiante.</p>
+    <a href="{{ route('calificaciones.index') }}" class="btn-feature">Consultar Notas</a>
+</div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-poll-h"></i>
-          </div>
-          <h3>Consulta de Calificaciones y Boletas</h3>
-          <p>Acceda de forma segura al historial académico del estudiante, consulte el progreso por materia y descargue
-            las boletas de evaluación del ciclo escolar.</p>
-          <a href="{{ route('calificaciones.index') }}" class="btn-feature">Portal de Calificaciones</a>
-        </div>
+
+
+<div class="feature-card">
+    <div class="feature-icon">
+        <!-- Ícono cambiado a un calendario para reflejar el tema -->
+        <i class="fas fa-calendar-alt"></i> 
+    </div>
+    <h3>Calendario Académico</h3>
+    <!-- Descripción enfocada en fechas clave y eventos -->
+    <p>Consulta las fechas de inicio y fin de clases, exámenes, días festivos y periodos de matrícula.</p>
+    <!-- Botón con un llamado a la acción relevante -->
+    <a href="{{route('calendario.publico') }}" class="btn-feature">Ver Fechas Clave</a>
+</div>
+
 
         <div class="feature-card">
           <div class="feature-icon">

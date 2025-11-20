@@ -572,18 +572,26 @@
                     </a>
                 </li>
 
+   
+{{-- 2. Enlace para Gestión del Calendario (Transformado de Tarjeta a Menú) --}}
+<li class="menu-item">
+    {{-- 'calendario.admin' es la ruta a la función vistaAdmin en CalendarioController --}}
+    <a href="{{ route('admin.calendario') }}"
+        class="menu-link {{ request()->routeIs('calendario.admin') ? 'active' : '' }}">
+        <!-- Ícono de engranaje o edición para indicar administración/configuración -->
+        <i class="fas fa-cog"></i> 
+        <span>Gestionar Calendario</span>
+    </a>
+</li>
 
-    
-    
-@can('gestionar-calendario')
-    <li class="menu-item">
-        <a href="{{ route('calendario.index') }}" 
-           class="menu-link {{ request()->routeIs('calendario.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Gestionar Calendario</span>
-        </a>
-    </li>
-@endcan
+{{-- 3. Enlace de Matrículas (Referencia original del usuario para estilo) --}}
+<li class="menu-item">
+    <a href="{{ route('matriculas.index') }}"
+        class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Matrículas</span>
+    </a>
+</li>
     
     
 
