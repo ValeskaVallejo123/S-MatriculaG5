@@ -30,7 +30,7 @@ class PadreController extends Controller
         
         $padres = $query->paginate(15);
         
-        return view('padres.index', compact('padres'));
+        return view('padre.index', compact('padres'));
     }
 
     /**
@@ -38,7 +38,7 @@ class PadreController extends Controller
      */
     public function create()
     {
-        return view('padres.create');
+        return view('padre.create');
     }
 
     /**
@@ -99,7 +99,7 @@ class PadreController extends Controller
 
         $padre = Padre::create($validated);
 
-        return redirect()->route('padres.index')
+        return redirect()->route('padre.index')
             ->with('success', 'Padre/tutor registrado exitosamente.');
     }
 
@@ -109,7 +109,7 @@ class PadreController extends Controller
     public function show($id)
     {
         $padre = Padre::with(['estudiantes'])->findOrFail($id);
-        return view('padres.show', compact('padre'));
+        return view('padre.show', compact('padre'));
     }
 
     /**
@@ -118,7 +118,7 @@ class PadreController extends Controller
     public function edit($id)
 {
     $padre = Padre::findOrFail($id);
-    return view('padres.edit', compact('padre'));
+    return view('padre.edit', compact('padre'));
 }
     /**
      * Actualizar padre
@@ -174,7 +174,7 @@ class PadreController extends Controller
 
         $padre->update($validated);
 
-        return redirect()->route('padres.show', $padre->id)
+        return redirect()->route('padre.show', $padre->id)
             ->with('success', 'Información del padre/tutor actualizada correctamente.');
     }
 
@@ -193,7 +193,7 @@ class PadreController extends Controller
             
             $padre->delete();
             
-            return redirect()->route('padres.index')
+            return redirect()->route('padre.index')
                 ->with('success', 'Padre/tutor eliminado correctamente.');
                 
         } catch (\Exception $e) {
@@ -280,7 +280,7 @@ class PadreController extends Controller
             
             DB::commit();
             
-            return redirect()->route('estudiantes.show', $estudiante->id)
+            return redirect()->route('estudiante.show', $estudiante->id)
                 ->with('success', 'Padre/tutor vinculado correctamente con el estudiante.');
                 
         } catch (\Exception $e) {

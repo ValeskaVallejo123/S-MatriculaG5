@@ -25,19 +25,19 @@ class ProfesorController extends Controller
             ->paginate(10)
             ->appends(['busqueda' => $busqueda]);
         
-        return view('profesores.index', compact('profesores'));
+        return view('profesor.index', compact('profesores'));
     }
 
     public function dashboard()
 {
-    return view('profesores.dashboard');
+    return view('profesor.dashboard');
 }
 
     public function create()
     {
         $especialidades = Profesor::especialidades();
         $tiposContrato = Profesor::tiposContrato();
-        return view('profesores.create', compact('especialidades', 'tiposContrato'));
+        return view('profesor.create', compact('especialidades', 'tiposContrato'));
     }
 
     public function store(Request $request)
@@ -60,13 +60,13 @@ class ProfesorController extends Controller
 
         Profesor::create($validated);
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesor.index')
             ->with('success', 'Profesor creado exitosamente');
     }
 
     public function show(Profesor $profesor)
     {
-        return view('profesores.show', compact('profesor'));
+        return view('profesor.show', compact('profesor'));
     }
 
     public function edit(Profesor $profesor)
@@ -98,7 +98,7 @@ class ProfesorController extends Controller
 
         $profesor->update($validated);
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesor.index')
             ->with('success', 'Profesor actualizado exitosamente');
     }
 
@@ -106,7 +106,7 @@ class ProfesorController extends Controller
     {
         $profesor->delete();
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesor.index')
             ->with('success', 'Profesor eliminado exitosamente');
     }
 

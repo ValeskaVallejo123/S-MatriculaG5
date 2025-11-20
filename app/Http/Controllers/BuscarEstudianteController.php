@@ -35,6 +35,6 @@ class BuscarEstudianteController extends Controller
             }
         }
 
-        return view('estudiantes.buscar', compact('resultados', 'busquedaRealizada', 'mensaje'));
+        return view('estudiante.buscar', compact('resultados', 'busquedaRealizada', 'mensaje'));
     }
 }

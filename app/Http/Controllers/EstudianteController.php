@@ -11,14 +11,14 @@ class EstudianteController extends Controller
     public function index()
     {
         $estudiantes = Estudiante::latest()->paginate(10);
-        return view('estudiantes.index', compact('estudiantes'));
+        return view('estudiante.index', compact('estudiantes'));
     }
 
     public function create()
     {
         $grados = Estudiante::grados();
         $secciones = Estudiante::secciones();
-        return view('estudiantes.create', compact('grados', 'secciones'));
+        return view('estudiante.create', compact('grados', 'secciones'));
     }
 
     public function store(Request $request)
@@ -53,14 +53,14 @@ class EstudianteController extends Controller
 
         Estudiante::create($validated);
 
-        return redirect()->route('estudiantes.index')
+        return redirect()->route('estudiante.index')
             ->with('success', 'Estudiante registrado exitosamente.');
     }
 
     public function show($id)
     {
         $estudiante = Estudiante::findOrFail($id);
-        return view('estudiantes.show', compact('estudiante'));
+        return view('estudiante.show', compact('estudiante'));
     }
 
     public function edit($id)
@@ -68,7 +68,7 @@ class EstudianteController extends Controller
         $estudiante = Estudiante::findOrFail($id);
         $grados = Estudiante::grados();
         $secciones = Estudiante::secciones();
-        return view('estudiantes.edit', compact('estudiante', 'grados', 'secciones'));
+        return view('estudiante.edit', compact('estudiante', 'grados', 'secciones'));
     }
 
     public function update(Request $request, $id)
@@ -111,7 +111,7 @@ class EstudianteController extends Controller
 
         $estudiante->update($validated);
 
-        return redirect()->route('estudiantes.index')
+        return redirect()->route('estudiante.index')
             ->with('success', 'Estudiante actualizado exitosamente.');
     }
 
@@ -129,7 +129,7 @@ class EstudianteController extends Controller
 
         $estudiante->delete();
 
-        return redirect()->route('estudiantes.index')
+        return redirect()->route('estudiante.index')
             ->with('success', 'Estudiante eliminado exitosamente.');
     }
 }
