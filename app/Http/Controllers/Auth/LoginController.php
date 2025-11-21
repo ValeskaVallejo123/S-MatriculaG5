@@ -52,41 +52,61 @@ class LoginController extends Controller
      */
     protected function redirectByEmailDomain($email)
     {
+        // Extraer el dominio del correo
         $domain = substr(strrchr($email, "@"), 1);
 
+        // Definir redirecciones según el dominio
         switch ($domain) {
+            // Super Administrador
             case 'egm.edu.hn':
+                return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Super Administrador!');
+
+            // Administrador de área
             case 'admin.egm.edu.hn':
                 return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Administrador!');
 
+            // Profesor
             case 'profesor.egm.edu.hn':
                 return redirect()->route('profesores.dashboard')->with('success', '¡Bienvenido Profesor!');
 
+            // Padre/Tutor
             case 'padre.egm.edu.hn':
                 return redirect()->route('padres.dashboard')->with('success', '¡Bienvenido Padre/Tutor!');
 
+            // Estudiante
             case 'estudiante.egm.edu.hn':
                 return redirect()->route('estudiantes.dashboard')->with('success', '¡Bienvenido Estudiante!');
 
+            // Gmail - Permitir acceso general (puedes personalizarlo)
             case 'gmail.com':
+                return $this->redirectByUserRole();
+
+            // Yahoo - Permitir acceso general (puedes personalizarlo)
             case 'yahoo.com':
             case 'yahoo.es':
             case 'yahoo.com.mx':
+                return $this->redirectByUserRole();
+
+            // Hotmail/Outlook - Por si también quieres aceptarlos
             case 'hotmail.com':
             case 'outlook.com':
             case 'live.com':
+                return $this->redirectByUserRole();
+
+            // Dominio no reconocido - Redirigir según rol del usuario
             default:
                 return $this->redirectByUserRole();
         }
     }
 
     /**
-     * Redirigir según el rol del usuario
+     * Redirigir según el rol del usuario (para correos públicos como Gmail, Yahoo, etc.)
      */
     protected function redirectByUserRole()
     {
         $user = Auth::user();
 
+        // Verificar si el usuario tiene un campo 'rol' o 'role'
         if (isset($user->rol)) {
             switch ($user->rol) {
                 case 'super_admin':
@@ -115,6 +135,7 @@ class LoginController extends Controller
             }
         }
 
+        // Si no tiene rol definido, redirigir a una página general
         return redirect()->route('home')->with('success', '¡Bienvenido!');
     }
 
