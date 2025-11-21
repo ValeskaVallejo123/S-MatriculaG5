@@ -22,6 +22,8 @@ use App\Http\Controllers\PadrePermisoController;
 use App\Http\Controllers\PadreController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\NotificacionPreferenciaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,35 +31,44 @@ use App\Http\Controllers\MateriaController;
 |--------------------------------------------------------------------------
 */
 
-// Página principal
-//Route::get('/', function () {
-   // return redirect()->route('login');
-//})->name('home');
 
-// Plantilla alternativa
+// Home y Plantilla
+Route::get('/', function () {
+    return view('plantilla');
+})->name('home');
+
 Route::get('/plantilla', function () {
     return view('plantilla');
 })->name('plantilla');
 
-// Consulta de solicitudes (PÚBLICA)
-Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])
-    ->name('estado-solicitud');
-Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
+// Portal público de horarios y profesores
+Route::prefix('portal')->name('portal.')->group(function () {
+    Route::get('/', function () { return view('portal.inicio'); })->name('inicio');
+    Route::get('/acerca-de', function () { return view('portal.acerca-de'); })->name('acerca-de');
+    Route::get('/contacto', function () { return view('portal.contacto'); })->name('contacto');
+    Route::get('/horarios-publicos', [HorarioController::class, 'horarioPublico'])->name('horarios');
+    Route::get('/profesores-publicos', [ProfesorController::class, 'listarPublico'])->name('profesores');
+});
+
+// Consulta de solicitudes (público)
+Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('estado-solicitud');
+Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI'])->name('solicitud.consultar');
+
+// Consulta de estudiante (público)
+Route::get('/consultar-estudiante', function () {
+    return view('publico.consultar-estudiante');
+})->name('consultar-estudiante');
+Route::post('/consultar-estudiante', [EstudianteController::class, 'consultarPublico'])->name('estudiante.consultar');
 
 /*
 |--------------------------------------------------------------------------
 | AUTENTICACIÓN
 |--------------------------------------------------------------------------
 */
-
-// Login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-
-// Logout
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Registro
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
@@ -66,68 +77,39 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 | RECUPERACIÓN DE CONTRASEÑA
 |--------------------------------------------------------------------------
 */
-Route::get('/password/solicitar', [PasswordResetController::class, 'showForgotForm'])
-    ->name('password.solicitar');
-Route::post('/password/solicitar', [PasswordResetController::class, 'sendResetLink'])
-    ->name('password.enviar');
-Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])
-    ->name('password.restablecer');
-Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])
-    ->name('password.actualizar');
-Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
-    ->name('password.recuperar');
+Route::get('/password/solicitar', [PasswordResetController::class, 'showForgotForm'])->name('password.solicitar');
+Route::post('/password/solicitar', [PasswordResetController::class, 'sendResetLink'])->name('password.enviar');
+Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
+Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
+Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
+
+// Rutas alternativas (opcional duplicado, se mantiene)
+Route::get('/password/forgot', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
+Route::post('/password/forgot', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS PROTEGIDAS (Requieren Autenticación)
+| RUTAS PROTEGIDAS (Requieren autenticación)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | DASHBOARDS POR ROL
-    |--------------------------------------------------------------------------
-    */
-
-    // Dashboard genérico (redirige según rol)
+    // Dashboards genéricos
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard');
-
-    // Dashboard Super Administrador
-    Route::get('/superadmin/dashboard', function () {
-        return view('superadmin.dashboard');
-    })->name('superadmin.dashboard');
-
-    // Dashboard Administrador
+    Route::get('/superadmin/dashboard', function () { return view('superadmin.dashboard'); })->name('superadmin.dashboard');
     Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
+    Route::get('/profesor/dashboard', function () { return view('profesor.dashboard.index'); })->name('profesor.dashboard');
+    Route::get('/estudiante/dashboard', function () { return view('estudiante.dashboard.index'); })->name('estudiante.dashboard');
+    Route::get('/padre/dashboard', function () { return view('padre.dashboard.index'); })->name('padre.dashboard');
 
-    // Dashboard Profesor
-    Route::get('/profesor/dashboard', function () {
-        return view('profesor.dashboard.index');
-    })->name('profesor.dashboard');
-
-    // Dashboard Estudiante
-    Route::get('/estudiante/dashboard', function () {
-        return view('estudiante.dashboard.index');
-    })->name('estudiante.dashboard');
-
-    // Dashboard Padre
-    Route::get('/padre/dashboard', function () {
-        return view('padre.dashboard.index');
-    })->name('padre.dashboard');
-
-    /*
-    |--------------------------------------------------------------------------
-    | RUTAS DE SUPER ADMINISTRADOR
-    |--------------------------------------------------------------------------
-    */
+    // Super Administrador
     Route::prefix('superadmin')->name('superadmin.')->group(function () {
-        // Perfil
         Route::get('/perfil', [SuperAdminController::class, 'perfil'])->name('perfil');
         Route::put('/perfil', [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
         Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
 
-        // Gestión de administradores
         Route::get('/administradores', [SuperAdminController::class, 'index'])->name('administradores.index');
         Route::get('/administradores/crear', [SuperAdminController::class, 'create'])->name('administradores.create');
         Route::post('/administradores', [SuperAdminController::class, 'store'])->name('administradores.store');
@@ -137,11 +119,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/administradores/{administrador}', [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | PANEL DE ADMINISTRADORES REGULARES
-    |--------------------------------------------------------------------------
-    */
+    // Administradores regulares
     Route::prefix('admins')->name('admins.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
         Route::get('/crear', [AdminController::class, 'create'])->name('create');
@@ -151,7 +129,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{admin}', [AdminController::class, 'update'])->name('update');
         Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
 
-        // Gestión de permisos de padres
+        // Permisos padres
         Route::get('/permisos', [PadrePermisoController::class, 'index'])->name('permisos.index');
         Route::get('/permisos/{padre}/configurar', [PadrePermisoController::class, 'configurar'])->name('permisos.configurar');
         Route::post('/permisos/{padre}/guardar', [PadrePermisoController::class, 'guardar'])->name('permisos.guardar');
@@ -160,53 +138,29 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/permisos/{padre}/{estudiante}/toggle', [PadrePermisoController::class, 'toggleTodos'])->name('permisos.toggle');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE ESTUDIANTES
-    |--------------------------------------------------------------------------
-    */
+    // Estudiantes
     Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
     Route::resource('estudiantes', EstudianteController::class);
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE PROFESORES
-    |--------------------------------------------------------------------------
-    */
+    // Profesores
     Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE PADRES/TUTORES
-    |--------------------------------------------------------------------------
-    */
+    // Padres
     Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar');
     Route::post('/padres/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
     Route::post('/padres/desvincular', [PadreController::class, 'desvincular'])->name('padres.desvincular');
     Route::resource('padres', PadreController::class);
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE MATRÍCULAS
-    |--------------------------------------------------------------------------
-    */
+    // Matrículas
     Route::resource('matriculas', MatriculaController::class);
     Route::post('matriculas/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('matriculas.confirmar');
     Route::post('matriculas/{matricula}/rechazar', [MatriculaController::class, 'rechazar'])->name('matriculas.rechazar');
     Route::post('matriculas/{matricula}/cancelar', [MatriculaController::class, 'cancelar'])->name('matriculas.cancelar');
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE PERIODOS ACADÉMICOS
-    |--------------------------------------------------------------------------
-    */
+    // Periodos académicos
     Route::resource('periodos-academicos', PeriodoAcademicoController::class);
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE CUPOS MÁXIMOS (CURSOS)
-    |--------------------------------------------------------------------------
-    */
+    // Cursos / Cupos máximos
     Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
         Route::get('/', [CursoController::class, 'index'])->name('index');
         Route::get('/create', [CursoController::class, 'create'])->name('create');
@@ -216,35 +170,48 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE OBSERVACIONES
-    |--------------------------------------------------------------------------
-    */
+    // Observaciones
     Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE DOCUMENTOS
-    |--------------------------------------------------------------------------
-    */
+    // Documentos
     Route::resource('documentos', DocumentoController::class);
 
-    /*
-    |--------------------------------------------------------------------------
-    | CAMBIAR CONTRASEÑA
-    |--------------------------------------------------------------------------
-    */
-    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
-    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
-
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE MATERIAS Y GRADOS
-    |--------------------------------------------------------------------------
-    */
+    // Materias y Grados
     Route::resource('materias', MateriaController::class);
     Route::resource('grados', GradoController::class);
     Route::get('grados/{grado}/asignar-materias', [GradoController::class, 'asignarMaterias'])->name('grados.asignar-materias');
     Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])->name('grados.guardar-materias');
+
+    // Cambiar contraseña
+    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
+    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+
+    // Horarios
+    Route::prefix('horarios')->name('horarios.')->group(function () {
+        Route::get('/', [HorarioController::class, 'index'])->name('index');
+        Route::get('/create', [HorarioController::class, 'create'])->name('create');
+        Route::post('/', [HorarioController::class, 'store'])->name('store');
+        Route::get('/{horario}', [HorarioController::class, 'show'])->name('show');
+        Route::get('/{horario}/edit', [HorarioController::class, 'edit'])->name('edit');
+        Route::put('/{horario}', [HorarioController::class, 'update'])->name('update');
+        Route::delete('/{horario}', [HorarioController::class, 'destroy'])->name('destroy');
+
+        Route::get('/profesor/mi-horario', [HorarioController::class, 'miHorario'])->name('profesor.mi-horario');
+        Route::get('/profesor/{profesor}/horario', [HorarioController::class, 'horarioPorProfesor'])->name('profesor.horario');
+        Route::get('/{profesor}/exportar-pdf', [HorarioController::class, 'exportPDF'])->name('exportPDF');
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::get('notificaciones', [NotificacionPreferenciaController::class, 'edit'])->name('notificaciones.edit');
+        Route::put('notificaciones', [NotificacionPreferenciaController::class, 'update'])->name('notificaciones.update');
+    });
+
+    // Estudiante - Permisos y rutas específicas
+    Route::middleware(['auth', 'role:estudiante'])->prefix('estudiante')->name('estudiante.')->group(function () {
+        Route::get('/matricula', [MatriculaController::class, 'create'])->name('matricula');
+        Route::post('/matricula', [MatriculaController::class, 'store'])->name('matricula.store');
+        Route::get('/horario', [HorarioController::class, 'horarioEstudiante'])->name('horario');
+        Route::get('/calificaciones', [EstudianteController::class, 'misNotas'])->name('calificaciones');
+    });
+
 });
