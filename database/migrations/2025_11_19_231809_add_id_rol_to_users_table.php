@@ -14,10 +14,16 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             // Agregar campo id_rol si no existe
             if (!Schema::hasColumn('users', 'id_rol')) {
-                $table->foreignId('id_rol')->nullable()->constrained('roles')->onDelete('set null');
+                $table->unsignedBigInteger('id_rol')->nullable();
+
+                // Definir clave foránea
+                $table->foreign('id_rol')
+                      ->references('id')
+                      ->on('roles')
+                      ->onDelete('set null');
             }
-            
-            // Eliminar campo role antiguo si existe (opcional)
+
+            // Eliminar campo role antiguo si quieres
             // if (Schema::hasColumn('users', 'role')) {
             //     $table->dropColumn('role');
             // }

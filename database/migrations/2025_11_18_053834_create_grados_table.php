@@ -16,7 +16,7 @@ return new class extends Migration
             $table->year('anio_lectivo');
             $table->boolean('activo')->default(true);
             $table->timestamps();
-            
+
             // Índice único para evitar duplicados
             $table->unique(['nivel', 'numero', 'seccion', 'anio_lectivo']);
         });

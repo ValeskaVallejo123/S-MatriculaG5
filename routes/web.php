@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PasswordResetController;
@@ -13,7 +14,6 @@ use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\MatriculaController;
 use App\Http\Controllers\PeriodoAcademicoController;
 use App\Http\Controllers\CursoController;
-use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\ObservacionController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\SolicitudController;
@@ -25,23 +25,19 @@ use App\Http\Controllers\MateriaController;
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS PÚBLICAS
+| RUTAS PÚBLICAS (Sin autenticación requerida)
 |--------------------------------------------------------------------------
 */
 
 // Página principal
-Route::get('/', function () {
-    return redirect()->route('login');
-})->name('home');
+//Route::get('/', function () {
+   // return redirect()->route('login');
+//})->name('home');
 
-// Portal público
-Route::prefix('portal')->name('portal.')->group(function () {
-    Route::get('/', fn() => view('portal.inicio'))->name('inicio');
-    Route::get('/acerca-de', fn() => view('portal.acerca-de'))->name('acerca-de');
-    Route::get('/contacto', fn() => view('portal.contacto'))->name('contacto');
-    Route::get('/horarios-publicos', [HorarioController::class, 'horarioPublico'])->name('horarios');
-    Route::get('/profesores-publicos', [ProfesorController::class, 'listarPublico'])->name('profesores');
-});
+// Plantilla alternativa
+Route::get('/plantilla', function () {
+    return view('plantilla');
+})->name('plantilla');
 
 // Consulta de solicitudes (PÚBLICA)
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])
@@ -54,24 +50,32 @@ Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']
 |--------------------------------------------------------------------------
 */
 
+// Login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/login', [LoginController::class, 'login']);
+
+// Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/register', [RegisterController::class, 'showRegister'])->name('register');
+// Registro
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
 /*
 |--------------------------------------------------------------------------
-| RECUPERACIÓN DE CONTRASEÑA (limpia y correcta)
+| RECUPERACIÓN DE CONTRASEÑA
 |--------------------------------------------------------------------------
 */
-
-Route::get('/password/forgot', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
-Route::post('/password/forgot', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
-
-Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
-Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+Route::get('/password/solicitar', [PasswordResetController::class, 'showForgotForm'])
+    ->name('password.solicitar');
+Route::post('/password/solicitar', [PasswordResetController::class, 'sendResetLink'])
+    ->name('password.enviar');
+Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])
+    ->name('password.restablecer');
+Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])
+    ->name('password.actualizar');
+Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
+    ->name('password.recuperar');
 
 /*
 |--------------------------------------------------------------------------
@@ -198,7 +202,11 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::resource('periodos-academicos', PeriodoAcademicoController::class);
 
-    // Cupos máximos
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE CUPOS MÁXIMOS (CURSOS)
+    |--------------------------------------------------------------------------
+    */
     Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
         Route::get('/', [CursoController::class, 'index'])->name('index');
         Route::get('/create', [CursoController::class, 'create'])->name('create');
@@ -208,10 +216,18 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
     });
 
-    // Observaciones
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE OBSERVACIONES
+    |--------------------------------------------------------------------------
+    */
     Route::resource('observaciones', ObservacionController::class)->except(['show']);
 
-    // Documentos
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE DOCUMENTOS
+    |--------------------------------------------------------------------------
+    */
     Route::resource('documentos', DocumentoController::class);
 
     /*
