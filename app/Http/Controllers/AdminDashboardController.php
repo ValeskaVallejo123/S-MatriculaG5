@@ -19,7 +19,6 @@ class AdminDashboardController extends Controller
         $estudiantesActivos = Estudiante::where('estado', 'activo')->count();
         $totalProfesores = Profesor::count();
         $matriculasPendientes = Matricula::where('estado', 'pendiente')->count();
-
         // Actividades recientes del área
         $actividadesRecientes = [
             [
@@ -41,7 +40,6 @@ class AdminDashboardController extends Controller
                 'fecha' => now()->subHours(8)
             ]
         ];
-
         // Tareas pendientes del administrador
         $tareasPendientes = [
             [
@@ -60,7 +58,6 @@ class AdminDashboardController extends Controller
                 'cantidad' => 1
             ]
         ];
-
         // Accesos rápidos
         $accesosRapidos = [
             [
@@ -88,7 +85,6 @@ class AdminDashboardController extends Controller
                 'color' => '#fa709a'
             ]
         ];
-
         return view('admin.dashboard.index', compact(
             'usuario',
             'totalEstudiantes',

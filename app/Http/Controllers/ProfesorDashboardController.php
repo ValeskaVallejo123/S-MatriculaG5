@@ -20,7 +20,6 @@ class ProfesorDashboardController extends Controller
         $totalEstudiantes = 120; // Total de estudiantes en todas sus clases
         $clasesHoy = 3; // Clases programadas para hoy
         $tareasPendientes = 8; // Tareas por revisar
-
         // Clases del profesor (datos de ejemplo)
         $misClases = [
             [
@@ -45,12 +44,10 @@ class ProfesorDashboardController extends Controller
                 'horario' => '10:00 AM - 11:00 AM'
             ]
         ];
-
         // Estudiantes destacados (datos de ejemplo)
         $estudiantesDestacados = Estudiante::where('estado', 'activo')
             ->limit(5)
             ->get();
-
         return view('profesores.dashboard.index', compact(
             'profesor',
             'totalClases',

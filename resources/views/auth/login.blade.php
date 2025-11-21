@@ -393,7 +393,6 @@
       .left-section {
         display: none;
       }
-
       .right-section {
         flex: 1;
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -513,7 +512,6 @@
   <!-- Lado derecho con formulario -->
   <div class="right-section">
     <div class="login-container">
-
       <div class="login-header">
         <h2>Iniciar Sesión</h2>
         <p>Ingresa tus credenciales para acceder</p>
@@ -580,16 +578,21 @@
         <label class="remember-me">
             <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
             <span>Recordarme</span>
-        </label>
+          </label>
+          @if (Route::has('password.request'))
+            <a href="{{ route('password.request') }}" class="forgot-password">
+              ¿Olvidaste tu contraseña?
+            </a>
+          @else
+            <a href="{{ url('/recuperar-contrasena') }}" class="forgot-password">
+              ¿Olvidaste tu contraseña?
+            </a>
+          @endif
+        </div>
 
-        <a href="{{ url('/recuperarcontrasenia') }}" class="forgot-password">
-            ¿Olvidaste tu contraseña?
-        </a>
-    </div>
-
-    <button type="submit" class="login-button">
-        <i class="fas fa-sign-in-alt"></i> Acceder
-    </button>
+        <button type="submit" class="login-button">
+          <i class="fas fa-sign-in-alt"></i> Acceder
+        </button>
       </form>
 
       <div class="divider">

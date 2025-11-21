@@ -11,23 +11,22 @@ return new class extends Migration
      */
     public function up()
     {
-        // Crear tabla users con todos los campos
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
-
-            $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])
-                  ->default('estudiante');
+            $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])->default('estudiante');
             $table->boolean('is_super_admin')->default(false);
             $table->json('permissions')->nullable();
             $table->boolean('is_protected')->default(false);
-
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
         });
 
-        // Tabla personalizada para tokens de contraseña
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');

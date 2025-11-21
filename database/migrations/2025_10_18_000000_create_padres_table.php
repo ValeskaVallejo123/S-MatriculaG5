@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('dni', 13)->unique();
             $table->enum('parentesco', ['padre', 'madre', 'tutor_legal']);
             $table->string('parentesco_otro', 50)->nullable();
-            $table->string('correo', 100)->unique();
+
+            // Información de Contacto
+         $table->string('correo')->nullable();
             $table->string('telefono', 8);
             $table->string('telefono_secundario', 8)->nullable();
             $table->string('direccion', 200);

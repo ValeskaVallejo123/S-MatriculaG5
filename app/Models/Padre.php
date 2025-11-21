@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Padre extends Model
 {
     protected $table = 'padres';
+
+    use HasFactory;
 
     protected $fillable = [
         'nombre',
@@ -61,6 +64,7 @@ class Padre extends Model
     public function estudiantes()
     {
         return $this->belongsToMany(Estudiante::class, 'matriculas');
+         return $this->hasMany(Estudiante::class, 'padre_id');
     }
 
     /**

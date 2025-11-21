@@ -13,21 +13,38 @@ class PadreDashboardController extends Controller
     public function index()
     {
         $usuario = Auth::user();
+<<<<<<< HEAD
 
         // Aquí deberías buscar el padre y sus hijos asociados
         // Por ahora, datos de ejemplo
 
         $padre = Padre::first(); // Reemplazar con el padre real del usuario
 
+=======
+        
+        // Aquí deberías buscar el padre y sus hijos asociados
+        // Por ahora, datos de ejemplo
+        
+        $padre = Padre::first(); // Reemplazar con el padre real del usuario
+        
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
         // Obtener los hijos del padre
         $misHijos = Estudiante::where('estado', 'activo')
             ->limit(3)
             ->get();
+<<<<<<< HEAD
 
         $totalHijos = $misHijos->count();
         $citasPendientes = 2; // Citas con profesores pendientes
         $pagosVencidos = 1; // Pagos de matrícula vencidos
 
+=======
+        
+        $totalHijos = $misHijos->count();
+        $citasPendientes = 2; // Citas con profesores pendientes
+        $pagosVencidos = 1; // Pagos de matrícula vencidos
+        
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
         // Resumen por hijo
         $resumenHijos = [];
         foreach ($misHijos as $hijo) {
@@ -40,7 +57,11 @@ class PadreDashboardController extends Controller
                 'comportamiento' => 'Excelente'
             ];
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
         // Próximos eventos (datos de ejemplo)
         $proximosEventos = [
             [
@@ -62,7 +83,11 @@ class PadreDashboardController extends Controller
                 'tipo' => 'evento'
             ]
         ];
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
         // Notificaciones recientes
         $notificaciones = [
             [
@@ -78,7 +103,11 @@ class PadreDashboardController extends Controller
                 'leido' => false
             ]
         ];
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
         return view('padre.dashboard.index', compact(
             'usuario',
             'padre',
@@ -91,4 +120,8 @@ class PadreDashboardController extends Controller
             'notificaciones'
         ));
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92

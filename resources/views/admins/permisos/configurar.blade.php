@@ -25,7 +25,11 @@ function establecerDefecto(padreId, estudianteId) {
 </script>
 
 <div class="container-fluid" style="max-width: 1200px;">
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -106,27 +110,46 @@ function establecerDefecto(padreId, estudianteId) {
                 <div class="card-header" style="background-color: #e8f4f8;">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0" style="color: #003b73;">
+<<<<<<< HEAD
                             <i class="fas fa-child"></i>
+=======
+                            <i class="fas fa-child"></i> 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                             {{ $estudiante->nombre }} {{ $estudiante->apellido }}
                             <small class="text-muted">({{ $estudiante->grado ?? 'N/A' }} - {{ $estudiante->seccion ?? 'N/A' }})</small>
                         </h5>
                         <div>
+<<<<<<< HEAD
                             <button
                                 type="button"
+=======
+                            <button 
+                                type="button" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                 class="btn btn-sm btn-success me-2"
                                 onclick="activarTodos({{ $padre->id }}, {{ $estudiante->id }})"
                             >
                                 <i class="fas fa-check-double"></i> Activar Todos
                             </button>
+<<<<<<< HEAD
                             <button
                                 type="button"
+=======
+                            <button 
+                                type="button" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                 class="btn btn-sm btn-warning me-2"
                                 onclick="desactivarTodos({{ $padre->id }}, {{ $estudiante->id }})"
                             >
                                 <i class="fas fa-times-circle"></i> Desactivar Todos
                             </button>
+<<<<<<< HEAD
                             <button
                                 type="button"
+=======
+                            <button 
+                                type="button" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                 class="btn btn-sm btn-info"
                                 onclick="establecerDefecto({{ $padre->id }}, {{ $estudiante->id }})"
                             >
@@ -136,14 +159,23 @@ function establecerDefecto(padreId, estudianteId) {
                     </div>
                 </div>
                 <div class="card-body">
+<<<<<<< HEAD
                     <form
                         action="{{ route('admin.permisos.guardar', $padre->id) }}"
+=======
+                    <form 
+                        action="{{ route('admin.permisos.guardar', $padre->id) }}" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                         method="POST"
                         id="form-{{ $estudiante->id }}"
                     >
                         @csrf
                         <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
+<<<<<<< HEAD
 
+=======
+                        
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                         <div class="row g-3">
                             <!-- Permisos de Visualización -->
                             <div class="col-12">
@@ -154,10 +186,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-6">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="ver_calificaciones"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="ver_calificaciones" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="ver_calificaciones_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->ver_calificaciones ? 'checked' : '' }}
                                     >
@@ -171,10 +210,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-6">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="ver_asistencias"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="ver_asistencias" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="ver_asistencias_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->ver_asistencias ? 'checked' : '' }}
                                     >
@@ -188,10 +234,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-6">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="ver_comportamiento"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="ver_comportamiento" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="ver_comportamiento_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->ver_comportamiento ? 'checked' : '' }}
                                     >
@@ -205,10 +258,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-6">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="ver_tareas"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="ver_tareas" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="ver_tareas_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->ver_tareas ? 'checked' : '' }}
                                     >
@@ -229,10 +289,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-6">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="comunicarse_profesores"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="comunicarse_profesores" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="comunicarse_profesores_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->comunicarse_profesores ? 'checked' : '' }}
                                     >
@@ -246,10 +313,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-6">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="autorizar_salidas"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="autorizar_salidas" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="autorizar_salidas_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->autorizar_salidas ? 'checked' : '' }}
                                     >
@@ -263,10 +337,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-6">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="modificar_datos_contacto"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="modificar_datos_contacto" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="modificar_datos_contacto_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->modificar_datos_contacto ? 'checked' : '' }}
                                     >
@@ -280,10 +361,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-6">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="descargar_boletas"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="descargar_boletas" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="descargar_boletas_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->descargar_boletas ? 'checked' : '' }}
                                     >
@@ -304,10 +392,17 @@ function establecerDefecto(padreId, estudianteId) {
 
                             <div class="col-md-12">
                                 <div class="form-check form-switch p-3 border rounded">
+<<<<<<< HEAD
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         name="recibir_notificaciones"
+=======
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="recibir_notificaciones" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                         id="recibir_notificaciones_{{ $estudiante->id }}"
                                         {{ isset($permisosExistentes[$estudiante->id]) && $permisosExistentes[$estudiante->id]->recibir_notificaciones ? 'checked' : '' }}
                                     >
@@ -324,10 +419,17 @@ function establecerDefecto(padreId, estudianteId) {
                                 <label for="notas_adicionales_{{ $estudiante->id }}" class="form-label fw-bold">
                                     <i class="fas fa-sticky-note text-warning"></i> Notas Adicionales
                                 </label>
+<<<<<<< HEAD
                                 <textarea
                                     class="form-control"
                                     id="notas_adicionales_{{ $estudiante->id }}"
                                     name="notas_adicionales"
+=======
+                                <textarea 
+                                    class="form-control" 
+                                    id="notas_adicionales_{{ $estudiante->id }}" 
+                                    name="notas_adicionales" 
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                                     rows="3"
                                     placeholder="Agregar notas u observaciones especiales sobre estos permisos..."
                                 >{{ $permisosExistentes[$estudiante->id]->notas_adicionales ?? '' }}</textarea>
@@ -359,20 +461,36 @@ function establecerDefecto(padreId, estudianteId) {
         background-color: #003b73;
         border-color: #003b73;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
     .form-check-input:focus {
         border-color: #4ec7d2;
         box-shadow: 0 0 0 0.25rem rgba(78, 199, 210, 0.25);
     }
+<<<<<<< HEAD
 
     .border.rounded {
         transition: all 0.3s ease;
     }
 
+=======
+    
+    .border.rounded {
+        transition: all 0.3s ease;
+    }
+    
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
     .border.rounded:hover {
         box-shadow: 0 2px 8px rgba(0, 59, 115, 0.1);
         border-color: #4ec7d2 !important;
     }
 </style>
 
+<<<<<<< HEAD
 @endsection
+=======
+@endsection
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92

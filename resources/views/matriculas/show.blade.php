@@ -4,7 +4,11 @@
 
 @section('content')
 <div class="container-fluid" style="max-width: 1200px;">
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -61,7 +65,11 @@
                     @endif
                 </div>
             </div>
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
             @if($matricula->estado === 'rechazada' && $matricula->motivo_rechazo)
             <div class="alert alert-danger mt-3 mb-0">
                 <strong><i class="fas fa-exclamation-triangle"></i> Motivo del rechazo:</strong><br>

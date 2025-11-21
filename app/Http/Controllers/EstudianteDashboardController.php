@@ -21,7 +21,6 @@ class EstudianteDashboardController extends Controller
         $asistencia = 95; // Porcentaje de asistencia
         $promedioGeneral = 88; // Promedio general
         $tareasPendientes = 3; // Tareas pendientes
-
         // Materias del estudiante (datos de ejemplo)
         $misMaterias = [
             [
@@ -49,7 +48,6 @@ class EstudianteDashboardController extends Controller
                 'asistencia' => 100
             ]
         ];
-
         // Tareas próximas (datos de ejemplo)
         $tareasProximas = [
             [
@@ -71,7 +69,6 @@ class EstudianteDashboardController extends Controller
                 'estado' => 'pendiente'
             ]
         ];
-
         return view('estudiante.dashboard.index', compact(
             'usuario',
             'estudiante',

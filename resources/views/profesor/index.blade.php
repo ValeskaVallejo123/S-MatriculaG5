@@ -139,12 +139,26 @@
 
                         <!-- Botones de Acción -->
                         <div class="btn-group" role="group">
+<<<<<<< HEAD:resources/views/profesores/index.blade.php
                             <a href="{{ route('profesores.show', $profesor) }}" class="btn btn-sm" style="border-radius: 6px 0 0 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;" title="Ver"
+=======
+                            <a href="{{ route('profesores.show', $profesor->id) }}" 
+                               class="btn btn-sm" 
+                               style="border-radius: 6px 0 0 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
+                               title="Ver"
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92:resources/views/profesor/index.blade.php
                                onmouseover="this.style.background='#00508f'; this.style.color='white';"
                                onmouseout="this.style.background='white'; this.style.color='#00508f';">
                                 <i class="fas fa-eye"></i>
                             </a>
+<<<<<<< HEAD:resources/views/profesores/index.blade.php
                             <a href="{{ route('profesores.edit', $profesor) }}" class="btn btn-sm" style="border-radius: 0; border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;" title="Editar"
+=======
+                            <a href="{{ route('profesores.edit', $profesor->id) }}" 
+                               class="btn btn-sm" 
+                               style="border-radius: 0; border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
+                               title="Editar"
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92:resources/views/profesor/index.blade.php
                                onmouseover="this.style.background='#4ec7d2'; this.style.color='white';"
                                onmouseout="this.style.background='white'; this.style.color='#4ec7d2';">
                                 <i class="fas fa-edit"></i>
@@ -157,7 +171,14 @@
                         </div>
 
                         <!-- Form oculto para eliminar -->
+<<<<<<< HEAD:resources/views/profesores/index.blade.php
                         <form id="delete-form-{{ $profesor->id }}" action="{{ route('profesores.destroy', $profesor) }}" method="POST" class="d-none">
+=======
+                        <form id="delete-form-{{ $profesor->id }}" 
+                              action="{{ route('profesores.destroy', $profesor->id) }}" 
+                              method="POST" 
+                              class="d-none">
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92:resources/views/profesor/index.blade.php
                             @csrf
                             @method('DELETE')
                         </form>

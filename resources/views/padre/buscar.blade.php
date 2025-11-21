@@ -51,7 +51,6 @@
                 @if($estudiante)
                     <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
                 @endif
-
                 <div class="row g-3">
                     <div class="col-md-3">
                         <label for="nombre" class="form-label fw-bold">
@@ -217,21 +216,21 @@
                                         @php
                                             $yaVinculado = $padre->estudiantes->contains($estudiante->id);
                                         @endphp
-
                                         @if($yaVinculado)
                                             <span class="badge bg-success">
                                                 <i class="fas fa-check-circle"></i> Ya vinculado
                                             </span>
-                                        @else
-                                            <button>
-    type="button"
-    class="btn btn-sm btn-primary"
-    onclick="confirmarVinculacion({{ $padre->id }}, `{{ $padre->nombre }} {{ $padre->apellido }}`)"
->
-    <i class="fas fa-link"></i> Seleccionar
-</button>
-                                        @endif
-                                    @else
+                                     @else
+    <button type="button"
+            class="btn btn-sm btn-vincular"
+            style="border-radius: 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.3rem 0.8rem; font-size: 0.8rem; font-weight: 600;"
+            data-padre-id="{{ $padre->id }}"
+            data-padre-nombre="{{ $padre->nombre }} {{ $padre->apellido }}"
+            onmouseover="this.style.background='#00508f'; this.style.color='white';"
+            onmouseout="this.style.background='white'; this.style.color='#00508f';">
+        <i class="fas fa-link me-1"></i> Seleccionar
+    </button>
+@endif
                                         <a href="{{ route('padres.show', $padre->id) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-eye"></i> Ver
                                         </a>
@@ -314,7 +313,6 @@
     .table tbody tr:hover {
         background-color: #f8f9fa;
     }
-
     .form-control:focus {
         border-color: #4ec7d2;
         box-shadow: 0 0 0 0.25rem rgba(78, 199, 210, 0.25);
@@ -325,7 +323,6 @@
 function confirmarVinculacion(padreId, nombrePadre) {
     document.getElementById('nombre-padre').textContent = nombrePadre;
     document.getElementById('padre-id-hidden').value = padreId;
-
     const modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
     modal.show();
 }

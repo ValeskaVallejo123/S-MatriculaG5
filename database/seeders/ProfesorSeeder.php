@@ -12,3 +12,4 @@ class ProfesorSeeder extends Seeder
         Profesor::factory(5)->create();
     }
 }
+
