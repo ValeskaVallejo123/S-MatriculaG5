@@ -11,9 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Registrar el alias del middleware
+        // Registrar middleware con alias
         $middleware->alias([
-            'super_admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+            'verificar.permiso' => \App\Http\Middleware\VerificarPermiso::class,
+            'verificar.rol' => \App\Http\Middleware\VerificarRol::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

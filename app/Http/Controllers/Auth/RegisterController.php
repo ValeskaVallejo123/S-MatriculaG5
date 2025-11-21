@@ -24,14 +24,13 @@ class RegisterController extends Controller
                 'unique:users,email',
                 function ($attribute, $value, $fail) {
                     $dominiosPermitidos = [
-                        // Dominios institucionales originales
-                        'gm.hn',
-                        'adm.hn',
-                        // Subdominios por rol
-                        'padre.gm.hn',
-                        'estudiante.gm.hn',
-                        'profesor.gm.hn',
-                        'admin.gm.hn',
+                        // Dominios institucionales (@egm.edu.hn)
+                        'egm.edu.hn',
+                        'admin.egm.edu.hn',
+                        'profesor.egm.edu.hn',
+                        'padre.egm.edu.hn',
+                        'estudiante.egm.edu.hn',
+                        
                         // Correos públicos
                         'gmail.com',
                         'yahoo.com',
@@ -42,11 +41,11 @@ class RegisterController extends Controller
                         'outlook.es',
                         'live.com',
                     ];
-
+                    
                     $dominio = substr(strrchr($value, "@"), 1);
-
+                    
                     if (!in_array($dominio, $dominiosPermitidos)) {
-                        $fail('Solo se permiten correos institucionales (@gm.hn, @padre.gm.hn, etc.) o correos públicos (Gmail, Yahoo, Hotmail).');
+                        $fail('Solo se permiten correos institucionales (@egm.edu.hn) o correos públicos (Gmail, Yahoo, Hotmail).');
                     }
                 },
             ],
@@ -81,21 +80,41 @@ class RegisterController extends Controller
     protected function redirectByEmailDomain($email, $name)
     {
         $domain = substr(strrchr($email, "@"), 1);
-
+        
         switch ($domain) {
-            case 'gm.hn':
-            case 'adm.hn':
-            case 'admin.gm.hn':
-            case 'padre.gm.hn':
-            case 'estudiante.gm.hn':
-            case 'profesor.gm.hn':
+            // Super Administrador
+            case 'egm.edu.hn':
+                return redirect()->route('matriculas.index')->with('success', '¡Bienvenido Super Administrador, '.$name.'!');
+            
+            // Administrador de área
+            case 'admin.egm.edu.hn':
+                return redirect()->route('matriculas.index')->with('success', '¡Bienvenido Administrador, '.$name.'!');
+            
+            // Profesor
+case 'profesor.egm.edu.hn':
+    return redirect()->route('profesores.index')->with('success', '¡Bienvenido Profesor, '.$name.'!');
+            
+            // Padre/Tutor
+            case 'padre.egm.edu.hn':
+                return redirect()->route('padre.index')->with('success', '¡Bienvenido Padre/Tutor, '.$name.'!');
+            
+            // Estudiante
+            case 'estudiante.egm.edu.hn':
+                return redirect()->route('estudiantes.dashboard')->with('success', '¡Bienvenido Estudiante, '.$name.'!');
+            
+            // Correos públicos (Gmail, Yahoo, etc.)
             case 'gmail.com':
             case 'yahoo.com':
             case 'yahoo.es':
+            case 'yahoo.com.mx':
             case 'hotmail.com':
             case 'outlook.com':
+            case 'outlook.es':
+            case 'live.com':
+                return redirect()->route('matriculas.index')->with('success', '¡Bienvenido, '.$name.'!');
+            
+            // Dominio no reconocido
             default:
-                // Por ahora, todos van a matrículas
                 return redirect()->route('matriculas.index')->with('success', '¡Bienvenido, '.$name.'!');
         }
     }

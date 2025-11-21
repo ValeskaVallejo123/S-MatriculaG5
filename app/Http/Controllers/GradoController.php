@@ -3,73 +3,123 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grado;
+use App\Models\Materia;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class GradoController extends Controller
 {
-    // Mostrar todos los grados
     public function index()
     {
-        $grados = Grado::orderBy('id')->get();
+        $grados = Grado::with('materias')->orderBy('nivel')->orderBy('numero')->paginate(15);
         return view('grados.index', compact('grados'));
     }
 
-    // Mostrar formulario de creación
     public function create()
     {
         return view('grados.create');
     }
 
-    // Guardar nuevo grado
-   public function store(Request $request)
-{
-    $request->validate([
-        'nombre' => 'required|string|max:50|unique:grados',
-        'seccion' => 'nullable|string|max:2',
-        'jornada' => 'required|in:Matutina,Vespertina',
-        'nombre_maestro' => 'required|string|max:255', // Cambio aquí
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nivel' => 'required|in:primaria,secundaria',
+            'numero' => 'required|integer|min:1|max:9',
+            'seccion' => 'nullable|string|max:1',
+            'anio_lectivo' => 'required|integer|min:2020|max:2100',
+        ]);
 
-    Grado::create($request->all());
+        // Validar que el número sea correcto según el nivel
+        if ($request->nivel == 'primaria' && ($request->numero < 1 || $request->numero > 6)) {
+            return back()->withErrors(['numero' => 'Para primaria, el grado debe ser entre 1° y 6°'])->withInput();
+        }
 
-    return redirect()->route('grados.index')
-        ->with('success', 'Grado creado exitosamente.');
-}
+        if ($request->nivel == 'secundaria' && ($request->numero < 7 || $request->numero > 9)) {
+            return back()->withErrors(['numero' => 'Para secundaria, el grado debe ser entre 7° y 9°'])->withInput();
+        }
 
-    // Mostrar un grado específico
+        Grado::create($request->all());
+
+        return redirect()->route('grados.index')
+                        ->with('success', 'Grado creado exitosamente');
+    }
+
     public function show(Grado $grado)
     {
+        $grado->load('materias.grados');
         return view('grados.show', compact('grado'));
     }
 
-    // Mostrar formulario de edición
     public function edit(Grado $grado)
     {
         return view('grados.edit', compact('grado'));
     }
 
-    // Actualizar grado
     public function update(Request $request, Grado $grado)
     {
         $request->validate([
-            'nombre' => 'required|string|max:50|unique:grados,nombre,' . $grado->id,
-            'seccion' => 'nullable|string|max:255',
-            'jornada' => 'required|in:Matutina,Vespertina',
-            'nombre_maestro' => 'required|string|max:255', // Cambio aquí
+            'nivel' => 'required|in:primaria,secundaria',
+            'numero' => 'required|integer|min:1|max:9',
+            'seccion' => 'nullable|string|max:1',
+            'anio_lectivo' => 'required|integer|min:2020|max:2100',
         ]);
 
         $grado->update($request->all());
 
         return redirect()->route('grados.index')
-            ->with('success', 'Grado actualizado exitosamente.');
+                        ->with('success', 'Grado actualizado exitosamente');
     }
 
-    // Eliminar grado
     public function destroy(Grado $grado)
     {
         $grado->delete();
 
         return redirect()->route('grados.index')
-            ->with('success', 'Grado eliminado exitosamente.');
+                        ->with('success', 'Grado eliminado exitosamente');
+    }
+
+    // Método para mostrar formulario de asignación de materias
+    public function asignarMaterias(Grado $grado)
+    {
+        // Obtener materias del mismo nivel del grado
+        $materias = Materia::where('nivel', $grado->nivel)
+                          ->where('activo', true)
+                          ->get();
+        
+        // Obtener profesores (usuarios con rol 'profesor')
+        $profesores = User::where('role', 'profesor')->get();
+        
+        // Materias ya asignadas a este grado
+        $materiasAsignadas = $grado->materias->pluck('id')->toArray();
+
+        return view('grados.asignar-materias', compact('grado', 'materias', 'profesores', 'materiasAsignadas'));
+    }
+
+    // Método para guardar las materias asignadas
+    public function guardarMaterias(Request $request, Grado $grado)
+    {
+        $request->validate([
+            'materias' => 'required|array|min:1',
+            'materias.*' => 'exists:materias,id',
+            'profesores' => 'nullable|array',
+            'profesores.*' => 'nullable|exists:users,id',
+            'horas' => 'nullable|array',
+            'horas.*' => 'nullable|integer|min:1|max:10',
+        ]);
+
+        // Preparar datos para sincronización
+        $syncData = [];
+        foreach ($request->materias as $materiaId) {
+            $syncData[$materiaId] = [
+                'profesor_id' => $request->profesores[$materiaId] ?? null,
+                'horas_semanales' => $request->horas[$materiaId] ?? 0,
+            ];
+        }
+
+        // Sincronizar materias (esto elimina las no seleccionadas y agrega las nuevas)
+        $grado->materias()->sync($syncData);
+
+        return redirect()->route('grados.show', $grado)
+                        ->with('success', 'Materias asignadas exitosamente');
     }
 }

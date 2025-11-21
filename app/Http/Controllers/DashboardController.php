@@ -2,141 +2,164 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Admin;
 use App\Models\Estudiante;
 use App\Models\Profesor;
-use App\Models\Padre;
+use App\Models\Curso;
 use App\Models\Matricula;
+use App\Models\PeriodoAcademico;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
     /**
-     * Muestra el dashboard principal con estadísticas
+     * Dashboard genérico - Redirige según el rol del usuario
+     */
+    public function redirect()
+    {
+        // Usar Auth facade en lugar de auth()
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $usuario = Auth::user();
+        
+        if (!$usuario->rol) {
+            Log::warning('Usuario sin rol', ['id' => $usuario->id]);
+            return view('dashboard', [
+                'totalEstudiantes' => 0,
+                'totalProfesores' => 0,
+                'totalMatriculas' => 0
+            ]);
+        }
+
+        switch ($usuario->rol->nombre) {
+            case 'Super Administrador':
+                return redirect()->route('superadmin.dashboard');
+            case 'Administrador':
+                return $this->admin();
+            case 'Profesor':
+                return redirect()->route('profesor.dashboard');
+            case 'Estudiante':
+                return redirect()->route('estudiante.dashboard');
+            case 'Padre':
+                return redirect()->route('padre.dashboard');
+            default:
+                return view('dashboard', [
+                    'totalEstudiantes' => 0,
+                    'totalProfesores' => 0,
+                    'totalMatriculas' => 0
+                ]);
+        }
+    }
+
+    /**
+     * Dashboard del Administrador
+     */
+    public function admin()
+    {
+        try {
+            // Estadísticas generales
+            $totalEstudiantes = Estudiante::count();
+            $estudiantesActivos = Estudiante::where('estado', 'activo')->count();
+            $totalProfesores = Profesor::count();
+            $profesoresActivos = Profesor::where('estado', 'activo')->count();
+            $totalCursos = Curso::count();
+            $totalMatriculas = Matricula::count();
+            $matriculasAprobadas = Matricula::where('estado', 'aprobada')->count();
+            $matriculasPendientes = Matricula::where('estado', 'pendiente')->count();
+            
+            // Usuarios del sistema
+            $totalUsuarios = User::count();
+            $totalAdministradores = User::whereHas('rol', function($query) {
+                $query->whereIn('nombre', ['Administrador', 'Super Administrador']);
+            })->count();
+
+            // Estudiantes por grado
+            $estudiantesPorGrado = Estudiante::select('grado', DB::raw('count(*) as total'))
+                ->where('estado', 'activo')
+                ->groupBy('grado')
+                ->orderByRaw("FIELD(grado, '1ro Primaria', '2do Primaria', '3ro Primaria', '4to Primaria', '5to Primaria', '6to Primaria', '1ro Secundaria', '2do Secundaria', '3ro Secundaria')")
+                ->get();
+
+            // Estudiantes por sección
+            $estudiantesPorSeccion = Estudiante::select('seccion', DB::raw('count(*) as total'))
+                ->where('estado', 'activo')
+                ->groupBy('seccion')
+                ->orderBy('seccion')
+                ->get();
+
+            // Profesores por especialidad (top 5)
+            $profesoresPorEspecialidad = Profesor::select('especialidad', DB::raw('count(*) as total'))
+                ->where('estado', 'activo')
+                ->groupBy('especialidad')
+                ->orderByDesc('total')
+                ->limit(5)
+                ->get();
+
+            // Últimas matrículas registradas
+            $ultimasMatriculas = Matricula::with(['estudiante', 'padre'])
+                ->orderByDesc('created_at')
+                ->limit(5)
+                ->get();
+
+            // Estudiantes registrados recientemente
+            $estudiantesRecientes = Estudiante::orderByDesc('created_at')
+                ->limit(5)
+                ->get();
+
+            // Profesores registrados recientemente
+            $profesoresRecientes = Profesor::orderByDesc('created_at')
+                ->limit(5)
+                ->get();
+
+            // Período académico actual
+            $periodoActual = PeriodoAcademico::where('fecha_inicio', '<=', now())
+                ->where('fecha_fin', '>=', now())
+                ->first();
+
+            return view('admin.dashboard', compact(
+                'totalEstudiantes',
+                'estudiantesActivos',
+                'totalProfesores',
+                'profesoresActivos',
+                'totalCursos',
+                'totalMatriculas',
+                'matriculasAprobadas',
+                'matriculasPendientes',
+                'totalUsuarios',
+                'totalAdministradores',
+                'estudiantesPorGrado',
+                'estudiantesPorSeccion',
+                'profesoresPorEspecialidad',
+                'ultimasMatriculas',
+                'estudiantesRecientes',
+                'profesoresRecientes',
+                'periodoActual'
+            ));
+        } catch (\Exception $e) {
+            Log::error('Error en dashboard admin', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Error al cargar el dashboard');
+        }
+    }
+
+    /**
+     * Dashboard genérico (fallback)
      */
     public function index()
     {
-        // Obtener estadísticas generales
-        $stats = [
-            'total_admins' => Admin::count(),
-            'total_estudiantes' => Estudiante::count(),
-            'total_profesores' => Profesor::count(),
-            'total_padres' => Padre::count(),
-            'total_matriculas' => Matricula::count(),
-            
-            // Matrículas por estado
-            'matriculas_pendientes' => Matricula::where('estado', 'pendiente')->count(),
-            'matriculas_aprobadas' => Matricula::where('estado', 'aprobada')->count(),
-            'matriculas_rechazadas' => Matricula::where('estado', 'rechazada')->count(),
-            
-            // Nuevos registros hoy
-            'estudiantes_hoy' => Estudiante::whereDate('created_at', today())->count(),
-            'matriculas_hoy' => Matricula::whereDate('created_at', today())->count(),
-            'profesores_hoy' => Profesor::whereDate('created_at', today())->count(),
-            
-            // Nuevos esta semana
-            'estudiantes_semana' => Estudiante::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-            'matriculas_semana' => Matricula::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-            'profesores_semana' => Profesor::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-        ];
-        
-        // Estudiantes por grado
-        $estudiantesPorGrado = Estudiante::selectRaw('grado, COUNT(*) as total')
-            ->groupBy('grado')
-            ->orderByRaw("
-                CASE 
-                    WHEN grado LIKE '%Primaria%' THEN 1
-                    WHEN grado LIKE '%Secundaria%' THEN 2
-                    ELSE 3
-                END
-            ")
-            ->get();
-        
-        // Últimas matrículas
-        $ultimasMatriculas = Matricula::with(['estudiante', 'padre'])
-            ->orderBy('created_at', 'desc')
-            ->take(5)
-            ->get();
-        
-        // Últimos estudiantes registrados
-        $ultimosEstudiantes = Estudiante::orderBy('created_at', 'desc')
-            ->take(5)
-            ->get();
-        
-        // Actividad reciente
-        $actividad_reciente = $this->obtenerActividadReciente();
-        
-        return view('dashboard.index', compact(
-            'stats', 
-            'estudiantesPorGrado',
-            'ultimasMatriculas',
-            'ultimosEstudiantes',
-            'actividad_reciente'
+        // Estadísticas básicas
+        $totalEstudiantes = Estudiante::count();
+        $totalProfesores = Profesor::count();
+        $totalMatriculas = Matricula::count();
+
+        return view('dashboard', compact(
+            'totalEstudiantes',
+            'totalProfesores',
+            'totalMatriculas'
         ));
-    }
-    
-    /**
-     * Obtiene la actividad reciente del sistema
-     */
-    private function obtenerActividadReciente()
-    {
-        $actividades = [];
-        
-        // Últimas matrículas
-        $matriculas = Matricula::with('estudiante')
-            ->orderBy('created_at', 'desc')
-            ->take(3)
-            ->get()
-            ->map(function($matricula) {
-                return [
-                    'tipo' => 'matricula_creada',
-                    'icono' => 'file',
-                    'color' => 'blue',
-                    'mensaje' => "Nueva matrícula: " . ($matricula->estudiante->nombre_completo ?? 'Estudiante'),
-                    'fecha' => $matricula->created_at,
-                ];
-            });
-        
-        // Últimos estudiantes
-        $estudiantes = Estudiante::orderBy('created_at', 'desc')
-            ->take(3)
-            ->get()
-            ->map(function($estudiante) {
-                return [
-                    'tipo' => 'estudiante_creado',
-                    'icono' => 'user',
-                    'color' => 'green',
-                    'mensaje' => "Nuevo estudiante: {$estudiante->nombre_completo}",
-                    'fecha' => $estudiante->created_at,
-                ];
-            });
-        
-        // Últimos profesores
-        $profesores = Profesor::orderBy('created_at', 'desc')
-            ->take(2)
-            ->get()
-            ->map(function($profesor) {
-                return [
-                    'tipo' => 'profesor_creado',
-                    'icono' => 'briefcase',
-                    'color' => 'purple',
-                    'mensaje' => "Nuevo profesor: {$profesor->nombre_completo}",
-                    'fecha' => $profesor->created_at,
-                ];
-            });
-        
-        // Combinar todas las actividades
-        $actividades = array_merge(
-            $matriculas->toArray(),
-            $estudiantes->toArray(),
-            $profesores->toArray()
-        );
-        
-        // Ordenar por fecha
-        usort($actividades, function($a, $b) {
-            return $b['fecha'] <=> $a['fecha'];
-        });
-        
-        return array_slice($actividades, 0, 10);
     }
 }

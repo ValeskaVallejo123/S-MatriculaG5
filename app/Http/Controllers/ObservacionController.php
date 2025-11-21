@@ -9,14 +9,17 @@ use Illuminate\Http\Request;
 
 class ObservacionController extends Controller
 {
+    /**
+     * Muestra el listado de observaciones
+     */
     public function index(Request $request)
     {
         $query = Observacion::with(['estudiante', 'profesor'])->latest();
 
-        // Filtro por nombre del estudiante (concatenando nombre1 y apellido1)
+        // Filtro por nombre del estudiante
         if ($request->filled('nombre')) {
             $query->whereHas('estudiante', function ($q) use ($request) {
-                $q->whereRaw("CONCAT(nombre1, ' ', apellido1) LIKE ?", ['%' . $request->nombre . '%']);
+                $q->where('nombre', 'like', '%' . $request->nombre . '%');
             });
         }
 
@@ -48,14 +51,22 @@ class ObservacionController extends Controller
             ]);
     }
 
+
+
+    /**
+     * Muestra el formulario para crear una nueva observación
+     */
     public function create()
     {
-        $estudiantes = Estudiante::orderBy('nombre1')->get(); // usar nombre1
-        $profesores = Profesor::orderBy('nombre')->get();     // asegúrate que exista esta columna
+        $estudiantes = Estudiante::orderBy('nombre1')->get();
+$profesores = Profesor::orderBy('nombre')->get();
 
         return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
     }
 
+    /**
+     * Guarda una nueva observación en la base de datos
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -65,20 +76,31 @@ class ObservacionController extends Controller
             'tipo' => 'required|in:positivo,negativo',
         ]);
 
-        Observacion::create($request->only(['estudiante_id', 'profesor_id', 'descripcion', 'tipo']));
+        Observacion::create([
+            'estudiante_id' => $request->estudiante_id,
+            'profesor_id' => $request->profesor_id,
+            'descripcion' => $request->descripcion,
+            'tipo' => $request->tipo,
+        ]);
 
         return redirect()->route('observaciones.index')
             ->with('success', 'Observación registrada correctamente.');
     }
 
+    /**
+     * Muestra el formulario para editar una observación existente
+     */
     public function edit(Observacion $observacion)
     {
-        $estudiantes = Estudiante::orderBy('nombre1')->get(); // usar nombre1
+        $estudiantes = Estudiante::orderBy('nombre')->get();
         $profesores = Profesor::orderBy('nombre')->get();
 
         return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores'));
     }
 
+    /**
+     * Actualiza una observación existente
+     */
     public function update(Request $request, Observacion $observacion)
     {
         $request->validate([
@@ -88,12 +110,20 @@ class ObservacionController extends Controller
             'tipo' => 'required|in:positivo,negativo',
         ]);
 
-        $observacion->update($request->only(['estudiante_id', 'profesor_id', 'descripcion', 'tipo']));
+        $observacion->update($request->only([
+            'estudiante_id',
+            'profesor_id',
+            'descripcion',
+            'tipo'
+        ]));
 
         return redirect()->route('observaciones.index')
             ->with('success', 'Observación actualizada correctamente.');
     }
 
+    /**
+     * Elimina una observación
+     */
     public function destroy(Observacion $observacion)
     {
         $observacion->delete();
@@ -102,7 +132,6 @@ class ObservacionController extends Controller
             ->with('success', 'Observación eliminada correctamente.');
     }
 }
-
 
 
 
