@@ -9,22 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('materias', function (Blueprint $table) {
+        Schema::create('permiso_rol', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('codigo')->nullable();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('materias');
+        Schema::dropIfExists('permiso_rol');
     }
 };

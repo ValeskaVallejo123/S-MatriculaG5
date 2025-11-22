@@ -30,7 +30,7 @@ class RegisterController extends Controller
                         'profesor.egm.edu.hn',
                         'padre.egm.edu.hn',
                         'estudiante.egm.edu.hn',
-                        
+
                         // Correos públicos
                         'gmail.com',
                         'yahoo.com',
@@ -41,9 +41,9 @@ class RegisterController extends Controller
                         'outlook.es',
                         'live.com',
                     ];
-                    
+
                     $dominio = substr(strrchr($value, "@"), 1);
-                    
+
                     if (!in_array($dominio, $dominiosPermitidos)) {
                         $fail('Solo se permiten correos institucionales (@egm.edu.hn) o correos públicos (Gmail, Yahoo, Hotmail).');
                     }
@@ -80,28 +80,28 @@ class RegisterController extends Controller
     protected function redirectByEmailDomain($email, $name)
     {
         $domain = substr(strrchr($email, "@"), 1);
-        
+
         switch ($domain) {
             // Super Administrador
             case 'egm.edu.hn':
                 return redirect()->route('matriculas.index')->with('success', '¡Bienvenido Super Administrador, '.$name.'!');
-            
+
             // Administrador de área
             case 'admin.egm.edu.hn':
                 return redirect()->route('matriculas.index')->with('success', '¡Bienvenido Administrador, '.$name.'!');
-            
+
             // Profesor
-case 'profesor.egm.edu.hn':
-    return redirect()->route('profesores.index')->with('success', '¡Bienvenido Profesor, '.$name.'!');
-            
+            case 'profesor.egm.edu.hn':
+                return redirect()->route('profesores.index')->with('success', '¡Bienvenido Profesor, '.$name.'!');
+
             // Padre/Tutor
             case 'padre.egm.edu.hn':
                 return redirect()->route('padre.index')->with('success', '¡Bienvenido Padre/Tutor, '.$name.'!');
-            
+
             // Estudiante
             case 'estudiante.egm.edu.hn':
                 return redirect()->route('estudiantes.dashboard')->with('success', '¡Bienvenido Estudiante, '.$name.'!');
-            
+
             // Correos públicos (Gmail, Yahoo, etc.)
             case 'gmail.com':
             case 'yahoo.com':
@@ -112,7 +112,7 @@ case 'profesor.egm.edu.hn':
             case 'outlook.es':
             case 'live.com':
                 return redirect()->route('matriculas.index')->with('success', '¡Bienvenido, '.$name.'!');
-            
+
             // Dominio no reconocido
             default:
                 return redirect()->route('matriculas.index')->with('success', '¡Bienvenido, '.$name.'!');

@@ -22,12 +22,51 @@ use App\Http\Controllers\PadrePermisoController;
 use App\Http\Controllers\PadreController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
-
+use App\Http\Controllers\PerfilController;
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS (Sin autenticación requerida)
 |--------------------------------------------------------------------------
 */
+/*
+|--------------------------------------------------------------------------
+| GESTIÓN DE OBSERVACIONES
+|--------------------------------------------------------------------------
+*/
+Route::resource('observaciones', ObservacionController::class)->except(['show']);
+
+/*
+|--------------------------------------------------------------------------
+| GESTIÓN DE DOCUMENTOS
+|--------------------------------------------------------------------------
+*/
+Route::resource('documentos', DocumentoController::class);
+
+/*
+|--------------------------------------------------------------------------
+| CAMBIAR CONTRASEÑA
+|--------------------------------------------------------------------------
+*/
+Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
+    ->name('cambiarcontrasenia.edit');
+Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
+    ->name('cambiarcontrasenia.update');
+//Rutas de Calificaciones
+Route::get('/indexCalificaciones', [CalificacionController::class, 'indexCalificaciones'])->name('calificaciones.index');
+//Ruta Perfil
+Route::middleware('auth')->group(function () {
+    Route::get('/perfil', [PerfilController::class, 'mostrarPerfil'])->name('perfil');
+});
+//Ruta cerrar sesion
+Route::post('/cerrar-sesion', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/login');
+})->name('cerrar.sesion');
+//LOGIN
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.show');
+Route::post('/login', [LoginController::class, 'login'])->name('login.perform');
 
 // Página principal
 Route::get('/', function () {
@@ -89,7 +128,7 @@ Route::middleware(['auth'])->group(function () {
     | DASHBOARDS POR ROL
     |--------------------------------------------------------------------------
     */
-    
+
     // Dashboard genérico (redirige según rol)
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard');
 
@@ -97,20 +136,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/superadmin/dashboard', function () {
         return view('superadmin.dashboard');
     })->name('superadmin.dashboard');
-    
+
     // Dashboard Administrador
     Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
-    
+
     // Dashboard Profesor
     Route::get('/profesor/dashboard', function () {
         return view('profesor.dashboard.index');
     })->name('profesor.dashboard');
-    
+
     // Dashboard Estudiante
     Route::get('/estudiante/dashboard', function () {
         return view('estudiante.dashboard.index');
     })->name('estudiante.dashboard');
-    
+
     // Dashboard Padre
     Route::get('/padre/dashboard', function () {
         return view('padre.dashboard.index');
@@ -215,28 +254,6 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{id}', [CursoController::class, 'update'])->name('update');
         Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE OBSERVACIONES
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('observaciones', ObservacionController::class)->except(['show']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE DOCUMENTOS
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('documentos', DocumentoController::class);
-
-    /*
-    |--------------------------------------------------------------------------
-    | CAMBIAR CONTRASEÑA
-    |--------------------------------------------------------------------------
-    */
-    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
-    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
 
     /*
     |--------------------------------------------------------------------------
