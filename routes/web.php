@@ -23,6 +23,7 @@ use App\Http\Controllers\PadreController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\CalificacionController;
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS (Sin autenticación requerida)
@@ -52,7 +53,8 @@ Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])
 Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])
     ->name('cambiarcontrasenia.update');
 //Rutas de Calificaciones
-Route::get('/indexCalificaciones', [CalificacionController::class, 'indexCalificaciones'])->name('calificaciones.index');
+Route::get('/indexCalificaciones', [CalificacionController::class, 'indexCalificaciones'])
+    ->name('calificaciones.index');
 //Ruta Perfil
 Route::middleware('auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'mostrarPerfil'])->name('perfil');
