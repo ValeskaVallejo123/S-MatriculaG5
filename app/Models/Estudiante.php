@@ -10,10 +10,10 @@ class Estudiante extends Model
     use HasFactory;
 
     protected $fillable = [
-    'nombre1',     
-    'nombre2',     
-    'apellido1',   
-    'apellido2',   
+    'nombre1',
+    'nombre2',
+    'apellido1',
+    'apellido2',
     'apellido',
     'dni',
     'fecha_nacimiento',

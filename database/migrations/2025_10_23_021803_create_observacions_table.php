@@ -10,7 +10,7 @@ return new class extends Migration
     {
         // Crear la tabla solo si no existe
         if (!Schema::hasTable('observacions')) {
-            Schema::create('observacions', function (Blueprint $table) { // <-- mismo nombre que la migración
+            Schema::create('observacions', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('estudiante_id'); // FK hacia estudiantes
                 $table->unsignedBigInteger('profesor_id');   // FK hacia profesores

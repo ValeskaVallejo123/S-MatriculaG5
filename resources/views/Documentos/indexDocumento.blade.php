@@ -2,99 +2,110 @@
 
 @section('title', 'Listado de Documentos')
 
+@section('page-title', 'Gestión de Documentos')
+
+@section('topbar-actions')
+    <a href="{{ route('documentos.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
+        <i class="fas fa-plus"></i>
+        Subir Documentos
+    </a>
+@endsection
+
 @section('content')
-    <main class="main-content">
-        <div class="content-wrapper">
+    <div class="container" style="max-width: 1400px;">
 
-            {{-- Encabezado --}}
-            <div class="page-header text-center mb-4">
-                <div class="page-icon"><i class="bi bi-file-earmark-text"></i></div>
-                <h1>Documentos del Estudiante</h1>
-                <div class="header-divider"></div>
-            </div>
-
-            {{-- Mensaje de éxito --}}
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-6 text-center shadow-sm">
-                    {{ session('success') }}
+        {{-- Mensaje de éxito --}}
+        @if(session('success'))
+            <div class="alert border-0 mb-3" style="background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4caf50 !important; border-radius: 8px;">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-check-circle me-2 mt-1" style="font-size: 0.9rem; color: #4caf50;"></i>
+                    <div>
+                        <strong style="color: #2e7d32;">{{ session('success') }}</strong>
+                    </div>
                 </div>
-            @endif
-
-            {{-- Botón subir documentos --}}
-            <div class="text-end mb-4">
-                <a href="{{ route('documentos.create') }}" class="btn-primary">
-                    <i class="bi bi-upload me-2"></i>Subir Nuevos Documentos
-                </a>
             </div>
+        @endif
 
-            {{-- Tabla --}}
-            <div class="form-card">
-                <div class="form-card-header">
-                    <h2>Documentos</h2>
-                </div>
-                <div class="form-card-body p-0">
-                    <table class="table table-hover text-center align-middle mb-0">
-                        <thead class="bg-blue-600 text-white">
+        <!-- Tabla compacta de Documentos -->
+        <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
                         <tr>
-                            <th>Foto</th>
-                            <th>Acta de Nacimiento</th>
-                            <th>Calificaciones</th>
-                            <th>Acciones</th>
+                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Foto</th>
+                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Acta de Nacimiento</th>
+                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Calificaciones</th>
+                            <th class="px-3 py-2 text-uppercase small fw-semibold text-end" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
                         @forelse ($documentos as $doc)
-                            <tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9; transition: all 0.2s ease;">
                                 {{-- FOTO --}}
-                                <td>
+                                <td class="px-3 py-2">
                                     @if($doc->foto && file_exists(storage_path('app/public/' . $doc->foto)))
                                         <a href="{{ asset('storage/' . $doc->foto) }}" target="_blank">
                                             <img src="{{ asset('storage/' . $doc->foto) }}"
                                                  alt="Foto del estudiante"
-                                                 class="miniatura">
+                                                 class="rounded-circle object-fit-cover"
+                                                 style="width: 35px; height: 35px; border: 2px solid #4ec7d2;">
                                         </a>
                                     @else
-                                        <span class="text-gray-400">No hay foto</span>
+                                        <span class="text-muted" style="font-size: 0.85rem;">No hay foto</span>
                                     @endif
                                 </td>
 
                                 {{-- ACTA --}}
-                                <td>
+                                <td class="px-3 py-2">
                                     @if($doc->acta_nacimiento && file_exists(storage_path('app/public/' . $doc->acta_nacimiento)))
                                         <a href="{{ asset('storage/' . $doc->acta_nacimiento) }}" target="_blank"
-                                           class="btn-table bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                           class="btn btn-sm"
+                                           style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.8rem; text-decoration: none;"
+                                           onmouseover="this.style.background='#00508f'; this.style.color='white';"
+                                           onmouseout="this.style.background='white'; this.style.color='#00508f';">
                                             Ver Acta
                                         </a>
                                     @else
-                                        <span class="text-gray-400">No hay acta</span>
+                                        <span class="text-muted" style="font-size: 0.85rem;">No hay acta</span>
                                     @endif
                                 </td>
 
                                 {{-- CALIFICACIONES --}}
-                                <td>
+                                <td class="px-3 py-2">
                                     @if($doc->calificaciones && file_exists(storage_path('app/public/' . $doc->calificaciones)))
                                         <a href="{{ asset('storage/' . $doc->calificaciones) }}" target="_blank"
-                                           class="btn-table bg-teal-100 text-teal-700 hover:bg-teal-200">
+                                           class="btn btn-sm"
+                                           style="border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.8rem; text-decoration: none;"
+                                           onmouseover="this.style.background='#4ec7d2'; this.style.color='white';"
+                                           onmouseout="this.style.background='white'; this.style.color='#4ec7d2';">
                                             Ver Calificaciones
                                         </a>
                                     @else
-                                        <span class="text-gray-400">No hay calificaciones</span>
+                                        <span class="text-muted" style="font-size: 0.85rem;">No hay calificaciones</span>
                                     @endif
                                 </td>
 
                                 {{-- ACCIONES --}}
-                                <td>
-                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                <td class="px-3 py-2 text-end">
+                                    <div class="btn-group" role="group">
                                         <a href="{{ route('documentos.edit', $doc->id) }}"
-                                           class="btn-action btn-warning text-white">
-                                            <i class="bi bi-pencil"></i> Editar
+                                           class="btn btn-sm"
+                                           style="border-radius: 6px 0 0 6px; border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
+                                           onmouseover="this.style.background='#4ec7d2'; this.style.color='white';"
+                                           onmouseout="this.style.background='white'; this.style.color='#4ec7d2';">
+                                            <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('documentos.destroy', $doc->id) }}" method="POST">
-                                            @csrf @method('DELETE')
+                                        <form action="{{ route('documentos.destroy', $doc->id) }}" method="POST" class="d-inline"
+                                              onsubmit="return confirm('¿Eliminar documentos?')">
+                                            @csrf
+                                            @method('DELETE')
                                             <button type="submit"
-                                                    onclick="return confirm('¿Eliminar documentos?')"
-                                                    class="btn-action btn-danger text-white">
-                                                <i class="bi bi-trash"></i> Eliminar
+                                                    class="btn btn-sm"
+                                                    style="border-radius: 0 6px 6px 0; border: 1.5px solid #ef4444; border-left: none; color: #ef4444; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
+                                                    onmouseover="this.style.background='#ef4444'; this.style.color='white';"
+                                                    onmouseout="this.style.background='white'; this.style.color='#ef4444';">
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -102,9 +113,15 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="py-10 text-gray-500 text-center">
-                                    <i class="bi bi-folder-x fs-2 d-block mb-2"></i>
-                                    No hay documentos subidos.
+                                <td colspan="4" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="fas fa-inbox fa-2x mb-2" style="color: #00508f; opacity: 0.5;"></i>
+                                        <h6 style="color: #003b73;">No hay documentos registrados</h6>
+                                        <p class="small mb-3">Comienza cargando los primeros documentos</p>
+                                        <a href="{{ route('documentos.create') }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem; text-decoration: none; display: inline-block;">
+                                            <i class="fas fa-plus me-1"></i>Subir Documentos
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
@@ -112,172 +129,28 @@
                     </table>
                 </div>
             </div>
-
         </div>
-    </main>
+
+    </div>
 
     @push('styles')
         <style>
-            body {
-                font-family: 'Poppins', sans-serif;
-                background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%);
-                color: #2c3e50;
+            .table > :not(caption) > * > * {
+                padding: 0.6rem 0.75rem;
             }
 
-            /* Centrado general */
-            .main-content {
-                margin-left: 0;
-                padding: 30px;
-                min-height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
+            .btn-group .btn:hover {
+                transform: translateY(-1px);
+                z-index: 1;
             }
 
-            .content-wrapper {
-                width: 100%;
-                max-width: 950px;
+            .table tbody tr:hover {
+                background-color: rgba(191, 217, 234, 0.08);
             }
 
-            .page-header {
-                text-align: center;
-                margin-bottom: 25px;
-            }
-
-            .page-icon {
-                width: 55px;
-                height: 55px;
-                background: linear-gradient(135deg, #00BCD4, #00ACC1);
-                border-radius: 12px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 1.4rem;
-                margin-bottom: 10px;
-            }
-
-            .header-divider {
-                width: 60px;
-                height: 3px;
-                background: linear-gradient(135deg, #00BCD4, #00ACC1);
-                margin: 10px auto 0;
-                border-radius: 2px;
-            }
-
-            .form-card {
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.07);
-                overflow: hidden;
-                margin-bottom: 20px;
-            }
-
-            .form-card-header {
-                background: linear-gradient(135deg, #00BCD4, #00ACC1);
-                padding: 15px 20px;
-                color: white;
-            }
-
-            .form-card-header h2 {
-                font-size: 1rem;
-                font-weight: 700;
-            }
-
-            .form-card-body {
-                padding: 20px;
-                overflow-x: auto;
-            }
-
-            /* Miniatura */
-            .miniatura {
-                width: 60px;
-                height: 60px;
-                border-radius: 8px;
-                object-fit: cover;
-                border: 2px solid #e0f7fa;
-                transition: transform 0.2s ease;
-            }
-
-            .miniatura:hover {
-                transform: scale(1.1);
-            }
-
-            /* Botones */
-            .btn-primary {
-                background: linear-gradient(135deg, #00BCD4, #00ACC1);
-                color: white;
-                font-weight: 600;
-                border-radius: 6px;
-                padding: 8px 14px;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                transition: 0.3s;
-            }
-
-            .btn-primary:hover {
-                opacity: 0.9;
-            }
-
-            .btn-table {
-                padding: 5px 10px;
-                border-radius: 6px;
-                font-size: 0.9rem;
-                font-weight: 600;
-                text-decoration: none;
-                display: inline-block;
-                transition: 0.2s;
-            }
-
-            .btn-action {
-                border: none;
-                padding: 6px 12px;
-                border-radius: 6px;
-                font-size: 0.9rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: 0.3s;
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-            }
-
-            /* Amarillo para Editar */
-            .btn-warning {
-                background-color: #facc15;
-            }
-
-            .btn-warning:hover {
-                background-color: #eab308;
-            }
-
-            /* Rojo para Eliminar */
-            .btn-danger {
-                background-color: #ef4444;
-            }
-
-            .btn-danger:hover {
-                background-color: #dc2626;
-            }
-
-            .table th, .table td {
-                vertical-align: middle;
-                padding: 12px;
-            }
-
-            @media (max-width: 768px) {
-                .content-wrapper {
-                    width: 100%;
-                    padding: 0 15px;
-                }
-
-                .miniatura {
-                    width: 50px;
-                    height: 50px;
-                }
+            .btn-back:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important;
             }
         </style>
     @endpush

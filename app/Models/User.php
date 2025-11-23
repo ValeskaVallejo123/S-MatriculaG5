@@ -26,6 +26,11 @@ class User extends Authenticatable
         return $this->belongsTo(Rol::class, 'id_rol');
     }
 
+    public function getRoleName()
+    {
+        return $this->rol ? $this->rol->nombre : ($this->role ?? 'SIN ROL');
+    }
+
     public function tienePermiso($nombrePermiso)
     {
         if (!$this->rol) return false;
@@ -43,4 +48,5 @@ class User extends Authenticatable
         if (!$this->rol) return collect([]);
         return $this->rol->permisos;
     }
+
 }

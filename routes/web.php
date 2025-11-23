@@ -58,12 +58,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'mostrarPerfil'])->name('perfil');
 });
 //Ruta cerrar sesion
-Route::post('/cerrar-sesion', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/login');
-})->name('cerrar.sesion');
+Route::middleware('auth')->group(function () {
+    Route::get('/perfil', [PerfilController::class, 'mostrarPerfil'])->name('perfil.mostrar');
+    Route::post('/perfil/actualizar', [PerfilController::class, 'actualizarPerfil'])->name('perfil.actualizar');
+});
 //LOGIN
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.show');
 Route::post('/login', [LoginController::class, 'login'])->name('login.perform');
