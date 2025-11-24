@@ -10,7 +10,7 @@ use App\Models\PeriodoAcademico;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
@@ -26,10 +26,10 @@ class DashboardController extends Controller
         }
 
         $usuario = Auth::user();
-        
+
         if (!$usuario->rol) {
             Log::warning('Usuario sin rol', ['id' => $usuario->id]);
-            return view('dashboard', [
+            return view('superadmin.dashboard', [
                 'totalEstudiantes' => 0,
                 'totalProfesores' => 0,
                 'totalMatriculas' => 0
@@ -48,7 +48,7 @@ class DashboardController extends Controller
             case 'Padre':
                 return redirect()->route('padre.dashboard');
             default:
-                return view('dashboard', [
+                return view('superadmin.dashboard', [
                     'totalEstudiantes' => 0,
                     'totalProfesores' => 0,
                     'totalMatriculas' => 0
@@ -71,7 +71,7 @@ class DashboardController extends Controller
             $totalMatriculas = Matricula::count();
             $matriculasAprobadas = Matricula::where('estado', 'aprobada')->count();
             $matriculasPendientes = Matricula::where('estado', 'pendiente')->count();
-            
+
             // Usuarios del sistema
             $totalUsuarios = User::count();
             $totalAdministradores = User::whereHas('rol', function($query) {
@@ -156,7 +156,7 @@ class DashboardController extends Controller
         $totalProfesores = Profesor::count();
         $totalMatriculas = Matricula::count();
 
-        return view('dashboard', compact(
+        return view('superadmin.dashboard', compact(
             'totalEstudiantes',
             'totalProfesores',
             'totalMatriculas'

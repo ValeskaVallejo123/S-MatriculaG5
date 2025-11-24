@@ -1,62 +1,147 @@
 @extends('layouts.app')
 
+@section('title', 'Estado de Solicitud')
+@section('page-title', 'Estado de Solicitud de Matrícula')
+
+@section('topbar-actions')
+    <a href="{{ route('buscarregistro') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.45rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; border: 2px solid #00508f; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+@endsection
+
 @section('content')
-    <div class="min-h-screen bg-[#001D39] flex items-center justify-center px-4 py-10">
-        <div class="w-full max-w-xl bg-white rounded-3xl shadow-2xl p-8">
-            <h2 class="text-2xl font-bold text-[#49769F] text-center mb-6">Consulta de estado de solicitud de matricula</h2>
+    <div class="container" style="max-width: 900px;">
 
-            <form method="POST" action="/estado-solicitud" class="space-y-8">
-                @csrf
-                <label for="dni" class="block text-sm font-semibold text-gray-700">Buscar solicitud por DNI:</label>
-                <input type="text" name="dni" id="dni" required
-                       pattern="\d{4}-\d{4}-\d{5}"
-                       title="Formato: ####-####-#####"
-                       placeholder="Ej: 0801-1990-12345"
-                       class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#4E8EA2] focus:outline-none text-sm shadow-sm text-center"
-                >
-                <div class="text-center">
-                    <button type="submit"
-                            class="px-6 py-2 bg-[#4E8EA2] text-white font-semibold rounded-lg shadow-md hover:bg-[#3f7c91] transition transform hover:scale-105">
-                        Buscar solicitud de matricula
-                    </button>
+        <!-- Header compacto -->
+        <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg,#00508f 0%,#003b73 100%); border-radius:10px;">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box me-3" style="width:45px;height:45px;background:rgba(78,199,210,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-info-circle text-white" style="font-size:1.1rem;"></i>
+                    </div>
+                    <div class="text-white">
+                        <h5 class="mb-0 fw-bold" style="font-size:1.05rem;">Estado de Solicitud de Matrícula</h5>
+                        <p class="mb-0 opacity-90" style="font-size:0.82rem;">Consulta rápida por DNI el estado de tu solicitud</p>
+                    </div>
                 </div>
-            </form>
+            </div>
+        </div>
 
-            @if(isset($solicitud))
-                @if($solicitud)
-                    <div class="mt-6 px-4 py-3 rounded-lg font-semibold text-center
-                    @if($solicitud->estado === 'aprobada') bg-green-100 text-green-700
-                    @elseif($solicitud->estado === 'rechazada') bg-red-100 text-red-700
-                    @else bg-yellow-100 text-yellow-700 @endif">
-                        @if($solicitud->estado === 'aprobada')
-                            Tu solicitud ha sido aprobada.
-                        @elseif($solicitud->estado === 'rechazada')
-                            Tu solicitud fue rechazada.
+        <!-- Card principal -->
+        <div class="card border-0 shadow-sm" style="border-radius:10px;">
+            <div class="card-body p-3">
+
+                <!-- Buscador (estilo plantilla) -->
+                <form method="POST" action="{{ route('estado-solicitud') }}">
+                    @csrf
+
+                    <div class="mb-3">
+                        <label for="dni" class="form-label fw-semibold small mb-1" style="color:#003b73;">Buscar por DNI</label>
+                        <div class="position-relative">
+                            <i class="fas fa-id-card position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#00508f; font-size:0.85rem; z-index:10;"></i>
+                            <input type="text"
+                                   id="dni"
+                                   name="dni"
+                                   required
+                                   pattern="\d{4}-\d{4}-\d{5}"
+                                   placeholder="Ej: 0801-1990-12345"
+                                   class="form-control form-control-sm ps-5 @error('dni') is-invalid @enderror"
+                                   style="border:2px solid #bfd9ea; border-radius:8px; padding:0.55rem 1rem 0.55rem 2.6rem;"
+                                   autocomplete="off">
+                            @error('dni')
+                            <div class="invalid-feedback" style="font-size:0.8rem;">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-2 border-top mt-3">
+                        <button type="submit" class="btn btn-sm fw-semibold flex-fill" style="background: linear-gradient(135deg,#004191 0%,#0b96b6 100%); color:white; border:none; padding:0.55rem; border-radius:8px; box-shadow:0 2px 8px rgba(4,64,120,0.12);">
+                            <i class="fas fa-search me-2"></i> Buscar solicitud
+                        </button>
+
+                        <a href="{{ route('estado-solicitud') }}" class="btn btn-sm fw-semibold flex-fill" style="background:white; color:#00508f; border:2px solid #00508f; padding:0.55rem; border-radius:8px; text-decoration:none;">
+                            <i class="fas fa-undo me-2"></i> Limpiar
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Resultado -->
+                @if(isset($solicitud))
+                    <div class="mt-4">
+                        @if($solicitud)
+                            <div class="text-center mb-4">
+                                @php
+                                    $estado = $solicitud->estado ?? 'revision';
+                                @endphp
+
+                                @if($estado === 'aprobada')
+                                    <div class="d-inline-block px-3 py-1 rounded-pill fw-semibold" style="background:#e6ffef;color:#0f5132;">Tu solicitud ha sido aprobada</div>
+                                @elseif($estado === 'rechazada')
+                                    <div class="d-inline-block px-3 py-1 rounded-pill fw-semibold" style="background:#fff2f2;color:#7a1a1a;">Tu solicitud fue rechazada</div>
+                                @else
+                                    <div class="d-inline-block px-3 py-1 rounded-pill fw-semibold" style="background:#fff8e1;color:#6a4a00;">Tu solicitud está en revisión</div>
+                                @endif
+                            </div>
+
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-700">
+                                <h6 class="text-[#49769F] fw-bold mb-3">👤 Datos del solicitante</h6>
+                                <div class="row g-2">
+                                    <div class="col-12 col-sm-6"><strong>Nombre:</strong> {{ $solicitud->nombre }}</div>
+                                    <div class="col-12 col-sm-6"><strong>DNI:</strong> {{ $solicitud->dni }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Correo:</strong> {{ $solicitud->correo ?? 'No registrado' }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Teléfono:</strong> {{ $solicitud->telefono ?? 'No registrado' }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Fecha de solicitud:</strong> {{ optional($solicitud->created_at)->format('d/m/Y') ?? '-' }}</div>
+                                </div>
+                            </div>
+
+                            @if(!empty($solicitud->notificar))
+                                <p class="mt-3 text-center text-xs text-gray-500 italic">Recibirás notificaciones cuando el estado cambie.</p>
+                            @endif
                         @else
-                            Tu solicitud está en revisión.
+                            <div class="mt-3 alert border-0 py-2 px-3" style="border-radius:8px;background:rgba(255,235,238,0.6);border-left:3px solid #f8d7da;">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-exclamation-circle me-2" style="color:#7a1a1a;"></i>
+                                    <div class="fw-semibold" style="color:#7a1a1a;">No se encontró ninguna solicitud con ese DNI. Verifique e intente nuevamente.</div>
+                                </div>
+                            </div>
                         @endif
                     </div>
-
-                    <div class="mt-6 bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-700">
-                        <h4 class="text-[#49769F] font-bold mb-3">📋 Datos del estudiante</h4>
-                        <p><strong>Nombre:</strong> {{ $solicitud->nombre }}</p>
-                        <p><strong>DNI:</strong> {{ $solicitud->dni }}</p>
-                        <p><strong>Correo:</strong> {{ $solicitud->correo }}</p>
-                        <p><strong>Teléfono:</strong> {{ $solicitud->telefono }}</p>
-                        <p><strong>Fecha de solicitud:</strong> {{ $solicitud->created_at->format('d/m/Y') }}</p>
-                    </div>
-
-                    @if($solicitud->notificar)
-                        <p class="mt-4 text-sm text-gray-600 text-center">
-                            Recibirás notificaciones cuando el estado cambie.
-                        </p>
-                    @endif
-                @else
-                    <div class="mt-6 bg-gray-200 text-gray-700 p-4 rounded-lg text-center font-semibold">
-                        No se encontró ninguna solicitud con ese DNI. Verifica e intenta nuevamente.
-                    </div>
                 @endif
-            @endif
+
+            </div>
         </div>
+
+        <!-- Nota compacta -->
+        <div class="alert border-0 mt-3 py-2 px-3" style="border-radius:8px; background:rgba(78,199,210,0.08); border-left:3px solid #4ec7d2;">
+            <div class="d-flex align-items-start">
+                <i class="fas fa-info-circle me-2 mt-1" style="color:#00508f;"></i>
+                <div>
+                    <strong style="color:#00508f;">Información importante:</strong>
+                    <span class="text-muted"> Usa el formato de DNI solicitado para obtener resultados más precisos.</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 @endsection
+
+@push('styles')
+    <style>
+        .form-control-sm, .form-select-sm {
+            border-radius: 6px;
+            border: 1.5px solid #e2e8f0;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        .form-control-sm:focus { border-color: #4ec7d2; box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.12); }
+        .form-label { color:#003b73; font-size:0.85rem; margin-bottom:0.3rem; }
+        .btn:hover { transform: translateY(-2px); transition: all 0.25s ease; }
+        .btn-back:hover { background:#00508f !important; color:white !important; transform:translateY(-2px); }
+        .border-top { border-color: rgba(0,80,143,0.08) !important; }
+        .position-relative .fas { pointer-events: none; left:12px; position:absolute; }
+        @media (max-width:768px){ .d-flex.gap-2 { gap:0.5rem !important; } }
+    </style>
+@endpush

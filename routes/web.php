@@ -22,6 +22,7 @@ use App\Http\Controllers\PadrePermisoController;
 use App\Http\Controllers\PadreController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\RegistrarCalificacionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,7 @@ Route::get('/plantilla', function () {
 })->name('plantilla');
 
 // Consulta de solicitudes (PÚBLICA)
+// estado de solicitud manuel padilla
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])
     ->name('estado-solicitud');
 Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
@@ -89,7 +91,7 @@ Route::middleware(['auth'])->group(function () {
     | DASHBOARDS POR ROL
     |--------------------------------------------------------------------------
     */
-    
+
     // Dashboard genérico (redirige según rol)
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard');
 
@@ -97,20 +99,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/superadmin/dashboard', function () {
         return view('superadmin.dashboard');
     })->name('superadmin.dashboard');
-    
+
     // Dashboard Administrador
     Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
-    
+
     // Dashboard Profesor
     Route::get('/profesor/dashboard', function () {
         return view('profesor.dashboard.index');
     })->name('profesor.dashboard');
-    
+
     // Dashboard Estudiante
     Route::get('/estudiante/dashboard', function () {
         return view('estudiante.dashboard.index');
     })->name('estudiante.dashboard');
-    
+
     // Dashboard Padre
     Route::get('/padre/dashboard', function () {
         return view('padre.dashboard.index');
@@ -165,7 +167,9 @@ Route::middleware(['auth'])->group(function () {
     | GESTIÓN DE ESTUDIANTES
     |--------------------------------------------------------------------------
     */
-    Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
+
+    Route::get('/buscarregistro', [BuscarEstudianteController::class, 'buscarregistro'])
+        ->name('buscarregistro');
     Route::resource('estudiantes', EstudianteController::class);
 
     /*
@@ -230,6 +234,7 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::resource('documentos', DocumentoController::class);
 
+
     /*
     |--------------------------------------------------------------------------
     | CAMBIAR CONTRASEÑA
@@ -247,4 +252,17 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('grados', GradoController::class);
     Route::get('grados/{grado}/asignar-materias', [GradoController::class, 'asignarMaterias'])->name('grados.asignar-materias');
     Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])->name('grados.guardar-materias');
+    // Mostrar formulario / filtros
+    Route::get('registrar-calificaciones', [RegistrarCalificacionController::class, 'create'])
+        ->name('registrarcalificaciones.create');
+    // Guardar notas
+    Route::post('registrar-calificaciones', [RegistrarCalificacionController::class, 'store'])
+        ->name('registrarcalificaciones.store');
+    // Listado (index) de calificaciones del profesor
+    Route::get('calificaciones', [RegistrarCalificacionController::class, 'index'])
+        ->name('registrarcalificaciones.index');
+    // AJAX: obtener estudiantes por curso
+    Route::get('registrar-calificaciones/estudiantes/{curso}', [RegistrarCalificacionController::class, 'obtenerEstudiantes'])
+        ->name('registrarcalificaciones.estudiantes');
+
 });

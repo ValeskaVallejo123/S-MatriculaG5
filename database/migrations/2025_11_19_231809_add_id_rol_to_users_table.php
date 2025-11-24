@@ -16,7 +16,7 @@ return new class extends Migration
             if (!Schema::hasColumn('users', 'id_rol')) {
                 $table->foreignId('id_rol')->nullable()->constrained('roles')->onDelete('set null');
             }
-            
+
             // Eliminar campo role antiguo si existe (opcional)
             // if (Schema::hasColumn('users', 'role')) {
             //     $table->dropColumn('role');
