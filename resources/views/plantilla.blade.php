@@ -928,7 +928,7 @@
         <h3>Servicios Disponibles</h3>
         <div class="category-tags">
           <a href="#modulos" class="category-tag">Información Escolar</a>
-          <a href="{{ route('matriculas.index') }}" class="category-tag">Consultar Solicitud</a>
+         <a href="{{ route('matriculas.index') }}" class="category-tag">Consultar Solicitud</a>
           <a href="#nosotros" class="category-tag">Sobre Nosotros</a>
           <a href="#contacto" class="category-tag">Contacto</a>
         </div>
@@ -996,23 +996,22 @@
         </div>
 
         <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-book-open"></i>
-          </div>
-          <h3>Plan de Estudios de Educación Primaria</h3>
-          <p>Desarrollo de las competencias fundamentales en Lectura, Escritura y Matemáticas, promoviendo el
-            aprendizaje activo y fomentando el pensamiento crítico.</p>
-          <a href="{{ route('grados.index') }}" class="btn-feature">Primaria</a>
-        </div>
+    <div class="feature-icon">
+        <i class="fas fa-book-open"></i>
+    </div>
+    <h3>Plan de Estudios de Educación Primaria</h3>
+    <p>Desarrollo de las competencias fundamentales en Lectura, Escritura y Matemáticas, promoviendo el
+        aprendizaje activo y fomentando el pensamiento crítico.</p>
+    <a href="{{ route('publico.grados.index') }}" class="btn-feature">Primaria</a>
+</div>
 
         <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-book-open"></i>
-          </div>
-          <h3>Plan de Estudios de Educación Secundaria</h3>
-          <p>Formación integral y especializada, enfocada en la orientación vocacional y la preparación para la
-            educación superior o el mundo laboral.</p>
-          <a href="{{ route('ciclos.index') }}" class="btn-feature">Secundaria</a>
+        <div class="feature-icon">
+        <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h3>Consulta de Ciclos</h3>
+        <p>Revisa los ciclos académicos disponibles, secciones, jornadas y maestros encargados.</p>
+        <a href="{{ route('publico.ciclos.index') }}" class="btn-feature">Ver Ciclos</a>
         </div>
          
 
@@ -1023,7 +1022,7 @@
     </div>
     <h3>Consulta de Calificaciones</h3>
     <p>Revisa el historial académico, consulta las notas parciales y visualiza el rendimiento del estudiante.</p>
-    <a href="{{ route('calificaciones.index') }}" class="btn-feature">Consultar Notas</a>
+    <a href="{{ route('publico.calificaciones.index') }}" class="btn-feature">Consultar Notas</a>
 </div>
 
 

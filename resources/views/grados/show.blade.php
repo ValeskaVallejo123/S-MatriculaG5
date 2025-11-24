@@ -197,8 +197,8 @@
                     <a href="{{ route('grados.edit', $grado) }}" class="btn btn-sm flex-fill" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); padding: 0.6rem; border-radius: 8px; font-weight: 600;">
                         <i class="fas fa-edit me-1"></i>Editar
                     </a>
-                    <a href="{{ route('grados.index') }}" class="btn btn-sm flex-fill" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem; border-radius: 8px; font-weight: 600;">
-                        <i class="fas fa-arrow-left me-1"></i>Volver
+                    <a href="{{ route('home') }}" class="btn btn-sm flex-fill" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem; border-radius: 8px; font-weight: 600;">
+                    <i class="fas fa-arrow-left me-1"></i>Volver
                     </a>
                     <button type="button" onclick="confirmDelete()" class="btn btn-sm flex-fill" style="border: 2px solid #ef4444; color: #ef4444; background: white; padding: 0.6rem; border-radius: 8px; font-weight: 600;">
                         <i class="fas fa-trash me-1"></i>Eliminar

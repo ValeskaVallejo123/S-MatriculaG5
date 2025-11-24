@@ -563,6 +563,21 @@
 
                 <!-- GESTIÓN ACADÉMICA -->
                 <li class="menu-section-title">Gestión Académica</li>
+                
+                
+                {{-- Botón para Plan de Estudio --}}
+                <li class="menu-section-title">Gestión Académica</li>
+
+{{-- Botón para Ciclos --}}
+{{-- Opción 2: Administración (solo para usuarios autenticados) --}}
+@auth
+<li class="menu-item">
+    <a href="{{ route('ciclos.index') }}"
+       class="menu-link {{ request()->routeIs('ciclos.*') && !request()->routeIs('publico.*') ? 'active' : '' }}">
+        <i class="fas fa-cog"></i> <span>Administrar Ciclos</span>
+    </a>
+</li>
+@endauth
 
                 <li class="menu-item">
                     <a href="{{ route('matriculas.index') }}"
@@ -584,15 +599,13 @@
     </a>
 </li>
 
-{{-- 3. Enlace de Matrículas (Referencia original del usuario para estilo) --}}
+{{-- Botón para Mostrar Calificaciones --}}
 <li class="menu-item">
-    <a href="{{ route('matriculas.index') }}"
-        class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
-        <i class="fas fa-clipboard-list"></i>
-        <span>Matrículas</span>
+    <a href="{{ route('calificaciones.index') }}"
+        class="menu-link {{ request()->routeIs('calificaciones.*') ? 'active' : '' }}">
+        <i class="fas fa-trophy"></i> <span>Mostrar Calificaciones</span>
     </a>
 </li>
-    
     
 
 

@@ -9,9 +9,13 @@
         <a href="{{ route('ciclos.edit', $ciclo) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3);">
             <i class="fas fa-edit me-1"></i>Editar
         </a>
-        <a href="{{ route('ciclos.index') }}" class="btn btn-sm" style="background: white; color: #00508f; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 2px solid #00508f;">
-            <i class="fas fa-arrow-left me-1"></i>Volver
-        </a>
+        {{-- Botón Volver corregido --}}
+{{-- Botón para volver a la lista de ciclos públicos --}}
+<a href="{{ route('publico.ciclos.index') }}" 
+   class="btn btn-sm" 
+   style="background: white; color: #00508f; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 2px solid #00508f;">
+    <i class="fas fa-arrow-left me-1"></i>Volver a Ciclos
+</a>
     </div>
 @endsection
 
@@ -124,13 +128,7 @@
             <!-- Botones de Acción (al final del card) -->
             <div class="pt-3 border-top mt-3">
                 <div class="d-flex gap-2">
-                    <a href="{{ route('ciclos.edit', $ciclo) }}" class="btn btn-sm flex-fill" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); padding: 0.6rem; border-radius: 8px; font-weight: 600;">
-                        <i class="fas fa-edit me-1"></i>Editar
-                    </a>
-                    
-                    <button type="button" onclick="confirmDelete()" class="btn btn-sm flex-fill" style="border: 2px solid #ef4444; color: #ef4444; background: white; padding: 0.6rem; border-radius: 8px; font-weight: 600;">
-                        <i class="fas fa-trash me-1"></i>Eliminar
-                    </button>
+                                                            
                     
                     <!-- Form oculto para eliminar -->
                     <form id="delete-form" action="{{ route('ciclos.destroy', $ciclo) }}" method="POST" style="display: none;">
@@ -153,33 +151,13 @@
                     <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 1.2rem;"></i>
                     </div>
-                    <div>
-                        <h5 class="modal-title mb-0 fw-bold" style="color: #003b73;">Confirmar Eliminación</h5>
-                        <p class="mb-0 small text-muted">Esta acción no se puede deshacer</p>
-                    </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
-            <!-- Body -->
-            <div class="modal-body" style="padding: 1.5rem;">
-                <p class="mb-2" style="color: #003b73; font-size: 0.95rem;">
-                    ¿Está seguro que desea eliminar el ciclo <strong>{{ $ciclo->nombre }}</strong>?
-                </p>
-                <p class="text-muted small mb-0">
-                    Se perderán todos los datos asociados (incluyendo estudiantes y clases) de forma permanente.
-                </p>
-            </div>
+        
             
             <!-- Footer -->
-            <div class="modal-footer border-0" style="background: #f8f9fa; padding: 1rem 1.5rem;">
-                <button type="button" class="btn btn-sm" data-bs-dismiss="modal" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600;">
-                    Cancelar
-                </button>
-                <button type="button" onclick="submitDelete()" class="btn btn-sm" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);">
-                    Sí, Eliminar
-                </button>
-            </div>
+            
         </div>
     </div>
 </div>
