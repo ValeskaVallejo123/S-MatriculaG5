@@ -24,6 +24,9 @@ use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\CalificacionController;
+use App\Http\Controllers\ProfesorMateriaController;
+
+Route::resource('profesor_materia', ProfesorMateriaController::class);
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS (Sin autenticación requerida)
