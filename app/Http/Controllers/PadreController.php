@@ -16,7 +16,7 @@ class PadreController extends Controller
     public function index(Request $request)
     {
         $query = Padre::with(['estudiantes']);
-        
+
         // Búsqueda
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
@@ -27,9 +27,9 @@ class PadreController extends Controller
                   ->orWhere('correo', 'like', "%{$buscar}%");
             });
         }
-        
+
         $padres = $query->paginate(15);
-        
+
         return view('padre.index', compact('padres'));
     }
 
@@ -126,7 +126,7 @@ class PadreController extends Controller
     public function update(Request $request, $id)
     {
         $padre = Padre::findOrFail($id);
-        
+
         $validated = $request->validate([
             'nombre' => 'required|string|min:2|max:50',
             'apellido' => 'required|string|min:2|max:50',
@@ -185,17 +185,17 @@ class PadreController extends Controller
     {
         try {
             $padre = Padre::findOrFail($id);
-            
+
             // Verificar si tiene estudiantes vinculados
             if ($padre->estudiantes()->count() > 0) {
                 return back()->with('error', 'No se puede eliminar. Este padre/tutor tiene estudiantes vinculados.');
             }
-            
+
             $padre->delete();
-            
+
             return redirect()->route('padre.index')
                 ->with('success', 'Padre/tutor eliminado correctamente.');
-                
+
         } catch (\Exception $e) {
             return back()->with('error', 'Error al eliminar: ' . $e->getMessage());
         }
@@ -207,38 +207,38 @@ class PadreController extends Controller
     public function buscar(Request $request)
     {
         $query = Padre::query();
-        
+
         // Filtros de búsqueda
         if ($request->filled('nombre')) {
             $query->where('nombre', 'like', '%' . $request->nombre . '%');
         }
-        
+
         if ($request->filled('apellido')) {
             $query->where('apellido', 'like', '%' . $request->apellido . '%');
         }
-        
+
         if ($request->filled('dni')) {
             $query->where('dni', 'like', '%' . $request->dni . '%');
         }
-        
+
         if ($request->filled('correo')) {
             $query->where('correo', 'like', '%' . $request->correo . '%');
         }
-        
+
         if ($request->filled('telefono')) {
             $query->where('telefono', 'like', '%' . $request->telefono . '%');
         }
-        
+
         // Obtener resultados (solo si hay búsqueda)
-        $padres = $request->anyFilled(['nombre', 'apellido', 'dni', 'correo', 'telefono']) 
-            ? $query->with('estudiantes')->get() 
+        $padres = $request->anyFilled(['nombre', 'apellido', 'dni', 'correo', 'telefono'])
+            ? $query->with('estudiantes')->get()
             : collect();
-        
+
         // Si viene un estudiante_id, verificar vinculaciones existentes
         $estudianteId = $request->input('estudiante_id');
         $estudiante = $estudianteId ? Estudiante::find($estudianteId) : null;
-        
-        return view('padres.buscar', compact('padres', 'estudiante'));
+
+        return view('padre.buscar', compact('padres', 'estudiante'));
     }
 
     /**
@@ -250,25 +250,25 @@ class PadreController extends Controller
             'padre_id' => 'required|exists:padres,id',
             'estudiante_id' => 'required|exists:estudiantes,id',
         ]);
-        
+
         try {
             DB::beginTransaction();
-            
+
             $padre = Padre::findOrFail($request->padre_id);
             $estudiante = Estudiante::findOrFail($request->estudiante_id);
-            
+
             // Verificar si ya existe una matrícula
             $matriculaExistente = Matricula::where('padre_id', $padre->id)
                 ->where('estudiante_id', $estudiante->id)
                 ->first();
-            
+
             if ($matriculaExistente) {
                 return back()->with('error', 'Este padre ya está vinculado con el estudiante.');
             }
-            
+
             // Crear la vinculación (matrícula)
             $codigoMatricula = 'MAT-' . date('Y') . '-' . str_pad(Matricula::count() + 1, 4, '0', STR_PAD_LEFT);
-            
+
             Matricula::create([
                 'padre_id' => $padre->id,
                 'estudiante_id' => $estudiante->id,
@@ -277,12 +277,12 @@ class PadreController extends Controller
                 'fecha_matricula' => now(),
                 'estado' => 'aprobada',
             ]);
-            
+
             DB::commit();
-            
+
             return redirect()->route('estudiante.show', $estudiante->id)
                 ->with('success', 'Padre/tutor vinculado correctamente con el estudiante.');
-                
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Error al vincular: ' . $e->getMessage());
@@ -298,24 +298,24 @@ class PadreController extends Controller
             'padre_id' => 'required|exists:padres,id',
             'estudiante_id' => 'required|exists:estudiantes,id',
         ]);
-        
+
         try {
             DB::beginTransaction();
-            
+
             $matricula = Matricula::where('padre_id', $request->padre_id)
                 ->where('estudiante_id', $request->estudiante_id)
                 ->first();
-            
+
             if (!$matricula) {
                 return back()->with('error', 'No existe vinculación entre este padre y estudiante.');
             }
-            
+
             $matricula->delete();
-            
+
             DB::commit();
-            
+
             return back()->with('success', 'Vinculación eliminada correctamente.');
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Error al desvincular: ' . $e->getMessage());
