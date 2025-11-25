@@ -1,24 +1,25 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])->default('estudiante');
+            $table->boolean('is_super_admin')->default(false);
+            $table->json('permissions')->nullable();
+            $table->boolean('is_protected')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('rol', ['estudiante', 'admin'])->default('estudiante'); // nuevo campo
             $table->rememberToken();
+          //  $table->string('role')->nullable(); // campo textual para trazabilidad visual
+           // $table->foreignId('id_rol')->nullable()->constrained('roles')->onDelete('set null');
             $table->timestamps();
         });
 
@@ -30,11 +31,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')
-                ->nullable()
-                ->constrained('users')
-                ->cascadeOnDelete(); // si se borra el usuario se borra la sesión también
-
+            $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
@@ -42,13 +39,10 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('sessions');              // Primero sesiones
-        Schema::dropIfExists('password_reset_tokens'); // Luego los tokens
-        Schema::dropIfExists('users');                 // Último los usuarios
+        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

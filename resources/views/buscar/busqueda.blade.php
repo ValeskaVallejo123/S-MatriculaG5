@@ -1,105 +1,160 @@
 @extends('layouts.app')
 
+@section('title', 'Buscar Registro')
+@section('page-title', 'Buscar Registro de Estudiante')
+
+@section('topbar-actions')
+    <a href="{{ route('estudiantes.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.45rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+@endsection
+
 @section('content')
-    <div class="min-h-screen bg-gradient-to-br from-purple-200 to-blue-300 flex items-center justify-center px-4">
-        <div class="w-full max-w-lg bg-purple-600 text-white rounded-2xl shadow-2xl p-8">
-            <h2 class="text-3xl font-bold mb-6 text-center"> Buscar Registro de Estudiante</h2>
+    <div class="container" style="max-width: 900px;">
 
-            <form action="{{ route('registroestudiantes.buscarregistro') }}" method="GET" class="space-y-6">
-                <!-- Campo Nombre -->
-                <div>
-                    <label for="nombre" class="block text-sm font-semibold mb-2">Nombre completo</label>
-                    <input
-                        type="text"
-                        name="nombre"
-                        id="nombre"
-                        value="{{ request('nombre') }}"
-                        placeholder="Ej. Juan Pérez"
-                        class="w-full px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm shadow-sm"
-                        autocomplete="off"
-                    >
+        <!-- Header compacto -->
+        <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg,#00508f 0%,#003b73 100%); border-radius:10px;">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box me-3" style="width:45px;height:45px;background:rgba(78,199,210,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-search text-white" style="font-size:1.1rem;"></i>
+                    </div>
+                    <div class="text-white">
+                        <h5 class="mb-0 fw-bold" style="font-size:1.05rem;">Buscar Registro de Estudiante</h5>
+                        <p class="mb-0 opacity-90" style="font-size:0.82rem;">Encuentra rápidamente el expediente del estudiante</p>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Campo DNI -->
-                <div>
-                    <label for="dni" class="block text-sm font-semibold mb-2">DNI</label>
-                    <input
-                        type="text"
-                        name="dni"
-                        id="dni"
-                        value="{{ request('dni') }}"
-                        placeholder="Ej. 0801-1990-12345"
-                        class="w-full px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm shadow-sm"
-                        autocomplete="off"
-                    >
-                </div>
+        <!-- Card principal -->
+        <div class="card border-0 shadow-sm" style="border-radius:10px;">
+            <div class="card-body p-3">
 
-                <!-- Botón -->
-                <div class="text-center">
-                    <button
-                        type="submit"
-                        class="inline-flex items-center gap-2 px-6 py-2 bg-yellow-400 text-purple-900 font-semibold rounded-lg shadow-md hover:bg-yellow-300 transition duration-300 ease-in-out transform hover:scale-105">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                        Buscar
-                    </button>
-
-                    <div class="text-center mt-6">
-                        <a href="{{ route('estudiantes.index') }}"
-                           class="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-semibold border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm hover:shadow-md">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                            Volver al listado
-                        </a>
+                <!-- Formulario (estilado como plantilla) -->
+                <form method="GET" action="{{ route('buscarregistro') }}">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label fw-semibold small mb-1" style="color:#003b73;">Nombre completo</label>
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#00508f; font-size:0.85rem; z-index:10;"></i>
+                            <input type="text"
+                                   id="nombre"
+                                   name="nombre"
+                                   value="{{ request('nombre') }}"
+                                   placeholder="Ej: Juan Pérez"
+                                   class="form-control form-control-sm ps-5 @error('nombre') is-invalid @enderror"
+                                   style="border:2px solid #bfd9ea; border-radius:8px; padding:0.55rem 1rem 0.55rem 2.6rem;"
+                                   autocomplete="off">
+                        </div>
                     </div>
 
-                </div>
-            </form>
+                    <div class="mb-3">
+                        <label for="dni" class="form-label fw-semibold small mb-1" style="color:#003b73;">Buscar por DNI</label>
+                        <div class="position-relative">
+                            <i class="fas fa-id-card position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#00508f; font-size:0.85rem; z-index:10;"></i>
+                            <input type="text"
+                                   id="dni"
+                                   name="dni"
+                                   value="{{ request('dni') }}"
+                                   pattern="\d{4}-\d{4}-\d{5}"
+                                   placeholder="Ej: 0801-1990-12345"
+                                   class="form-control form-control-sm ps-5 @error('dni') is-invalid @enderror"
+                                   style="border:2px solid #bfd9ea; border-radius:8px; padding:0.55rem 1rem 0.55rem 2.6rem;"
+                                   autocomplete="off">
+                        </div>
+                    </div>
 
-            @if($busquedaRealizada)
-                <div class="mt-8 space-y-6">
-                    @forelse($resultados as $estudiante)
-                        <div class="bg-white text-gray-800 rounded-2xl shadow-xl p-6">
-                            <h3 class="text-xl font-bold text-purple-700 mb-4"> Ficha del Estudiante</h3>
+                    <!-- Botones -->
+                    <div class="d-flex gap-2 pt-2 border-top mt-3">
+                        <button type="submit" class="btn btn-sm fw-semibold flex-fill" style="background: linear-gradient(135deg,#004191 0%,#0b96b6 100%); color:white; border:none; padding:0.55rem; border-radius:8px; box-shadow:0 2px 8px rgba(4,64,120,0.12);">
+                            <i class="fas fa-search me-2"></i> Buscar solicitud
+                        </button>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                <p><strong>Nombre:</strong> {{ $estudiante->nombre }}</p>
-                                <p><strong>Apellido:</strong> {{ $estudiante->apellido }}</p>
-                                <p><strong>DNI:</strong> {{ $estudiante->dni }}</p>
-                                <p><strong>Fecha de nacimiento:</strong> {{ $estudiante->fecha_nacimiento->format('d/m/Y') }}</p>
-                                <p><strong>Sexo:</strong> {{ ucfirst($estudiante->sexo) }}</p>
-                                <p><strong>Correo electrónico:</strong> {{ $estudiante->email ?? 'No registrado' }}</p>
-                                <p><strong>Teléfono:</strong> {{ $estudiante->telefono ?? 'No registrado' }}</p>
-                                <p><strong>Dirección:</strong> {{ $estudiante->direccion ?? 'No registrada' }}</p>
-                                <p><strong>Grado:</strong> {{ $estudiante->grado }}</p>
-                                <p><strong>Sección:</strong> {{ $estudiante->seccion }}</p>
-                                <p><strong>Estado:</strong>
-                                    <span class="px-2 py-1 rounded-full {{ $estudiante->estado === 'activo' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                            {{ ucfirst($estudiante->estado) }}
-                        </span>
-                                </p>
-                                <p><strong>Observaciones:</strong> {{ $estudiante->observaciones ?? 'Sin observaciones' }}</p>
+                        <a href="{{ route('buscarregistro') }}" class="btn btn-sm fw-semibold flex-fill" style="background:white; color:#00508f; border:2px solid #00508f; padding:0.55rem; border-radius:8px; text-decoration:none;">
+                            <i class="fas fa-undo me-2"></i> Limpiar
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Resultados -->
+                @if(isset($busquedaRealizada) && $busquedaRealizada)
+                    <div class="mt-4">
+                        @forelse($resultados as $estudiante)
+                            <div class="mb-3">
+                                <div class="text-center mb-3">
+                                    <div class="d-inline-block px-3 py-1 rounded-pill fw-semibold small
+                                    @if($estudiante->estado === 'activo')" style="background:#e6ffef;color:#0f5132;border-radius:999px;"@elseif($estudiante->estado === 'inactivo') " style="background:#fff2f2;color:#7a1a1a;border-radius:999px;"@else " style="background:#fff8e1;color:#6a4a00;border-radius:999px;"@endif">
+                                    Estado: {{ ucfirst($estudiante->estado) }}
+                                </div>
                             </div>
 
-                            @if($estudiante->foto)
-                                <div class="mt-4">
-                                    <p class="font-semibold mb-2"> Foto del estudiante:</p>
-                                    <img src="{{ asset('storage/' . $estudiante->foto) }}" alt="Foto de {{ $estudiante->nombre }}" class="w-32 h-32 object-cover rounded-lg border">
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-700">
+                                <h6 class="text-[#49769F] fw-bold mb-3">👤 Datos del estudiante</h6>
+                                <div class="row g-2">
+                                    <div class="col-12 col-sm-6"><strong>Nombre:</strong> {{ $estudiante->nombre }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Apellido:</strong> {{ $estudiante->apellido }}</div>
+                                    <div class="col-12 col-sm-6"><strong>DNI:</strong> {{ $estudiante->dni }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Correo:</strong> {{ $estudiante->email ?? 'No registrado' }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Teléfono:</strong> {{ $estudiante->telefono ?? 'No registrado' }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Fecha de nacimiento:</strong> {{ optional($estudiante->fecha_nacimiento)->format('d/m/Y') ?? 'No registrada' }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Grado:</strong> {{ $estudiante->grado }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Sección:</strong> {{ $estudiante->seccion }}</div>
+                                    <div class="col-12"><strong>Dirección:</strong> {{ $estudiante->direccion ?? 'No registrada' }}</div>
+                                    <div class="col-12"><strong>Observaciones:</strong> {{ $estudiante->observaciones ?? 'Sin observaciones' }}</div>
                                 </div>
-                            @endif
-                        </div>
 
+                                @if($estudiante->foto)
+                                    <div class="mt-3 text-center">
+                                        <p class="fw-semibold mb-2">Foto del estudiante</p>
+                                        <img src="{{ asset('storage/' . $estudiante->foto) }}" alt="Foto de {{ $estudiante->nombre }}" class="w-28 h-28 object-cover rounded-lg border mx-auto">
+                                    </div>
+                                @endif
+                            </div>
+                    </div>
                     @empty
-                        <div class="bg-red-100 text-red-700 p-4 rounded-lg text-center font-semibold">
-                            Estudiante no encontrado
+                        <div class="mt-3 alert border-0 py-2 px-3" style="border-radius:8px;background:rgba(255,235,238,0.6);border-left:3px solid #f8d7da;">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-exclamation-circle me-2" style="color:#7a1a1a;"></i>
+                                <div class="fw-semibold" style="color:#7a1a1a;">No se encontró ningún registro con esos datos. Verifique e intente nuevamente.</div>
+                            </div>
                         </div>
                     @endforelse
-                </div>
+            </div>
             @endif
 
         </div>
     </div>
+
+    <!-- Nota compacta -->
+    <div class="alert border-0 mt-3 py-2 px-3" style="border-radius:8px; background:rgba(78,199,210,0.08); border-left:3px solid #4ec7d2; font-size:0. nine rem;">
+        <div class="d-flex align-items-start">
+            <i class="fas fa-info-circle me-2 mt-1" style="color:#00508f;"></i>
+            <div>
+                <strong style="color:#00508f;">Información importante:</strong>
+                <span class="text-muted"> Usa nombre completo o DNI para obtener resultados más precisos.</span>
+            </div>
+        </div>
+    </div>
+
+    </div>
 @endsection
 
+@push('styles')
+    <style>
+        .form-control-sm, .form-select-sm {
+            border-radius: 6px;
+            border: 1.5px solid #e2e8f0;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        .form-control-sm:focus { border-color: #4ec7d2; box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.12); }
+        .form-label { color:#003b73; font-size:0.85rem; margin-bottom:0.3rem; }
+        .btn:hover { transform: translateY(-2px); transition: all 0.25s ease; }
+        .btn-back:hover { background:#00508f !important; color:white !important; transform:translateY(-2px); }
+        .border-top { border-color: rgba(0,80,143,0.08) !important; }
+        .position-relative .fas { pointer-events: none; left:12px; position:absolute; }
+        .alert .text-muted { font-size:0.85rem; color:#6b7280; }
+        @media (max-width:768px){ .d-flex.gap-2 { gap:0.5rem !important; } }
+    </style>
+@endpush

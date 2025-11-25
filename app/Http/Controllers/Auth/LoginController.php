@@ -8,41 +8,87 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    /**
+     * Mostrar formulario de login
+     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
+    /**
+     * Procesar el login
+     */
     public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+{
+    // Validar credenciales
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ], [
+        'email.required' => 'El correo electrónico es obligatorio.',
+        'email.email' => 'Debe ser un correo electrónico válido.',
+        'password.required' => 'La contraseña es obligatoria.',
+    ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return back()->with('error', 'Credenciales incorrectas.');
+    // Intentar autenticar
+    if (Auth::attempt($credentials, $request->filled('remember'))) {
+        $request->session()->regenerate();
+
+        $usuario = Auth::user();
+
+        // Redirigir según el rol del usuario
+        if ($usuario->rol) {
+            $nombreRol = $usuario->rol->nombre;
+
+            switch ($nombreRol) {
+                case 'Super Administrador':
+                    return redirect()->route('superadmin.dashboard')
+                        ->with('success', 'Bienvenido Super Administrador');
+
+                case 'Administrador':
+                    return redirect()->route('admin.dashboard')
+                        ->with('success', 'Bienvenido Administrador');
+
+                case 'Profesor':
+                    return redirect()->route('profesor.dashboard')
+                        ->with('success', 'Bienvenido Profesor');
+
+                case 'Estudiante':
+                    return redirect()->route('estudiante.dashboard')
+                        ->with('success', 'Bienvenido Estudiante');
+
+                case 'Padre':
+                    return redirect()->route('padre.dashboard')
+                        ->with('success', 'Bienvenido Padre/Tutor');
+
+                default:
+                    return redirect()->route('dashboard')
+                        ->with('success', 'Bienvenido al sistema');
+            }
         }
 
-        return $this->authenticated($request, Auth::user());
+        // Si no tiene rol asignado
+        return redirect()->route('dashboard')
+            ->with('success', 'Bienvenido');
     }
 
-    protected function authenticated(Request $request, $user)
-    {
-        if (str_ends_with($user->email, '@gmail.edu')) {
-            $user->rol = 'admin';
-            $user->save();
-            return redirect()->route('admins.index');
-        }
+    // Si falla la autenticación
+    return back()->withErrors([
+        'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+    ])->onlyInput('email');
+}
 
-        $user->rol = 'estudiante';
-        $user->save();
-        return redirect()->route('matriculas.index');
-    }
-
-    public function logout()
+    /**
+     * Cerrar sesión
+     */
+    public function logout(Request $request)
     {
         Auth::logout();
-        return redirect()->route('login.show');
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login')->with('success', 'Sesión cerrada correctamente');
     }
 }

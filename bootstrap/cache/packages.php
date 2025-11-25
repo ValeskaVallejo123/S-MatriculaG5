@@ -1,141 +1,126 @@
 <?php return array (
-<<<<<<< HEAD
-=======
-  'barryvdh/laravel-dompdf' => 
+  'codezero/browser-locale' =>
   array (
-    'aliases' => 
-    array (
-      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
-      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
-    ),
-    'providers' => 
-    array (
-      0 => 'Barryvdh\\DomPDF\\ServiceProvider',
-    ),
-  ),
->>>>>>> cesia-dev
-  'codezero/browser-locale' => 
-  array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
     ),
   ),
-  'laravel-lang/actions' => 
+  'laravel-lang/actions' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\Actions\\ServiceProvider',
     ),
   ),
-  'laravel-lang/attributes' => 
+  'laravel-lang/attributes' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\Attributes\\ServiceProvider',
     ),
   ),
-  'laravel-lang/config' => 
+  'laravel-lang/config' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\Config\\ServiceProvider',
     ),
   ),
-  'laravel-lang/http-statuses' => 
+  'laravel-lang/http-statuses' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\HttpStatuses\\ServiceProvider',
     ),
   ),
-  'laravel-lang/lang' => 
+  'laravel-lang/lang' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\Lang\\ServiceProvider',
     ),
   ),
-  'laravel-lang/locales' => 
+  'laravel-lang/locales' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\Locales\\ServiceProvider',
     ),
   ),
-  'laravel-lang/models' => 
+  'laravel-lang/models' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\Models\\ServiceProvider',
     ),
   ),
-  'laravel-lang/moonshine' => 
+  'laravel-lang/moonshine' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\MoonShine\\ServiceProvider',
     ),
   ),
-  'laravel-lang/publisher' => 
+  'laravel-lang/publisher' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\Publisher\\ServiceProvider',
     ),
   ),
-  'laravel-lang/routes' => 
+  'laravel-lang/routes' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\Routes\\ServiceProvider',
     ),
   ),
-  'laravel-lang/starter-kits' => 
+  'laravel-lang/starter-kits' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'LaravelLang\\StarterKits\\ServiceProvider',
     ),
   ),
-  'laravel/pail' => 
+  'laravel/pail' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Laravel\\Pail\\PailServiceProvider',
     ),
   ),
-  'laravel/sail' => 
+  'laravel/sail' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Laravel\\Sail\\SailServiceProvider',
     ),
   ),
-  'laravel/tinker' => 
+  'laravel/tinker' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
     ),
   ),
-  'nesbot/carbon' => 
+  'nesbot/carbon' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Carbon\\Laravel\\ServiceProvider',
     ),
   ),
-  'nunomaduro/collision' => 
+  'nunomaduro/collision' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     ),
   ),
-  'nunomaduro/termwind' => 
+  'nunomaduro/termwind' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),

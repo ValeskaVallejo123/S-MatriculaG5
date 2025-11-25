@@ -10,30 +10,37 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'rol', // El rol se asignará automáticamente
-    ];
+    protected $fillable = ['name', 'email', 'password', 'id_rol'];
+    protected $hidden = ['password', 'remember_token'];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
-
-    public function isAdmin(): bool
+    protected function casts(): array
     {
-        return $this->rol === 'admin';
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
-    public function isEstudiante(): bool
+    public function rol()
     {
-        return $this->rol === 'estudiante';
+        return $this->belongsTo(Rol::class, 'id_rol');
+    }
+
+    public function tienePermiso($nombrePermiso)
+    {
+        if (!$this->rol) return false;
+        return $this->rol->tienePermiso($nombrePermiso);
+    }
+
+    public function tieneRol($nombreRol)
+    {
+        if (!$this->rol) return false;
+        return $this->rol->nombre === $nombreRol;
+    }
+
+    public function obtenerPermisos()
+    {
+        if (!$this->rol) return collect([]);
+        return $this->rol->permisos;
     }
 }
