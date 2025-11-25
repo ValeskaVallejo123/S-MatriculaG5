@@ -23,6 +23,7 @@ use App\Http\Controllers\PadreController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\RegistrarCalificacionController;
+use App\Http\Controllers\AccionesImportantesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +161,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/permisos/{padre}/{estudiante}/defecto', [PadrePermisoController::class, 'establecerDefecto'])->name('permisos.defecto');
         Route::delete('/permisos/{padre}/{estudiante}', [PadrePermisoController::class, 'eliminar'])->name('permisos.eliminar');
         Route::post('/permisos/{padre}/{estudiante}/toggle', [PadrePermisoController::class, 'toggleTodos'])->name('permisos.toggle');
+         // acciones importantes
+        Route::get('/acciones_importantes', [AccionesImportantesController::class, 'index'])
+            ->name('acciones_importantes');
     });
 
     /*

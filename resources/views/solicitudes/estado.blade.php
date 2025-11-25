@@ -4,7 +4,23 @@
 @section('page-title', 'Estado de Solicitud de Matrícula')
 
 @section('topbar-actions')
-    <a href="{{ route('buscarregistro') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.45rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; border: 2px solid #00508f; font-size: 0.9rem;">
+    {{-- NUEVO: Validación según el rol del usuario autenticado para regresar al dashboard correcto --}}
+    @php
+        $usuario = auth()->user();
+        $rutaDashboard = match($usuario->rol->nombre ?? '') {
+            'Administrador' => route('admin.dashboard'),
+            'Super Administrador' => route('superadmin.dashboard'),
+            'Profesor' => route('profesor.dashboard'),
+            'Estudiante' => route('estudiante.dashboard'),
+            'Padre' => route('padre.dashboard'),
+            default => route('home'),
+        };
+    @endphp
+
+    <a href="{{ $rutaDashboard }}" class="btn-back"
+       style="background: white; color: #00508f; padding: 0.45rem 1rem; border-radius: 8px;
+              text-decoration: none; font-weight: 600; display: inline-flex; align-items: center;
+              gap: 0.5rem; border: 2px solid #00508f; font-size: 0.9rem;">
         <i class="fas fa-arrow-left"></i> Volver
     </a>
 @endsection
@@ -31,7 +47,7 @@
         <div class="card border-0 shadow-sm" style="border-radius:10px;">
             <div class="card-body p-3">
 
-                <!-- Buscador (estilo plantilla) -->
+                <!-- Buscador -->
                 <form method="POST" action="{{ route('estado-solicitud') }}">
                     @csrf
 
@@ -136,12 +152,28 @@
             transition: all 0.3s ease;
             font-size: 0.875rem;
         }
-        .form-control-sm:focus { border-color: #4ec7d2; box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.12); }
-        .form-label { color:#003b73; font-size:0.85rem; margin-bottom:0.3rem; }
-        .btn:hover { transform: translateY(-2px); transition: all 0.25s ease; }
-        .btn-back:hover { background:#00508f !important; color:white !important; transform:translateY(-2px); }
+        .form-control-sm:focus {
+            border-color: #4ec7d2;
+            box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.12);
+        }
+        .form-label {
+            color:#003b73;
+            font-size:0.85rem;
+            margin-bottom:0.3rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            transition: all 0.25s ease;
+        }
+        .btn-back:hover {
+            background:#00508f !important;
+            color:white !important;
+            transform:translateY(-2px);
+        }
         .border-top { border-color: rgba(0,80,143,0.08) !important; }
         .position-relative .fas { pointer-events: none; left:12px; position:absolute; }
-        @media (max-width:768px){ .d-flex.gap-2 { gap:0.5rem !important; } }
+        @media (max-width:768px){
+            .d-flex.gap-2 { gap:0.5rem !important; }
+        }
     </style>
 @endpush

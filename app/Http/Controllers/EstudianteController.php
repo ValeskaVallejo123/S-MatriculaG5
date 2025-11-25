@@ -24,8 +24,10 @@ class EstudianteController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|min:2|max:50',
-            'apellido' => 'required|string|min:2|max:50',
+            'nombre1' => 'required|string|min:2|max:50',
+            'nombre2' => 'string|min:2|max:50',
+            'apellido1' => 'required|string|min:2|max:50',
+            'apellido2' => 'string|min:2|max:50',
             'dni' => 'nullable|string|max:13',
             'fecha_nacimiento' => 'required|date|before:today',
             'sexo' => 'required|in:masculino,femenino',

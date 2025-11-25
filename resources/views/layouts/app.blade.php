@@ -503,6 +503,9 @@
                 </a>
             </li>
 
+            <!-- ACCIONES IMPORTANTES -->
+
+
             <!-- PERMISOS -->
             <li class="menu-section-title">PERMISOS</li>
 
@@ -541,6 +544,18 @@
                     <span>Estado de Solicitud</span>
                 </a>
             </li>
+
+            <!-- ACCIONES IMPORTANTES -->
+            <li class="menu-section-title">AYUDA</li>
+
+            <li class="menu-item">
+                <a href="{{ route('acciones_importantes.index') }}"
+                   class="menu-link {{ request()->routeIs('acciones_importantes.index') ? 'active' : '' }}">
+                    <i class="fas fa-bolt"></i>
+                    <span>Acciones Importantes</span>
+                </a>
+            </li>
+
 
         </ul>
 
