@@ -69,6 +69,10 @@ class RolesPermisosSeeder extends Seeder
             ['nombre' => 'configurar_sistema', 'descripcion' => 'Configurar parámetros del sistema'],
             ['nombre' => 'gestionar_roles', 'descripcion' => 'Gestionar roles y permisos'],
             ['nombre' => 'ver_logs', 'descripcion' => 'Ver registros del sistema'],
+
+            // Permisos de Notificaciones
+            ['nombre' => 'notificacion', 'descripcion' => 'Permite recibir notificaciones'],
+            ['nombre' => 'notificacionPreferencia', 'descripcion' => 'Permite configurar preferencias de notificaciones'],
         ];
 
         foreach ($permisos as $permiso) {
@@ -81,13 +85,13 @@ class RolesPermisosSeeder extends Seeder
         // ========================================
         // CREAR ROLES
         // ========================================
-        
+
         // 1. Super Administrador (Acceso total)
         $superAdmin = Rol::firstOrCreate(
             ['nombre' => 'Super Administrador'],
             ['descripcion' => 'Acceso completo al sistema']
         );
-        
+
         // Asignar TODOS los permisos al Super Administrador
         $todosLosPermisos = Permiso::all();
         $superAdmin->permisos()->sync($todosLosPermisos->pluck('id'));
@@ -97,7 +101,7 @@ class RolesPermisosSeeder extends Seeder
             ['nombre' => 'Administrador'],
             ['descripcion' => 'Administrador de área específica']
         );
-        
+
         $permisosAdmin = Permiso::whereIn('nombre', [
             'ver_usuarios', 'crear_usuarios', 'editar_usuarios',
             'ver_estudiantes', 'crear_estudiantes', 'editar_estudiantes',
@@ -106,6 +110,7 @@ class RolesPermisosSeeder extends Seeder
             'ver_cursos', 'crear_cursos', 'editar_cursos',
             'ver_secciones', 'crear_secciones', 'editar_secciones',
             'ver_calificaciones', 'ver_reportes', 'generar_reportes',
+            'notificacion', 'notificacionPreferencia',
         ])->get();
         $admin->permisos()->sync($permisosAdmin->pluck('id'));
 
@@ -114,13 +119,14 @@ class RolesPermisosSeeder extends Seeder
             ['nombre' => 'Profesor'],
             ['descripcion' => 'Docente del centro educativo']
         );
-        
+
         $permisosProfesor = Permiso::whereIn('nombre', [
             'ver_estudiantes',
             'ver_cursos',
             'ver_secciones',
             'ver_calificaciones', 'registrar_calificaciones', 'editar_calificaciones',
             'ver_reportes',
+            'notificacion', 'notificacionPreferencia',
         ])->get();
         $profesor->permisos()->sync($permisosProfesor->pluck('id'));
 
@@ -129,7 +135,7 @@ class RolesPermisosSeeder extends Seeder
             ['nombre' => 'Estudiante'],
             ['descripcion' => 'Alumno del centro educativo']
         );
-        
+
         $permisosEstudiante = Permiso::whereIn('nombre', [
             'ver_cursos',
             'ver_calificaciones', // Solo las propias
@@ -141,7 +147,7 @@ class RolesPermisosSeeder extends Seeder
             ['nombre' => 'Padre'],
             ['descripcion' => 'Padre o tutor legal del estudiante']
         );
-        
+
         $permisosPadre = Permiso::whereIn('nombre', [
             'ver_estudiantes', // Solo sus hijos
             'ver_calificaciones', // Solo de sus hijos
@@ -161,6 +167,6 @@ class RolesPermisosSeeder extends Seeder
             ]
         );
 
-        $this->command->info(' Roles, permisos y super administrador creados exitosamente.');
+        $this->command->info('Roles, permisos y super administrador creados exitosamente.');
     }
 }
