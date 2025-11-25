@@ -161,9 +161,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/permisos/{padre}/{estudiante}/defecto', [PadrePermisoController::class, 'establecerDefecto'])->name('permisos.defecto');
         Route::delete('/permisos/{padre}/{estudiante}', [PadrePermisoController::class, 'eliminar'])->name('permisos.eliminar');
         Route::post('/permisos/{padre}/{estudiante}/toggle', [PadrePermisoController::class, 'toggleTodos'])->name('permisos.toggle');
-         // acciones importantes
-        Route::get('/acciones_importantes', [AccionesImportantesController::class, 'index'])
-            ->name('acciones_importantes');
     });
 
     /*
@@ -237,6 +234,14 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::resource('documentos', DocumentoController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE ACCIONES IMPORTANTES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/acciones_importantes', [AccionesImportantesController::class, 'index'])
+        ->name('acciones_importantes.index');
 
 
     /*

@@ -4,7 +4,23 @@
 @section('page-title', 'Buscar Registro de Estudiante')
 
 @section('topbar-actions')
-    <a href="{{ route('estudiantes.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.45rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
+    {{-- NUEVO: Validación según el rol del usuario autenticado para regresar al dashboard correcto --}}
+    @php
+        $usuario = auth()->user();
+        $rutaDashboard = match($usuario->rol->nombre ?? '') {
+            'Administrador' => route('admin.dashboard'),
+            'Super Administrador' => route('superadmin.dashboard'),
+            'Profesor' => route('profesor.dashboard'),
+            'Estudiante' => route('estudiante.dashboard'),
+            'Padre' => route('padre.dashboard'),
+            default => route('home'),
+        };
+    @endphp
+
+    <a href="{{ $rutaDashboard }}" class="btn-back"
+       style="background: white; color: #00508f; padding: 0.45rem 1rem; border-radius: 8px;
+              text-decoration: none; font-weight: 600; display: inline-flex; align-items: center;
+              gap: 0.5rem; border: 2px solid #00508f; font-size: 0.9rem;">
         <i class="fas fa-arrow-left"></i> Volver
     </a>
 @endsection

@@ -546,7 +546,7 @@
             </li>
 
             <!-- ACCIONES IMPORTANTES -->
-            <li class="menu-section-title">AYUDA</li>
+            <li class="menu-section-title">MAS</li>
 
             <li class="menu-item">
                 <a href="{{ route('acciones_importantes.index') }}"
@@ -555,7 +555,6 @@
                     <span>Acciones Importantes</span>
                 </a>
             </li>
-
 
         </ul>
 
