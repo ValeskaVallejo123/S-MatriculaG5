@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="container" style="max-width: 1200px;">
-    
+
     <!-- Tarjeta de Bienvenida -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.15) 0%, rgba(0, 80, 143, 0.1) 100%);">
         <div class="card-body p-4">
@@ -27,7 +27,7 @@
 
     <!-- Tarjetas de información -->
     <div class="row g-3 mb-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card border-0 shadow-sm h-100" style="border-radius: 10px; border-left: 4px solid #4ec7d2;">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card border-0 shadow-sm h-100" style="border-radius: 10px; border-left: 4px solid #00508f;">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card border-0 shadow-sm h-100" style="border-radius: 10px; border-left: 4px solid #003b73;">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -74,6 +74,49 @@
                 </div>
             </div>
         </div>
+
+<!-- Nueva Tarjeta: Horario Académico -->
+<div class="col-md-3">
+    <div class="card border-0 shadow-sm h-100" style="border-radius: 10px; border-left: 4px solid #003b73;">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-calendar-alt fa-2x" style="color: #003b73;"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <a href="{{ route('estudiante.miHorario') }}"
+                       class="btn btn-sm w-100"
+                       style="background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+                              color: white; border-radius: 6px; font-weight: 600; text-align: center;">
+                        Ver Horario
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="notificaciones">
+    <a href="{{ route('estudiante.notificaciones.index') }}">
+        <i class="fa fa-bell"></i>
+        @if($notificacionesNoLeidas->count() > 0)
+            <span class="badge">{{ $notificacionesNoLeidas->count() }}</span>
+        @endif
+    </a>
+</div>
+
+{{-- Lista desplegable de notificaciones --}}
+<ul class="dropdown-menu">
+    @forelse($todasNotificaciones as $notificacion)
+        <li class="{{ $notificacion->leida ? '' : 'fw-bold' }}">
+            {{ $notificacion->titulo }} - {{ $notificacion->created_at->diffForHumans() }}
+        </li>
+    @empty
+        <li>No hay notificaciones</li>
+    @endforelse
+</ul>
+
+
     </div>
 
     <!-- Mensaje informativo -->

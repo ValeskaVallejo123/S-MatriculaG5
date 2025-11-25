@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Horario;
+use App\Models\Profesor;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -16,85 +17,63 @@ class HorarioController extends Controller
     {
         $user = Auth::user();
 
-        $query = Horario::with('profesor')->orderBy('dia')->orderBy('hora_inicio');
+        $query = Horario::with('profesor')
+            ->orderBy('dia')
+            ->orderBy('hora_inicio');
 
+        // Si es profesor, solo sus horarios
         if ($user && $user->user_type === 'profesor') {
             $query->where('profesor_id', $user->id);
         }
 
-        // Paginación para administradores y profesores
         $horarios = $query->paginate(10);
 
         return view('horarios.index', compact('horarios'));
     }
 
     /**
-     * Mostrar horarios públicos o del estudiante logueado
-     */
-    public function horarioPublico()
-    {
-        $user = Auth::user();
-
-        $query = Horario::with('profesor')->orderBy('dia')->orderBy('hora_inicio');
-
-        if ($user && $user->user_type === 'estudiante') {
-            // Filtrar solo su grado y sección
-            $query->where('grado', $user->grado)
-                  ->where('seccion', $user->seccion);
-        }
-
-        $horarios = $query->paginate(10); // Paginación opcional
-        return view('horarios.publicos', compact('horarios'));
-    }
-
-    /**
      * Exportar horarios a PDF
-     * @param int|null $profesorId
+     * Cada profesor descarga solo su horario
      */
-    public function exportPDF($profesorId = null)
+    public function exportPDF()
     {
         $user = Auth::user();
 
-        $query = Horario::with('profesor')->orderBy('dia')->orderBy('hora_inicio');
-
-        if ($user && $user->user_type === 'profesor') {
-            $query->where('profesor_id', $user->id);
-        } elseif ($user && $user->user_type === 'estudiante') {
-            // Solo sus horarios
-            $query->where('grado', $user->grado)
-                  ->where('seccion', $user->seccion);
-        } elseif ($profesorId) {
-            $query->where('profesor_id', $profesorId);
+        if (!$user || $user->user_type !== 'profesor') {
+            abort(403, 'No tienes permisos para descargar este PDF.');
         }
 
-        $horarios = $query->get(); // PDF no necesita paginación
+        $horarios = Horario::with('profesor')
+            ->where('profesor_id', $user->id)
+            ->orderBy('dia')
+            ->orderBy('hora_inicio')
+            ->get();
 
-        return Pdf::loadView('horarios.pdf', compact('horarios', 'user'))
-                  ->download('horario.pdf');
+        return Pdf::loadView('horarios.pdf', [
+            'horarios' => $horarios,
+            'profesor' => $user
+        ])->download('horario.pdf');
     }
 
     /**
-     * Mostrar formulario para crear un horario
+     * Crear
      */
     public function create()
     {
         return view('horarios.create');
     }
 
-    /**
-     * Guardar un nuevo horario
-     */
     public function store(Request $request)
     {
         $request->validate([
             'profesor_id' => 'required|exists:profesores,id',
-            'dia' => 'required|string',
+            'dia' => 'required',
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
-            'grado' => 'required|string',
-            'seccion' => 'required|string',
-            'aula' => 'nullable|string',
-            'observaciones' => 'nullable|string',
+            'grado' => 'required',
+            'seccion' => 'required',
+            'aula' => 'nullable',
+            'observaciones' => 'nullable',
         ]);
 
         Horario::create($request->all());
@@ -103,36 +82,27 @@ class HorarioController extends Controller
             ->with('success', 'Horario creado correctamente.');
     }
 
-    /**
-     * Mostrar un horario específico
-     */
     public function show(Horario $horario)
     {
         return view('horarios.show', compact('horario'));
     }
 
-    /**
-     * Mostrar formulario para editar un horario
-     */
     public function edit(Horario $horario)
     {
         return view('horarios.edit', compact('horario'));
     }
 
-    /**
-     * Actualizar un horario
-     */
     public function update(Request $request, Horario $horario)
     {
         $request->validate([
             'profesor_id' => 'required|exists:profesores,id',
-            'dia' => 'required|string',
+            'dia' => 'required',
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
-            'grado' => 'required|string',
-            'seccion' => 'required|string',
-            'aula' => 'nullable|string',
-            'observaciones' => 'nullable|string',
+            'grado' => 'required',
+            'seccion' => 'required',
+            'aula' => 'nullable',
+            'observaciones' => 'nullable',
         ]);
 
         $horario->update($request->all());
@@ -141,9 +111,6 @@ class HorarioController extends Controller
             ->with('success', 'Horario actualizado correctamente.');
     }
 
-    /**
-     * Eliminar un horario
-     */
     public function destroy(Horario $horario)
     {
         $horario->delete();
@@ -151,4 +118,24 @@ class HorarioController extends Controller
         return redirect()->route('horarios.index')
             ->with('success', 'Horario eliminado correctamente.');
     }
+
+    public function miHorario()
+{
+    $user = Auth::user();
+
+    // Solo estudiantes
+    if (!$user || $user->user_type !== 'estudiante') {
+        abort(403, 'No tienes permisos para ver este horario.');
+    }
+
+    // Obtener el horario según el grado y sección del estudiante
+    $horario = Horario::with( 'profesor')
+                ->where('seccion', $user->seccion)
+                ->orderBy('dia')
+                ->orderBy('hora_inicio')
+                ->get();
+
+    return view('estudiante.miHorario', compact('horario'));
+}
+
 }

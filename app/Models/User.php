@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\NotificacionPreferencia;
+use App\Models\Notificacion;
 
 class User extends Authenticatable
 {
@@ -34,13 +36,28 @@ class User extends Authenticatable
 
     public function estudiante()
     {
-        return $this->hasOne(Estudiante::class, 'user_id');
+        return $this->hasOne(Estudiante::class, 'email', 'email');
     }
 
     public function docente()
     {
         return $this->hasOne(Profesor::class, 'user_id');
     }
+
+    // Nueva relación: preferencias de notificación
+public function notificaciones()
+{
+    return $this->hasMany(Notificacion::class, 'user_id');
+}
+
+    /**
+     * Relación con las preferencias de notificación
+     */
+    public function notificacionPreferencias()
+    {
+        return $this->hasOne(NotificacionPreferencia::class, 'user_id');
+    }
+
 
     // Permisos
     public function tienePermiso($nombrePermiso)

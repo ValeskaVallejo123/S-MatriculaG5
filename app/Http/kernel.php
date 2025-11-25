@@ -27,11 +27,9 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
@@ -47,15 +45,15 @@ class Kernel extends HttpKernel
      * These middleware may be assigned to groups or used individually.
      */
     protected $routeMiddleware = [
-    'auth' => \App\Http\Middleware\Authenticate::class,
+
     'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-    'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+
     'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
     'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
     'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     'check.superadmin' => \App\Http\Middleware\CheckSuperAdmin::class,
 
     // 🚀 Middleware de roles
-    'rol' => \App\Http\Middleware\RolMiddleware::class,
+    'rol' => \App\Http\Middleware\RoleMiddleware::class,
 ];
 }

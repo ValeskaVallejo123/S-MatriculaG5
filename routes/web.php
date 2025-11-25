@@ -9,6 +9,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\EstudianteDashboardController;
 use App\Http\Controllers\BuscarEstudianteController;
 use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\MatriculaController;
@@ -24,40 +25,33 @@ use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\NotificacionPreferenciaController;
+use App\Http\Controllers\NotificacionController;
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS PÚBLICAS (Sin autenticación requerida)
+| RUTAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
 
-
 // Home y Plantilla
-Route::get('/', function () {
-    return view('plantilla');
-})->name('home');
-
-Route::get('/plantilla', function () {
-    return view('plantilla');
-})->name('plantilla');
+Route::get('/', fn() => view('plantilla'))->name('home');
+Route::get('/plantilla', fn() => view('plantilla'))->name('plantilla');
 
 // Portal público de horarios y profesores
 Route::prefix('portal')->name('portal.')->group(function () {
-    Route::get('/', function () { return view('portal.inicio'); })->name('inicio');
-    Route::get('/acerca-de', function () { return view('portal.acerca-de'); })->name('acerca-de');
-    Route::get('/contacto', function () { return view('portal.contacto'); })->name('contacto');
+    Route::get('/', fn() => view('portal.inicio'))->name('inicio');
+    Route::get('/acerca-de', fn() => view('portal.acerca-de'))->name('acerca-de');
+    Route::get('/contacto', fn() => view('portal.contacto'))->name('contacto');
     Route::get('/horarios-publicos', [HorarioController::class, 'horarioPublico'])->name('horarios');
     Route::get('/profesores-publicos', [ProfesorController::class, 'listarPublico'])->name('profesores');
 });
 
-// Consulta de solicitudes (público)
+// Consulta de solicitudes
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('estado-solicitud');
 Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI'])->name('solicitud.consultar');
 
-// Consulta de estudiante (público)
-Route::get('/consultar-estudiante', function () {
-    return view('publico.consultar-estudiante');
-})->name('consultar-estudiante');
+// Consulta de estudiante
+Route::get('/consultar-estudiante', fn() => view('publico.consultar-estudiante'))->name('consultar-estudiante');
 Route::post('/consultar-estudiante', [EstudianteController::class, 'consultarPublico'])->name('estudiante.consultar');
 
 /*
@@ -83,26 +77,22 @@ Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'sh
 Route::post('/password/restablecer', [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
 Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
 
-// Rutas alternativas (opcional duplicado, se mantiene)
-Route::get('/password/forgot', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
-Route::post('/password/forgot', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
-Route::get('/password/reset/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
-Route::post('/password/reset', [PasswordResetController::class, 'resetPassword'])->name('password.update');
-
 /*
 |--------------------------------------------------------------------------
-| RUTAS PROTEGIDAS (Requieren autenticación)
+| RUTAS PROTEGIDAS
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
 
     // Dashboards genéricos
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard');
-    Route::get('/superadmin/dashboard', function () { return view('superadmin.dashboard'); })->name('superadmin.dashboard');
+    Route::get('/superadmin/dashboard', fn() => view('superadmin.dashboard'))->name('superadmin.dashboard');
     Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
-    Route::get('/profesor/dashboard', function () { return view('profesor.dashboard.index'); })->name('profesor.dashboard');
-    Route::get('/estudiante/dashboard', function () { return view('estudiante.dashboard.index'); })->name('estudiante.dashboard');
-    Route::get('/padre/dashboard', function () { return view('padre.dashboard.index'); })->name('padre.dashboard');
+    Route::get('/profesor/dashboard', fn() => view('profesor.dashboard.index'))->name('profesor.dashboard');
+
+Route::get('/estudiante/dashboard', [EstudianteDashboardController::class, 'index'])
+     ->name('estudiante.dashboard');
+    Route::get('/padre/dashboard', fn() => view('padre.dashboard.index'))->name('padre.dashboard');
 
     // Super Administrador
     Route::prefix('superadmin')->name('superadmin.')->group(function () {
@@ -110,24 +100,12 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/perfil', [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
         Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
 
-        Route::get('/administradores', [SuperAdminController::class, 'index'])->name('administradores.index');
-        Route::get('/administradores/crear', [SuperAdminController::class, 'create'])->name('administradores.create');
-        Route::post('/administradores', [SuperAdminController::class, 'store'])->name('administradores.store');
-        Route::get('/administradores/{administrador}', [SuperAdminController::class, 'show'])->name('administradores.show');
-        Route::get('/administradores/{administrador}/editar', [SuperAdminController::class, 'edit'])->name('administradores.edit');
-        Route::put('/administradores/{administrador}', [SuperAdminController::class, 'update'])->name('administradores.update');
-        Route::delete('/administradores/{administrador}', [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
+        Route::resource('administradores', SuperAdminController::class);
     });
 
     // Administradores regulares
     Route::prefix('admins')->name('admins.')->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('index');
-        Route::get('/crear', [AdminController::class, 'create'])->name('create');
-        Route::post('/', [AdminController::class, 'store'])->name('store');
-        Route::get('/{admin}', [AdminController::class, 'show'])->name('show');
-        Route::get('/{admin}/editar', [AdminController::class, 'edit'])->name('edit');
-        Route::put('/{admin}', [AdminController::class, 'update'])->name('update');
-        Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
+        Route::resource('/', AdminController::class);
 
         // Permisos padres
         Route::get('/permisos', [PadrePermisoController::class, 'index'])->name('permisos.index');
@@ -139,17 +117,17 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Estudiantes
-    Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
     Route::resource('estudiantes', EstudianteController::class);
+    Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
 
     // Profesores
     Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
 
     // Padres
+    Route::resource('padres', PadreController::class);
     Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar');
     Route::post('/padres/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
     Route::post('/padres/desvincular', [PadreController::class, 'desvincular'])->name('padres.desvincular');
-    Route::resource('padres', PadreController::class);
 
     // Matrículas
     Route::resource('matriculas', MatriculaController::class);
@@ -162,12 +140,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Cursos / Cupos máximos
     Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
-        Route::get('/', [CursoController::class, 'index'])->name('index');
-        Route::get('/create', [CursoController::class, 'create'])->name('create');
-        Route::post('/', [CursoController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [CursoController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [CursoController::class, 'update'])->name('update');
-        Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
+        Route::resource('/', CursoController::class);
     });
 
     // Observaciones
@@ -188,30 +161,36 @@ Route::middleware(['auth'])->group(function () {
 
     // Horarios
     Route::prefix('horarios')->name('horarios.')->group(function () {
-        Route::get('/', [HorarioController::class, 'index'])->name('index');
-        Route::get('/create', [HorarioController::class, 'create'])->name('create');
-        Route::post('/', [HorarioController::class, 'store'])->name('store');
-        Route::get('/{horario}', [HorarioController::class, 'show'])->name('show');
-        Route::get('/{horario}/edit', [HorarioController::class, 'edit'])->name('edit');
-        Route::put('/{horario}', [HorarioController::class, 'update'])->name('update');
-        Route::delete('/{horario}', [HorarioController::class, 'destroy'])->name('destroy');
-
-        Route::get('/profesor/mi-horario', [HorarioController::class, 'miHorario'])->name('profesor.mi-horario');
-        Route::get('/profesor/{profesor}/horario', [HorarioController::class, 'horarioPorProfesor'])->name('profesor.horario');
-        Route::get('/{profesor}/exportar-pdf', [HorarioController::class, 'exportPDF'])->name('exportPDF');
+        Route::resource('/', HorarioController::class);
+        Route::get('/exportar-pdf', [HorarioController::class, 'exportPDF'])->name('exportPDF');
     });
 
-    Route::middleware('auth')->group(function () {
-        Route::get('notificaciones', [NotificacionPreferenciaController::class, 'edit'])->name('notificaciones.edit');
-        Route::put('notificaciones', [NotificacionPreferenciaController::class, 'update'])->name('notificaciones.update');
-    });
-
-    // Estudiante - Permisos y rutas específicas
-    Route::middleware(['auth', 'role:estudiante'])->prefix('estudiante')->name('estudiante.')->group(function () {
+    // =========================
+    // RUTAS EXCLUSIVAS PARA ESTUDIANTES
+    // =========================
+    Route::prefix('estudiante')->name('estudiante.')->group(function () {
+        Route::get('/mi-horario', [HorarioController::class, 'miHorario'])->name('miHorario');
         Route::get('/matricula', [MatriculaController::class, 'create'])->name('matricula');
         Route::post('/matricula', [MatriculaController::class, 'store'])->name('matricula.store');
         Route::get('/horario', [HorarioController::class, 'horarioEstudiante'])->name('horario');
         Route::get('/calificaciones', [EstudianteController::class, 'misNotas'])->name('calificaciones');
+
+        // Notificaciones del estudiante
+        Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'index'])->name('notificaciones.index');
     });
+
+    // =========================
+    // RUTAS EXCLUSIVAS PARA PROFESORES
+    // =========================
+    Route::prefix('profesor')->name('profesor.')->group(function () {
+        Route::get('/mi-horario', [HorarioController::class, 'miHorarioProfesor'])->name('miHorario');
+        Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'indexProfesor'])->name('notificaciones.index');
+    });
+
+    // =========================
+    // PREFERENCIAS GENERALES DE NOTIFICACIONES
+    // =========================
+    Route::get('notificaciones/preferencias', [NotificacionPreferenciaController::class, 'edit'])->name('notificaciones.edit');
+    Route::put('notificaciones/preferencias', [NotificacionPreferenciaController::class, 'update'])->name('notificaciones.update');
 
 });

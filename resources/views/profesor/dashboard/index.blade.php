@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="container" style="max-width: 1200px;">
-    
+
     <!-- Tarjeta de Bienvenida -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.15) 0%, rgba(0, 80, 143, 0.1) 100%);">
         <div class="card-body p-4">
@@ -119,7 +119,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <a href="#" class="text-decoration-none">
+                    <a href="{{route('horarios.index')}}" class="text-decoration-none">
                         <div class="card border-0 h-100" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 10px;">
                             <div class="card-body text-center p-3">
                                 <i class="fas fa-calendar-alt" style="font-size: 2rem; color: white; margin-bottom: 0.5rem;"></i>

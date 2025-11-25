@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
+use App\Models\Notificacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,17 +11,20 @@ class EstudianteDashboardController extends Controller
 {
     public function index()
     {
+        // Obtener el usuario logueado
         $usuario = Auth::user();
 
-        // Aquí deberías buscar el estudiante asociado al usuario
-        // Por ahora, datos de ejemplo
+        // Obtener el estudiante asociado al usuario
+        
+        // Reemplaza esta línea con la lógica real de tu aplicación
+        $estudiante = Estudiante::first(); // <-- Temporal, reemplazar con: $usuario->estudiante;
 
-        $estudiante = Estudiante::first(); // Reemplazar con el estudiante real del usuario
-
+        // Datos de ejemplo del dashboard
         $misClases = 8; // Total de materias
         $asistencia = 95; // Porcentaje de asistencia
         $promedioGeneral = 88; // Promedio general
         $tareasPendientes = 3; // Tareas pendientes
+
         // Materias del estudiante (datos de ejemplo)
         $misMaterias = [
             [
@@ -48,6 +52,7 @@ class EstudianteDashboardController extends Controller
                 'asistencia' => 100
             ]
         ];
+
         // Tareas próximas (datos de ejemplo)
         $tareasProximas = [
             [
@@ -69,6 +74,18 @@ class EstudianteDashboardController extends Controller
                 'estado' => 'pendiente'
             ]
         ];
+
+        // Obtener notificaciones no leídas del estudiante
+        $// Notificaciones no leídas
+$notificacionesNoLeidas = $usuario->notificaciones
+                                  ->where('leida', false); // Collection ya filtrada en memoria
+
+// Todas las notificaciones ordenadas por fecha
+$todasNotificaciones = $usuario->notificaciones
+                               ->sortByDesc('created_at');
+
+
+        // Retornar la vista con todos los datos
         return view('estudiante.dashboard.index', compact(
             'usuario',
             'estudiante',
@@ -77,7 +94,9 @@ class EstudianteDashboardController extends Controller
             'promedioGeneral',
             'tareasPendientes',
             'misMaterias',
-            'tareasProximas'
+            'tareasProximas',
+            'notificacionesNoLeidas',
+            'todasNotificaciones'
         ));
     }
 }
