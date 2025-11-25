@@ -16,8 +16,10 @@ class SuperAdminController extends Controller
     }
     public function index()
     {
-        $administradores = User::whereIn('rol', ['admin', 'super_admin'])
-            ->orderBy('is_super_admin', 'desc')
+        $administradores = User::whereHas('rol', function ($query) {
+            $query->whereIn('nombre', ['admin', 'super_admin']);
+        })
+            ->orderByRaw("CASE WHEN id_rol = 1 THEN 0 ELSE 1 END") // Super Admin primero
             ->orderBy('name')
             ->get();
 
