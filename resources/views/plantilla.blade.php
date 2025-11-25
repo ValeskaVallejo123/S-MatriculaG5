@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Escuela Gabriela Mistral - Sistema Escolar</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<<<<<<<<< Temporary merge branch 1
 
   <style>
     * {
@@ -337,25 +336,20 @@
     }
 
     @keyframes float {
-
-      0%,
-      100% {
-        transform: translateY(0px) rotate(0deg);
+      0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
         opacity: 0.15;
       }
-
-      25% {
-        transform: translateY(-15px) rotate(3deg);
+      25% { 
+        transform: translateY(-15px) rotate(3deg); 
         opacity: 0.25;
       }
-
-      50% {
-        transform: translateY(-25px) rotate(-3deg);
+      50% { 
+        transform: translateY(-25px) rotate(-3deg); 
         opacity: 0.2;
       }
-
-      75% {
-        transform: translateY(-10px) rotate(2deg);
+      75% { 
+        transform: translateY(-10px) rotate(2deg); 
         opacity: 0.25;
       }
     }
@@ -496,25 +490,20 @@
     }
 
     @keyframes rocketLaunch {
-
-      0%,
-      100% {
-        transform: translateX(-50%) translateY(0) rotate(-5deg);
+      0%, 100% { 
+        transform: translateX(-50%) translateY(0) rotate(-5deg); 
         opacity: 0.2;
       }
-
-      25% {
-        transform: translateX(-50%) translateY(-20px) rotate(0deg);
+      25% { 
+        transform: translateX(-50%) translateY(-20px) rotate(0deg); 
         opacity: 0.3;
       }
-
-      50% {
-        transform: translateX(-50%) translateY(-40px) rotate(5deg);
+      50% { 
+        transform: translateX(-50%) translateY(-40px) rotate(5deg); 
         opacity: 0.25;
       }
-
-      75% {
-        transform: translateX(-50%) translateY(-20px) rotate(0deg);
+      75% { 
+        transform: translateX(-50%) translateY(-20px) rotate(0deg); 
         opacity: 0.3;
       }
     }
@@ -606,8 +595,7 @@
       color: white;
     }
 
-    .feature-card h3 {
-      font-size: 1.5rem;
+    .process h2 {
       font-weight: 700;
       color: #003b73;
       margin-bottom: 15px;
@@ -849,7 +837,7 @@
     }
   </style>
 </head>
-
+>>>>>>>>> Temporary merge branch 2
 <body>
 
   <!-- ========== NAVBAR ========== -->
@@ -859,9 +847,9 @@
         <i class="fas fa-graduation-cap"></i>
         Escuela Gabriela Mistral
       </a>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        style="background-color: rgba(78, 199, 210, 0.3); border: none;">
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              style="background-color: rgba(78, 199, 210, 0.3); border: none;">
         <span class="navbar-toggler-icon" style="filter: brightness(0) invert(1);"></span>
       </button>
 
@@ -935,21 +923,28 @@
       </div>
     </div>
 
-   <li class="menu-item">
-   {{-- Para usuarios no autenticados o normales --}}
-<a href="{{ route('calendario.publico') }}" class="btn btn-info">
-    <i class="fas fa-calendar"></i> Ver Calendario
-</a>
-<i class="fas fa-calendar-edit"></i>
-<div class="section-title">
-            <h2>Calendario Académico Anual</h2>
-            <p>Administra y visualiza las fechas importantes del ciclo escolar, incluyendo inicio y fin de clases,
-            exámenes, vacaciones y eventos especiales.</p>
-        </div>
-</li>
+    <i class="fas fa-rocket hero-rocket"></i>
+  </section>
 
-        
   <!-- ========== FEATURES SECTION ========== -->
+<<<<<<<<< Temporary merge branch 1
+  <section class="features-section" id="modules">
+    <div class="container">
+      <div class="section-title">
+        <h2>Nuestros Módulos</h2>
+        <p>Todo lo que necesitas para gestionar tu escuela de manera eficiente</p>
+      </div>
+
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h3>Matrículas Online</h3>
+          <p>Registra nuevos estudiantes de manera rápida y sencilla. Sistema automatizado con validación de datos.</p>
+          <button class="btn-feature">Acceder</button>
+=========
   <section class="features-section" id="modulos">
     <div class="container">
       <div class="section-title">
@@ -972,72 +967,92 @@
           <div class="feature-icon">
             <i class="fas fa-users"></i>
           </div>
-          <h3>Comunidad Educativa</h3>
-          <p>Espacio dedicado para estudiantes, padres y profesores con acceso personalizado.</p>
-          <a href="{{ route('login') }}" class="btn-feature">Acceder</a>
+<<<<<<<<< Temporary merge branch 1
+          <h3>Gestión de Estudiantes</h3>
+          <p>Base de datos completa con historial académico, información personal y documentos importantes.</p>
+          <button class="btn-feature">Acceder</button>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">
-            <i class="fas fa-graduation-cap"></i>
+            <i class="fas fa-chalkboard-teacher"></i>
           </div>
-          <h3>Excelencia Académica</h3>
-          <p>Formación integral con docentes calificados y programas educativos de calidad.</p>
-          <a href="#nosotros" class="btn-feature">Conocer Más</a>
+          <h3>Portal de Profesores</h3>
+          <p>Herramientas para docentes: registro de notas, control de asistencia y planificación académica.</p>
+          <button class="btn-feature">Acceder</button>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">
             <i class="fas fa-clipboard-list"></i>
           </div>
+          <h3>Calificaciones</h3>
+          <p>Sistema completo para registro y consulta de notas. Generación automática de boletines.</p>
+          <a href="{{ route('calificaciones.index') }}" class="btn-feature">Acceder</a>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <h3>Control de Asistencia</h3>
+          <p>Registro diario automatizado con notificaciones a padres y reportes estadísticos.</p>
+          <button class="btn-feature">Acceder</button>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <h3>Reportes y Estadísticas</h3>
+          <p>Análisis detallados del rendimiento académico y generación de informes personalizados.</p>
+          <button class="btn-feature">Acceder</button>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-child"></i>
+          </div>
+          <h3>Plan de Estudios Primaria</h3>
+          <p>Consulta la estructura curricular y las asignaturas del nivel primario.</p>
+          <a href="{{ route('grados.index') }}" class="btn-feature">Acceder</a>
+
+          <h3>Comunidad Educativa</h3>
+          <p>Espacio dedicado para estudiantes, padres y profesores con acceso personalizado.</p>
+          <a href="{{ route('login') }}" class="btn-feature">Acceder</a>
+
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+<<<<<<<<< Temporary merge branch 1
+          <h3>Plan de Estudios Ciclo Básico</h3>
+          <p>Consulta la estructura curricular y las asignaturas del ciclo básico (Secundaria).</p>
+          <a href="{{ route('ciclos.index') }}" class="btn-feature">Acceder</a>
+
+          <h3>Excelencia Académica</h3>
+          <p>Formación integral con docentes calificados y programas educativos de calidad.</p>
+          <a href="#nosotros" class="btn-feature">Conocer Más</a>
+
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+<<<<<<<<< Temporary merge branch 1
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <h3>Calendario Académico</h3>
+          <p>Consulta las fechas importantes: clases, exámenes, festivos y periodos de matrícula.</p>
+          <a href="{{ route('calendario.index') }}" class="btn-feature">Acceder</a>
+=========
+            <i class="fas fa-clipboard-list"></i>
+          </div>
           <h3>Proceso de Matrícula</h3>
           <p>Información sobre requisitos y proceso de inscripción para nuevos estudiantes.</p>
           <a href="#contacto" class="btn-feature">Información</a>
         </div>
-
-        <div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-book-open"></i>
-    </div>
-    <h3>Plan de Estudios de Educación Primaria</h3>
-    <p>Desarrollo de las competencias fundamentales en Lectura, Escritura y Matemáticas, promoviendo el
-        aprendizaje activo y fomentando el pensamiento crítico.</p>
-    <a href="{{ route('publico.grados.index') }}" class="btn-feature">Primaria</a>
-</div>
-
-        <div class="feature-card">
-        <div class="feature-icon">
-        <i class="fas fa-calendar-alt"></i>
-        </div>
-        <h3>Consulta de Ciclos</h3>
-        <p>Revisa los ciclos académicos disponibles, secciones, jornadas y maestros encargados.</p>
-        <a href="{{ route('publico.ciclos.index') }}" class="btn-feature">Ver Ciclos</a>
-        </div>
-         
-
-       {{-- ENLACE PÚBLICO (visible para todos) --}}
-<div class="feature-card">
-    <div class="feature-icon">
-        <i class="fas fa-clipboard-check"></i>
-    </div>
-    <h3>Consulta de Calificaciones</h3>
-    <p>Revisa el historial académico, consulta las notas parciales y visualiza el rendimiento del estudiante.</p>
-    <a href="{{ route('publico.calificaciones.index') }}" class="btn-feature">Consultar Notas</a>
-</div>
-
-
-
-<div class="feature-card">
-    <div class="feature-icon">
-        <!-- Ícono cambiado a un calendario para reflejar el tema -->
-        <i class="fas fa-calendar-alt"></i> 
-    </div>
-    <h3>Calendario Académico</h3>
-    <!-- Descripción enfocada en fechas clave y eventos -->
-    <p>Consulta las fechas de inicio y fin de clases, exámenes, días festivos y periodos de matrícula.</p>
-    <!-- Botón con un llamado a la acción relevante -->
-    <a href="{{route('calendario.publico') }}" class="btn-feature">Ver Fechas Clave</a>
-</div>
 
 
         <div class="feature-card">
@@ -1176,5 +1191,7 @@
   </script>
 
 </body>
+</html>
+>>>>>>>>> Temporary merge branch 2
 
 </html>

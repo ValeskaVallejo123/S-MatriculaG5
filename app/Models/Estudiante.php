@@ -10,20 +10,25 @@ class Estudiante extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre',
-        'apellido',
-        'email',
-        'sexo',
-        'telefono',
-        'dni',
-        'fecha_nacimiento',
-        'direccion',
-        'grado',
-        'seccion',
-        'estado',
-        'observaciones'
-    ];
-
+    'nombre1',     
+    'nombre2',     
+    'apellido1',   
+    'apellido2',   
+    'apellido',
+    'dni',
+    'fecha_nacimiento',
+    'sexo',
+    'genero',
+    'email',
+    'telefono',
+    'direccion',
+    'grado',
+    'seccion',
+    'estado',
+    'padre_id',
+    'observaciones',
+    'foto',
+];
     protected $casts = [
         'fecha_nacimiento' => 'date',
     ];

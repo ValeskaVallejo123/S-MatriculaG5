@@ -41,8 +41,8 @@
                                 <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Nombre Completo <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $admin->nombre) }}" 
-                                    class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $admin->nombre) }}"
+                                    class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                     required minlength="3" maxlength="50">
                                 @error('nombre')
                                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -55,7 +55,7 @@
                                     Correo Electrónico Institucional <span class="text-red-500">*</span>
                                 </label>
                                 <input type="email" name="email" id="email" value="{{ old('email', $admin->email) }}"
-                                    class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                    class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                     required maxlength="100">
                                 @error('email')
                                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>

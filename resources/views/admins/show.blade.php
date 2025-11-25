@@ -6,7 +6,7 @@
 
 <div class="min-h-screen py-8 bg-gray-50">
     <div class="max-w-4xl mx-auto px-4">
-        
+
         <!-- Navegación simple -->
         <div class="mb-6">
             <a href="{{ route('admins.index') }}" class="inline-flex items-center text-blue-700 hover:text-blue-900 font-medium">
@@ -19,7 +19,7 @@
 
         <!-- Tarjeta Principal -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-            
+
             <!-- Encabezado con información básica -->
             <div class="bg-blue-700 px-6 py-6">
                 <div class="flex items-center gap-5">
@@ -29,7 +29,7 @@
                             {{ strtoupper(substr($admin->nombre ?? 'A', 0, 1) . substr($admin->apellido ?? 'D', 0, 1)) }}
                         </span>
                     </div>
-                    
+
                     <!-- Nombre y rol -->
                     <div class="flex-1">
                         <h1 class="text-2xl font-bold text-white mb-1">
@@ -55,7 +55,7 @@
 
             <!-- Contenido -->
             <div class="p-6">
-                
+
                 <!-- Información Personal -->
                 <div class="mb-8">
                     <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-600">
@@ -159,11 +159,11 @@
                 <!-- Botones de Acción -->
                 <div class="pt-6 border-t border-gray-200">
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{{ route('admins.edit', $admin) }}" 
+                        <a href="{{ route('admins.edit', $admin) }}"
                            class="flex-1 bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-800 transition text-center">
                             Editar
                         </a>
-                        <a href="{{ route('admins.index') }}" 
+                        <a href="{{ route('admins.index') }}"
                            class="flex-1 bg-gray-200 text-gray-800 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition text-center">
                             Volver
                         </a>
@@ -172,7 +172,7 @@
                                 class="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition">
                             Eliminar
                         </button>
-                        
+
                         <!-- Form oculto para eliminar -->
                         <form id="delete-form" action="{{ route('admins.destroy', $admin) }}" method="POST" style="display: none;">
                             @csrf
@@ -202,7 +202,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Body -->
         <div class="px-6 py-5">
             <p class="text-gray-700 text-sm leading-relaxed">
@@ -212,14 +212,14 @@
                 Se perderán todos los datos asociados a este administrador de forma permanente.
             </p>
         </div>
-        
+
         <!-- Footer -->
         <div class="bg-gray-50 px-6 py-4 rounded-b-xl flex gap-3 justify-end">
-            <button onclick="closeModal()" 
+            <button onclick="closeModal()"
                     class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 transition text-sm font-medium border border-gray-300">
                 Cancelar
             </button>
-            <button onclick="submitDelete()" 
+            <button onclick="submitDelete()"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow-sm">
                 Sí, Eliminar
             </button>

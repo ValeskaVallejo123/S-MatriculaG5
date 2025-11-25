@@ -2,383 +2,383 @@
 
 @section('title', 'Grados')
 
-@section('page-title', 'Gestión de Grados')
+@section('page-title', 'Gestión de Grados y Secciones')
 
 @section('topbar-actions')
-    <a href="{{ route('grados.create') }}" class="btn-back"
-        style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(218, 245, 247, 0.3); font-size: 0.9rem;">
+    <a href="{{ route('grados.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
+        <i class="fas fa-plus"></i>
         Nuevo Grado
-    </a>
-    <a href="{{ route('plantilla') }}" class="btn-back"
-        style="background: #e2e8f0; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 1px solid #bfd9ea; font-size: 0.9rem;">
-        Volver
     </a>
 @endsection
 
 @section('content')
-    {{-- Asegúrate de que este CDN está antes de usar cualquier icono --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        integrity="sha512-RXf+QSDCUQs6Q0siJY9Jv2a8lm2SleqU9jwELyhlHLLJoPLD114F8CbnZ4PlzyBbs6k8ZZr3Su2MzKK3SU8ykg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+<div class="container" style="max-width: 1400px;">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert" style="border-radius: 10px; border-left: 4px solid #4ec7d2;">
+        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
 
-    <div class="container" style="max-width: 1400px; font-family: 'Poppins', sans-serif;">
-
-        {{-- Mensaje de éxito --}}
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert"
-                style="border-radius: 8px; background-color: #d1f7e0; border-color: #4ec7d2; color: #00508f; font-family: 'Poppins', sans-serif;">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        <div class="card border-0 shadow-sm mb-3"
-            style="border-radius: 10px; box-shadow: 0 8px 30px rgba(0, 59, 115, 0.1) !important;">
-            <div class="card-body p-3">
-                <div class="row align-items-center g-2">
-                    <div class="col-md-6">
-                        <div class="position-relative">
-                            <input type="text" id="searchInput" class="form-control form-control-sm ps-3"
-                                placeholder="Buscar por grado, sección, maestro o jornada..."
-                                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 1rem; transition: all 0.3s ease; font-family: 'Poppins', sans-serif;">
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center justify-content-md-end gap-3">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="small" style="font-family: 'Poppins', sans-serif;"><strong
-                                        style="color: #00508f;">{{ $grados->count() }}</strong> <span
-                                        class="text-muted">Total de Grados</span></span>
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="small" style="font-family: 'Poppins', sans-serif;"><strong
-                                        style="color: #4ec7d2;">{{ $grados->where('jornada', 'Matutina')->count() }}</strong>
-                                    <span class="text-muted">Matutinos</span></span>
-                            </div>
-                            <button class="btn btn-sm"
-                                style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; padding: 0.3rem 0.8rem; font-size: 0.85rem; transition: all 0.3s ease; font-family: 'Poppins', sans-serif;">
-                                Exportar
-                            </button>
-                        </div>
+    <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px;">
+        <div class="card-body p-3">
+            <div class="row align-items-center g-2">
+                <div class="col-md-4">
+                    <div class="position-relative">
+                        <i class="fas fa-search position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.9rem;"></i>
+                        <input type="text"
+                               id="searchInput"
+                               class="form-control form-control-sm ps-5"
+                               placeholder="Buscar por grado, sección, año..."
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 1rem 0.5rem 2.5rem; transition: all 0.3s ease;">
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="card border-0 shadow-sm"
-            style="border-radius: 10px; background: white; box-shadow: 0 8px 30px rgba(0, 59, 115, 0.1) !important; overflow: hidden;">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="gradosTable"
-                        style="font-family: 'Poppins', sans-serif;">
-                        <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                            <tr>
-                                <th class="px-3 py-2 text-uppercase small fw-semibold"
-                                    style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73; font-family: 'Poppins', sans-serif;">
-                                    ID</th>
-                                <th class="px-3 py-2 text-uppercase small fw-semibold"
-                                    style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73; font-family: 'Poppins', sans-serif;">
-                                    Grado</th>
-                                <th class="px-3 py-2 text-uppercase small fw-semibold"
-                                    style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73; font-family: 'Poppins', sans-serif;">
-                                    Sección</th>
-                                <th class="px-3 py-2 text-uppercase small fw-semibold"
-                                    style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73; font-family: 'Poppins', sans-serif;">
-                                    Maestro Encargado</th>
-                                <th class="px-3 py-2 text-uppercase small fw-semibold"
-                                    style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73; font-family: 'Poppins', sans-serif;">
-                                    Jornada</th>
-                                <th class="px-3 py-2 text-uppercase small fw-semibold text-end"
-                                    style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73; font-family: 'Poppins', sans-serif;">
-                                    Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($grados as $grado)
-                                <tr style="border-bottom: 1px solid #f1f5f9; transition: all 0.2s ease; background: white;"
-                                    class="grado-row">
-                                    <td class="px-3 py-2">
-                                        <span class="font-monospace small"
-                                            style="color: #00508f; font-size: 0.85rem; font-family: 'Poppins', sans-serif;">{{ $grado->id }}</span>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <div class="fw-semibold"
-                                            style="color: #003b73; font-size: 0.9rem; font-family: 'Poppins', sans-serif; font-weight: 600;">
-                                            {{ $grado->nombre }}
-                                        </div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <span class="badge"
-                                            style="background: rgba(78, 199, 210, 0.15); color: #00508f; border: 1px solid #4ec7d2; padding: 0.3rem 0.6rem; font-weight: 600; font-size: 0.75rem; border-radius: 6px; font-family: 'Poppins', sans-serif;">
-                                            {{ $grado->seccion ?? 'Sin asignar' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <small class="text-muted"
-                                            style="font-size: 0.8rem; font-family: 'Poppins', sans-serif;">
-                                            {{ $grado->nombre_maestro ?? 'Sin asignar' }}
-                                        </small>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        @php
-                                            $isMatutina = ($grado->jornada ?? '') === 'Matutina';
-                                            $badgeBg = $isMatutina ? 'rgba(0, 80, 143, 0.1)' : 'rgba(255, 193, 7, 0.1)';
-                                            $badgeColor = $isMatutina ? '#00508f' : '#856404';
-                                            $badgeBorder = $isMatutina ? '#00508f' : '#ffc107';
-                                        @endphp
-                                        <span class="badge rounded-pill"
-                                            style="background: {{ $badgeBg }}; color: {{ $badgeColor }}; padding: 0.3rem 0.7rem; font-weight: 600; border: 1px solid {{ $badgeBorder }}; font-size: 0.75rem; font-family: 'Poppins', sans-serif;">
-                                            {{ $grado->jornada ?? 'Sin asignar' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-3 py-2 text-end">
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ route('grados.show', $grado->id) }}" 
-                                               class="btn btn-sm btn-action-ver"
-                                               style="border-radius: 6px 0 0 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; transition: all 0.3s ease; font-family: 'Poppins', sans-serif;"
-                                               title="Ver">
-                                                Ver
-                                            </a>
-                                            <a href="{{ route('grados.edit', $grado->id) }}" 
-                                               class="btn btn-sm btn-action-edit"
-                                               style="border-radius: 0; border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; transition: all 0.3s ease; font-family: 'Poppins', sans-serif;"
-                                               title="Editar">
-                                                Editar
-                                            </a>
-                                            <form action="{{ route('grados.destroy', $grado->id) }}" method="POST"
-                                                class="d-inline"
-                                                onsubmit="return confirm('¿Está seguro de eliminar el grado {{ $grado->nombre }}?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-action-delete"
-                                                    style="border-radius: 0 6px 6px 0; border: 1.5px solid #ef4444; border-left: none; color: #ef4444; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem; transition: all 0.3s ease; font-family: 'Poppins', sans-serif;"
-                                                    title="Eliminar">
-                                                    Eliminar
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-5">
-                                        <div class="text-muted">
-                                            <h6 style="color: #003b73; font-family: 'Poppins', sans-serif; font-weight: 700;">No
-                                                hay grados registrados</h6>
-                                            <p class="small mb-3" style="font-family: 'Poppins', sans-serif;">Comienza agregando
-                                                el primer grado</p>
-                                            <a href="{{ route('grados.create') }}" class="btn btn-sm"
-                                                style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem; transition: all 0.4s ease; border: none; box-shadow: 0 8px 20px rgba(78, 199, 210, 0.3); font-family: 'Poppins', sans-serif; font-weight: 600;">
-                                                Registrar Grado
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    <hr>
-                    <div
-                        class="row">
-                        <div class="col-sm-12">
-                            {{ $grados->links() }}
+                <div class="col-md-3">
+                    <select id="filterNivel" class="form-select form-select-sm" style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 1rem;">
+                        <option value="">Todos los niveles</option>
+                        <option value="primaria">Primaria (1° - 6°)</option>
+                        <option value="secundaria">Secundaria (7° - 9°)</option>
+                    </select>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="d-flex align-items-center justify-content-md-end gap-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-school" style="color: #00508f; font-size: 0.9rem;"></i>
+                            <span class="small"><strong style="color: #00508f;">{{ $grados->total() }}</strong> <span class="text-muted">Total</span></span>
                         </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-check-circle" style="color: #4ec7d2; font-size: 0.9rem;"></i>
+                            <span class="small"><strong style="color: #4ec7d2;">{{ $grados->where('activo', true)->count() }}</strong> <span class="text-muted">Activos</span></span>
+                        </div>
+                        <button class="btn btn-sm" style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; padding: 0.3rem 0.8rem; font-size: 0.85rem;">
+                            <i class="fas fa-download"></i>
+                        </button>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </div>
 
-    @push('styles')
-        <style>
-            * {
-                font-family: 'Poppins', sans-serif !important;
+    <ul class="nav nav-tabs mb-3" id="nivelTabs" style="border: none;">
+        <li class="nav-item">
+            <button class="nav-link active" id="todos-tab" data-bs-toggle="tab" data-bs-target="#todos" type="button" style="border-radius: 8px 8px 0 0; border: 2px solid #bfd9ea; border-bottom: none; color: #00508f; font-weight: 600;">
+                <i class="fas fa-th-large"></i> Todos
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="primaria-tab" data-bs-toggle="tab" data-bs-target="#primaria" type="button" style="border-radius: 8px 8px 0 0; border: 2px solid #bfd9ea; border-bottom: none; color: #00508f; font-weight: 600;">
+                <i class="fas fa-child"></i> Primaria (1° - 6°)
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="secundaria-tab" data-bs-toggle="tab" data-bs-target="#secundaria" type="button" style="border-radius: 8px 8px 0 0; border: 2px solid #bfd9ea; border-bottom: none; color: #00508f; font-weight: 600;">
+                <i class="fas fa-user-graduate"></i> Secundaria (7° - 9°)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="nivelTabsContent">
+        <div class="tab-pane fade show active" id="todos">
+            <div class="row g-3">
+            @forelse($grados as $grado)
+<div class="col-md-6 col-lg-4 grado-card" data-nivel="{{ $grado->nivel }}">
+    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; transition: all 0.3s ease; border-left: 4px solid #4ec7d2;">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h5 class="mb-1 fw-bold" style="color: #003b73; font-size: 1rem;">
+                        <i class="fas fa-graduation-cap" style="color: #4ec7d2;"></i>
+                        {{ $grado->numero }}° Grado
+                        @if($grado->seccion)
+                            <span style="color: #4ec7d2;">{{ $grado->seccion }}</span>
+                        @endif
+                    </h5>
+                    <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; border: 1px solid #4ec7d2; padding: 0.25rem 0.5rem; font-size: 0.7rem;">
+                        <i class="fas fa-child"></i>
+                        {{ ucfirst($grado->nivel) }}
+                    </span>
+                </div>
+                @if($grado->activo)
+                    <span class="badge rounded-pill" style="background: rgba(78, 199, 210, 0.2); color: #00508f; padding: 0.3rem 0.7rem; border: 1px solid #4ec7d2; font-size: 0.7rem;">
+                        <i class="fas fa-circle" style="font-size: 0.35rem;"></i> Activo
+                    </span>
+                @else
+                    <span class="badge rounded-pill" style="background: #fee2e2; color: #991b1b; padding: 0.3rem 0.7rem; border: 1px solid #ef4444; font-size: 0.7rem;">
+                        <i class="fas fa-circle" style="font-size: 0.35rem;"></i> Inactivo
+                    </span>
+                @endif
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex align-items-center mb-2" style="font-size: 0.85rem;">
+                    <i class="fas fa-calendar-alt me-2" style="color: #00508f; width: 16px;"></i>
+                    <span class="text-muted small">Año Lectivo:</span>
+                    <strong class="ms-auto" style="color: #003b73;">{{ $grado->anio_lectivo }}</strong>
+                </div>
+                <div class="d-flex align-items-center" style="font-size: 0.85rem;">
+                    <i class="fas fa-book me-2" style="color: #4ec7d2; width: 16px;"></i>
+                    <span class="text-muted small">Materias asignadas:</span>
+                    <span class="badge ms-auto" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+                        {{ $grado->materias->count() }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="{{ route('grados.show', $grado) }}"
+                   class="btn btn-sm flex-fill"
+                   style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem;">
+                    <i class="fas fa-eye"></i> Ver
+                </a>
+                <a href="{{ route('grados.asignar-materias', $grado) }}"
+                   class="btn btn-sm flex-fill"
+                   style="border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem;">
+                    <i class="fas fa-tasks"></i> Materias
+                </a>
+                <a href="{{ route('grados.edit', $grado) }}"
+                   class="btn btn-sm"
+                   style="border: 1.5px solid #f59e0b; color: #f59e0b; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem 0.5rem;">
+                    <i class="fas fa-edit"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+@empty
+<div class="col-12">
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-inbox fa-3x mb-3" style="color: #00508f; opacity: 0.5;"></i>
+            <h5 style="color: #003b73;">No hay grados registrados</h5>
+            <p class="text-muted mb-3">Comienza agregando el primer grado</p>
+            <a href="{{ route('grados.create') }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem;">
+                <i class="fas fa-plus me-1"></i>Crear Grado
+            </a>
+        </div>
+    </div>
+</div>
+@endforelse
+            </div>
+
+            @if($grados->hasPages())
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+                <div class="text-muted small" style="font-size: 0.85rem;">
+                    Mostrando {{ $grados->firstItem() }} - {{ $grados->lastItem() }} de {{ $grados->total() }} grados
+                </div>
+                <div>
+                    {{ $grados->links() }}
+                </div>
+            </div>
+            @endif
+        </div>
+
+        <div class="tab-pane fade" id="primaria">
+            <div class="row g-3">
+                @forelse($grados->where('nivel', 'primaria') as $grado)
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border-left: 4px solid #4ec7d2;">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="mb-1 fw-bold" style="color: #003b73; font-size: 1rem;">
+                                        <i class="fas fa-child" style="color: #4ec7d2;"></i>
+                                        {{ $grado->numero }}° Grado {{ $grado->seccion }}
+                                    </h5>
+                                    <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; border: 1px solid #4ec7d2; padding: 0.25rem 0.5rem; font-size: 0.7rem;">
+                                        Primaria
+                                    </span>
+                                </div>
+                                @if($grado->activo)
+                                    <span class="badge rounded-pill" style="background: rgba(78, 199, 210, 0.2); color: #00508f; border: 1px solid #4ec7d2; font-size: 0.7rem;">Activo</span>
+                                @endif
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2" style="font-size: 0.85rem;">
+                                    <span class="text-muted">Año:</span>
+                                    <strong style="color: #003b73;">{{ $grado->anio_lectivo }}</strong>
+                                </div>
+                                <div class="d-flex justify-content-between" style="font-size: 0.85rem;">
+                                    <span class="text-muted">Materias:</span>
+                                    <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white;">{{ $grado->materias->count() }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('grados.show', $grado) }}" class="btn btn-sm flex-fill" style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px; font-size: 0.8rem;"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('grados.asignar-materias', $grado) }}" class="btn btn-sm flex-fill" style="border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; font-size: 0.8rem;"><i class="fas fa-tasks"></i></a>
+                                <a href="{{ route('grados.edit', $grado) }}" class="btn btn-sm" style="border: 1.5px solid #f59e0b; color: #f59e0b; background: white; border-radius: 6px; font-size: 0.8rem;"><i class="fas fa-edit"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-2x mb-3 text-muted"></i>
+                        <p class="text-muted">No hay grados de primaria registrados</p>
+                    </div>
+                </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="secundaria">
+            <div class="row g-3">
+                @forelse($grados->where('nivel', 'secundaria') as $grado)
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border-left: 4px solid #00508f;">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="mb-1 fw-bold" style="color: #003b73; font-size: 1rem;">
+                                        <i class="fas fa-user-graduate" style="color: #00508f;"></i>
+                                        {{ $grado->numero }}° Grado {{ $grado->seccion }}
+                                    </h5>
+                                    <span class="badge" style="background: rgba(0, 80, 143, 0.15); color: #003b73; border: 1px solid #00508f; padding: 0.25rem 0.5rem; font-size: 0.7rem;">
+                                        Secundaria
+                                    </span>
+                                </div>
+                                @if($grado->activo)
+                                    <span class="badge rounded-pill" style="background: rgba(78, 199, 210, 0.2); color: #00508f; border: 1px solid #4ec7d2; font-size: 0.7rem;">Activo</span>
+                                @endif
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2" style="font-size: 0.85rem;">
+                                    <span class="text-muted">Año:</span>
+                                    <strong style="color: #003b73;">{{ $grado->anio_lectivo }}</strong>
+                                </div>
+                                <div class="d-flex justify-content-between" style="font-size: 0.85rem;">
+                                    <span class="text-muted">Materias:</span>
+                                    <span class="badge" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); color: white;">{{ $grado->materias->count() }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('grados.show', $grado) }}" class="btn btn-sm flex-fill" style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px; font-size: 0.8rem;"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route('grados.asignar-materias', $grado) }}" class="btn btn-sm flex-fill" style="border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; font-size: 0.8rem;"><i class="fas fa-tasks"></i></a>
+                                <a href="{{ route('grados.edit', $grado) }}" class="btn btn-sm" style="border: 1.5px solid #f59e0b; color: #f59e0b; background: white; border-radius: 6px; font-size: 0.8rem;"><i class="fas fa-edit"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-2x mb-3 text-muted"></i>
+                        <p class="text-muted">No hay grados de secundaria registrados</p>
+                    </div>
+                </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@push('styles')
+<style>
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .pagination {
+        margin-bottom: 0;
+    }
+
+    .pagination .page-link {
+        border-radius: 6px;
+        margin: 0 2px;
+        border: 1px solid #e2e8f0;
+        color: #00508f;
+        transition: all 0.3s ease;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.85rem;
+    }
+
+    .pagination .page-link:hover {
+        background: #bfd9ea;
+        border-color: #4ec7d2;
+        color: #003b73;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
+        border-color: #4ec7d2;
+        color: white;
+    }
+
+    .btn-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important;
+    }
+
+    #searchInput:focus, .form-select:focus {
+        border-color: #4ec7d2;
+        box-shadow: 0 0 0 0.2rem rgba(78, 199, 210, 0.15);
+        outline: none;
+    }
+
+    .nav-tabs {
+        border-bottom: 2px solid #bfd9ea;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        background: transparent;
+        margin-right: 0.5rem;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: white;
+        border: 2px solid #4ec7d2;
+        border-bottom: 2px solid white;
+        margin-bottom: -2px;
+        color: #00508f !important;
+    }
+
+    .nav-tabs .nav-link:hover {
+        background: rgba(78, 199, 210, 0.1);
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const filterNivel = document.getElementById('filterNivel');
+    const cards = document.querySelectorAll('.grado-card');
+
+    function filterCards() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const nivelFilter = filterNivel.value;
+        let visibleCount = 0;
+
+        cards.forEach(function(card) {
+            const text = card.textContent.toLowerCase();
+            const nivel = card.dataset.nivel;
+
+            const matchesSearch = text.includes(searchTerm);
+            const matchesNivel = !nivelFilter || nivel === nivelFilter;
+
+            if (matchesSearch && matchesNivel) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
             }
+        });
+    }
 
-            body {
-                background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
-            }
-
-            .table> :not(caption)>*>* {
-                padding: 0.6rem 0.75rem;
-            }
-
-            .btn-group .btn:hover {
-                transform: translateY(-2px) scale(1.05);
-                z-index: 1;
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            }
-
-            .btn-action-ver:hover {
-                background: #00508f !important;
-                color: white !important;
-            }
-
-            .btn-action-edit:hover {
-                background: #4ec7d2 !important;
-                color: white !important;
-            }
-
-            .btn-action-delete:hover {
-                background: #ef4444 !important;
-                color: white !important;
-            }
-
-            .table tbody tr:hover {
-                background-color: rgba(191, 217, 234, 0.12) !important;
-                box-shadow: 0 4px 15px rgba(0, 59, 115, 0.08);
-                transform: translateY(-1px);
-            }
-
-            .btn-back:hover {
-                transform: translateY(-3px) scale(1.05);
-                box-shadow: 0 10px 30px rgba(78, 199, 210, 0.5) !important;
-            }
-
-            #searchInput:focus {
-                border-color: #4ec7d2 !important;
-                box-shadow: 0 0 0 0.25rem rgba(78, 199, 210, 0.25) !important;
-                outline: none;
-            }
-
-            .card {
-                transition: all 0.3s ease;
-            }
-
-            .card:hover {
-                box-shadow: 0 12px 40px rgba(0, 59, 115, 0.15) !important;
-            }
-
-            /* Animaciones de entrada */
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(30px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .grado-row {
-                animation: fadeInUp 0.6s ease forwards;
-                opacity: 0;
-            }
-
-            .grado-row:nth-child(1) {
-                animation-delay: 0.05s;
-            }
-
-            .grado-row:nth-child(2) {
-                animation-delay: 0.1s;
-            }
-
-            .grado-row:nth-child(3) {
-                animation-delay: 0.15s;
-            }
-
-            .grado-row:nth-child(4) {
-                animation-delay: 0.2s;
-            }
-
-            .grado-row:nth-child(5) {
-                animation-delay: 0.25s;
-            }
-
-            .grado-row:nth-child(6) {
-                animation-delay: 0.3s;
-            }
-
-            .grado-row:nth-child(7) {
-                animation-delay: 0.35s;
-            }
-
-            .grado-row:nth-child(8) {
-                animation-delay: 0.4s;
-            }
-
-            .grado-row:nth-child(9) {
-                animation-delay: 0.45s;
-            }
-
-            .grado-row:nth-child(10) {
-                animation-delay: 0.5s;
-            }
-
-            .badge {
-                transition: all 0.3s ease;
-            }
-
-            .badge:hover {
-                transform: scale(1.1);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            }
-
-            /* Botón de descarga */
-            .btn-sm:has(.fa-download):hover {
-                background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%) !important;
-                color: white !important;
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(78, 199, 210, 0.4);
-            }
-        </style>
-    @endpush
-
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const searchInput = document.getElementById('searchInput');
-                const table = document.getElementById('gradosTable');
-                const rows = table.querySelectorAll('tbody .grado-row');
-
-                searchInput.addEventListener('keyup', function () {
-                    const searchTerm = this.value.toLowerCase().trim();
-                    let visibleCount = 0;
-
-                    rows.forEach(function (row) {
-                        const text = row.textContent.toLowerCase();
-
-                        if (text.includes(searchTerm)) {
-                            row.style.display = '';
-                            visibleCount++;
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-
-                    // Mostrar mensaje si no hay resultados
-                    const tbody = table.querySelector('tbody');
-                    const existingNoResultsRow = document.querySelector('.no-results-row');
-
-                    if (visibleCount === 0 && searchTerm !== '') {
-                        if (!existingNoResultsRow) {
-                            const noResultsRow = document.createElement('tr');
-                            noResultsRow.className = 'no-results-row';
-                            noResultsRow.innerHTML = `
-                                <td colspan="6" class="text-center py-4" style="font-family: 'Poppins', sans-serif;">
-                                    <p class="text-muted mt-2 mb-0">No se encontraron resultados para "<strong>${searchTerm}</strong>"</p>
-                                </td>
-                            `;
-                            tbody.appendChild(noResultsRow);
-                        } else {
-                            // Actualizar el texto si ya existe la fila
-                            existingNoResultsRow.querySelector('strong').textContent = searchTerm;
-                            existingNoResultsRow.style.display = '';
-                        }
-                    } else {
-                        if (existingNoResultsRow) {
-                            existingNoResultsRow.remove();
-                        }
-                    }
-                });
-            });
-        </script>
-    @endpush
+    searchInput.addEventListener('keyup', filterCards);
+    filterNivel.addEventListener('change', filterCards);
+});
+</script>
+@endpush
 @endsection

@@ -11,21 +11,23 @@ class EstudianteController extends Controller
     public function index()
     {
         $estudiantes = Estudiante::latest()->paginate(10);
-        return view('estudiantes.index', compact('estudiantes'));
+        return view('estudiante.index', compact('estudiantes'));
     }
 
     public function create()
     {
         $grados = Estudiante::grados();
         $secciones = Estudiante::secciones();
-        return view('estudiantes.create', compact('grados', 'secciones'));
+        return view('estudiante.create', compact('grados', 'secciones'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|min:2|max:50',
-            'apellido' => 'required|string|min:2|max:50',
+            'nombre1' => 'required|string|min:2|max:50',
+            'nombre2' => 'string|min:2|max:50',
+            'apellido1' => 'required|string|min:2|max:50',
+            'apellido2' => 'string|min:2|max:50',
             'dni' => 'nullable|string|max:13',
             'fecha_nacimiento' => 'required|date|before:today',
             'sexo' => 'required|in:masculino,femenino',
@@ -53,14 +55,14 @@ class EstudianteController extends Controller
 
         Estudiante::create($validated);
 
-        return redirect()->route('estudiantes.index')
+        return redirect()->route('estudiante.index')
             ->with('success', 'Estudiante registrado exitosamente.');
     }
 
     public function show($id)
     {
         $estudiante = Estudiante::findOrFail($id);
-        return view('estudiantes.show', compact('estudiante'));
+        return view('estudiante.show', compact('estudiante'));
     }
 
     public function edit($id)
@@ -68,7 +70,7 @@ class EstudianteController extends Controller
         $estudiante = Estudiante::findOrFail($id);
         $grados = Estudiante::grados();
         $secciones = Estudiante::secciones();
-        return view('estudiantes.edit', compact('estudiante', 'grados', 'secciones'));
+        return view('estudiante.edit', compact('estudiante', 'grados', 'secciones'));
     }
 
     public function update(Request $request, $id)
@@ -111,7 +113,7 @@ class EstudianteController extends Controller
 
         $estudiante->update($validated);
 
-        return redirect()->route('estudiantes.index')
+        return redirect()->route('estudiante.index')
             ->with('success', 'Estudiante actualizado exitosamente.');
     }
 
@@ -129,7 +131,7 @@ class EstudianteController extends Controller
 
         $estudiante->delete();
 
-        return redirect()->route('estudiantes.index')
+        return redirect()->route('estudiante.index')
             ->with('success', 'Estudiante eliminado exitosamente.');
     }
 }

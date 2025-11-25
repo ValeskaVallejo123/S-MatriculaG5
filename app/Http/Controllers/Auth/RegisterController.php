@@ -7,18 +7,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
+use Illuminate\Contracts\View\View;
 
 class RegisterController extends Controller
 {
     /**
      * Muestra el formulario de registro.
      */
-    public function showRegistrationForm(): Response
+    public function showRegistrationForm(): View
     {
-        // Asumiendo que la vista de registro se encuentra en 'auth.register'
-        return response()->view('auth.register'); 
+        return view('auth.register');
     }
 
     /**
@@ -33,13 +33,13 @@ class RegisterController extends Controller
                 'required',
                 'max:100',
                 'unique:users,email',
-                // Validación de dominios
+                // Validación de dominios usando el método de la clase
                 function ($attribute, $value, $fail) {
                     $dominiosPermitidos = $this->getAcceptedDomains();
                     $dominio = substr(strrchr($value, "@"), 1);
-                    
+
                     if (!in_array($dominio, $dominiosPermitidos)) {
-                        $fail('Solo se permiten correos institucionales o correos públicos (Gmail, Yahoo, Hotmail).');
+                        $fail('Solo se permiten correos institucionales (@egm.edu.hn, etc.) o correos públicos (Gmail, Yahoo, Hotmail, etc.).');
                     }
                 },
             ],
@@ -64,14 +64,13 @@ class RegisterController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'rol' => $rol, // Asignación del rol
+            'rol' => $rol, // Asegúrate de que el campo 'rol' exista en tu tabla 'users'
         ]);
 
         // 3. Autenticar el usuario recién registrado
         Auth::login($user);
 
         // 4. Redirigir al dashboard correspondiente
-        // Nota: Se asume que el dominio del correo determinará la redirección.
         return $this->redirectAfterRegistration($user->email, $user->name, $rol);
     }
 
@@ -87,7 +86,7 @@ class RegisterController extends Controller
             'profesor.egm.edu.hn',
             'padre.egm.edu.hn',
             'estudiante.egm.edu.hn',
-            
+
             // Correos públicos comunes
             'gmail.com',
             'yahoo.com',
@@ -99,14 +98,14 @@ class RegisterController extends Controller
             'live.com',
         ];
     }
-    
+
     /**
      * Determina el rol del usuario basándose en el dominio del correo electrónico.
      */
     protected function getRoleFromEmail(string $email): string
     {
         $domain = substr(strrchr($email, "@"), 1);
-        
+
         switch ($domain) {
             case 'egm.edu.hn':
             case 'admin.egm.edu.hn':
@@ -117,34 +116,32 @@ class RegisterController extends Controller
                 return 'padre';
             case 'estudiante.egm.edu.hn':
                 return 'estudiante';
-            // Para correos públicos, podrías querer un rol por defecto, ej. 'padre' o 'estudiante'
+            // Para correos públicos, se asigna el rol 'padre' por defecto (o el que decidas)
             default:
-                return 'padre'; // Rol por defecto si es correo público
+                return 'padre';
         }
     }
 
     /**
-     * Redirige al usuario después del registro según su rol/dominio.
+     * Redirige al usuario después del registro según su rol.
      */
     protected function redirectAfterRegistration(string $email, string $name, string $rol): RedirectResponse
     {
-        $domain = substr(strrchr($email, "@"), 1);
         $successMessage = '¡Registro exitoso! Bienvenido/a, ' . $name . '.';
 
         switch ($rol) {
             case 'admin':
-                // Nota: Redirigir a 'admins.index' o 'admin.dashboard'
                 return redirect()->route('admin.dashboard')->with('success', $successMessage);
-            
+
             case 'profesor':
                 return redirect()->route('profesores.dashboard')->with('success', $successMessage);
-            
+
             case 'padre':
                 return redirect()->route('padres.dashboard')->with('success', $successMessage);
-            
+
             case 'estudiante':
                 return redirect()->route('estudiantes.dashboard')->with('success', $successMessage);
-            
+
             default:
                 // Fallback general para cualquier otro caso
                 return redirect()->route('dashboard')->with('success', $successMessage);

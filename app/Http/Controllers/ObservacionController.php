@@ -58,8 +58,8 @@ class ObservacionController extends Controller
      */
     public function create()
     {
-        $estudiantes = Estudiante::orderBy('nombre')->get();
-        $profesores = Profesor::orderBy('nombre')->get();
+        $estudiantes = Estudiante::orderBy('nombre1')->get();
+$profesores = Profesor::orderBy('nombre')->get();
 
         return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
     }

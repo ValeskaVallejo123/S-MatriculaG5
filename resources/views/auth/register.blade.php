@@ -54,7 +54,7 @@
         font-size: 16px;
         color: #f5dfdf;
         background-color: #e155d1;
-        border: none; t
+        border: none;
         ransition: all 0.3s ease;
         width: 100%;
     }
@@ -138,7 +138,7 @@ document.getElementById('registrationForm').addEventListener('submit', function(
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('password_confirmation').value;
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    const passwordRegex = /^(?=.[a-z])(?=.[A-Z])(?=.*\d).{6,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if(name === '') errors.push('El nombre es obligatorio.');
