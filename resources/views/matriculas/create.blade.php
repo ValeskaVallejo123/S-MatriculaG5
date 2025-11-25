@@ -13,7 +13,7 @@
 
 @section('content')
 <div class="container" style="max-width: 1000px;">
-    
+
     <form action="{{ route('matriculas.store') }}" method="POST" id="formMatricula">
         @csrf
 
@@ -35,11 +35,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('padre_nombre') is-invalid @enderror" 
-                                   id="padre_nombre" 
-                                   name="padre_nombre" 
-                                   value="{{ old('padre_nombre') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_nombre') is-invalid @enderror"
+                                   id="padre_nombre"
+                                   name="padre_nombre"
+                                   value="{{ old('padre_nombre') }}"
                                    placeholder="Ej: Juan Carlos"
                                    required
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -58,11 +58,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('padre_apellido') is-invalid @enderror" 
-                                   id="padre_apellido" 
-                                   name="padre_apellido" 
-                                   value="{{ old('padre_apellido') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_apellido') is-invalid @enderror"
+                                   id="padre_apellido"
+                                   name="padre_apellido"
+                                   value="{{ old('padre_apellido') }}"
                                    placeholder="Ej: Pérez García"
                                    required
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -81,11 +81,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('padre_dni') is-invalid @enderror" 
-                                   id="padre_dni" 
-                                   name="padre_dni" 
-                                   value="{{ old('padre_dni') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_dni') is-invalid @enderror"
+                                   id="padre_dni"
+                                   name="padre_dni"
+                                   value="{{ old('padre_dni') }}"
                                    placeholder="0801199512345"
                                    maxlength="13"
                                    pattern="[0-9]{13}"
@@ -109,8 +109,8 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-users position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                            <select class="form-select ps-5 @error('padre_parentesco') is-invalid @enderror" 
-                                    id="padre_parentesco" 
+                            <select class="form-select ps-5 @error('padre_parentesco') is-invalid @enderror"
+                                    id="padre_parentesco"
                                     name="padre_parentesco"
                                     required
                                     onchange="toggleOtroParentesco()"
@@ -135,11 +135,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-pen position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('padre_parentesco_otro') is-invalid @enderror" 
-                                   id="padre_parentesco_otro" 
-                                   name="padre_parentesco_otro" 
-                                   value="{{ old('padre_parentesco_otro') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_parentesco_otro') is-invalid @enderror"
+                                   id="padre_parentesco_otro"
+                                   name="padre_parentesco_otro"
+                                   value="{{ old('padre_parentesco_otro') }}"
                                    placeholder="Ej: Tío, Hermano"
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
                             @error('padre_parentesco_otro')
@@ -157,11 +157,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-phone position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('padre_telefono') is-invalid @enderror" 
-                                   id="padre_telefono" 
-                                   name="padre_telefono" 
-                                   value="{{ old('padre_telefono') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_telefono') is-invalid @enderror"
+                                   id="padre_telefono"
+                                   name="padre_telefono"
+                                   value="{{ old('padre_telefono') }}"
                                    placeholder="98765432"
                                    maxlength="8"
                                    pattern="[0-9]{8}"
@@ -182,11 +182,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="email" 
-                                   class="form-control ps-5 @error('padre_email') is-invalid @enderror" 
-                                   id="padre_email" 
-                                   name="padre_email" 
-                                   value="{{ old('padre_email') }}" 
+                            <input type="email"
+                                   class="form-control ps-5 @error('padre_email') is-invalid @enderror"
+                                   id="padre_email"
+                                   name="padre_email"
+                                   value="{{ old('padre_email') }}"
                                    placeholder="padre@ejemplo.com"
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
                             @error('padre_email')
@@ -204,10 +204,10 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-map-marker-alt position-absolute" style="left: 12px; top: 18px; color: #00508f; font-size: 0.85rem;"></i>
-                            <textarea class="form-control ps-5 @error('padre_direccion') is-invalid @enderror" 
-                                      id="padre_direccion" 
-                                      name="padre_direccion" 
-                                      rows="2" 
+                            <textarea class="form-control ps-5 @error('padre_direccion') is-invalid @enderror"
+                                      id="padre_direccion"
+                                      name="padre_direccion"
+                                      rows="2"
                                       placeholder="Dirección completa"
                                       required
                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">{{ old('padre_direccion') }}</textarea>
@@ -240,11 +240,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('estudiante_nombre') is-invalid @enderror" 
-                                   id="estudiante_nombre" 
-                                   name="estudiante_nombre" 
-                                   value="{{ old('estudiante_nombre') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('estudiante_nombre') is-invalid @enderror"
+                                   id="estudiante_nombre"
+                                   name="estudiante_nombre"
+                                   value="{{ old('estudiante_nombre') }}"
                                    placeholder="Ej: María José"
                                    required
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -263,11 +263,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('estudiante_apellido') is-invalid @enderror" 
-                                   id="estudiante_apellido" 
-                                   name="estudiante_apellido" 
-                                   value="{{ old('estudiante_apellido') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('estudiante_apellido') is-invalid @enderror"
+                                   id="estudiante_apellido"
+                                   name="estudiante_apellido"
+                                   value="{{ old('estudiante_apellido') }}"
                                    placeholder="Ej: López Martínez"
                                    required
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -286,11 +286,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('estudiante_dni') is-invalid @enderror" 
-                                   id="estudiante_dni" 
-                                   name="estudiante_dni" 
-                                   value="{{ old('estudiante_dni') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('estudiante_dni') is-invalid @enderror"
+                                   id="estudiante_dni"
+                                   name="estudiante_dni"
+                                   value="{{ old('estudiante_dni') }}"
                                    placeholder="0801201012345"
                                    maxlength="13"
                                    pattern="[0-9]{13}"
@@ -314,10 +314,10 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="date" 
-                                   class="form-control ps-5 @error('estudiante_fecha_nacimiento') is-invalid @enderror" 
-                                   id="estudiante_fecha_nacimiento" 
-                                   name="estudiante_fecha_nacimiento" 
+                            <input type="date"
+                                   class="form-control ps-5 @error('estudiante_fecha_nacimiento') is-invalid @enderror"
+                                   id="estudiante_fecha_nacimiento"
+                                   name="estudiante_fecha_nacimiento"
                                    value="{{ old('estudiante_fecha_nacimiento') }}"
                                    required
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -336,8 +336,8 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-venus-mars position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                            <select class="form-select ps-5 @error('estudiante_sexo') is-invalid @enderror" 
-                                    id="estudiante_sexo" 
+                            <select class="form-select ps-5 @error('estudiante_sexo') is-invalid @enderror"
+                                    id="estudiante_sexo"
                                     name="estudiante_sexo"
                                     required
                                     style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -360,11 +360,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="email" 
-                                   class="form-control ps-5 @error('estudiante_email') is-invalid @enderror" 
-                                   id="estudiante_email" 
-                                   name="estudiante_email" 
-                                   value="{{ old('estudiante_email') }}" 
+                            <input type="email"
+                                   class="form-control ps-5 @error('estudiante_email') is-invalid @enderror"
+                                   id="estudiante_email"
+                                   name="estudiante_email"
+                                   value="{{ old('estudiante_email') }}"
                                    placeholder="estudiante@ejemplo.com"
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
                             @error('estudiante_email')
@@ -382,11 +382,11 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-phone position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                            <input type="text" 
-                                   class="form-control ps-5 @error('estudiante_telefono') is-invalid @enderror" 
-                                   id="estudiante_telefono" 
-                                   name="estudiante_telefono" 
-                                   value="{{ old('estudiante_telefono') }}" 
+                            <input type="text"
+                                   class="form-control ps-5 @error('estudiante_telefono') is-invalid @enderror"
+                                   id="estudiante_telefono"
+                                   name="estudiante_telefono"
+                                   value="{{ old('estudiante_telefono') }}"
                                    placeholder="98765432"
                                    maxlength="8"
                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -405,10 +405,10 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-map-marker-alt position-absolute" style="left: 12px; top: 18px; color: #00508f; font-size: 0.85rem;"></i>
-                            <textarea class="form-control ps-5 @error('estudiante_direccion') is-invalid @enderror" 
-                                      id="estudiante_direccion" 
-                                      name="estudiante_direccion" 
-                                      rows="2" 
+                            <textarea class="form-control ps-5 @error('estudiante_direccion') is-invalid @enderror"
+                                      id="estudiante_direccion"
+                                      name="estudiante_direccion"
+                                      rows="2"
                                       placeholder="Dirección del estudiante"
                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">{{ old('estudiante_direccion') }}</textarea>
                             @error('estudiante_direccion')
@@ -426,8 +426,8 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-graduation-cap position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                            <select class="form-select ps-5 @error('estudiante_grado') is-invalid @enderror" 
-                                    id="estudiante_grado" 
+                            <select class="form-select ps-5 @error('estudiante_grado') is-invalid @enderror"
+                                    id="estudiante_grado"
                                     name="estudiante_grado"
                                     required
                                     style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -451,8 +451,8 @@
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-door-open position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                            <select class="form-select ps-5 @error('estudiante_seccion') is-invalid @enderror" 
-                                    id="estudiante_seccion" 
+                            <select class="form-select ps-5 @error('estudiante_seccion') is-invalid @enderror"
+                                    id="estudiante_seccion"
                                     name="estudiante_seccion"
                                     required
                                     style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -491,11 +491,11 @@
     </label>
     <div class="position-relative">
         <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-        <input type="date" 
-               class="form-control ps-5 @error('fecha_matricula') is-invalid @enderror" 
-               id="fecha_matricula" 
-               name="fecha_matricula" 
-               value="{{ old('fecha_matricula', date('Y-m-d')) }}" 
+        <input type="date"
+               class="form-control ps-5 @error('fecha_matricula') is-invalid @enderror"
+               id="fecha_matricula"
+               name="fecha_matricula"
+               value="{{ old('fecha_matricula', date('Y-m-d')) }}"
                required
                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
         @error('fecha_matricula')
@@ -512,11 +512,11 @@
                 </label>
                 <div class="position-relative">
                     <i class="fas fa-calendar-alt position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                    <input type="number" 
-                           class="form-control ps-5 @error('anio_lectivo') is-invalid @enderror" 
-                           id="anio_lectivo" 
-                           name="anio_lectivo" 
-                           value="{{ old('anio_lectivo', date('Y')) }}" 
+                    <input type="number"
+                           class="form-control ps-5 @error('anio_lectivo') is-invalid @enderror"
+                           id="anio_lectivo"
+                           name="anio_lectivo"
+                           value="{{ old('anio_lectivo', date('Y')) }}"
                            placeholder="2024"
                            min="2020"
                            max="2099"
@@ -537,8 +537,8 @@
                 </label>
                 <div class="position-relative">
                     <i class="fas fa-info-circle position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                    <select class="form-select ps-5 @error('estado') is-invalid @enderror" 
-                            id="estado" 
+                    <select class="form-select ps-5 @error('estado') is-invalid @enderror"
+                            id="estado"
                             name="estado"
                             style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
                         <option value="pendiente" {{ old('estado', 'pendiente') == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
@@ -560,10 +560,10 @@
                 </label>
                 <div class="position-relative">
                     <i class="fas fa-comment-alt position-absolute" style="left: 12px; top: 18px; color: #00508f; font-size: 0.85rem;"></i>
-                    <textarea class="form-control ps-5 @error('observaciones') is-invalid @enderror" 
-                              id="observaciones" 
-                              name="observaciones" 
-                              rows="3" 
+                    <textarea class="form-control ps-5 @error('observaciones') is-invalid @enderror"
+                              id="observaciones"
+                              name="observaciones"
+                              rows="3"
                               placeholder="Notas adicionales sobre la matrícula"
                               style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">{{ old('observaciones') }}</textarea>
                     @error('observaciones')
@@ -610,8 +610,8 @@
         </div>
 
         <!-- Botón para subir documentos -->
-        <button type="button" 
-                class="btn w-100 d-flex align-items-center justify-content-center gap-2" 
+        <button type="button"
+                class="btn w-100 d-flex align-items-center justify-content-center gap-2"
                 onclick="alert('Funcionalidad de carga de documentos próximamente')"
                 style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.8rem; border-radius: 8px; border: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);">
             <i class="fas fa-cloud-upload-alt" style="font-size: 1.1rem;"></i>
@@ -630,13 +630,13 @@
 
         <!-- Botones de acción -->
         <div class="d-flex gap-2">
-            <button type="submit" 
-                    class="btn flex-fill" 
+            <button type="submit"
+                    class="btn flex-fill"
                     style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.8rem; border-radius: 8px; font-weight: 600; border: none; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);">
                 <i class="fas fa-save me-2"></i>Registrar Matrícula
             </button>
-            <a href="{{ route('matriculas.index') }}" 
-               class="btn flex-fill" 
+            <a href="{{ route('matriculas.index') }}"
+               class="btn flex-fill"
                style="background: white; color: #003b73; padding: 0.8rem; border-radius: 8px; font-weight: 600; border: 2px solid #bfd9ea; transition: all 0.3s ease;">
                 <i class="fas fa-times me-2"></i>Cancelar
             </a>
@@ -652,7 +652,7 @@
 function toggleOtroParentesco() {
     const select = document.getElementById('padre_parentesco');
     const otroDiv = document.getElementById('otro_parentesco_div');
-    
+
     if (select.value === 'otro') {
         otroDiv.style.display = 'block';
     } else {

@@ -50,7 +50,7 @@
                                 <div>
                                     <small class="text-muted d-block" style="font-size: 0.75rem;">GRADO Y SECCIÓN</small>
                                     <h3 class="mb-0 fw-bold" style="color: #003b73;">
-                                        {{ $grado->numero }}° Grado 
+                                        {{ $grado->numero }}° Grado
                                         @if($grado->seccion)
                                             <span style="color: #4ec7d2;">Sección {{ $grado->seccion }}</span>
                                         @endif
@@ -249,8 +249,8 @@
                         <a href="{{ route('materias.index') }}" class="btn" style="background: white; color: #4ec7d2; border: 2px solid #4ec7d2; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
                             <i class="fas fa-book"></i> Ver Materias
                         </a>
-                        <form action="{{ route('grados.destroy', $grado) }}" 
-                              method="POST" 
+                        <form action="{{ route('grados.destroy', $grado) }}"
+                              method="POST"
                               onsubmit="return confirm('¿Está seguro de eliminar este grado?')">
                             @csrf
                             @method('DELETE')
@@ -299,5 +299,5 @@
     }
 </style>
 @endpush
-
 @endsection
+

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('documentos', function (Blueprint $table) {
             $table->id();
+
             $table->string('foto')->nullable(); // columna para la foto
             $table->string('acta_nacimiento')->nullable(); // columna para el acta
             $table->string('calificaciones')->nullable(); // columna para las calificaciones

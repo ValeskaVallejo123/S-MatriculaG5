@@ -393,7 +393,7 @@
     .card {
         transition: all 0.3s ease;
     }
-    
+
     .card:hover {
         box-shadow: 0 8px 16px rgba(0, 80, 143, 0.1) !important;
     }

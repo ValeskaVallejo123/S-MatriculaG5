@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             BuscarEstudianteSeeder::class,
             ProfesorSeeder::class,
         ]);
-        
+
 
     }
 

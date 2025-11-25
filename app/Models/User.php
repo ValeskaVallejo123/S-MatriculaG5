@@ -48,11 +48,4 @@ class User extends Authenticatable
         if (!$this->rol) return collect([]);
         return $this->rol->permisos;
     }
-
-    // 🔥 Método añadido sin borrar nada
-    public function isSuperAdmin()
-    {
-        return $this->id_rol == 1;
-    }
-
 }

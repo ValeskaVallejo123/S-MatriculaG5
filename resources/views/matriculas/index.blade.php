@@ -98,10 +98,10 @@
                         <label class="form-label small fw-semibold mb-1" style="color: #003b73;">
                             <i class="fas fa-search"></i> Buscar
                         </label>
-                        <input 
-                            type="text" 
-                            name="buscar" 
-                            class="form-control form-control-sm" 
+                        <input
+                            type="text"
+                            name="buscar"
+                            class="form-control form-control-sm"
                             placeholder="Nombre, apellido o DNI..."
                             value="{{ request('buscar') }}"
                             style="border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.5rem 0.75rem;"
@@ -112,8 +112,8 @@
                         <label class="form-label small fw-semibold mb-1" style="color: #003b73;">
                             <i class="fas fa-graduation-cap"></i> Grado
                         </label>
-                        <select 
-                            name="grado" 
+                        <select
+                            name="grado"
                             class="form-select form-select-sm"
                             style="border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.5rem 0.75rem;"
                         >
@@ -131,8 +131,8 @@
                         <label class="form-label small fw-semibold mb-1" style="color: #003b73;">
                             <i class="fas fa-flag"></i> Estado
                         </label>
-                        <select 
-                            name="estado" 
+                        <select
+                            name="estado"
                             class="form-select form-select-sm"
                             style="border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.5rem 0.75rem;"
                         >
@@ -147,8 +147,8 @@
                         <label class="form-label small fw-semibold mb-1" style="color: #003b73;">
                             <i class="fas fa-calendar"></i> Año Lectivo
                         </label>
-                        <select 
-                            name="anio" 
+                        <select
+                            name="anio"
                             class="form-select form-select-sm"
                             style="border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.5rem 0.75rem;"
                         >
@@ -182,7 +182,7 @@
     <div class="card border-0 shadow-sm mb-2 matricula-card" style="border-radius: 10px; transition: all 0.2s ease;">
         <div class="card-body p-2">
             <div class="row align-items-center g-2">
-                
+
                 <!-- Avatar y Datos -->
                 <div class="col-lg-4">
                     <div class="d-flex align-items-center gap-2">
@@ -222,7 +222,7 @@
                 <div class="col-lg-2">
                     @if($matricula->padre)
                     <small class="d-block text-truncate" style="color: #003b73; font-size: 0.8rem;">
-                        <i class="fas fa-user-friends text-muted"></i> 
+                        <i class="fas fa-user-friends text-muted"></i>
                         {{ $matricula->padre->nombre }} {{ $matricula->padre->apellido }}
                     </small>
                     <small class="text-muted d-block" style="font-size: 0.7rem;">
@@ -257,14 +257,14 @@
                         @endif
 
                         <div class="btn-group" role="group">
-                            <a href="{{ route('matriculas.show', $matricula->id) }}" 
-                               class="btn btn-sm" 
+                            <a href="{{ route('matriculas.show', $matricula->id) }}"
+                               class="btn btn-sm"
                                style="border-radius: 6px 0 0 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.35rem 0.7rem; font-size: 0.8rem;"
                                title="Ver detalles">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ route('matriculas.edit', $matricula->id) }}" 
-                               class="btn btn-sm" 
+                            <a href="{{ route('matriculas.edit', $matricula->id) }}"
+                               class="btn btn-sm"
                                style="border-radius: 0 6px 6px 0; border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white; padding: 0.35rem 0.7rem; font-size: 0.8rem;"
                                title="Editar">
                                 <i class="fas fa-edit"></i>

@@ -85,10 +85,10 @@ class GradoController extends Controller
         $materias = Materia::where('nivel', $grado->nivel)
                           ->where('activo', true)
                           ->get();
-        
+
         // Obtener profesores (usuarios con rol 'profesor')
         $profesores = User::where('role', 'profesor')->get();
-        
+
         // Materias ya asignadas a este grado
         $materiasAsignadas = $grado->materias->pluck('id')->toArray();
 

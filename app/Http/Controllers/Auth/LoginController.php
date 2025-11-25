@@ -45,23 +45,23 @@ class LoginController extends Controller
                 case 'Super Administrador':
                     return redirect()->route('superadmin.dashboard')
                         ->with('success', 'Bienvenido Super Administrador');
-                
+
                 case 'Administrador':
                     return redirect()->route('admin.dashboard')
                         ->with('success', 'Bienvenido Administrador');
-                
+
                 case 'Profesor':
                     return redirect()->route('profesor.dashboard')
                         ->with('success', 'Bienvenido Profesor');
-                
+
                 case 'Estudiante':
                     return redirect()->route('estudiante.dashboard')
                         ->with('success', 'Bienvenido Estudiante');
-                
+
                 case 'Padre':
                     return redirect()->route('padre.dashboard')
                         ->with('success', 'Bienvenido Padre/Tutor');
-                
+
                 default:
                     return redirect()->route('dashboard')
                         ->with('success', 'Bienvenido al sistema');

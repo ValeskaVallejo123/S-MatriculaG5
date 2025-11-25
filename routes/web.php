@@ -25,6 +25,9 @@ use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\ProfesorMateriaController;
+use App\Http\Controllers\RegistrarCalificacionController;
+use App\Http\Controllers\AccionesImportantesController;
+
 
 Route::resource('profesor_materia', ProfesorMateriaController::class);
 /*
@@ -82,6 +85,7 @@ Route::get('/plantilla', function () {
 })->name('plantilla');
 
 // Consulta de solicitudes (PÚBLICA)
+// estado de solicitud manuel padilla
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])
     ->name('estado-solicitud');
 Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
@@ -207,7 +211,9 @@ Route::middleware(['auth'])->group(function () {
     | GESTIÓN DE ESTUDIANTES
     |--------------------------------------------------------------------------
     */
-    Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
+
+    Route::get('/buscarregistro', [BuscarEstudianteController::class, 'buscarregistro'])
+        ->name('buscarregistro');
     Route::resource('estudiantes', EstudianteController::class);
 
     /*
@@ -260,6 +266,40 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+<<<<<<< HEAD
+=======
+    | GESTIÓN DE OBSERVACIONES
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('observaciones', ObservacionController::class)->except(['show']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE DOCUMENTOS
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('documentos', DocumentoController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE ACCIONES IMPORTANTES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/acciones_importantes', [AccionesImportantesController::class, 'index'])
+        ->name('acciones_importantes.index');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CAMBIAR CONTRASEÑA
+    |--------------------------------------------------------------------------
+    */
+    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
+    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+
+    /*
+    |--------------------------------------------------------------------------
+>>>>>>> origin/main
     | GESTIÓN DE MATERIAS Y GRADOS
     |--------------------------------------------------------------------------
     */
@@ -267,4 +307,17 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('grados', GradoController::class);
     Route::get('grados/{grado}/asignar-materias', [GradoController::class, 'asignarMaterias'])->name('grados.asignar-materias');
     Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])->name('grados.guardar-materias');
+    // Mostrar formulario / filtros
+    Route::get('registrar-calificaciones', [RegistrarCalificacionController::class, 'create'])
+        ->name('registrarcalificaciones.create');
+    // Guardar notas
+    Route::post('registrar-calificaciones', [RegistrarCalificacionController::class, 'store'])
+        ->name('registrarcalificaciones.store');
+    // Listado (index) de calificaciones del profesor
+    Route::get('calificaciones', [RegistrarCalificacionController::class, 'index'])
+        ->name('registrarcalificaciones.index');
+    // AJAX: obtener estudiantes por curso
+    Route::get('registrar-calificaciones/estudiantes/{curso}', [RegistrarCalificacionController::class, 'obtenerEstudiantes'])
+        ->name('registrarcalificaciones.estudiantes');
+
 });

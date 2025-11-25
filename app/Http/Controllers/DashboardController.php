@@ -29,7 +29,8 @@ class DashboardController extends Controller
 
         if (!$usuario->rol) {
             Log::warning('Usuario sin rol', ['id' => $usuario->id]);
-            return view('admin.dashboard', [
+
+            return view('superadmin.dashboard', [
                 'totalEstudiantes' => 0,
                 'totalProfesores' => 0,
                 'totalMatriculas' => 0
@@ -48,7 +49,7 @@ class DashboardController extends Controller
             case 'Padre':
                 return redirect()->route('padre.dashboard');
             default:
-                return view('dashboard', [
+                return view('superadmin.dashboard', [
                     'totalEstudiantes' => 0,
                     'totalProfesores' => 0,
                     'totalMatriculas' => 0
@@ -155,8 +156,7 @@ class DashboardController extends Controller
         $totalEstudiantes = Estudiante::count();
         $totalProfesores = Profesor::count();
         $totalMatriculas = Matricula::count();
-
-        return view('dashboard', compact(
+        return view('superadmin.dashboard', compact(
             'totalEstudiantes',
             'totalProfesores',
             'totalMatriculas'

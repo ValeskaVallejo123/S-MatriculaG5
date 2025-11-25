@@ -27,10 +27,10 @@
                 <div class="col-md-4">
                     <div class="position-relative">
                         <i class="fas fa-search position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.9rem;"></i>
-                        <input type="text" 
-                               id="searchInput" 
-                               class="form-control form-control-sm ps-5" 
-                               placeholder="Buscar por grado, sección, año..." 
+                        <input type="text"
+                               id="searchInput"
+                               class="form-control form-control-sm ps-5"
+                               placeholder="Buscar por grado, sección, año..."
                                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 1rem 0.5rem 2.5rem; transition: all 0.3s ease;">
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                         <option value="secundaria">Secundaria (7° - 9°)</option>
                     </select>
                 </div>
-                
+
                 <div class="col-md-5">
                     <div class="d-flex align-items-center justify-content-md-end gap-3">
                         <div class="d-flex align-items-center gap-2">
@@ -128,18 +128,18 @@
             </div>
 
             <div class="d-flex gap-2">
-                <a href="{{ route('grados.show', $grado) }}" 
-                   class="btn btn-sm flex-fill" 
+                <a href="{{ route('grados.show', $grado) }}"
+                   class="btn btn-sm flex-fill"
                    style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem;">
                     <i class="fas fa-eye"></i> Ver
                 </a>
-                <a href="{{ route('grados.asignar-materias', $grado) }}" 
-                   class="btn btn-sm flex-fill" 
+                <a href="{{ route('grados.asignar-materias', $grado) }}"
+                   class="btn btn-sm flex-fill"
                    style="border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem;">
                     <i class="fas fa-tasks"></i> Materias
                 </a>
-                <a href="{{ route('grados.edit', $grado) }}" 
-                   class="btn btn-sm" 
+                <a href="{{ route('grados.edit', $grado) }}"
+                   class="btn btn-sm"
                    style="border: 1.5px solid #f59e0b; color: #f59e0b; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem 0.5rem;">
                     <i class="fas fa-edit"></i>
                 </a>
@@ -354,19 +354,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const filterNivel = document.getElementById('filterNivel');
     const cards = document.querySelectorAll('.grado-card');
-    
+
     function filterCards() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const nivelFilter = filterNivel.value;
         let visibleCount = 0;
-        
+
         cards.forEach(function(card) {
             const text = card.textContent.toLowerCase();
             const nivel = card.dataset.nivel;
-            
+
             const matchesSearch = text.includes(searchTerm);
             const matchesNivel = !nivelFilter || nivel === nivelFilter;
-            
+
             if (matchesSearch && matchesNivel) {
                 card.style.display = '';
                 visibleCount++;
@@ -375,10 +375,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     searchInput.addEventListener('keyup', filterCards);
     filterNivel.addEventListener('change', filterCards);
 });
 </script>
 @endpush
 @endsection
+

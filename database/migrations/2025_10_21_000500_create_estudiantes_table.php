@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('nombre2')->nullable();
             $table->string('apellido1');
             $table->string('apellido2')->nullable();
-            $table->string('apellido');
             $table->string('dni');
             $table->date('fecha_nacimiento');
             $table->string('sexo');
@@ -54,4 +53,3 @@ return new class extends Migration
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 };
-

@@ -7,7 +7,7 @@
   <title>Login - Escuela Gabriela Mistral</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
+
   <style>
     * {
       margin: 0;
@@ -60,17 +60,17 @@
     .hex-6 { top: 60%; right: 25%; width: 110px; height: 110px; opacity: 0.5; animation: float 10s ease-in-out infinite 3s; }
 
     @keyframes float {
-      0%, 100% { 
-        transform: translateY(0px) translateX(0px) rotate(0deg); 
+      0%, 100% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
       }
-      25% { 
-        transform: translateY(-20px) translateX(10px) rotate(5deg); 
+      25% {
+        transform: translateY(-20px) translateX(10px) rotate(5deg);
       }
-      50% { 
-        transform: translateY(-15px) translateX(-10px) rotate(-3deg); 
+      50% {
+        transform: translateY(-15px) translateX(-10px) rotate(-3deg);
       }
-      75% { 
-        transform: translateY(-25px) translateX(5px) rotate(2deg); 
+      75% {
+        transform: translateY(-25px) translateX(5px) rotate(2deg);
       }
     }
 
@@ -393,7 +393,7 @@
       .left-section {
         display: none;
       }
-      
+
       .right-section {
         flex: 1;
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -476,17 +476,18 @@
       .input-wrapper input:focus {
         transform: none;
       }
-      
+
       .login-button:hover {
         transform: none;
       }
-      
+
       .login-button:active {
         transform: scale(0.98);
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Lado izquierdo decorativo -->
@@ -513,7 +514,7 @@
   <!-- Lado derecho con formulario -->
   <div class="right-section">
     <div class="login-container">
-      
+
       <div class="login-header">
         <h2>Iniciar Sesión</h2>
         <p>Ingresa tus credenciales para acceder</p>
@@ -521,31 +522,31 @@
 
       @if ($errors->any())
         <div class="alert alert-danger">
-          <i class="fas fa-exclamation-circle"></i> 
+          <i class="fas fa-exclamation-circle"></i>
           <span>{{ $errors->first() }}</span>
         </div>
       @endif
 
       @if (session('status'))
         <div class="alert alert-success">
-          <i class="fas fa-check-circle"></i> 
+          <i class="fas fa-check-circle"></i>
           <span>{{ session('status') }}</span>
         </div>
       @endif
 
       <form method="POST" action="{{ route('login') }}" id="loginForm">
         @csrf
-        
+
         <div class="form-group">
           <label for="email">Correo electrónico</label>
           <div class="input-wrapper">
             <i class="fas fa-envelope input-icon"></i>
-            <input 
-              type="email" 
-              id="email" 
+            <input
+              type="email"
+              id="email"
               name="email"
               value="{{ old('email') }}"
-              placeholder="tu-correo@ejemplo.com" 
+              placeholder="tu-correo@ejemplo.com"
               required
               autofocus
               autocomplete="email"
@@ -561,11 +562,11 @@
           <label for="password">Contraseña</label>
           <div class="input-wrapper">
             <i class="fas fa-lock input-icon"></i>
-            <input 
-              type="password" 
-              id="password" 
+            <input
+              type="password"
+              id="password"
               name="password"
-              placeholder="Ingresa tu contraseña" 
+              placeholder="Ingresa tu contraseña"
               required
               autocomplete="current-password"
               class="@error('password') is-invalid @enderror"
@@ -602,7 +603,7 @@
       </div>
 
       <div class="register-link">
-        ¿No tienes una cuenta? 
+        ¿No tienes una cuenta?
         @if (Route::has('register'))
           <a href="{{ route('register') }}">Regístrate aquí</a>
         @else
@@ -643,3 +644,4 @@
 
 </body>
 </html>
+

@@ -54,7 +54,7 @@
         font-size: 16px;
         color: #f5dfdf;
         background-color: #e155d1;
-        border: none; 
+        border: none;
         ransition: all 0.3s ease;
         width: 100%;
     }
@@ -163,3 +163,4 @@ document.getElementById('registrationForm').addEventListener('submit', function(
 
 </body>
 </html>
+
