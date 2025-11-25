@@ -67,28 +67,29 @@
 
         .sidebar-logo i {
             font-size: 2rem;
-            color: #4ec7d2;
-            background: rgba(78, 199, 210, 0.2);
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.15);
             width: 50px;
             height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 12px;
+            border: 3px solid rgba(245, 158, 11, 0.3);
         }
 
         .logo-text h4 {
             margin: 0;
             font-size: 1.1rem;
             font-weight: 700;
-            color: white;
+            color: #f59e0b;
             line-height: 1.2;
         }
 
         .logo-text p {
             margin: 0;
             font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(245, 158, 11, 0.8);
             letter-spacing: 0.5px;
             font-weight: 500;
         }
@@ -356,7 +357,7 @@
     <aside class="sidebar" id="sidebar">
         <!-- Header -->
         <div class="sidebar-header">
-            <a href="{{ route('dashboard') }}" class="sidebar-logo">
+            <a href="{{ $isSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}" class="sidebar-logo">
                 <i class="fas fa-graduation-cap"></i>
                 <div class="logo-text">
                     <h4>Escuela G.M.</h4>
@@ -376,173 +377,171 @@
             </div>
         </div>
 
-     <!-- Menu -->
-<ul class="sidebar-menu">
-    
-    <!-- PRINCIPAL -->
-    <li class="menu-section-title">PRINCIPAL</li>
-    
-    @if($isSuperAdmin)
-    <li class="menu-item">
-        <a href="{{ route('superadmin.dashboard') }}" class="menu-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-chart-line"></i>
-            <span>Dashboard</span>
-        </a>
-    </li>
-    @else
-    <li class="menu-item">
-        <a href="{{ route('dashboard') }}" class="menu-link {{ request()->routeIs('dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('profesor.dashboard') ? 'active' : '' }}">
-            <i class="fas fa-chart-line"></i>
-            <span>Dashboard</span>
-        </a>
-    </li>
-    @endif
+        <!-- Menu -->
+        <ul class="sidebar-menu">
+            
+            <!-- PRINCIPAL -->
+            <li class="menu-section-title">PRINCIPAL</li>
+            
+            @if($isSuperAdmin)
+            <li class="menu-item">
+                <a href="{{ route('superadmin.dashboard') }}" class="menu-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            @elseif($isAdmin)
+            <li class="menu-item">
+                <a href="{{ route('admin.dashboard') }}" class="menu-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            @endif
 
-    <!-- GESTIÓN DE USUARIOS -->
-    <li class="menu-section-title">GESTIÓN DE USUARIOS</li>
-    
-    @if($isSuperAdmin)
-    <li class="menu-item">
-        <a href="{{ route('superadmin.administradores.index') }}" class="menu-link {{ request()->routeIs('superadmin.administradores.*') ? 'active' : '' }}">
-            <i class="fas fa-user-shield"></i>
-            <span>Administradores</span>
-        </a>
-    </li>
-    @endif
-    
-    <li class="menu-item">
-        <a href="{{ route('estudiantes.index') }}" class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
-            <i class="fas fa-user-graduate"></i>
-            <span>Estudiantes</span>
-        </a>
-    </li>
+            <!-- GESTIÓN DE USUARIOS -->
+            <li class="menu-section-title">GESTIÓN DE USUARIOS</li>
+            
+            @if($isSuperAdmin)
+            <li class="menu-item">
+                <a href="{{ route('superadmin.administradores.index') }}" class="menu-link {{ request()->routeIs('superadmin.administradores.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Administradores</span>
+                </a>
+            </li>
+            @endif
+            
+            <li class="menu-item">
+                <a href="{{ route('estudiantes.index') }}" class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Estudiantes</span>
+                </a>
+            </li>
 
-    <li class="menu-item">
-        <a href="{{ route('profesores.index') }}" class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
-            <i class="fas fa-chalkboard-teacher"></i>
-            <span>Profesores</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('profesores.index') }}" class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Profesores</span>
+                </a>
+            </li>
 
-    <li class="menu-item">
-        <a href="{{ route('padres.index') }}" class="menu-link {{ request()->routeIs('padres.*') ? 'active' : '' }}">
-            <i class="fas fa-user-friends"></i>
-            <span>Padres/Tutores</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('padres.index') }}" class="menu-link {{ request()->routeIs('padres.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Padres/Tutores</span>
+                </a>
+            </li>
 
-    <!-- BÚSQUEDA -->
-    <li class="menu-section-title">BÚSQUEDA</li>
-    
-    <li class="menu-item">
-        <a href="{{ route('estudiantes.buscar') }}" class="menu-link {{ request()->routeIs('estudiantes.buscar') ? 'active' : '' }}">
-            <i class="fas fa-search"></i>
-            <span>Buscar Estudiante</span>
-        </a>
-    </li>
+            <!-- BÚSQUEDA -->
+            <li class="menu-section-title">BÚSQUEDA</li>
+            
+            <li class="menu-item">
+                <a href="{{ route('estudiantes.buscar') }}" class="menu-link {{ request()->routeIs('estudiantes.buscar') ? 'active' : '' }}">
+                    <i class="fas fa-search"></i>
+                    <span>Buscar Estudiante</span>
+                </a>
+            </li>
 
-    <li class="menu-item">
-        <a href="{{ route('padres.buscar') }}" class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
-            <i class="fas fa-user-search"></i>
-            <span>Buscar Padre/Tutor</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('padres.buscar') }}" class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
+                    <i class="fas fa-user-search"></i>
+                    <span>Buscar Padre/Tutor</span>
+                </a>
+            </li>
 
-    <!-- GESTIÓN ACADÉMICA -->
-    <li class="menu-section-title">GESTIÓN ACADÉMICA</li>
-    
-    <li class="menu-item">
-        <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
-            <i class="fas fa-clipboard-list"></i>
-            <span>Matrículas</span>
-        </a>
-    </li>
+            <!-- GESTIÓN ACADÉMICA -->
+            <li class="menu-section-title">GESTIÓN ACADÉMICA</li>
+            
+            <li class="menu-item">
+                <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Matrículas</span>
+                </a>
+            </li>
 
-    <li class="menu-item">
-        <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
-            <i class="fas fa-layer-group"></i>
-            <span>Grados</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Grados</span>
+                </a>
+            </li>
 
-    <li class="menu-item">
-        <a href="{{ route('materias.index') }}" class="menu-link {{ request()->routeIs('materias.*') ? 'active' : '' }}">
-            <i class="fas fa-book"></i>
-            <span>Materias</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('materias.index') }}" class="menu-link {{ request()->routeIs('materias.*') ? 'active' : '' }}">
+                    <i class="fas fa-book"></i>
+                    <span>Materias</span>
+                </a>
+            </li>
 
-    <li class="menu-item">
-        <a href="{{ route('periodos-academicos.index') }}" class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Períodos Académicos</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('periodos-academicos.index') }}" class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Períodos Académicos</span>
+                </a>
+            </li>
 
-    <li class="menu-item">
-        <a href="{{ route('cupos_maximos.index') }}" class="menu-link {{ request()->routeIs('cupos_maximos.*') ? 'active' : '' }}">
-            <i class="fas fa-users"></i>
-            <span>Cupos Máximos</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('cupos_maximos.index') }}" class="menu-link {{ request()->routeIs('cupos_maximos.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Cupos Máximos</span>
+                </a>
+            </li>
 
-    <!-- DOCUMENTACIÓN -->
-    <li class="menu-section-title">DOCUMENTACIÓN</li>
-    
-    <li class="menu-item">
-        <a href="{{ route('observaciones.index') }}" class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
-            <i class="fas fa-sticky-note"></i>
-            <span>Observaciones</span>
-        </a>
-    </li>
+            <!-- DOCUMENTACIÓN -->
+            <li class="menu-section-title">DOCUMENTACIÓN</li>
+            
+            <li class="menu-item">
+                <a href="{{ route('observaciones.index') }}" class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
+                    <i class="fas fa-sticky-note"></i>
+                    <span>Observaciones</span>
+                </a>
+            </li>
 
-    <li class="menu-item">
-        <a href="{{ route('documentos.index') }}" class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
-            <i class="fas fa-folder-open"></i>
-            <span>Documentos</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('documentos.index') }}" class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Documentos</span>
+                </a>
+            </li>
 
-    <!-- PERMISOS -->
-    <li class="menu-section-title">PERMISOS</li>
-    
-    <li class="menu-item">
-        <a href="{{ route('admins.permisos.index') }}" class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
-            <i class="fas fa-user-lock"></i>
-            <span>Permisos de Padres</span>
-        </a>
-    </li>
+            <!-- PERMISOS -->
+            <li class="menu-section-title">PERMISOS</li>
+            
+            <li class="menu-item">
+                <a href="{{ route('admins.permisos.index') }}" class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-lock"></i>
+                    <span>Permisos de Padres</span>
+                </a>
+            </li>
 
-    <!-- CONFIGURACIÓN -->
-    <li class="menu-section-title">CONFIGURACIÓN</li>
-    
-    @if($isSuperAdmin)
-    <li class="menu-item">
-        <a href="{{ route('superadmin.perfil') }}" class="menu-link {{ request()->routeIs('superadmin.perfil') ? 'active' : '' }}">
-            <i class="fas fa-user-circle"></i>
-            <span>Mi Perfil</span>
-        </a>
-    </li>
-    @endif
+            <!-- CONFIGURACIÓN -->
+            <li class="menu-section-title">CONFIGURACIÓN</li>
+            
+            @if($isSuperAdmin)
+            <li class="menu-item">
+                <a href="{{ route('superadmin.perfil') }}" class="menu-link {{ request()->routeIs('superadmin.perfil') ? 'active' : '' }}">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Mi Perfil</span>
+                </a>
+            </li>
+            @endif
 
-    <li class="menu-item">
-        <a href="{{ route('cambiarcontrasenia.edit') }}" class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
-            <i class="fas fa-key"></i>
-            <span>Cambiar Contraseña</span>
-        </a>
-    </li>
+            <li class="menu-item">
+                <a href="{{ route('cambiarcontrasenia.edit') }}" class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
+                    <i class="fas fa-key"></i>
+                    <span>Cambiar Contraseña</span>
+                </a>
+            </li>
 
-    <!-- AYUDA -->
-    <li class="menu-section-title">AYUDA</li>
-    
-    <li class="menu-item">
-        <a href="{{ route('estado-solicitud') }}" class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
-            <i class="fas fa-question-circle"></i>
-            <span>Estado de Solicitud</span>
-        </a>
-    </li>
-
-</ul>
+            <!-- AYUDA -->
+            <li class="menu-section-title">AYUDA</li>
+            
+            <li class="menu-item">
+                <a href="{{ route('estado-solicitud') }}" class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Estado de Solicitud</span>
+                </a>
+            </li>
 
         </ul>
     </aside>
@@ -620,6 +619,395 @@
                 bsAlert.close();
             });
         }, 5000);
+
+        // ========== MANTENER POSICIÓN DEL SIDEBAR ==========
+        const sidebar = document.getElementById('sidebar');
+        
+        if (sidebar) {
+            // Restaurar posición del scroll al cargar la página
+            const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
+            if (savedScrollPosition) {
+                sidebar.scrollTop = parseInt(savedScrollPosition);
+            }
+
+            // Guardar posición del scroll cuando se hace clic en un enlace
+            const menuLinks = sidebar.querySelectorAll('.menu-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+                });
+            });
+
+            // Guardar posición del scroll periódicamente mientras se desplaza
+            sidebar.addEventListener('scroll', function() {
+                sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+            });
+
+            // Scroll automático al elemento activo si está fuera de vista
+            const activeLink = sidebar.querySelector('.menu-link.active');
+            if (activeLink && savedScrollPosition === null) {
+                // Solo hacer scroll automático si no hay posición guardada
+                const sidebarRect = sidebar.getBoundingClientRect();
+                const activeLinkRect = activeLink.getBoundingClientRect();
+                
+                // Verificar si el elemento activo está fuera de vista
+                if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
+                    // Centrar el elemento activo en el sidebar
+                    const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
+                    sidebar.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        }
+    </script>
+
+    @stack('scripts')
+    <!-- Modal de Confirmación de Eliminación -->
+    <div class="modal-delete-overlay" id="modalDelete">
+        <div class="modal-delete">
+            <button type="button" class="modal-delete-close" onclick="cerrarModalDelete()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-delete-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <h4 class="modal-delete-title">¿Confirmar Eliminación?</h4>
+            
+            <div class="modal-delete-content">
+                <p class="modal-delete-message" id="deleteMessage">
+                    Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?
+                </p>
+                
+                <div class="modal-delete-item" id="deleteItemInfo" style="display: none;">
+                    <div class="delete-item-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="delete-item-details">
+                        <span class="delete-item-label">Elemento a eliminar:</span>
+                        <strong class="delete-item-name" id="deleteItemName"></strong>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="formDelete" method="POST" style="display: none;">
+                @csrf
+                @method('DELETE')
+            </form>
+            
+            <div class="modal-delete-actions">
+                <button type="button" class="btn-delete-cancel" onclick="cerrarModalDelete()">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="button" class="btn-delete-confirm" onclick="confirmarEliminacion()">
+                    <i class="fas fa-trash-alt"></i>
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal de Eliminación */
+        .modal-delete-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-delete-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-delete {
+            background: white;
+            border-radius: 16px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2);
+            transform: scale(0.95);
+            animation: scaleUp 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes scaleUp {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .modal-delete-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 8px;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+
+        .modal-delete-close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .modal-delete-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto 1.5rem;
+            color: #ef4444;
+            font-size: 2.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+            }
+        }
+
+        .modal-delete-title {
+            text-align: center;
+            color: #1e293b;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 1.5rem 0;
+            padding: 0 2rem;
+        }
+
+        .modal-delete-content {
+            padding: 0 2rem 2rem;
+        }
+
+        .modal-delete-message {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.938rem;
+            line-height: 1.6;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .modal-delete-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-left: 4px solid #ef4444;
+        }
+
+        .delete-item-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+        }
+
+        .delete-item-details {
+            flex: 1;
+        }
+
+        .delete-item-label {
+            display: block;
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .delete-item-name {
+            display: block;
+            color: #1e293b;
+            font-size: 0.938rem;
+            font-weight: 700;
+        }
+
+        .modal-delete-actions {
+            padding: 1rem 1.5rem 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-delete-cancel,
+        .btn-delete-confirm {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-delete-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .btn-delete-cancel:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete-confirm {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-delete-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Responsive Modal */
+        @media (max-width: 576px) {
+            .modal-delete {
+                max-width: calc(100% - 2rem);
+                margin: 1rem;
+            }
+
+            .modal-delete-title {
+                font-size: 1.25rem;
+                padding: 0 1.5rem;
+            }
+
+            .modal-delete-content {
+                padding: 0 1.5rem 1.5rem;
+            }
+
+            .modal-delete-actions {
+                flex-direction: column;
+                padding: 1rem 1.5rem 1.5rem;
+            }
+
+            .btn-delete-cancel,
+            .btn-delete-confirm {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        // Variables globales para el modal de eliminación
+        let deleteFormAction = null;
+
+        function mostrarModalDelete(url, mensaje = null, itemName = null) {
+            // Guardar la URL del formulario
+            deleteFormAction = url;
+            
+            // Actualizar mensaje si se proporciona
+            if (mensaje) {
+                document.getElementById('deleteMessage').textContent = mensaje;
+            } else {
+                document.getElementById('deleteMessage').textContent = 'Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?';
+            }
+            
+            // Mostrar información del item si se proporciona
+            const itemInfo = document.getElementById('deleteItemInfo');
+            if (itemName) {
+                document.getElementById('deleteItemName').textContent = itemName;
+                itemInfo.style.display = 'flex';
+            } else {
+                itemInfo.style.display = 'none';
+            }
+            
+            // Configurar acción del formulario
+            document.getElementById('formDelete').action = url;
+            
+            // Mostrar modal
+            const modal = document.getElementById('modalDelete');
+            modal.classList.add('show');
+            
+            // Prevenir scroll del body
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarModalDelete() {
+            const modal = document.getElementById('modalDelete');
+            modal.classList.remove('show');
+            
+            // Restaurar scroll del body
+            document.body.style.overflow = '';
+            
+            // Limpiar datos
+            deleteFormAction = null;
+        }
+
+        function confirmarEliminacion() {
+            // Enviar el formulario
+            document.getElementById('formDelete').submit();
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('modalDelete');
+            if (e.target === modal) {
+                cerrarModalDelete();
+            }
+        });
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarModalDelete();
+            }
+        });
     </script>
 
     @stack('scripts')

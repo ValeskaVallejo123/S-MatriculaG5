@@ -76,14 +76,30 @@
     }
 
     .btn-login {
-      background: rgba(78, 199, 210, 0.2);
-      color: white !important;
-      padding: 8px 24px;
-      border-radius: 25px;
-      border: 2px solid #4ec7d2;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
+  background: rgba(78, 199, 210, 0.2);
+  color: white !important;
+  padding: 10px 28px;
+  border-radius: 25px;
+  border: 2px solid #4ec7d2;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn-login:hover {
+  background: #4ec7d2;
+  color: #003b73 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(78, 199, 210, 0.4);
+}
+
+.btn-login i {
+  font-size: 0.95rem;
+}
 
     .btn-login:hover {
       background: #4ec7d2;
@@ -479,6 +495,224 @@
       }
     }
 
+    /* ========== MATRICULA SECTION ========== */
+    .matricula-section {
+      padding: 100px 0;
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .matricula-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(78, 199, 210, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0, 80, 143, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .matricula-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .matricula-header {
+      margin-bottom: 60px;
+    }
+
+    .matricula-header h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #003b73;
+      margin-bottom: 15px;
+    }
+
+    .matricula-header p {
+      font-size: 1.2rem;
+      color: #00508f;
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .matricula-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    .matricula-card {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 59, 115, 0.1);
+      transition: all 0.4s ease;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .matricula-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #4ec7d2 0%, #00508f 100%);
+    }
+
+    .matricula-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(78, 199, 210, 0.3);
+      border-color: #4ec7d2;
+    }
+
+    .matricula-card-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 25px;
+      background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: white;
+      box-shadow: 0 10px 30px rgba(78, 199, 210, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .matricula-card:hover .matricula-card-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .matricula-card h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #003b73;
+      margin-bottom: 15px;
+    }
+
+    .matricula-card ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+      margin-bottom: 25px;
+    }
+
+    .matricula-card ul li {
+      color: #00508f;
+      margin-bottom: 12px;
+      padding-left: 30px;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .matricula-card ul li::before {
+      content: '\f00c';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      color: #4ec7d2;
+      font-size: 1rem;
+    }
+
+    .btn-matricula {
+      background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
+      color: white;
+      padding: 15px 40px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 1rem;
+      box-shadow: 0 8px 25px rgba(78, 199, 210, 0.3);
+    }
+
+    .btn-matricula:hover {
+      transform: scale(1.08);
+      box-shadow: 0 12px 35px rgba(78, 199, 210, 0.5);
+      color: white;
+      background: linear-gradient(135deg, #00508f 0%, #003b73 100%);
+    }
+
+    .matricula-cta {
+      background: linear-gradient(135deg, #003b73 0%, #00508f 100%);
+      padding: 50px;
+      border-radius: 25px;
+      box-shadow: 0 15px 50px rgba(0, 59, 115, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .matricula-cta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 30% 50%, rgba(78, 199, 210, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(78, 199, 210, 0.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .matricula-cta-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .matricula-cta h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .matricula-cta p {
+      font-size: 1.1rem;
+      color: #bfd9ea;
+      margin-bottom: 30px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-matricula-principal {
+      background: #4ec7d2;
+      color: #003b73;
+      padding: 18px 50px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-block;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 1.15rem;
+      box-shadow: 0 10px 30px rgba(78, 199, 210, 0.4);
+    }
+
+    .btn-matricula-principal:hover {
+      background: white;
+      color: #003b73;
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+    }
+
     /* ========== FEATURES SECTION ========== */
     .features-section {
       padding: 100px 0;
@@ -806,6 +1040,14 @@
       .shape {
         display: none;
       }
+
+      .matricula-header h2 {
+        font-size: 2rem;
+      }
+
+      .matricula-cards {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -830,6 +1072,9 @@
             <a class="nav-link" href="#inicio">Inicio</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="#matricula">Matrícula</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="#nosotros">Nosotros</a>
           </li>
           <li class="nav-item">
@@ -840,8 +1085,8 @@
           </li>
           <li class="nav-item ms-3">
             <a class="btn-login" href="{{ route('login') }}">
-              <i class="fas fa-sign-in-alt me-2"></i>Acceso Sistema
-            </a>
+  <i class="fas fa-sign-in-alt me-2"></i>Acceso Sistema
+</a>
           </li>
         </ul>
       </div>
@@ -886,7 +1131,7 @@
       <div class="categories">
         <h3>Servicios Disponibles</h3>
         <div class="category-tags">
-          <a href="#modulos" class="category-tag">Información Escolar</a>
+          <a href="#matricula" class="category-tag">Matrícula en Línea</a>
           <a href="{{ route('matriculas.index') }}" class="category-tag">Consultar Solicitud</a>
           <a href="#nosotros" class="category-tag">Sobre Nosotros</a>
           <a href="#contacto" class="category-tag">Contacto</a>
@@ -895,6 +1140,80 @@
     </div>
 
     <i class="fas fa-rocket hero-rocket"></i>
+  </section>
+
+  <!-- ========== MATRICULA SECTION ========== -->
+  <section class="matricula-section" id="matricula">
+    <div class="container matricula-content">
+      
+      <div class="matricula-header">
+        <h2>Proceso de Matrícula 2025</h2>
+        <p>
+          Inscribe a tu hijo(a) en la Escuela Gabriela Mistral y forma parte de nuestra familia educativa. 
+          Proceso sencillo, rápido y 100% en línea.
+        </p>
+      </div>
+
+      <div class="matricula-cards">
+        
+        <div class="matricula-card">
+          <div class="matricula-card-icon">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+          <h3>Requisitos</h3>
+          <ul>
+            <li>Partida de nacimiento original</li>
+            <li>Certificado de estudios previo</li>
+            <li>Documento de identidad del padre/madre</li>
+            <li>Constancia de domicilio</li>
+            <li>2 fotografías tamaño carnet</li>
+          </ul>
+        </div>
+
+        <div class="matricula-card">
+          <div class="matricula-card-icon">
+            <i class="fas fa-file-signature"></i>
+          </div>
+          <h3>Proceso en Línea</h3>
+          <ul>
+            <li>Completa el formulario digital</li>
+            <li>Sube documentos requeridos</li>
+            <li>Recibe confirmación inmediata</li>
+            <li>Programa tu cita presencial</li>
+            <li>Finaliza el proceso en la escuela</li>
+          </ul>
+        </div>
+
+        <div class="matricula-card">
+          <div class="matricula-card-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <h3>Fechas Importantes</h3>
+          <ul>
+            <li>Apertura: 2 de enero, 2025</li>
+            <li>Cierre: 28 de febrero, 2025</li>
+            <li>Inicio de clases: 10 de marzo</li>
+            <li>Matrícula abierta todo el año</li>
+            <li>Cupos limitados disponibles</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="matricula-cta">
+        <div class="matricula-cta-content">
+          <h3>¿Listo para Inscribir a tu Hijo(a)?</h3>
+          <p>
+            Completa el formulario de matrícula en línea y un miembro de nuestro equipo 
+            se pondrá en contacto contigo para continuar con el proceso.
+          </p>
+         <a href="{{ route('matriculas.public.create') }}" class="btn-matricula-principal">
+  <i class="fas fa-pen-alt me-2"></i> Iniciar Matrícula en Línea
+</a>
+        </div>
+      </div>
+
+    </div>
   </section>
 
   <!-- ========== FEATURES SECTION ========== -->
@@ -940,7 +1259,7 @@
           </div>
           <h3>Proceso de Matrícula</h3>
           <p>Información sobre requisitos y proceso de inscripción para nuevos estudiantes.</p>
-          <a href="#contacto" class="btn-feature">Información</a>
+          <a href="#matricula" class="btn-feature">Información</a>
         </div>
 
         <div class="feature-card">
@@ -1021,8 +1340,8 @@
         <div class="footer-section">
           <h4>Enlaces Rápidos</h4>
           <a href="#inicio">Inicio</a>
+          <a href="#matricula">Matrícula</a>
           <a href="#nosotros">Nosotros</a>
-          <a href="#modulos">Servicios</a>
           <a href="{{ route('matriculas.index') }}">Consultar Solicitud</a>
         </div>
 
@@ -1082,7 +1401,7 @@
       });
     });
 
-    document.querySelectorAll('.feature-card, .stat-item').forEach(el => {
+    document.querySelectorAll('.feature-card, .stat-item, .matricula-card').forEach(el => {
       observer.observe(el);
     });
   </script>

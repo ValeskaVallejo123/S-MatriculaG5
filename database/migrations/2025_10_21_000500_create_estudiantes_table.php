@@ -16,25 +16,31 @@ return new class extends Migration
         
         Schema::create('estudiantes', function (Blueprint $table) {
             $table->id();
-             $table->string('nombre1');
-            $table->string('nombre2')->nullable();
-            $table->string('apellido1');
-            $table->string('apellido2')->nullable();
-            $table->string('apellido');
-            $table->string('dni');
+            $table->string('nombre1', 50);
+            $table->string('nombre2', 50)->nullable();
+            $table->string('apellido1', 50);
+            $table->string('apellido2', 50)->nullable();
+            $table->string('dni', 13)->nullable()->unique();
             $table->date('fecha_nacimiento');
-            $table->string('sexo');
-            $table->string('grado');
-            $table->string('seccion');
-            $table->string('direccion')->nullable();
-            $table->string('email')->nullable();
-            $table->string('telefono')->nullable();
-            $table->enum('estado', ['pendiente', 'activo', 'inactivo'])->default('pendiente');
+            $table->enum('sexo', ['masculino', 'femenino']);
+            $table->string('email', 100)->nullable();
+            $table->string('telefono', 15)->nullable();
+            $table->text('direccion')->nullable();
+            $table->string('grado', 50);
+            $table->string('seccion', 1);
+            $table->enum('estado', ['activo', 'inactivo', 'retirado'])->default('activo');
             $table->text('observaciones')->nullable();
+            $table->string('nombre_padre', 100)->nullable();
+            $table->string('telefono_padre', 15)->nullable();
+            $table->string('email_padre', 100)->nullable();
+            $table->string('foto')->nullable();
+            $table->string('dni_doc')->nullable();
             $table->unsignedBigInteger('padre_id')->nullable();
             $table->string('genero')->nullable();
-            $table->string('foto')->nullable();
             $table->timestamps();
+            
+            // Si tienes relación con tabla padres, descomenta esto:
+            // $table->foreign('padre_id')->references('id')->on('padres')->onDelete('set null');
         });
         
         // Rehabilitar foreign keys

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Matricula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +13,26 @@ class SuperAdminController extends Controller
 {
     public function dashboard()
     {
-        return view('superadmin.dashboard');
+        // Obtener matrículas pendientes (más recientes primero)
+        $matriculasPendientes = Matricula::with(['estudiante', 'padre'])
+            ->where('estado', 'pendiente')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Contar todas las matrículas por estado
+        $totalPendientes = Matricula::where('estado', 'pendiente')->count();
+        $totalAprobadas = Matricula::where('estado', 'aprobada')->count();
+        $totalRechazadas = Matricula::where('estado', 'rechazada')->count();
+
+        return view('superadmin.dashboard', compact(
+            'matriculasPendientes',
+            'totalPendientes',
+            'totalAprobadas',
+            'totalRechazadas'
+        ));
     }
+
     public function index()
     {
         $administradores = User::whereIn('rol', ['admin', 'super_admin'])

@@ -30,7 +30,7 @@ class PadreController extends Controller
         
         $padres = $query->paginate(15);
         
-        return view('padre.index', compact('padres'));
+        return view('padres.index', compact('padres'));
     }
 
     /**
@@ -38,7 +38,7 @@ class PadreController extends Controller
      */
     public function create()
     {
-        return view('padre.create');
+        return view('padres.create');
     }
 
     /**
@@ -99,7 +99,7 @@ class PadreController extends Controller
 
         $padre = Padre::create($validated);
 
-        return redirect()->route('padre.index')
+        return redirect()->route('padres.index')
             ->with('success', 'Padre/tutor registrado exitosamente.');
     }
 
@@ -109,17 +109,18 @@ class PadreController extends Controller
     public function show($id)
     {
         $padre = Padre::with(['estudiantes'])->findOrFail($id);
-        return view('padre.show', compact('padre'));
+        return view('padres.show', compact('padre'));
     }
 
     /**
      * Mostrar formulario de edición
      */
     public function edit($id)
-{
-    $padre = Padre::findOrFail($id);
-    return view('padre.edit', compact('padre'));
-}
+    {
+        $padre = Padre::findOrFail($id);
+        return view('padres.edit', compact('padre'));
+    }
+
     /**
      * Actualizar padre
      */
@@ -174,7 +175,7 @@ class PadreController extends Controller
 
         $padre->update($validated);
 
-        return redirect()->route('padre.show', $padre->id)
+        return redirect()->route('padres.show', $padre->id)
             ->with('success', 'Información del padre/tutor actualizada correctamente.');
     }
 
@@ -193,7 +194,7 @@ class PadreController extends Controller
             
             $padre->delete();
             
-            return redirect()->route('padre.index')
+            return redirect()->route('padres.index')
                 ->with('success', 'Padre/tutor eliminado correctamente.');
                 
         } catch (\Exception $e) {
@@ -208,35 +209,40 @@ class PadreController extends Controller
     {
         $query = Padre::query();
         
+        // Obtener estudiante si viene el ID
+        $estudianteId = $request->input('estudiante_id');
+        $estudiante = $estudianteId ? Estudiante::find($estudianteId) : null;
+        
         // Filtros de búsqueda
         if ($request->filled('nombre')) {
-            $query->where('nombre', 'like', '%' . $request->nombre . '%');
+            $nombre = $request->nombre;
+            $query->where(function($q) use ($nombre) {
+                $q->where('nombre', 'like', '%' . $nombre . '%')
+                  ->orWhere('apellido', 'like', '%' . $nombre . '%');
+            });
         }
         
-        if ($request->filled('apellido')) {
-            $query->where('apellido', 'like', '%' . $request->apellido . '%');
+        if ($request->filled('identidad') || $request->filled('dni')) {
+            $dni = $request->filled('identidad') ? $request->identidad : $request->dni;
+            $query->where('dni', 'like', '%' . $dni . '%');
         }
         
-        if ($request->filled('dni')) {
-            $query->where('dni', 'like', '%' . $request->dni . '%');
+        if ($request->filled('telefono')) {
+            $telefono = $request->telefono;
+            $query->where(function($q) use ($telefono) {
+                $q->where('telefono', 'like', '%' . $telefono . '%')
+                  ->orWhere('telefono_secundario', 'like', '%' . $telefono . '%');
+            });
         }
         
         if ($request->filled('correo')) {
             $query->where('correo', 'like', '%' . $request->correo . '%');
         }
         
-        if ($request->filled('telefono')) {
-            $query->where('telefono', 'like', '%' . $request->telefono . '%');
-        }
-        
-        // Obtener resultados (solo si hay búsqueda)
-        $padres = $request->anyFilled(['nombre', 'apellido', 'dni', 'correo', 'telefono']) 
+        // Obtener resultados solo si hay búsqueda
+        $padres = $request->anyFilled(['nombre', 'identidad', 'dni', 'correo', 'telefono']) 
             ? $query->with('estudiantes')->get() 
             : collect();
-        
-        // Si viene un estudiante_id, verificar vinculaciones existentes
-        $estudianteId = $request->input('estudiante_id');
-        $estudiante = $estudianteId ? Estudiante::find($estudianteId) : null;
         
         return view('padres.buscar', compact('padres', 'estudiante'));
     }
@@ -244,17 +250,16 @@ class PadreController extends Controller
     /**
      * Vincular padre con estudiante
      */
-    public function vincular(Request $request)
+    public function vincular(Request $request, $padreId)
     {
         $request->validate([
-            'padre_id' => 'required|exists:padres,id',
             'estudiante_id' => 'required|exists:estudiantes,id',
         ]);
         
         try {
             DB::beginTransaction();
             
-            $padre = Padre::findOrFail($request->padre_id);
+            $padre = Padre::findOrFail($padreId);
             $estudiante = Estudiante::findOrFail($request->estudiante_id);
             
             // Verificar si ya existe una matrícula
@@ -280,7 +285,7 @@ class PadreController extends Controller
             
             DB::commit();
             
-            return redirect()->route('estudiante.show', $estudiante->id)
+            return redirect()->route('estudiantes.show', $estudiante->id)
                 ->with('success', 'Padre/tutor vinculado correctamente con el estudiante.');
                 
         } catch (\Exception $e) {
