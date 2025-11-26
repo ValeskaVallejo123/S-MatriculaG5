@@ -436,9 +436,9 @@
             <li class="menu-section-title">BÚSQUEDA</li>
 
             <li class="menu-item">
-                <a href="{{ route('estudiantes.buscar') }}" class="menu-link {{ request()->routeIs('estudiantes.buscar') ? 'active' : '' }}">
+                <a href="{{ route('buscarregistro') }}" class="menu-link {{ request()->routeIs('buscarregistro') ? 'active' : '' }}">
                     <i class="fas fa-search"></i>
-                    <span>Buscar Estudiante</span>
+                    <span>Registro de estudiante</span>
                 </a>
             </li>
 

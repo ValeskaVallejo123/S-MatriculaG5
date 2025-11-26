@@ -59,11 +59,11 @@
                                    id="dni"
                                    name="dni"
                                    required
-                                   pattern="\d{4}-\d{4}-\d{5}"
-                                   placeholder="Ej: 0801-1990-12345"
+                                   placeholder="Ej: 0801199012345"
                                    class="form-control form-control-sm ps-5 @error('dni') is-invalid @enderror"
                                    style="border:2px solid #bfd9ea; border-radius:8px; padding:0.55rem 1rem 0.55rem 2.6rem;"
                                    autocomplete="off">
+
                             @error('dni')
                             <div class="invalid-feedback" style="font-size:0.8rem;">
                                 <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}

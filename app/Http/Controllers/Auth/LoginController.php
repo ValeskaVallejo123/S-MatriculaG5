@@ -42,8 +42,8 @@ class LoginController extends Controller
             ])->onlyInput('email');
         }
 
-        // Verificar si la cuenta está activa
-        if (isset($usuario->activo) && !$usuario->activo) {
+        // Verificar si la cuenta está activa (excepto para Super Administrador)
+        if ($usuario->id_rol !== 1 && isset($usuario->activo) && !$usuario->activo) {
             return back()->withErrors([
                 'email' => 'Tu cuenta está pendiente de aprobación. Un administrador debe activarla antes de que puedas acceder.',
             ])->onlyInput('email');
@@ -70,23 +70,23 @@ class LoginController extends Controller
                     case 'Super Administrador':
                         return redirect()->route('superadmin.dashboard')
                             ->with('success', 'Bienvenido Super Administrador');
-                    
+
                     case 'Administrador':
                         return redirect()->route('admin.dashboard')
                             ->with('success', 'Bienvenido Administrador');
-                    
+
                     case 'Profesor':
                         return redirect()->route('profesor.dashboard')
                             ->with('success', 'Bienvenido Profesor');
-                    
+
                     case 'Estudiante':
                         return redirect()->route('estudiante.dashboard')
                             ->with('success', 'Bienvenido Estudiante');
-                    
+
                     case 'Padre':
                         return redirect()->route('padre.dashboard')
                             ->with('success', 'Bienvenido Padre/Tutor');
-                    
+
                     default:
                         // Si el rol no coincide con ninguno, redirigir a /home
                         return redirect()->route('home')

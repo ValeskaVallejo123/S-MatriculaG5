@@ -107,8 +107,8 @@
                             <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-700">
                                 <h6 class="text-[#49769F] fw-bold mb-3">👤 Datos del estudiante</h6>
                                 <div class="row g-2">
-                                    <div class="col-12 col-sm-6"><strong>Nombre:</strong> {{ $estudiante->nombre }}</div>
-                                    <div class="col-12 col-sm-6"><strong>Apellido:</strong> {{ $estudiante->apellido }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Nombre:</strong> {{ $estudiante->nombre1 }}</div>
+                                    <div class="col-12 col-sm-6"><strong>Apellido:</strong> {{ $estudiante->apellido1 }}</div>
                                     <div class="col-12 col-sm-6"><strong>DNI:</strong> {{ $estudiante->dni }}</div>
                                     <div class="col-12 col-sm-6"><strong>Correo:</strong> {{ $estudiante->email ?? 'No registrado' }}</div>
                                     <div class="col-12 col-sm-6"><strong>Teléfono:</strong> {{ $estudiante->telefono ?? 'No registrado' }}</div>
