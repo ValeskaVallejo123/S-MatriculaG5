@@ -36,7 +36,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
-            
+
             // Redirigir según el dominio del correo
             return $this->redirectByEmailDomain($user->email);
         }
@@ -54,45 +54,45 @@ class LoginController extends Controller
     {
         // Extraer el dominio del correo
         $domain = substr(strrchr($email, "@"), 1);
-        
+
         // Definir redirecciones según el dominio
         switch ($domain) {
             // Super Administrador
             case 'egm.edu.hn':
                 return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Super Administrador!');
-            
+
             // Administrador de área
             case 'admin.egm.edu.hn':
                 return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Administrador!');
-            
+
             // Profesor
             case 'profesor.egm.edu.hn':
                 return redirect()->route('profesores.dashboard')->with('success', '¡Bienvenido Profesor!');
-            
+
             // Padre/Tutor
             case 'padre.egm.edu.hn':
                 return redirect()->route('padres.dashboard')->with('success', '¡Bienvenido Padre/Tutor!');
-            
+
             // Estudiante
             case 'estudiante.egm.edu.hn':
                 return redirect()->route('estudiantes.dashboard')->with('success', '¡Bienvenido Estudiante!');
-            
+
             // Gmail - Permitir acceso general (puedes personalizarlo)
             case 'gmail.com':
                 return $this->redirectByUserRole();
-            
+
             // Yahoo - Permitir acceso general (puedes personalizarlo)
             case 'yahoo.com':
             case 'yahoo.es':
             case 'yahoo.com.mx':
                 return $this->redirectByUserRole();
-            
+
             // Hotmail/Outlook - Por si también quieres aceptarlos
             case 'hotmail.com':
             case 'outlook.com':
             case 'live.com':
                 return $this->redirectByUserRole();
-            
+
             // Dominio no reconocido - Redirigir según rol del usuario
             default:
                 return $this->redirectByUserRole();
@@ -105,36 +105,36 @@ class LoginController extends Controller
     protected function redirectByUserRole()
     {
         $user = Auth::user();
-        
+
         // Verificar si el usuario tiene un campo 'rol' o 'role'
         if (isset($user->rol)) {
             switch ($user->rol) {
                 case 'super_admin':
                 case 'superadmin':
                     return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Super Administrador!');
-                
+
                 case 'admin':
                 case 'administrador':
                     return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido Administrador!');
-                
+
                 case 'profesor':
                 case 'teacher':
                     return redirect()->route('profesores.dashboard')->with('success', '¡Bienvenido Profesor!');
-                
+
                 case 'padre':
                 case 'tutor':
                 case 'parent':
                     return redirect()->route('padres.dashboard')->with('success', '¡Bienvenido Padre/Tutor!');
-                
+
                 case 'estudiante':
                 case 'student':
                     return redirect()->route('estudiantes.dashboard')->with('success', '¡Bienvenido Estudiante!');
-                
+
                 default:
                     return redirect()->route('home')->with('success', '¡Bienvenido!');
             }
         }
-        
+
         // Si no tiene rol definido, redirigir a una página general
         return redirect()->route('home')->with('success', '¡Bienvenido!');
     }
