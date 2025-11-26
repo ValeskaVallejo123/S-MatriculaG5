@@ -27,7 +27,7 @@
     </p>
 
     <p style="text-align: center; font-size: 13px; color: #888; margin-top: 20px;">
-        © {{ date('Y') }} Escuela Gabriela Mistral. Todos los derechos reservados.
+         {{ date('Y') }} Escuela Gabriela Mistral. Todos los derechos reservados.
     </p>
 </div>
 </body>

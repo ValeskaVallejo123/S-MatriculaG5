@@ -7,17 +7,37 @@ use Illuminate\Http\Request;
 
 class ProfesorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $profesores = Profesor::latest()->paginate(10);
-        return view('profesores.index', compact('profesores'));
+        $busqueda = $request->input('busqueda');
+        
+        $profesores = Profesor::query()
+            ->when($busqueda, function ($query, $busqueda) {
+                return $query->where(function ($q) use ($busqueda) {
+                    $q->where('nombre', 'like', "%{$busqueda}%")
+                      ->orWhere('apellido', 'like', "%{$busqueda}%")
+                      ->orWhere('dni', 'like', "%{$busqueda}%")
+                      ->orWhere('email', 'like', "%{$busqueda}%")
+                      ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->appends(['busqueda' => $busqueda]);
+        
+        return view('profesor.index', compact('profesores'));
     }
+
+    public function dashboard()
+{
+    return view('profesor.dashboard');
+}
 
     public function create()
     {
         $especialidades = Profesor::especialidades();
         $tiposContrato = Profesor::tiposContrato();
-        return view('profesores.create', compact('especialidades', 'tiposContrato'));
+        return view('profesor.create', compact('especialidades', 'tiposContrato'));
     }
 
     public function store(Request $request)
@@ -40,19 +60,21 @@ class ProfesorController extends Controller
 
         Profesor::create($validated);
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesor.index')
             ->with('success', 'Profesor creado exitosamente');
     }
 
     public function show(Profesor $profesor)
     {
-        return view('profesores.show', compact('profesor'));
+        return view('profesor.show', compact('profesor'));
     }
 
     public function edit(Profesor $profesor)
     {
+        // Traemos las opciones para los selects
         $especialidades = Profesor::especialidades();
         $tiposContrato = Profesor::tiposContrato();
+
         return view('profesores.edit', compact('profesor', 'especialidades', 'tiposContrato'));
     }
 
@@ -76,7 +98,7 @@ class ProfesorController extends Controller
 
         $profesor->update($validated);
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesor.index')
             ->with('success', 'Profesor actualizado exitosamente');
     }
 
@@ -84,7 +106,9 @@ class ProfesorController extends Controller
     {
         $profesor->delete();
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesor.index')
             ->with('success', 'Profesor eliminado exitosamente');
     }
+
+    
 }
