@@ -543,6 +543,14 @@
                 </a>
             </li>
 
+            <!-- ACCIONES IMPORTANTES -->
+            <li class="menu-item">
+                <a href="{{ route('acciones_importantes.index') }}" class="menu-link {{ request()->routeIs('acciones_importantes.index') ? 'active' : '' }}">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Ver acciones recientes</span>
+                </a>
+            </li>
+
         </ul>
     </aside>
     @endif

@@ -18,7 +18,10 @@ return new class extends Migration
             $table->boolean('notificar')->default(false);
             $table->timestamps();
 
-            $table->foreign('estudiante_id')->references('id')->on('estudiantes')->onDelete('cascade');
+            $table->foreign('estudiante_id')
+                ->references('id')
+                ->on('estudiantes')
+                ->onDelete('cascade');
         });
     }
 
