@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\BuscarEstudiante;
 
@@ -11,7 +12,7 @@ class BuscarEstudianteController extends Controller
         $nombre = $request->input('nombre');
         $dni = $request->input('dni');
 
-        $resultados = collect(); // colección vacía por defecto
+        $resultados = collect();
         $busquedaRealizada = false;
         $mensaje = null;
 
@@ -20,11 +21,19 @@ class BuscarEstudianteController extends Controller
 
             $estudiantes = BuscarEstudiante::query();
 
+            // Buscar por nombre (nombre1 y apellido1 incluidos)
             if ($nombre) {
-                $estudiantes->whereRaw("CONCAT(nombre1, ' ', nombre2, ' ', apellido1, ' ', apellido2) LIKE ?", ["%$nombre%"]);
+                $estudiantes->where(function ($q) use ($nombre) {
+                    $q->where('nombre1', 'like', "%$nombre%")
+                        ->orWhere('nombre2', 'like', "%$nombre%")
+                        ->orWhere('apellido1', 'like', "%$nombre%")
+                        ->orWhere('apellido2', 'like', "%$nombre%");
+                });
             }
 
+            // Normalizar el DNI (eliminar guiones y espacios)
             if ($dni) {
+                $dni = preg_replace('/[^0-9]/', '', $dni);
                 $estudiantes->orWhere('dni', 'like', "%$dni%");
             }
 
