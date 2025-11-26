@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Nuevo Grado')
 
@@ -13,6 +13,7 @@
 
 @section('content')
 <div class="container" style="max-width: 900px;">
+    
 
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-header" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.2rem;">
@@ -37,10 +38,10 @@
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar nivel...</option>
                             <option value="primaria" {{ old('nivel') == 'primaria' ? 'selected' : '' }}>
-                                🎒 Primaria (1° - 6° Grado)
+                                 Primaria (1° - 6° Grado)
                             </option>
                             <option value="secundaria" {{ old('nivel') == 'secundaria' ? 'selected' : '' }}>
-                                🎓 Secundaria (7° - 9° Grado)
+                                 Secundaria (7° - 9° Grado)
                             </option>
                         </select>
                         @error('nivel')

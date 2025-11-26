@@ -1,534 +1,232 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
-@section('title', 'Dashboard Super Admin')
-@section('page-title', 'Panel de Control')
+@section('title', 'Administradores')
+@section('page-title', 'Gestión de Administradores')
+
+@section('topbar-actions')
+    <a href="{{ route('superadmin.administradores.permisos') }}" 
+       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem; margin-right: 0.5rem;">
+        <i class="fas fa-shield-alt"></i>
+        Permisos y Roles
+    </a>
+    <a href="{{ route('superadmin.administradores.create') }}" 
+       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; font-size: 0.9rem;">
+        <i class="fas fa-plus"></i>
+        Nuevo Administrador
+    </a>
+@endsection
+
+@section('content')
+<div class="container-fluid">
+    
+    <!-- Estadísticas en Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Total -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);">
+                            <i class="fas fa-users" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-1" style="color: #64748b; font-size: 0.875rem; font-weight: 600;">Total Administradores</p>
+                            <h3 class="mb-0" style="color: #003b73; font-weight: 700; font-size: 1.875rem;">{{ $administradores->count() }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Super Admins -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);">
+                            <i class="fas fa-crown" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-1" style="color: #64748b; font-size: 0.875rem; font-weight: 600;">Super Administradores</p>
+                            <h3 class="mb-0" style="color: #003b73; font-weight: 700; font-size: 1.875rem;">{{ $administradores->where('is_super_admin', true)->count() }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admins Regulares -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                            <i class="fas fa-user-shield" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-1" style="color: #64748b; font-size: 0.875rem; font-weight: 600;">Administradores</p>
+                            <h3 class="mb-0" style="color: #003b73; font-weight: 700; font-size: 1.875rem;">{{ $administradores->where('is_super_admin', false)->count() }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Administradores -->
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-header text-white" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-user-shield" style="font-size: 1.25rem;"></i>
+                <h5 class="mb-0 fw-bold">Lista de Administradores</h5>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0;">
+                    <thead style="background: #f8fafc;">
+                        <tr>
+                            <th class="px-4 py-3" style="color: #003b73; font-weight: 700; font-size: 0.875rem; border: none;">
+                                <i class="fas fa-user me-2" style="color: #4ec7d2;"></i>Administrador
+                            </th>
+                            <th class="px-4 py-3" style="color: #003b73; font-weight: 700; font-size: 0.875rem; border: none;">
+                                <i class="fas fa-envelope me-2" style="color: #4ec7d2;"></i>Email
+                            </th>
+                            <th class="px-4 py-3 text-center" style="color: #003b73; font-weight: 700; font-size: 0.875rem; border: none;">
+                                <i class="fas fa-shield-alt me-2" style="color: #4ec7d2;"></i>Rol
+                            </th>
+                            <th class="px-4 py-3 text-center" style="color: #003b73; font-weight: 700; font-size: 0.875rem; border: none;">
+                                <i class="fas fa-check-circle me-2" style="color: #4ec7d2;"></i>Permisos
+                            </th>
+                            <th class="px-4 py-3 text-center" style="color: #003b73; font-weight: 700; font-size: 0.875rem; border: none;">
+                                <i class="fas fa-toggle-on me-2" style="color: #4ec7d2;"></i>Estado
+                            </th>
+                            <th class="px-4 py-3 text-center" style="color: #003b73; font-weight: 700; font-size: 0.875rem; border: none;">
+                                <i class="fas fa-cog me-2" style="color: #4ec7d2;"></i>Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($administradores as $admin)
+                        <tr style="border-bottom: 1px solid #e2e8f0; transition: all 0.2s ease;">
+                            <td class="px-4 py-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3);">
+                                        <strong style="color: white; font-size: 1.125rem;">{{ substr($admin->name, 0, 1) }}</strong>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block" style="color: #1e293b; font-size: 0.938rem;">{{ $admin->name }}</strong>
+                                        @if($admin->is_protected)
+                                        <span class="badge" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); font-size: 0.7rem; padding: 0.25rem 0.5rem; border-radius: 4px;">
+                                            <i class="fas fa-lock me-1"></i>Protegido
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3" style="color: #64748b; font-size: 0.875rem;">
+                                <i class="fas fa-envelope me-2" style="color: #4ec7d2;"></i>{{ $admin->email }}
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @if($admin->is_super_admin)
+                                    <span class="badge" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);">
+                                        <i class="fas fa-crown me-1"></i>Super Admin
+                                    </span>
+                                @else
+                                    <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(78, 199, 210, 0.3);">
+                                        <i class="fas fa-user-shield me-1"></i>Administrador
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @php
+                                    $permisosActivos = is_array($admin->permissions) ? count($admin->permissions) : 0;
+                                @endphp
+                                @if($admin->is_super_admin)
+                                    <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">
+                                        <i class="fas fa-infinity me-1"></i>Todos
+                                    </span>
+                                @else
+                                    <span class="badge" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);">
+                                        <i class="fas fa-list-check me-1"></i>{{ $permisosActivos }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">
+                                    <i class="fas fa-check-circle me-1"></i>Activo
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @if(!$admin->is_protected)
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="{{ route('superadmin.administradores.edit', $admin->id) }}" 
+                                       class="btn btn-sm"
+                                       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; padding: 0.5rem 0.875rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(78, 199, 210, 0.3);"
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-sm"
+                                            style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 0.5rem 0.875rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);"
+                                            data-route="{{ route('superadmin.administradores.destroy', $admin->id) }}"
+                                            data-message="¿Estás seguro de eliminar a este administrador?"
+                                            data-name="{{ $admin->name }}"
+                                            onclick="mostrarModalDeleteData(this)"
+                                            title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                @else
+                                <span style="color: #94a3b8; font-size: 0.875rem; font-weight: 600;">
+                                    <i class="fas fa-lock me-1"></i>Protegido
+                                </span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div style="padding: 3rem 1rem;">
+                                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.1) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                                        <i class="fas fa-users" style="font-size: 2rem; color: #4ec7d2;"></i>
+                                    </div>
+                                    <h6 style="color: #64748b; font-weight: 600; margin-bottom: 0.5rem;">No hay administradores registrados</h6>
+                                    <p style="color: #94a3b8; font-size: 0.875rem; margin: 0;">Comienza agregando tu primer administrador</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 @push('styles')
 <style>
-    /* Animaciones personalizadas */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+        transform: scale(1.001);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    @media (max-width: 768px) {
+        .table {
+            font-size: 0.875rem;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        
+        .card-body {
+            padding: 1rem !important;
         }
-    }
-
-    .fade-in-up {
-        animation: fadeInUp 0.6s ease-out forwards;
-    }
-
-    /* Tarjetas de estadísticas mejoradas */
-    .stat-card {
-        background: white;
-        border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        border: 1px solid #f0f0f0;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--card-color), transparent);
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    }
-
-    .stat-card.primary { --card-color: #667eea; }
-    .stat-card.danger { --card-color: #ef4444; }
-    .stat-card.success { --card-color: #10b981; }
-    .stat-card.warning { --card-color: #f59e0b; }
-    .stat-card.info { --card-color: #3b82f6; }
-    .stat-card.purple { --card-color: #8b5cf6; }
-
-    .stat-icon {
-        width: 70px;
-        height: 70px;
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        transition: all 0.3s ease;
-    }
-
-    .stat-card:hover .stat-icon {
-        transform: scale(1.1) rotate(5deg);
-    }
-
-    /* Tarjetas de acceso rápido */
-    .quick-access-card {
-        background: white;
-        border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        border: 1px solid #f0f0f0;
-        height: 100%;
-        text-decoration: none;
-        color: inherit;
-        display: block;
-    }
-
-    .quick-access-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        text-decoration: none;
-    }
-
-    .quick-access-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-    }
-
-    .quick-access-card h5 {
-        font-weight: 700;
-        margin-bottom: 8px;
-        color: #1f2937;
-    }
-
-    .quick-access-card p {
-        color: #6b7280;
-        font-size: 0.9rem;
-        margin-bottom: 15px;
-    }
-
-    .quick-access-buttons {
-        display: flex;
-        gap: 10px;
-    }
-
-    .quick-access-buttons .btn {
-        flex: 1;
-        border-radius: 10px;
-        padding: 10px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    /* Tabla mejorada */
-    .custom-table {
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    }
-
-    .custom-table thead {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .custom-table thead th {
-        border: none;
-        padding: 18px 20px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
-
-    .custom-table tbody tr {
-        transition: all 0.3s ease;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .custom-table tbody tr:hover {
-        background: #f8f9ff;
-        transform: scale(1.01);
-    }
-
-    /* Badges mejorados */
-    .badge-custom {
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.8rem;
-        letter-spacing: 0.3px;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    /* Actividad reciente */
-    .activity-item {
-        padding: 15px;
-        border-left: 3px solid #667eea;
-        background: #f8f9ff;
-        border-radius: 0 10px 10px 0;
-        margin-bottom: 12px;
-        transition: all 0.3s ease;
-    }
-
-    .activity-item:hover {
-        background: white;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        transform: translateX(5px);
     }
 </style>
 @endpush
-
-@section('content')
-
-<!-- Mensaje de bienvenida -->
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show mb-4 fade-in-up" style="animation-delay: 0.1s;">
-    <i class="fas fa-check-circle me-2"></i> 
-    <strong>{{ session('success') }}</strong>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-
-<!-- Header de Bienvenida -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm fade-in-up" style="animation-delay: 0.1s; border-radius: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-            <div class="card-body text-white p-4">
-                <h2 class="mb-2 fw-bold">
-                    👋 ¡Bienvenido, {{ Auth::user()->name }}!
-                </h2>
-                <p class="mb-0 opacity-75">Panel de Administración - Sistema de Matrículas Gabriela Mistral</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Estadísticas principales -->
-<div class="row g-4 mb-4">
-    <!-- Total Materias -->
-    <div class="col-lg-3 col-md-6 fade-in-up" style="animation-delay: 0.1s;">
-        <div class="stat-card primary">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="text-muted mb-2 fw-semibold">Total Materias</p>
-                    <h2 class="mb-0 fw-bold">{{ \App\Models\Materia::count() }}</h2>
-                    <small class="text-success">
-                        <i class="fas fa-arrow-up"></i> Activas: {{ \App\Models\Materia::where('activo', true)->count() }}
-                    </small>
-                </div>
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                    <i class="fas fa-book"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Total Grados -->
-    <div class="col-lg-3 col-md-6 fade-in-up" style="animation-delay: 0.2s;">
-        <div class="stat-card success">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="text-muted mb-2 fw-semibold">Total Grados</p>
-                    <h2 class="mb-0 fw-bold">{{ \App\Models\Grado::count() }}</h2>
-                    <small class="text-success">
-                        <i class="fas fa-check-circle"></i> Activos: {{ \App\Models\Grado::where('activo', true)->count() }}
-                    </small>
-                </div>
-                <div class="stat-icon bg-success bg-opacity-10 text-success">
-                    <i class="fas fa-school"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profesores -->
-    <div class="col-lg-3 col-md-6 fade-in-up" style="animation-delay: 0.3s;">
-        <div class="stat-card warning">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="text-muted mb-2 fw-semibold">Profesores</p>
-                    <h2 class="mb-0 fw-bold">{{ \App\Models\User::where('role', 'profesor')->count() }}</h2>
-                    <small class="text-muted">
-                        <i class="fas fa-chalkboard-teacher"></i> Docentes activos
-                    </small>
-                </div>
-                <div class="stat-icon bg-warning bg-opacity-10 text-warning">
-                    <i class="fas fa-user-tie"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Estudiantes -->
-    <div class="col-lg-3 col-md-6 fade-in-up" style="animation-delay: 0.4s;">
-        <div class="stat-card info">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="text-muted mb-2 fw-semibold">Estudiantes</p>
-                    <h2 class="mb-0 fw-bold">{{ \App\Models\User::where('role', 'estudiante')->count() }}</h2>
-                    <small class="text-muted">
-                        <i class="fas fa-graduation-cap"></i> Matriculados
-                    </small>
-                </div>
-                <div class="stat-icon bg-info bg-opacity-10 text-info">
-                    <i class="fas fa-user-graduate"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Sección de Accesos Rápidos -->
-<div class="row mb-4">
-    <div class="col-12">
-        <h4 class="fw-bold mb-3 fade-in-up" style="animation-delay: 0.5s;">
-            <i class="fas fa-bolt text-warning"></i> Accesos Rápidos
-        </h4>
-    </div>
-</div>
-
-<div class="row g-4 mb-4">
-    <!-- Gestión de Materias -->
-    <div class="col-lg-4 col-md-6 fade-in-up" style="animation-delay: 0.6s;">
-        <div class="quick-access-card">
-            <div class="quick-access-icon bg-primary bg-opacity-10 text-primary">
-                <i class="fas fa-book-open"></i>
-            </div>
-            <h5>Gestión de Materias</h5>
-            <p class="mb-3">Administra las materias y asignaturas del centro educativo para primaria y secundaria.</p>
-            <div class="quick-access-buttons">
-                <a href="{{ route('materias.index') }}" class="btn btn-primary">
-                    <i class="fas fa-list"></i> Ver Todas
-                </a>
-                <a href="{{ route('materias.create') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-plus"></i> Crear
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Gestión de Grados -->
-    <div class="col-lg-4 col-md-6 fade-in-up" style="animation-delay: 0.7s;">
-        <div class="quick-access-card">
-            <div class="quick-access-icon bg-success bg-opacity-10 text-success">
-                <i class="fas fa-school"></i>
-            </div>
-            <h5>Gestión de Grados</h5>
-            <p class="mb-3">Administra los grados escolares (1° a 9°) y asigna materias a cada sección.</p>
-            <div class="quick-access-buttons">
-                <a href="{{ route('grados.index') }}" class="btn btn-success">
-                    <i class="fas fa-th-large"></i> Ver Todos
-                </a>
-                <a href="{{ route('grados.create') }}" class="btn btn-outline-success">
-                    <i class="fas fa-plus"></i> Crear
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Asignación de Materias -->
-    <div class="col-lg-4 col-md-6 fade-in-up" style="animation-delay: 0.8s;">
-        <div class="quick-access-card">
-            <div class="quick-access-icon bg-info bg-opacity-10 text-info">
-                <i class="fas fa-link"></i>
-            </div>
-            <h5>Asignación de Materias</h5>
-            <p class="mb-3">Asigna materias a grados, define profesores y establece horarios semanales.</p>
-            <div class="quick-access-buttons">
-                <a href="{{ route('grados.index') }}" class="btn btn-info text-white">
-                    <i class="fas fa-tasks"></i> Gestionar
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profesores -->
-    <div class="col-lg-4 col-md-6 fade-in-up" style="animation-delay: 0.9s;">
-        <div class="quick-access-card">
-            <div class="quick-access-icon bg-warning bg-opacity-10 text-warning">
-                <i class="fas fa-chalkboard-teacher"></i>
-            </div>
-            <h5>Gestión de Profesores</h5>
-            <p class="mb-3">Administra el personal docente y sus asignaciones de materias.</p>
-            <div class="quick-access-buttons">
-                <a href="#" class="btn btn-warning text-white">
-                    <i class="fas fa-users"></i> Ver Todos
-                </a>
-                <a href="#" class="btn btn-outline-warning">
-                    <i class="fas fa-user-plus"></i> Agregar
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Estudiantes -->
-    <div class="col-lg-4 col-md-6 fade-in-up" style="animation-delay: 1s;">
-        <div class="quick-access-card">
-            <div class="quick-access-icon bg-danger bg-opacity-10 text-danger">
-                <i class="fas fa-user-graduate"></i>
-            </div>
-            <h5>Gestión de Estudiantes</h5>
-            <p class="mb-3">Administra los estudiantes matriculados y sus inscripciones.</p>
-            <div class="quick-access-buttons">
-                <a href="#" class="btn btn-danger">
-                    <i class="fas fa-graduation-cap"></i> Ver Todos
-                </a>
-                <a href="#" class="btn btn-outline-danger">
-                    <i class="fas fa-user-plus"></i> Matricular
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reportes -->
-    <div class="col-lg-4 col-md-6 fade-in-up" style="animation-delay: 1.1s;">
-        <div class="quick-access-card">
-            <div class="quick-access-icon bg-purple bg-opacity-10 text-purple" style="color: #8b5cf6;">
-                <i class="fas fa-chart-bar"></i>
-            </div>
-            <h5>Reportes y Estadísticas</h5>
-            <p class="mb-3">Genera reportes del sistema y consulta estadísticas generales.</p>
-            <div class="quick-access-buttons">
-                <a href="#" class="btn text-white" style="background-color: #8b5cf6;">
-                    <i class="fas fa-file-alt"></i> Ver Reportes
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Sección de Administradores (si tienes esta variable) -->
-@if(isset($administradores) && $administradores->count() > 0)
-<div class="row g-4">
-    <!-- Panel principal -->
-    <div class="col-lg-8">
-        <div class="custom-table fade-in-up" style="animation-delay: 1.2s;">
-            <div class="px-4 py-3 bg-white">
-                <h5 class="mb-0 fw-bold">
-                    <i class="fas fa-users-cog text-primary"></i> Administradores del Sistema
-                </h5>
-            </div>
-            <table class="table mb-0">
-                <thead>
-                    <tr>
-                        <th>Administrador</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($administradores->take(5) as $admin)
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
-                                    <strong class="text-primary">{{ substr($admin->name, 0, 1) }}</strong>
-                                </div>
-                                <div>
-                                    <strong>{{ $admin->name }}</strong>
-                                    @if($admin->is_super_admin)
-                                        <span class="badge-custom bg-danger text-white ms-2">
-                                            <i class="fas fa-crown"></i> SUPER
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </td>
-                        <td class="align-middle">
-                            <i class="fas fa-envelope text-muted me-2"></i>
-                            {{ $admin->email }}
-                        </td>
-                        <td class="align-middle">
-                            @if($admin->is_super_admin)
-                                <span class="badge-custom bg-danger text-white">
-                                    <i class="fas fa-star"></i> Super Admin
-                                </span>
-                            @else
-                                <span class="badge-custom bg-primary text-white">
-                                    <i class="fas fa-user-cog"></i> Admin
-                                </span>
-                            @endif
-                        </td>
-                        <td class="text-center align-middle">
-                            @if(!$admin->is_protected)
-                                <a href="{{ route('superadmin.administradores.edit', $admin) }}" 
-                                   class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            @else
-                                <span class="badge bg-warning">Protegido</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Panel lateral -->
-    <div class="col-lg-4">
-        <!-- Actividad reciente -->
-        <div class="card border-0 shadow-sm fade-in-up" style="animation-delay: 1.3s; border-radius: 15px;">
-            <div class="card-header bg-white border-0">
-                <h5 class="mb-0 fw-bold">
-                    <i class="fas fa-history text-primary"></i> Actividad Reciente
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="activity-item">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong>Materia creada</strong>
-                            <p class="mb-0 small text-muted">Nueva materia agregada al sistema</p>
-                        </div>
-                        <span class="badge bg-success">Hoy</span>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong>Grado actualizado</strong>
-                            <p class="mb-0 small text-muted">Se modificaron las asignaciones</p>
-                        </div>
-                        <span class="badge bg-info">Ayer</span>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong>Login exitoso</strong>
-                            <p class="mb-0 small text-muted">Administrador inició sesión</p>
-                        </div>
-                        <span class="badge bg-secondary">2d</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
-
 @endsection
-
-@push('scripts')
-<script>
-    // Auto-hide alerts
-    setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        });
-    }, 5000);
-</script>
-@endpush

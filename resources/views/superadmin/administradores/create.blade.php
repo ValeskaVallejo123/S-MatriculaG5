@@ -1,442 +1,269 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crear Administrador - Escuela Gabriela Mistral</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+@extends('layouts.app')
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+@section('title', 'Nuevo Administrador')
+@section('page-title', 'Crear Nuevo Administrador')
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%);
-      color: #2c3e50;
-    }
+@section('topbar-actions')
+    <a href="{{ route('superadmin.administradores.index') }}" 
+       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+@endsection
 
-    /* SIDEBAR */
-    .sidebar {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 230px;
-      height: 100vh;
-      background: white;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.05);
-      overflow-y: auto;
-    }
-
-    .sidebar-header {
-      padding: 20px 15px;
-      border-bottom: 1px solid #f0f0f0;
-      text-align: center;
-    }
-
-    .sidebar-logo {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #00BCD4 0%, #00ACC1 100%);
-      border-radius: 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.1rem;
-      margin-bottom: 6px;
-    }
-
-    .sidebar-brand h2 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #2c3e50;
-    }
-
-    .sidebar-brand p {
-      font-size: 0.65rem;
-      color: #95a5a6;
-    }
-
-    .sidebar-nav {
-      padding: 10px 0;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      padding: 10px 15px;
-      color: #7f8c8d;
-      text-decoration: none;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-    }
-
-    .nav-item i {
-      width: 16px;
-      font-size: 0.9rem;
-      margin-right: 10px;
-    }
-
-    .nav-item:hover, .nav-item.active {
-      background: #f8f9fc;
-      color: #00BCD4;
-    }
-
-    /* MAIN CONTENT */
-    .main-content {
-      margin-left: 230px;
-      padding: 30px;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .content-wrapper {
-      width: 100%;
-      max-width: 550px;
-    }
-
-    /* HEADER */
-    .page-header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .page-icon {
-      width: 50px;
-      height: 50px;
-      background: linear-gradient(135deg, #00BCD4, #00ACC1);
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.3rem;
-      margin-bottom: 10px;
-    }
-
-    .page-header h1 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .page-header p {
-      font-size: 0.75rem;
-      color: #7f8c8d;
-    }
-
-    .header-divider {
-      width: 50px;
-      height: 3px;
-      background: linear-gradient(135deg, #00BCD4, #00ACC1);
-      margin: 10px auto 0;
-      border-radius: 2px;
-    }
-
-    /* FORM CARD */
-    .form-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.07);
-      overflow: hidden;
-    }
-
-    .form-card-header {
-      background: linear-gradient(135deg, #00BCD4, #00ACC1);
-      padding: 15px 20px;
-      color: white;
-    }
-
-    .form-card-header h2 {
-      font-size: 1rem;
-      font-weight: 700;
-    }
-
-    .form-card-header p {
-      font-size: 0.7rem;
-    }
-
-    .form-card-body {
-      padding: 20px;
-    }
-
-    .form-section {
-      margin-bottom: 18px;
-    }
-
-    .section-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #2c3e50;
-      border-bottom: 2px solid #e0f7fa;
-      padding-bottom: 5px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .section-title i {
-      color: #00BCD4;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .form-group label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      display: block;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 8px 8px 8px 30px;
-      border: 2px solid #e0f7fa;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      background: #f1f8fb;
-      transition: all 0.3s;
-    }
-
-    .form-control:focus {
-      border-color: #00BCD4;
-      background: white;
-    }
-
-    .input-icon {
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #00BCD4;
-      font-size: 0.8rem;
-    }
-
-    .input-wrapper {
-      position: relative;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #95a5a6;
-      cursor: pointer;
-    }
-
-    .form-hint {
-      font-size: 0.65rem;
-      color: #7f8c8d;
-      margin-top: 3px;
-    }
-
-    .info-box {
-      background: rgba(0, 188, 212, 0.08);
-      border: 1px solid #e0f7fa;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 0.75rem;
-    }
-
-    .permissions-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      background: #f1f8fb;
-      border-radius: 8px;
-      padding: 10px;
-    }
-
-    .permission-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: white;
-      border: 1px solid #e0f7fa;
-      border-radius: 6px;
-      padding: 6px;
-      font-size: 0.75rem;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 20px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #00BCD4, #00ACC1);
-      color: white;
-    }
-
-    .btn-secondary {
-      background: white;
-      border: 2px solid #e0f7fa;
-      color: #5a6c7d;
-    }
-
-    .alert {
-      background: #e0f7fa;
-      border: 1px solid #80deea;
-      border-radius: 8px;
-      padding: 10px;
-      margin-top: 15px;
-      font-size: 0.7rem;
-    }
-
-    @media (max-width: 768px) {
-      .form-grid, .permissions-grid {
-        grid-template-columns: 1fr;
-      }
-      .main-content {
-        margin-left: 0;
-        padding: 20px;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo"><i class="fas fa-graduation-cap"></i></div>
-      <div class="sidebar-brand">
-        <h2>Gabriela Mistral</h2>
-        <p>Sistema Escolar</p>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="#" class="nav-item active"><i class="fas fa-user-shield"></i>Admins</a>
-      <a href="#" class="nav-item"><i class="fas fa-users"></i>Usuarios</a>
-      <a href="#" class="nav-item"><i class="fas fa-cog"></i>Configuración</a>
-    </nav>
-  </aside>
-
-  <main class="main-content">
-    <div class="content-wrapper">
-      <div class="page-header">
-        <div class="page-icon"><i class="fas fa-user-shield"></i></div>
-        <h1>Nuevo Administrador</h1>
-        <p>Complete los datos para crear la cuenta</p>
-        <div class="header-divider"></div>
-      </div>
-
-      <div class="form-card">
-        <div class="form-card-header">
-          <h2>Información del Administrador</h2>
-          <p>Campos marcados con * son obligatorios</p>
+@section('content')
+<div class="container" style="max-width: 800px;">
+    
+    <!-- Formulario -->
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-header text-white" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-user-plus" style="font-size: 1.25rem;"></i>
+                <h5 class="mb-0 fw-bold">Información del Administrador</h5>
+            </div>
         </div>
 
-        <div class="form-card-body">
-          <form>
-            <div class="form-section">
-              <h3 class="section-title"><i class="fas fa-user"></i>Datos Personales</h3>
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Nombre(s) *</label>
-                  <div class="input-wrapper">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" class="form-control" placeholder="Ej: Juan Carlos">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label>Apellido(s) *</label>
-                  <div class="input-wrapper">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" class="form-control" placeholder="Ej: Pérez González">
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="card-body p-4">
+            <form action="{{ route('superadmin.administradores.store') }}" method="POST">
+                @csrf
 
-            <div class="form-section">
-              <h3 class="section-title"><i class="fas fa-lock"></i>Credenciales</h3>
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Contraseña *</label>
-                  <div class="input-wrapper">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="password" class="form-control" placeholder="Mínimo 8 caracteres">
-                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
-                      <i class="fas fa-eye" id="eye-password"></i>
+                <!-- Información Personal -->
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3" style="color: #003b73;">
+                        <i class="fas fa-user me-2" style="color: #4ec7d2;"></i>Información Personal
+                    </h6>
+
+                    <div class="row g-3">
+                        <!-- Nombre -->
+                        <div class="col-md-6">
+                            <label for="name" class="form-label small fw-semibold" style="color: #003b73;">
+                                Nombre Completo <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="text" 
+                                       class="form-control ps-5 @error('name') is-invalid @enderror" 
+                                       id="name" 
+                                       name="name" 
+                                       value="{{ old('name') }}" 
+                                       placeholder="Ej: Juan Pérez"
+                                       required
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('name')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label for="email" class="form-label small fw-semibold" style="color: #003b73;">
+                                Email <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="email" 
+                                       class="form-control ps-5 @error('email') is-invalid @enderror" 
+                                       id="email" 
+                                       name="email" 
+                                       value="{{ old('email') }}" 
+                                       placeholder="admin@ejemplo.com"
+                                       required
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('email')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seguridad -->
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3" style="color: #003b73;">
+                        <i class="fas fa-lock me-2" style="color: #4ec7d2;"></i>Seguridad
+                    </h6>
+
+                    <div class="row g-3">
+                        <!-- Contraseña -->
+                        <div class="col-md-6">
+                            <label for="password" class="form-label small fw-semibold" style="color: #003b73;">
+                                Contraseña <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-key position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="password" 
+                                       class="form-control ps-5 @error('password') is-invalid @enderror" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Mínimo 8 caracteres"
+                                       required
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('password')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <small class="text-muted" style="font-size: 0.75rem;">
+                                <i class="fas fa-info-circle me-1"></i>Mínimo 8 caracteres
+                            </small>
+                        </div>
+
+                        <!-- Confirmar Contraseña -->
+                        <div class="col-md-6">
+                            <label for="password_confirmation" class="form-label small fw-semibold" style="color: #003b73;">
+                                Confirmar Contraseña <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-key position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="password" 
+                                       class="form-control ps-5" 
+                                       id="password_confirmation" 
+                                       name="password_confirmation" 
+                                       placeholder="Repite la contraseña"
+                                       required
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rol y Permisos -->
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3" style="color: #003b73;">
+                        <i class="fas fa-shield-alt me-2" style="color: #4ec7d2;"></i>Rol y Permisos
+                    </h6>
+
+                    <!-- Tipo de Rol -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" style="color: #003b73;">
+                            Tipo de Administrador <span style="color: #ef4444;">*</span>
+                        </label>
+                        
+                        <div class="row g-3">
+                            <!-- Super Admin -->
+                            <div class="col-md-6">
+                                <div class="form-check p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px; cursor: pointer;" onclick="document.getElementById('role_super_admin').click()">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="role" 
+                                           id="role_super_admin" 
+                                           value="super_admin"
+                                           {{ old('role') == 'super_admin' ? 'checked' : '' }}
+                                           style="width: 20px; height: 20px; cursor: pointer;">
+                                    <label class="form-check-label ms-2" for="role_super_admin" style="cursor: pointer;">
+                                        <strong style="color: #ef4444;">Super Administrador</strong>
+                                        <small class="d-block text-muted">Acceso total al sistema</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Admin Regular -->
+                            <div class="col-md-6">
+                                <div class="form-check p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px; cursor: pointer;" onclick="document.getElementById('role_admin').click()">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="role" 
+                                           id="role_admin" 
+                                           value="admin"
+                                           {{ old('role', 'admin') == 'admin' ? 'checked' : '' }}
+                                           style="width: 20px; height: 20px; cursor: pointer;">
+                                    <label class="form-check-label ms-2" for="role_admin" style="cursor: pointer;">
+                                        <strong style="color: #00508f;">Administrador</strong>
+                                        <small class="d-block text-muted">Permisos configurables</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usuario Protegido -->
+                    <div class="form-check form-switch p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px;">
+                        <input class="form-check-input" 
+                               type="checkbox" 
+                               name="is_protected" 
+                               id="is_protected"
+                               value="1"
+                               {{ old('is_protected') ? 'checked' : '' }}
+                               style="width: 40px; height: 20px; cursor: pointer;">
+                        <label class="form-check-label ms-2" for="is_protected" style="cursor: pointer;">
+                            <strong style="color: #1e293b;">Usuario Protegido</strong>
+                            <small class="d-block text-muted">No se puede editar ni eliminar (recomendado para cuentas críticas)</small>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Alert informativo -->
+                <div class="alert mb-4" style="background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.1) 100%); border: 1px solid rgba(78, 199, 210, 0.2); border-radius: 10px;">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="fas fa-info-circle mt-1" style="color: #4ec7d2;"></i>
+                        <div>
+                            <strong class="d-block mb-1" style="color: #003b73; font-size: 0.875rem;">Nota Importante</strong>
+                            <small style="color: #64748b;">
+                                Los permisos específicos se pueden asignar después de crear el administrador en la sección "Permisos y Roles".
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a href="{{ route('superadmin.administradores.index') }}" 
+                       class="btn" 
+                       style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </a>
+                    <button type="submit" 
+                            class="btn" 
+                            style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); transition: all 0.3s ease;">
+                        <i class="fas fa-save me-1"></i>Crear Administrador
                     </button>
-                  </div>
                 </div>
-                <div class="form-group">
-                  <label>Confirmar *</label>
-                  <div class="input-wrapper">
-                    <i class="fas fa-check-circle input-icon"></i>
-                    <input type="password" id="password_confirmation" class="form-control" placeholder="Repita contraseña">
-                    <button type="button" class="toggle-password" onclick="togglePassword('password_confirmation')">
-                      <i class="fas fa-eye" id="eye-password_confirmation"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div class="form-section">
-              <h3 class="section-title"><i class="fas fa-key"></i>Permisos</h3>
-              <div class="permissions-grid">
-                <div class="permission-item"><input type="checkbox"><label>Usuarios</label></div>
-                <div class="permission-item"><input type="checkbox"><label>Estudiantes</label></div>
-                <div class="permission-item"><input type="checkbox"><label>Profesores</label></div>
-                <div class="permission-item"><input type="checkbox"><label>Reportes</label></div>
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary">Crear</button>
-              <button type="reset" class="btn btn-secondary">Cancelar</button>
-            </div>
-          </form>
+            </form>
         </div>
-      </div>
-
-      <div class="alert">
-        <strong>Nota:</strong> El correo institucional se generará automáticamente como
-        <em>nombre.apellido@admin.edu</em>.
-      </div>
     </div>
-  </main>
 
-  <script>
-    function togglePassword(id) {
-      const input = document.getElementById(id);
-      const icon = document.getElementById('eye-' + id);
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-      } else {
-        input.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-      }
+</div>
+
+@push('styles')
+<style>
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4ec7d2;
+        box-shadow: 0 0 0 0.2rem rgba(78, 199, 210, 0.15);
+        outline: none;
     }
-  </script>
-</body>
-</html>
+
+    .form-control.is-invalid {
+        border-color: #ef4444;
+        background-image: none;
+    }
+
+    .form-control.is-invalid:focus {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.15);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-check-input:checked {
+        background-color: #4ec7d2;
+        border-color: #4ec7d2;
+    }
+
+    .form-check:has(input:checked) {
+        border-color: #4ec7d2 !important;
+        background: linear-gradient(135deg, rgba(78, 199, 210, 0.05) 0%, rgba(0, 80, 143, 0.05) 100%);
+    }
+</style>
+@endpush
+@endsection
