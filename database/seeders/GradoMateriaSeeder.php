@@ -4,71 +4,45 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Grado;
-use App\Models\Materia;
 
 class GradoMateriaSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // Crear grados de primaria
-        for ($i = 1; $i <= 6; $i++) {
-            Grado::create([
-                'nivel' => 'primaria',
-                'numero' => $i,
-                'seccion' => 'A',
-                'anio_lectivo' => 2025,
-                'activo' => true,
-            ]);
-        }
+        // Eliminar grados existentes del año actual
+        $anioActual = date('Y');
+        Grado::where('anio_lectivo', $anioActual)->delete();
+        
+        $this->command->warn('🗑️  Grados del año ' . $anioActual . ' eliminados');
 
-        // Crear grados de secundaria
-        for ($i = 7; $i <= 9; $i++) {
-            Grado::create([
-                'nivel' => 'secundaria',
-                'numero' => $i,
-                'seccion' => 'A',
-                'anio_lectivo' => 2025,
-                'activo' => true,
-            ]);
-        }
-
-        // Crear materias de primaria
-        $materiasPrimaria = [
-            ['nombre' => 'Matemáticas', 'codigo' => 'MAT-P', 'area' => 'Matemáticas'],
-            ['nombre' => 'Español', 'codigo' => 'ESP-P', 'area' => 'Español'],
-            ['nombre' => 'Ciencias Naturales', 'codigo' => 'CN-P', 'area' => 'Ciencias Naturales'],
-            ['nombre' => 'Ciencias Sociales', 'codigo' => 'CS-P', 'area' => 'Ciencias Sociales'],
-            ['nombre' => 'Educación Física', 'codigo' => 'EF-P', 'area' => 'Educación Física'],
+        $grados = [
+            ['numero' => 1, 'nivel' => 'primaria'],
+            ['numero' => 2, 'nivel' => 'primaria'],
+            ['numero' => 3, 'nivel' => 'primaria'],
+            ['numero' => 4, 'nivel' => 'primaria'],
+            ['numero' => 5, 'nivel' => 'primaria'],
+            ['numero' => 6, 'nivel' => 'primaria'],
+            ['numero' => 7, 'nivel' => 'secundaria'],
+            ['numero' => 8, 'nivel' => 'secundaria'],
+            ['numero' => 9, 'nivel' => 'secundaria'],
         ];
 
-        foreach ($materiasPrimaria as $materia) {
-            Materia::create([
-                'nombre' => $materia['nombre'],
-                'codigo' => $materia['codigo'],
-                'area' => $materia['area'],
-                'nivel' => 'primaria',
-                'activo' => true,
-            ]);
+        $secciones = ['A', 'B', 'C', 'D'];
+
+        foreach ($grados as $gradoData) {
+            foreach ($secciones as $seccion) {
+                Grado::create([
+                    'nivel' => $gradoData['nivel'],
+                    'numero' => $gradoData['numero'],
+                    'seccion' => $seccion,
+                    'anio_lectivo' => $anioActual,
+                    'activo' => true,
+                ]);
+            }
         }
 
-        // Crear materias de secundaria
-        $materiasSecundaria = [
-            ['nombre' => 'Matemáticas', 'codigo' => 'MAT-S', 'area' => 'Matemáticas'],
-            ['nombre' => 'Español', 'codigo' => 'ESP-S', 'area' => 'Español'],
-            ['nombre' => 'Ciencias Naturales', 'codigo' => 'CN-S', 'area' => 'Ciencias Naturales'],
-            ['nombre' => 'Ciencias Sociales', 'codigo' => 'CS-S', 'area' => 'Ciencias Sociales'],
-            ['nombre' => 'Inglés', 'codigo' => 'ING-S', 'area' => 'Inglés'],
-            ['nombre' => 'Informática', 'codigo' => 'INF-S', 'area' => 'Informática'],
-        ];
-
-        foreach ($materiasSecundaria as $materia) {
-            Materia::create([
-                'nombre' => $materia['nombre'],
-                'codigo' => $materia['codigo'],
-                'area' => $materia['area'],
-                'nivel' => 'secundaria',
-                'activo' => true,
-            ]);
-        }
+        $this->command->info(' Se han creado 9 grados con 4 secciones cada uno (36 grados en total)');
+        $this->command->info('   • Primaria: 1° a 6° (24 grados)');
+        $this->command->info('   • Secundaria: 7° a 9° (12 grados)');
     }
 }

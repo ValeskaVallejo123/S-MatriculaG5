@@ -35,7 +35,7 @@ class SuperAdminController extends Controller
 
     public function index()
     {
-        $administradores = User::whereIn('rol', ['admin', 'super_admin'])
+        $administradores = User::whereIn('role', ['admin', 'super_admin'])
             ->orderBy('is_super_admin', 'desc')
             ->orderBy('name')
             ->get();
@@ -76,7 +76,7 @@ class SuperAdminController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'rol' => 'admin',
+            'role' => 'admin',
             'permissions' => $request->permissions ?? [],
             'is_super_admin' => false,
             'is_protected' => false,
@@ -143,7 +143,7 @@ class SuperAdminController extends Controller
     {
         if (!$administrador->canBeDeleted()) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', '⚠️ Este usuario no puede ser eliminado');
+                ->with('error', 'Este usuario no puede ser eliminado');
         }
 
         $administrador->delete();
@@ -215,6 +215,50 @@ class SuperAdminController extends Controller
     }
 
     /**
+     * Mostrar vista de permisos y roles
+     */
+   public function permisosRoles()
+{
+    $permisos = $this->getAvailablePermissions();
+    
+    // Solo obtener usuarios del sistema (tabla users) que sean configurables
+    $usuarios = User::where(function($query) {
+            // Solo administradores regulares
+            $query->where('role', 'admin')
+                  // O super admins no protegidos
+                  ->orWhere(function($q) {
+                      $q->where('role', 'super_admin')
+                        ->where('is_protected', 0);
+                  });
+        })
+        ->orderBy('role')
+        ->orderBy('name')
+        ->get();
+    
+    return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
+}
+
+    /**
+     * Actualizar permisos de un usuario
+     */
+    public function actualizarPermisos(Request $request, $userId)
+    {
+        $usuario = User::findOrFail($userId);
+        
+        // Proteger al super admin principal
+        if ($usuario->is_protected) {
+            return redirect()->back()->with('error', ' No se pueden modificar los permisos de este usuario');
+        }
+        
+        // Actualizar permisos
+        $usuario->permissions = $request->input('permisos', []);
+        $usuario->save();
+        
+        return redirect()->route('superadmin.administradores.permisos')
+            ->with('success', " Permisos actualizados correctamente para {$usuario->name}");
+    }
+
+    /**
      * Permisos disponibles en el sistema
      */
     private function getAvailablePermissions()
@@ -227,6 +271,12 @@ class SuperAdminController extends Controller
             'gestionar_grados' => 'Gestionar Grados',
             'ver_reportes' => 'Ver Reportes',
             'gestionar_pagos' => 'Gestionar Pagos',
+            'gestionar_calificaciones' => 'Gestionar Calificaciones',
+            'gestionar_asistencias' => 'Gestionar Asistencias',
+            'gestionar_observaciones' => 'Gestionar Observaciones',
+            'gestionar_documentos' => 'Gestionar Documentos',
+            'gestionar_mensajes' => 'Gestionar Mensajes',
+            'gestionar_avisos' => 'Gestionar Avisos y Comunicados',
         ];
     }
 }
