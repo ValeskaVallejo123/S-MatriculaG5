@@ -11,7 +11,13 @@ class Calificacion extends Model
 
     protected $table = 'calificaciones';
 
+    // Unión de ambos fillable (sin duplicados)
     protected $fillable = [
+        'estudiante_id',
+        'materia_id',
+        'periodo_id',
+        'nota',
+        'observacion',
         'nombre_alumno',
         'primer_parcial',
         'segundo_parcial',
@@ -20,6 +26,22 @@ class Calificacion extends Model
         'recuperacion',
         'nota_final',
     ];
+
+    // Relaciones de la versión HEAD
+    public function estudiante()
+    {
+        return $this->belongsTo(Estudiante::class);
+    }
+
+    public function materia()
+    {
+        return $this->belongsTo(Materia::class);
+    }
+
+    public function periodo()
+    {
+        return $this->belongsTo(PeriodoAcademico::class, 'periodo_id');
+    }
 
     /**
      * Calcular automáticamente la nota final

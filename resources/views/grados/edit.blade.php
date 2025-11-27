@@ -212,5 +212,5 @@
     document.getElementById('nivel').dispatchEvent(new Event('change'));
 </script>
 @endpush
-
 @endsection
+

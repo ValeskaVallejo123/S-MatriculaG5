@@ -60,85 +60,90 @@ class MatriculaController extends Controller
 
     /**
      * Formulario para crear matrícula
+     * Puede ser accedido desde admin (con sidebar) o público (sin sidebar)
      */
-    public function create(Request $request)
-    {
-        $estudiantes = Estudiante::orderBy('nombre1', 'asc')->get();
-        $padres = Padre::orderBy('nombre', 'asc')->get();
+   public function create(Request $request)
+{
+    $estudiantes = Estudiante::orderBy('nombre1', 'asc')->get();
+    $padres = Padre::orderBy('nombre', 'asc')->get();
 
-        $parentescos = [
-            'padre' => 'Padre',
-            'madre' => 'Madre',
-            'tutor_legal' => 'Tutor Legal',
-            'abuelo' => 'Abuelo',
-            'abuela' => 'Abuela',
-            'tio' => 'Tío',
-            'tia' => 'Tía',
-            'otro' => 'Otro'
-        ];
+    $parentescos = [
+        'padre' => 'Padre',
+        'madre' => 'Madre',
+        'tutor_legal' => 'Tutor Legal',
+        'abuelo' => 'Abuelo',
+        'abuela' => 'Abuela',
+        'tio' => 'Tío',
+        'tia' => 'Tía',
+        'otro' => 'Otro'
+    ];
 
-        $grados = [
-            '1er Grado',
-            '2do Grado',
-            '3er Grado',
-            '4to Grado',
-            '5to Grado',
-            '6to Grado'
-        ];
+    $grados = [
+        '1er Grado',
+        '2do Grado',
+        '3er Grado',
+        '4to Grado',
+        '5to Grado',
+        '6to Grado'
+    ];
 
-        $secciones = ['A', 'B', 'C', 'D'];
+    $secciones = ['A', 'B', 'C', 'D'];
 
-        // Si es ruta pública → Vista SIN sidebar
+    // Si es ruta pública → Vista SIN sidebar
     if ($request->route()->getName() === 'matriculas.public.create') {
         return view('matriculas.create-public', compact('estudiantes', 'padres', 'parentescos', 'grados', 'secciones'));
     }
-    //si es ruta admin → Vista CON sidebar
-        return view('matriculas.create', compact('estudiantes', 'padres', 'parentescos', 'grados', 'secciones'));
-    }
 
+    // Si es ruta admin → Vista CON sidebar
+    return view('matriculas.create', compact('estudiantes', 'padres', 'parentescos', 'grados', 'secciones'));
+}
     /**
      * Guardar nueva matrícula
+     * Maneja tanto matrículas admin como públicas
      */
-  public function store(Request $request)
-{
-    // Validar los datos
-    $validated = $request->validate([
-        // Validación del Padre/Tutor
-        'padre_nombre' => 'required|string|min:2|max:50',
-        'padre_apellido' => 'required|string|min:2|max:50',
-        'padre_dni' => 'nullable|string|max:13',
-        'padre_parentesco' => 'required|string|in:padre,madre,tutor_legal,abuelo,abuela,tio,tia,otro',
-        'padre_parentesco_otro' => 'nullable|required_if:padre_parentesco,otro|string|max:50',
-        'padre_email' => 'nullable|email|max:100',
-        'padre_telefono' => 'required|string|min:8|max:15',
-        'padre_direccion' => 'required|string|max:255',
+    public function store(Request $request)
+    {
+        // Detectar si es matrícula pública
+        $esPublico = $request->is('matricula-publica') || $request->has('publico');
 
-        // Validación del Estudiante
-        'estudiante_nombre' => 'required|string|min:2|max:100',
-        'estudiante_apellido' => 'required|string|min:2|max:100',
-        'estudiante_dni' => 'nullable|string|max:13',
-        'estudiante_fecha_nacimiento' => 'required|date|before:today',
-        'estudiante_sexo' => 'required|in:masculino,femenino',
-        'estudiante_email' => 'nullable|email|max:100',
-        'estudiante_telefono' => 'nullable|string|max:15',
-        'estudiante_direccion' => 'nullable|string|max:255',
-        'estudiante_grado' => 'required|string|max:20',
-        'estudiante_seccion' => 'required|string|max:1',
+        // Validar los datos
+        $validated = $request->validate([
+            // Validación del Padre/Tutor
+            'padre_nombre' => 'required|string|min:2|max:50',
+            'padre_apellido' => 'required|string|min:2|max:50',
+            'padre_dni' => 'required|string|max:13',
+            'padre_parentesco' => 'required|string|in:padre,madre,tutor_legal,abuelo,abuela,tio,tia,otro',
+            'padre_parentesco_otro' => 'nullable|required_if:padre_parentesco,otro|string|max:50',
+            'padre_email' => $esPublico ? 'required|email|max:100|unique:users,email' : 'nullable|email|max:100',
+            'padre_telefono' => 'required|string|min:8|max:15',
+            'padre_direccion' => 'required|string|max:255',
 
-        // Matrícula
-        'anio_lectivo' => 'required|digits:4|integer|min:2020|max:2100',
-        'fecha_matricula' => 'nullable|date',
-        'estado' => 'nullable|in:pendiente,aprobada,rechazada,cancelada',
-        'observaciones' => 'nullable|string|max:500',
+            // Validación del Estudiante
+            'estudiante_nombre' => 'required|string|min:2|max:100',
+            'estudiante_apellido' => 'required|string|min:2|max:100',
+            'estudiante_dni' => 'required|string|max:13',
+            'estudiante_fecha_nacimiento' => 'required|date|before:today',
+            'estudiante_sexo' => 'required|in:masculino,femenino',
+            'estudiante_email' => 'nullable|email|max:100',
+            'estudiante_telefono' => 'nullable|string|max:15',
+            'estudiante_direccion' => 'nullable|string|max:255',
+            'estudiante_grado' => 'required|string|max:20',
+            'estudiante_seccion' => 'required|string|max:1',
 
-        // Documentos
+            // Matrícula
+            'anio_lectivo' => 'required|digits:4|integer|min:2020|max:2100',
+            'fecha_matricula' => 'nullable|date',
+            'estado' => 'nullable|in:pendiente,aprobada,rechazada,cancelada',
+            'observaciones' => 'nullable|string|max:500',
+
+            // Documentos
             'documentos.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120', // 5MB máximo
-    ]);
+        ]);
 
-    try {
-        DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-         // Verificar si el padre ya existe por DNI
+            // Verificar si el padre ya existe por DNI
             $padreExistente = null;
             if (!empty($validated['padre_dni'])) {
                 $padreExistente = Padre::where('dni', $validated['padre_dni'])->first();
@@ -152,18 +157,18 @@ class MatriculaController extends Controller
                 }
             }
 
-        // Verificar si el estudiante ya existe por DNI
-        if (!empty($validated['estudiante_dni'])) {
-            $estudianteExistente = Estudiante::where('dni', $validated['estudiante_dni'])->first();
-            if ($estudianteExistente) {
-                DB::rollBack();
-                return back()
-                    ->withInput()
-                    ->withErrors(['estudiante_dni' => 'Ya existe un estudiante con este DNI.']);
+            // Verificar si el estudiante ya existe por DNI
+            if (!empty($validated['estudiante_dni'])) {
+                $estudianteExistente = Estudiante::where('dni', $validated['estudiante_dni'])->first();
+                if ($estudianteExistente) {
+                    DB::rollBack();
+                    return back()
+                        ->withInput()
+                        ->withErrors(['estudiante_dni' => 'Ya existe un estudiante con este DNI.']);
+                }
             }
-        }
 
-        // Crear o usar padre existente
+            // Crear o usar padre existente
             if ($padreExistente) {
                 $padre = $padreExistente;
             } else {
@@ -180,6 +185,7 @@ class MatriculaController extends Controller
                     'estado' => 1,
                 ]);
             }
+
             // Si es matrícula pública, crear usuario padre
             if ($esPublico && !empty($validated['padre_email']) && !empty($validated['padre_dni'])) {
                 // Verificar que no exista el usuario
@@ -196,7 +202,7 @@ class MatriculaController extends Controller
                 }
             }
 
-        // Separar nombre y apellido del estudiante
+            // Separar nombre y apellido del estudiante
             $nombreCompleto = explode(' ', trim($validated['estudiante_nombre']), 2);
             $apellidoCompleto = explode(' ', trim($validated['estudiante_apellido']), 2);
 
@@ -204,7 +210,6 @@ class MatriculaController extends Controller
             $nombre2 = !empty($nombreCompleto[1]) ? $nombreCompleto[1] : null;
             $apellido1 = !empty($apellidoCompleto[0]) ? $apellidoCompleto[0] : 'Sin apellido';
             $apellido2 = !empty($apellidoCompleto[1]) ? $apellidoCompleto[1] : null;
-
 
             // Crear Estudiante
             $estudiante = Estudiante::create([
@@ -225,11 +230,12 @@ class MatriculaController extends Controller
                 'estado' => 'activo',
                 'padre_id' => $padre->id,
             ]);
-        // Generar código de matrícula único
-        $ultimaMatricula = Matricula::whereYear('created_at', date('Y'))->count();
-        $codigoMatricula = 'MAT-' . $validated['anio_lectivo'] . '-' . str_pad($ultimaMatricula + 1, 4, '0', STR_PAD_LEFT);
 
-        // Crear Matrícula
+            // Generar código de matrícula único
+            $ultimaMatricula = Matricula::whereYear('created_at', date('Y'))->count();
+            $codigoMatricula = 'MAT-' . $validated['anio_lectivo'] . '-' . str_pad($ultimaMatricula + 1, 4, '0', STR_PAD_LEFT);
+
+            // Crear Matrícula
             $matricula = Matricula::create([
                 'padre_id' => $padre->id,
                 'estudiante_id' => $estudiante->id,
@@ -241,6 +247,7 @@ class MatriculaController extends Controller
                     ? 'Matrícula registrada desde el portal público'
                     : ($validated['observaciones'] ?? null),
             ]);
+
             // Manejar documentos si se subieron
             if ($request->hasFile('documentos')) {
                 foreach ($request->file('documentos') as $documento) {
@@ -256,8 +263,9 @@ class MatriculaController extends Controller
                 }
             }
 
-        DB::commit();
-        // Redirigir según el tipo de matrícula
+            DB::commit();
+
+            // Redirigir según el tipo de matrícula
             if ($esPublico) {
                 return redirect()->route('matriculas.success')
                     ->with('success', '¡Matrícula registrada exitosamente!')
@@ -270,28 +278,16 @@ class MatriculaController extends Controller
                     ->with('success', 'Matrícula registrada exitosamente con código: ' . $codigoMatricula);
             }
 
-        } catch (\Illuminate\Database\QueryException $e) {
-         DB::rollBack();
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-        dd([
-          'TIPO' => 'Error de Base de Datos',
-           'MENSAJE' => $e->getMessage(),
-           'SQL' => $e->getSql(),
-           'LINEA' => $e->getLine(),
-        ]);
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Ocurrió un error: ' . $e->getMessage()]);
+        }
+    }
 
-    } catch (\Exception $e) {
-        DB::rollBack();
-
-      dd([
-        'TIPO' => 'Error General',
-        'MENSAJE' => $e->getMessage(),
-        'ARCHIVO' => $e->getFile(),
-        'LINEA' => $e->getLine(),
-        'TRACE' => $e->getTraceAsString(),
-    ]);
-}
-/**
+    /**
      * Página de éxito para matrícula pública
      */
     public function success()
@@ -333,7 +329,6 @@ public function detalles(Matricula $matricula)
             'observaciones' => $matricula->observaciones,
         ]
     ]);
-}
 }
 
     /**
@@ -396,10 +391,6 @@ public function detalles(Matricula $matricula)
             'estado' => 'required|in:pendiente,aprobada,rechazada,cancelada',
             'motivo_rechazo' => 'nullable|string|max:500',
             'observaciones' => 'nullable|string|max:1000',
-        ], [
-            'anio_lectivo.digits' => 'El año lectivo debe tener 4 dígitos.',
-            'anio_lectivo.min' => 'El año lectivo debe ser 2020 o posterior.',
-            'anio_lectivo.max' => 'El año lectivo no puede ser mayor a 2100.',
         ]);
 
         try {
@@ -511,5 +502,4 @@ public function detalles(Matricula $matricula)
                 ->withErrors(['error' => 'Error al cancelar la matrícula.']);
         }
     }
-
-
+}

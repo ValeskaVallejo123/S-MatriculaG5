@@ -531,7 +531,11 @@
                             <p style="color: #00508f; font-size: 0.85rem; margin-bottom: 0;">o arrastra y suelta aquí</p>
                             <small style="color: #6c757d;">Formatos: PDF, JPG, PNG (máx. 5MB por archivo)</small>
                         </div>
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> origin/main
                         <input type="file" id="documentos" name="documentos[]" multiple accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivos(this)">
 
                         <div id="listaArchivos" class="mt-3"></div>
@@ -551,7 +555,11 @@
                         <i class="fas fa-paper-plane"></i>
                         <span>Enviar Solicitud de Matrícula</span>
                     </button>
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> origin/main
                    <a href="{{ route('plantilla') }}" class="btn-cancel">
     <i class="fas fa-times"></i>
     <span>Cancelar</span>
@@ -567,7 +575,6 @@
     function toggleOtroParentesco() {
         const select = document.getElementById('padre_parentesco');
         const otroDiv = document.getElementById('otro_parentesco_div');
-
         if (select && otroDiv) {
             otroDiv.style.display = select.value === 'otro' ? 'block' : 'none';
         }
@@ -582,7 +589,7 @@
         if (input.files.length > 0) {
             Array.from(input.files).forEach((file, index) => {
                 if (file.size > 5 * 1024 * 1024) {
-                    alert(El archivo ${file.name} excede el tamaño máximo de 5MB);
+                    alert(`El archivo ${file.name} excede el tamaño máximo de 5MB`);
                     return;
                 }
 
@@ -611,7 +618,6 @@
     function removerArchivo(index) {
         const input = document.getElementById('documentos');
         if (!input) return;
-
         const dt = new DataTransfer();
         Array.from(input.files).forEach((file, i) => {
             if (i !== index) dt.items.add(file);

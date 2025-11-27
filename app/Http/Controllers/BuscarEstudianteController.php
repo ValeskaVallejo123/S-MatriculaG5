@@ -24,28 +24,28 @@ class BuscarEstudianteController extends Controller
 
             $query = Estudiante::query();
 
-
+            // Buscar por nombre
             if ($nombre) {
-                $query->where(function($q) use ($nombre) {
+                $query->where(function ($q) use ($nombre) {
                     $q->where('nombre1', 'like', "%$nombre%")
-                      ->orWhere('nombre2', 'like', "%$nombre%")
-                      ->orWhere('apellido1', 'like', "%$nombre%")
-                      ->orWhere('apellido2', 'like', "%$nombre%")
-                      ->orWhereRaw("CONCAT(COALESCE(nombre1, ''), ' ', COALESCE(nombre2, ''), ' ', COALESCE(apellido1, ''), ' ', COALESCE(apellido2, '')) LIKE ?", ["%$nombre%"]);
+                        ->orWhere('nombre2', 'like', "%$nombre%")
+                        ->orWhere('apellido1', 'like', "%$nombre%")
+                        ->orWhere('apellido2', 'like', "%$nombre%");
                 });
             }
 
-            // Búsqueda por DNI/Identidad
+            // Buscar por DNI normalizado
             if ($dni) {
-                $query->where('dni', 'like', "%$dni%");
+                $dni = preg_replace('/[^0-9]/', '', $dni);
+                $query->orWhere('dni', 'like', "%$dni%");
             }
 
-            // Búsqueda por código
+            // Buscar por código
             if ($codigo) {
                 $query->where('codigo', 'like', "%$codigo%");
             }
 
-            // Búsqueda por grado
+            // Buscar por grado
             if ($grado) {
                 $query->where('grado', 'like', "%$grado%");
             }
@@ -57,6 +57,6 @@ class BuscarEstudianteController extends Controller
             }
         }
 
-        return view('estudiantes.buscar', compact('estudiantes', 'busquedaRealizada', 'mensaje'));
+        return view('buscar.busqueda', compact('estudiantes', 'busquedaRealizada', 'mensaje'));
     }
 }

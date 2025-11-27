@@ -3,28 +3,49 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Solicitud;
+use App\Models\Estudiante;
+use App\Models\Matricula;
 
 class SolicitudController extends Controller
 {
-    public function verestado()
+    public function verEstado()
     {
         return view('solicitudes.estado');
     }
 
     public function consultarPorDNI(Request $request)
     {
+        // Validar formato del DNI
         $request->validate([
-            'dni' => ['required', 'regex:/^\d{4}-\d{4}-\d{5}$/']
+            'dni' => ['required']
         ]);
 
-        try {
-            $solicitud = Solicitud::where('dni', $request->dni)->first();
-        } catch (\Exception $e) {
+        // 1️⃣ Buscar estudiante por DNI
+        $estudiante = Estudiante::where('dni', $request->dni)->first();
 
-            return back()->with('error', 'Hubo un problema al consultar la solicitud. Intenta más tarde.');
+        if (!$estudiante) {
+            return view('solicitudes.estado')->with([
+                'error' => 'No se encontró ningún estudiante con ese DNI.',
+                'solicitud' => null
+            ]);
         }
 
-        return view('solicitudes.estado', ['solicitud' => $solicitud]);
+        // 2️⃣ Buscar matrícula asociada a ese estudiante
+        $matricula = Matricula::where('estudiante_id', $estudiante->id)
+            ->latest()
+            ->first();
+
+        if (!$matricula) {
+            return view('solicitudes.estado')->with([
+                'error' => 'El estudiante existe, pero no tiene una solicitud de matrícula registrada.',
+                'solicitud' => null
+            ]);
+        }
+
+        // 3️⃣ Devolver los datos a la vista
+        return view('solicitudes.estado')->with([
+            'estudiante' => $estudiante,
+            'matricula' => $matricula,
+        ]);
     }
 }

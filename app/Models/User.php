@@ -7,7 +7,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\NotificacionPreferencia;
 use App\Models\Notificacion;
-
+use App\Models\Rol;
+use App\Models\Padre;
+use App\Models\Estudiante;
+use App\Models\Profesor;
 
 class User extends Authenticatable
 {
@@ -40,10 +43,13 @@ class User extends Authenticatable
         ];
     }
 
-    // Relaciones
+    // ===================================
+    // RELACIONES
+    // ===================================
+
     public function rol()
     {
-        return $this->belongsTo(Rol::class, 'id_rol');
+        return $this->belongsTo(Rol::class, 'id_rol', 'id');
     }
 
     public function padre()
@@ -53,6 +59,7 @@ class User extends Authenticatable
 
     public function estudiante()
     {
+        // Se conserva la versión correcta (HEAD) que usa email
         return $this->hasOne(Estudiante::class, 'email', 'email');
     }
 
@@ -61,112 +68,29 @@ class User extends Authenticatable
         return $this->hasOne(Profesor::class, 'user_id');
     }
 
-    // Nueva relación: preferencias de notificación
-public function notificaciones()
-{
-    return $this->hasMany(Notificacion::class, 'user_id');
-}
+    public function notificaciones()
+    {
+        return $this->hasMany(Notificacion::class, 'user_id');
+    }
 
-    /**
-     * Relación con las preferencias de notificación
-     */
     public function notificacionPreferencias()
     {
         return $this->hasOne(NotificacionPreferencia::class, 'user_id');
     }
 
+    // ===================================
+    // PERMISOS
+    // ===================================
 
-    // Permisos
     public function tienePermiso($nombrePermiso)
     {
         if (!$this->rol || !$this->rol->permisos) {
             return false;
         }
+
         return $this->rol->permisos->contains('nombre', $nombrePermiso);
     }
-    
 
-    // ===================================
-    // MÉTODOS DE ROLES
-    // ===================================
-    public function tieneRol($nombreRol)
-    {
-        if (!$this->rol) {
-            return false;
-        }
-        return strtolower($this->rol->nombre) === strtolower($nombreRol);
-    }
-
-
-    public function obtenerPermisos()
-    {
-        if (!$this->rol || !$this->rol->permisos) {
-            return collect([]);
-        }
-        return $this->rol->permisos;
-    }
-
-    // Métodos de roles específicos
-    public function isSuperAdmin()
-    {
-        return $this->tieneRol('Super Administrador')
-            || $this->tieneRol('superadmin')
-            || $this->tieneRol('Super Admin');
-    }
-
-    public function isAdministrador()
-    {
-        return $this->tieneRol('Administrador')
-            || $this->tieneRol('administrador')
-            || $this->tieneRol('admin');
-    }
-
-    public function isDocente()
-    {
-        return $this->tieneRol('Docente')
-            || $this->tieneRol('docente')
-            || $this->tieneRol('Profesor')
-            || $this->tieneRol('profesor');
-    }
-
-    public function isEstudiante()
-    {
-        return $this->tieneRol('Estudiante')
-            || $this->tieneRol('estudiante')
-            || $this->tieneRol('Alumno')
-            || $this->tieneRol('alumno');
-    }
-
-    public function isPadre()
-    {
-        return $this->tieneRol('Padre')
-            || $this->tieneRol('padre')
-            || $this->tieneRol('Tutor')
-            || $this->tieneRol('tutor');
-    }
-
-    // Roles múltiples
-    public function hasAnyRole(array $roles)
-    {
-        if (!$this->rol) {
-            return false;
-        }
-
-        foreach ($roles as $role) {
-            if ($this->tieneRol($role)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function hasRole($role)
-    {
-        return $this->tieneRol($role);
-    }
-
-    // Permisos múltiples
     public function tieneAlgunPermiso(array $permisos)
     {
         foreach ($permisos as $permiso) {
@@ -185,5 +109,120 @@ public function notificaciones()
             }
         }
         return true;
+    }
+
+    public function obtenerPermisos()
+    {
+        if (!$this->rol || !$this->rol->permisos) {
+            return collect([]);
+        }
+
+        return $this->rol->permisos;
+    }
+
+    // ===================================
+    // ROLES
+    // ===================================
+
+    public function tieneRol($nombreRol)
+    {
+        if (!$this->rol) {
+            return false;
+        }
+
+        return strtolower($this->rol->nombre) === strtolower($nombreRol);
+    }
+
+    public function hasRole($role)
+    {
+        return $this->tieneRol($role);
+    }
+
+    public function hasAnyRole(array $roles)
+    {
+        if (!$this->rol) {
+            return false;
+        }
+
+        foreach ($roles as $role) {
+            if ($this->tieneRol($role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->tieneRol('Super Administrador')
+            || $this->tieneRol('superadmin')
+            || $this->tieneRol('Super Admin')
+            || $this->is_super_admin == 1;
+    }
+
+    public function isAdministrador()
+    {
+        return $this->hasAnyRole(['Administrador', 'administrador', 'admin']);
+    }
+
+    public function isDocente()
+    {
+        return $this->hasAnyRole(['Docente', 'docente', 'Profesor', 'profesor']);
+    }
+
+    public function isEstudiante()
+    {
+        return $this->hasAnyRole(['Estudiante', 'estudiante', 'Alumno', 'alumno']);
+    }
+
+    public function isPadre()
+    {
+        return $this->hasAnyRole(['Padre', 'padre', 'Tutor', 'tutor']);
+    }
+
+    // ===================================
+    // ESTADOS
+    // ===================================
+
+    public function estaActivo()
+    {
+        return $this->activo === true;
+    }
+
+    public function estaPendiente()
+    {
+        return $this->activo === false;
+    }
+
+    public function activar()
+    {
+        $this->activo = true;
+        $this->save();
+    }
+
+    public function desactivar()
+    {
+        $this->activo = false;
+        $this->save();
+    }
+
+    // ===================================
+    // SCOPES
+    // ===================================
+
+    public function scopeActivos($query)
+    {
+        return $query->where('activo', true);
+    }
+
+    public function scopePendientes($query)
+    {
+        return $query->where('activo', false);
+    }
+
+    public function scopePorRol($query, $rolId)
+    {
+        return $query->where('id_rol', $rolId);
     }
 }

@@ -22,7 +22,6 @@ class DocumentoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre_estudiante' => 'required|string|max:255',
             'foto'              => 'nullable|image|mimes:jpg,png|max:5120',
             'acta_nacimiento'   => 'required|file|mimes:jpg,png,pdf|max:5120',
             'calificaciones'    => 'required|file|mimes:jpg,png,pdf|max:5120',
@@ -33,7 +32,6 @@ class DocumentoController extends Controller
         $calificacionesPath = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
 
         Documento::create([
-            'nombre_estudiante' => $request->nombre_estudiante,
             'foto'              => $fotoPath,
             'acta_nacimiento'   => $actaPath,
             'calificaciones'    => $calificacionesPath,
@@ -53,7 +51,6 @@ class DocumentoController extends Controller
         $documento = Documento::findOrFail($id);
 
         $request->validate([
-            'nombre_estudiante' => 'required|string|max:255',
             'foto'              => 'nullable|image|mimes:jpg,png|max:5120',
             'acta_nacimiento'   => 'nullable|file|mimes:jpg,png,pdf|max:5120',
             'calificaciones'    => 'nullable|file|mimes:jpg,png,pdf|max:5120',
@@ -80,7 +77,6 @@ class DocumentoController extends Controller
             $documento->calificaciones = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
         }
 
-        $documento->nombre_estudiante = $request->nombre_estudiante;
         $documento->save();
 
         return redirect()->route('documentos.index')->with('success', 'Documentos actualizados correctamente.');
@@ -108,27 +104,3 @@ class DocumentoController extends Controller
         return redirect()->route('documentos.index')->with('success', 'Documentos eliminados correctamente.');
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -108,7 +108,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <a href="#" class="text-decoration-none">
+                    <a href="{{ route('registrarcalificaciones.create') }}" class="text-decoration-none" aria-label="Registrar calificaciones">
                         <div class="card border-0 h-100" style="background: linear-gradient(135deg, #003b73 0%, #00508f 100%); border-radius: 10px;">
                             <div class="card-body text-center p-3">
                                 <i class="fas fa-clipboard-check" style="font-size: 2rem; color: white; margin-bottom: 0.5rem;"></i>

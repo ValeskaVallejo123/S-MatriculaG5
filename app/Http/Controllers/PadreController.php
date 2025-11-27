@@ -236,7 +236,7 @@ class PadreController extends Controller
         $estudianteId = $request->input('estudiante_id');
         $estudiante = $estudianteId ? Estudiante::find($estudianteId) : null;
 
-        return view('padres.buscar', compact('padres', 'estudiante'));
+        return view('padre.buscar', compact('padres', 'estudiante'));
     }
 
     /**

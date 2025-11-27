@@ -2,112 +2,226 @@
 
 @section('title', 'Crear Observación')
 
+@section('page-title', 'Nueva Observación')
+
+@section('topbar-actions')
+    <a href="{{ route('observaciones.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+@endsection
+
 @section('content')
-    <div class="min-h-screen py-12">
-        <div class="max-w-4xl mx-auto">
-            <!-- Header -->
-            <div class="text-center mb-10">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl shadow-lg mb-6">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
+    <div class="container" style="max-width: 1200px;">
+
+        <!-- Header compacto -->
+        <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px;">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box me-3" style="width: 45px; height: 45px; background: rgba(78, 199, 210, 0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-note-sticky text-white" style="font-size: 1.3rem;"></i>
+                    </div>
+                    <div class="text-white">
+                        <h5 class="mb-0 fw-bold" style="font-size: 1.1rem;">Registro de Observación</h5>
+                        <p class="mb-0 opacity-90" style="font-size: 0.8rem;">Complete la información de la observación</p>
+                    </div>
                 </div>
-                <h1 class="text-4xl font-bold text-gray-900 mb-3">Registro de Observación</h1>
-                <p class="text-lg text-gray-600">Complete el formulario con la información de la observación</p>
-                <div class="w-24 h-1 bg-blue-600 mx-auto mt-4 rounded-full"></div>
             </div>
+        </div>
 
-            <!-- Form Card -->
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
-                <!-- Card Header -->
-                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
-                    <h2 class="text-xl font-semibold text-white">Información de la Observación</h2>
-                    <p class="text-blue-100 text-sm mt-1">Los campos marcados con asterisco son obligatorios</p>
-                </div>
-
-                <!-- Form Body -->
-                <form action="{{ route('observaciones.store') }}" method="POST" class="p-8">
+        <!-- Formulario compacto -->
+        <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+            <div class="card-body p-3">
+                <form action="{{ route('observaciones.store') }}" method="POST">
                     @csrf
 
-                    <div class="space-y-8">
-                        <!-- Sección: Selección de Estudiante -->
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-blue-100">
-                                Estudiante
-                            </h3>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                    </svg>
-                                </div>
-                                <select name="estudiante_id" class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all @error('estudiante_id') border-red-400 bg-red-50 @enderror" required>
-                                    <option value="">Seleccione un estudiante</option>
-                                    @foreach($estudiantes as $est)
-                                        <option value="{{ $est->id }}" {{ old('estudiante_id') == $est->id ? 'selected' : '' }}>{{ $est->nombreCompleto }}</option>
-                                    @endforeach
-                                </select>
+                    <!-- Estudiante -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="color: white; font-size: 0.9rem;"></i>
                             </div>
-                            @error('estudiante_id')
-                            <p class="mt-2 text-sm text-red-600 flex items-center">{{ $message }}</p>
-                            @enderror
+                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Estudiante</h6>
                         </div>
 
-                        <!-- Sección: Tipo de Observación -->
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-blue-100">
-                                Tipo de Observación
-                            </h3>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
+                        <div class="row g-3">
+                            <!-- Selección de Estudiante -->
+                            <div class="col-12">
+                                <label for="estudiante_id" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Estudiante <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-users position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                    <select class="form-select ps-5 @error('estudiante_id') is-invalid @enderror"
+                                            id="estudiante_id"
+                                            name="estudiante_id"
+                                            required
+                                            style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                        <option value="">Seleccione un estudiante</option>
+                                        @foreach($estudiantes as $est)
+                                            <option value="{{ $est->id }}" {{ old('estudiante_id') == $est->id ? 'selected' : '' }}>{{ $est->nombreCompleto }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('estudiante_id')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
                                 </div>
-                                <select name="tipo" class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                                    <option value="positivo" {{ old('tipo') == 'positivo' ? 'selected' : '' }}>Positivo</option>
-                                    <option value="negativo" {{ old('tipo') == 'negativo' ? 'selected' : '' }}>Negativo</option>
-                                </select>
                             </div>
-                        </div>
-
-                        <!-- Sección: Descripción -->
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-blue-100">
-                                Descripción
-                            </h3>
-                            <div class="relative">
-                                <div class="absolute top-4 left-0 pl-4 pointer-events-none">
-                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
-                                </div>
-                                <textarea name="descripcion" rows="5" class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all @error('descripcion') border-red-400 bg-red-50 @enderror" placeholder="Escriba la descripción de la observación">{{ old('descripcion') }}</textarea>
-                            </div>
-                            @error('descripcion')
-                            <p class="mt-2 text-sm text-red-600 flex items-center">{{ $message }}</p>
-                            @enderror
                         </div>
                     </div>
 
-                    <!-- Botones de acción -->
-                    <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t-2 border-gray-100">
-                        <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Registrar Observación
+                    <!-- Tipo de Observación -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check" style="color: white; font-size: 0.9rem;"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Tipo de Observación</h6>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Tipo -->
+                            <div class="col-12">
+                                <label for="tipo" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Tipo <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-list-check position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                    <select class="form-select ps-5 @error('tipo') is-invalid @enderror"
+                                            id="tipo"
+                                            name="tipo"
+                                            required
+                                            style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                        <option value="positivo" {{ old('tipo') == 'positivo' ? 'selected' : '' }}>Positivo</option>
+                                        <option value="negativo" {{ old('tipo') == 'negativo' ? 'selected' : '' }}>Negativo</option>
+                                    </select>
+                                    @error('tipo')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-file-alt" style="color: white; font-size: 0.9rem;"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Descripción</h6>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Descripción -->
+                            <div class="col-12">
+                                <label for="descripcion" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Descripción <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-pen-to-square position-absolute" style="left: 12px; top: 12px; color: #00508f; font-size: 0.85rem;"></i>
+                                    <textarea
+                                        class="form-control ps-5 @error('descripcion') is-invalid @enderror"
+                                        id="descripcion"
+                                        name="descripcion"
+                                        rows="4"
+                                        placeholder="Escriba la descripción de la observación"
+                                        required
+                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease; resize: none;">{{ old('descripcion') }}</textarea>
+                                    @error('descripcion')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones compactos -->
+                    <div class="d-flex gap-2 pt-2 border-top">
+                        <button type="submit" class="btn btn-sm fw-semibold flex-fill" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); padding: 0.6rem; border-radius: 8px;">
+                            <i class="fas fa-save me-1"></i>Registrar Observación
                         </button>
-                        <a href="{{ route('observaciones.index') }}" class="flex-1 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                            Cancelar
+                        <a href="{{ route('observaciones.index') }}" class="btn btn-sm fw-semibold flex-fill" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem; border-radius: 8px;">
+                            <i class="fas fa-times me-1"></i>Cancelar
                         </a>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
-@endsection
 
+        <!-- Nota compacta -->
+        <div class="alert border-0 mt-2 py-2 px-3" style="border-radius: 8px; background: rgba(78, 199, 210, 0.1); border-left: 3px solid #4ec7d2 !important; font-size: 0.85rem;">
+            <div class="d-flex align-items-start">
+                <i class="fas fa-info-circle me-2 mt-1" style="font-size: 0.9rem; color: #00508f;"></i>
+                <div>
+                    <strong style="color: #00508f;">Información importante:</strong>
+                    <span class="text-muted"> Los campos marcados con asterisco son obligatorios.</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @push('styles')
+        <style>
+            .form-control, .form-select {
+                border-radius: 6px;
+                border: 1.5px solid #e2e8f0;
+                padding: 0.5rem 0.75rem;
+                transition: all 0.3s ease;
+                font-size: 0.875rem;
+            }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #4ec7d2;
+                box-shadow: 0 0 0 0.15rem rgba(78, 199, 210, 0.15);
+            }
+
+            .form-label {
+                color: #003b73;
+                font-size: 0.85rem;
+                margin-bottom: 0.3rem;
+            }
+
+            small.text-muted {
+                font-size: 0.7rem;
+                display: block;
+                margin-top: 0.15rem;
+                color: #6b7280 !important;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                transition: all 0.3s ease;
+            }
+
+            .btn-back:hover {
+                background: #00508f !important;
+                color: white !important;
+                transform: translateY(-2px);
+            }
+
+            button[type="submit"]:hover {
+                box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important;
+            }
+
+            .border-top {
+                border-color: rgba(0, 80, 143, 0.15) !important;
+            }
+
+            .ps-5 {
+                padding-left: 2.5rem !important;
+            }
+
+            textarea {
+                min-height: 100px !important;
+            }
+        </style>
+    @endpush
+@endsection

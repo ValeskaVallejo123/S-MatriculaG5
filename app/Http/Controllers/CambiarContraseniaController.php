@@ -55,7 +55,7 @@ class CambiarContraseniaController extends Controller
 
         // Actualiza la contraseña
         $user->password = Hash::make($request->new_password);
-        //$user->save();
+        $user->save();
 
         return back()->with('success', '¡Tu contraseña ha sido cambiada correctamente!');
     }

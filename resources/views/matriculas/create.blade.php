@@ -3,48 +3,9 @@
 @section('title', 'Editar Matrícula')
 
 @section('content')
-<div class="container-fluid" style="max-width: 1200px;">
+<div class="container" style="max-width: 1000px;">
 
-    <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="mb-1" style="color: #003b73; font-weight: 700;">
-                <i class="fas fa-edit"></i> Editar Matrícula
-            </h2>
-            <p class="text-muted mb-0">Código: <strong>{{ $matricula->codigo_matricula }}</strong></p>
-        </div>
-        <div>
-            <a href="{{ route('matriculas.show', $matricula->id) }}" class="btn btn-info me-2">
-                <i class="fas fa-eye"></i> Ver Detalles
-            </a>
-            <a href="{{ route('matriculas.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-
-    <!-- Mensajes -->
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle"></i>
-        <strong>¡Error!</strong> Por favor corrige los siguientes errores:
-        <ul class="mb-0 mt-2">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    <form action="{{ route('matriculas.update', $matricula->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('matriculas.store') }}" method="POST" id="formMatricula">
         @csrf
         @method('PUT')
 
@@ -111,48 +72,189 @@
                         <label for="estado" class="form-label fw-bold">
                             <i class="fas fa-flag"></i> Estado <span class="text-danger">*</span>
                         </label>
-                        <select class="form-select @error('estado') is-invalid @enderror" id="estado" name="estado">
-                            <option value="pendiente" {{ old('estado', $matricula->estado) === 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                            <option value="aprobada" {{ old('estado', $matricula->estado) === 'aprobada' ? 'selected' : '' }}>Aprobada</option>
-                            <option value="rechazada" {{ old('estado', $matricula->estado) === 'rechazada' ? 'selected' : '' }}>Rechazada</option>
-                            <option value="cancelada" {{ old('estado', $matricula->estado) === 'cancelada' ? 'selected' : '' }}>Cancelada</option>
-                        </select>
-                        @error('estado')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_nombre') is-invalid @enderror"
+                                   id="padre_nombre"
+                                   name="padre_nombre"
+                                   value="{{ old('padre_nombre') }}"
+                                   placeholder="Ej: Juan Carlos"
+                                   required
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('padre_nombre')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="col-md-6" id="motivo-rechazo-container" @if(old('estado', $matricula->estado) !== 'rechazada') style="display: none;" @endif>
                         <label for="motivo_rechazo" class="form-label fw-bold">
                             <i class="fas fa-exclamation-triangle"></i> Motivo del Rechazo
                         </label>
-                        <input
-                            type="text"
-                            class="form-control @error('motivo_rechazo') is-invalid @enderror"
-                            id="motivo_rechazo"
-                            name="motivo_rechazo"
-                            value="{{ old('motivo_rechazo', $matricula->motivo_rechazo) }}"
-                            placeholder="Especificar motivo del rechazo"
-                        >
-                        @error('motivo_rechazo')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_apellido') is-invalid @enderror"
+                                   id="padre_apellido"
+                                   name="padre_apellido"
+                                   value="{{ old('padre_apellido') }}"
+                                   placeholder="Ej: Pérez García"
+                                   required
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('padre_apellido')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
 
+                    <!-- DNI del Padre -->
+                    <div class="col-md-6">
+                        <label for="padre_dni" class="form-label small fw-semibold" style="color: #003b73;">
+                            DNI <span style="color: #ef4444;">*</span>
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_dni') is-invalid @enderror"
+                                   id="padre_dni"
+                                   name="padre_dni"
+                                   value="{{ old('padre_dni') }}"
+                                   placeholder="0801199512345"
+                                   maxlength="13"
+                                   pattern="[0-9]{13}"
+                                   required
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('padre_dni')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <small class="text-muted" style="font-size: 0.75rem;">
+                            <i class="fas fa-info-circle me-1"></i>13 dígitos
+                        </small>
+                    </div>
+
+                    <!-- Parentesco -->
+                    <div class="col-md-6">
+                        <label for="padre_parentesco" class="form-label small fw-semibold" style="color: #003b73;">
+                            Parentesco <span style="color: #ef4444;">*</span>
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-users position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                            <select class="form-select ps-5 @error('padre_parentesco') is-invalid @enderror"
+                                    id="padre_parentesco"
+                                    name="padre_parentesco"
+                                    required
+                                    onchange="toggleOtroParentesco()"
+                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                <option value="">Seleccionar...</option>
+                                @foreach($parentescos as $key => $value)
+                                    <option value="{{ $key }}" {{ old('padre_parentesco') == $key ? 'selected' : '' }}>{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('padre_parentesco')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Otro Parentesco -->
+                    <div class="col-md-6" id="otro_parentesco_div" style="display: none;">
+                        <label for="padre_parentesco_otro" class="form-label small fw-semibold" style="color: #003b73;">
+                            Especificar Parentesco
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-pen position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_parentesco_otro') is-invalid @enderror"
+                                   id="padre_parentesco_otro"
+                                   name="padre_parentesco_otro"
+                                   value="{{ old('padre_parentesco_otro') }}"
+                                   placeholder="Ej: Tío, Hermano"
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('padre_parentesco_otro')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="col-md-6">
+                        <label for="padre_telefono" class="form-label small fw-semibold" style="color: #003b73;">
+                            Teléfono <span style="color: #ef4444;">*</span>
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-phone position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('padre_telefono') is-invalid @enderror"
+                                   id="padre_telefono"
+                                   name="padre_telefono"
+                                   value="{{ old('padre_telefono') }}"
+                                   placeholder="98765432"
+                                   maxlength="8"
+                                   pattern="[0-9]{8}"
+                                   required
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('padre_telefono')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label for="padre_email" class="form-label small fw-semibold" style="color: #003b73;">
+                            Email
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="email"
+                                   class="form-control ps-5 @error('padre_email') is-invalid @enderror"
+                                   id="padre_email"
+                                   name="padre_email"
+                                   value="{{ old('padre_email') }}"
+                                   placeholder="padre@ejemplo.com"
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('padre_email')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Dirección -->
                     <div class="col-12">
                         <label for="observaciones" class="form-label fw-bold">
                             <i class="fas fa-sticky-note"></i> Observaciones
                         </label>
-                        <textarea
-                            class="form-control @error('observaciones') is-invalid @enderror"
-                            id="observaciones"
-                            name="observaciones"
-                            rows="3"
-                            placeholder="Agregar observaciones adicionales..."
-                        >{{ old('observaciones', $matricula->observaciones) }}</textarea>
-                        @error('observaciones')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <div class="position-relative">
+                            <i class="fas fa-map-marker-alt position-absolute" style="left: 12px; top: 18px; color: #00508f; font-size: 0.85rem;"></i>
+                            <textarea class="form-control ps-5 @error('padre_direccion') is-invalid @enderror"
+                                      id="padre_direccion"
+                                      name="padre_direccion"
+                                      rows="2"
+                                      placeholder="Dirección completa"
+                                      required
+                                      style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">{{ old('padre_direccion') }}</textarea>
+                            @error('padre_direccion')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </div>
@@ -177,12 +279,21 @@
                         <label for="foto_estudiante" class="form-label fw-bold">
                             <i class="fas fa-camera"></i> Foto del Estudiante
                         </label>
-                        @if($matricula->foto_estudiante)
-                        <div class="mb-2">
-                            <small class="text-muted">
-                                <i class="fas fa-check-circle text-success"></i> Archivo actual:
-                                <a href="{{ asset('storage/' . $matricula->foto_estudiante) }}" target="_blank">Ver foto</a>
-                            </small>
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('estudiante_nombre') is-invalid @enderror"
+                                   id="estudiante_nombre"
+                                   name="estudiante_nombre"
+                                   value="{{ old('estudiante_nombre') }}"
+                                   placeholder="Ej: María José"
+                                   required
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('estudiante_nombre')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
                         </div>
                         @endif
                         <input
@@ -203,12 +314,21 @@
                         <label for="acta_nacimiento" class="form-label fw-bold">
                             <i class="fas fa-file-alt"></i> Acta de Nacimiento
                         </label>
-                        @if($matricula->acta_nacimiento)
-                        <div class="mb-2">
-                            <small class="text-muted">
-                                <i class="fas fa-check-circle text-success"></i> Archivo actual:
-                                <a href="{{ asset('storage/' . $matricula->acta_nacimiento) }}" target="_blank">Ver documento</a>
-                            </small>
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('estudiante_apellido') is-invalid @enderror"
+                                   id="estudiante_apellido"
+                                   name="estudiante_apellido"
+                                   value="{{ old('estudiante_apellido') }}"
+                                   placeholder="Ej: López Martínez"
+                                   required
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('estudiante_apellido')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
                         </div>
                         @endif
                         <input
@@ -229,12 +349,23 @@
                         <label for="certificado_estudios" class="form-label fw-bold">
                             <i class="fas fa-certificate"></i> Certificado de Estudios
                         </label>
-                        @if($matricula->certificado_estudios)
-                        <div class="mb-2">
-                            <small class="text-muted">
-                                <i class="fas fa-check-circle text-success"></i> Archivo actual:
-                                <a href="{{ asset('storage/' . $matricula->certificado_estudios) }}" target="_blank">Ver documento</a>
-                            </small>
+                        <div class="position-relative">
+                            <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('estudiante_dni') is-invalid @enderror"
+                                   id="estudiante_dni"
+                                   name="estudiante_dni"
+                                   value="{{ old('estudiante_dni') }}"
+                                   placeholder="0801201012345"
+                                   maxlength="13"
+                                   pattern="[0-9]{13}"
+                                   required
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('estudiante_dni')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
                         </div>
                         @endif
                         <input
@@ -255,12 +386,20 @@
                         <label for="constancia_conducta" class="form-label fw-bold">
                             <i class="fas fa-award"></i> Constancia de Conducta
                         </label>
-                        @if($matricula->constancia_conducta)
-                        <div class="mb-2">
-                            <small class="text-muted">
-                                <i class="fas fa-check-circle text-success"></i> Archivo actual:
-                                <a href="{{ asset('storage/' . $matricula->constancia_conducta) }}" target="_blank">Ver documento</a>
-                            </small>
+                        <div class="position-relative">
+                            <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="date"
+                                   class="form-control ps-5 @error('estudiante_fecha_nacimiento') is-invalid @enderror"
+                                   id="estudiante_fecha_nacimiento"
+                                   name="estudiante_fecha_nacimiento"
+                                   value="{{ old('estudiante_fecha_nacimiento') }}"
+                                   required
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('estudiante_fecha_nacimiento')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
                         </div>
                         @endif
                         <input
@@ -281,12 +420,22 @@
                         <label for="foto_dni_estudiante" class="form-label fw-bold">
                             <i class="fas fa-id-card"></i> DNI del Estudiante
                         </label>
-                        @if($matricula->foto_dni_estudiante)
-                        <div class="mb-2">
-                            <small class="text-muted">
-                                <i class="fas fa-check-circle text-success"></i> Archivo actual:
-                                <a href="{{ asset('storage/' . $matricula->foto_dni_estudiante) }}" target="_blank">Ver foto</a>
-                            </small>
+                        <div class="position-relative">
+                            <i class="fas fa-venus-mars position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                            <select class="form-select ps-5 @error('estudiante_sexo') is-invalid @enderror"
+                                    id="estudiante_sexo"
+                                    name="estudiante_sexo"
+                                    required
+                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                <option value="">Seleccionar...</option>
+                                <option value="masculino" {{ old('estudiante_sexo') == 'masculino' ? 'selected' : '' }}>Masculino</option>
+                                <option value="femenino" {{ old('estudiante_sexo') == 'femenino' ? 'selected' : '' }}>Femenino</option>
+                            </select>
+                            @error('estudiante_sexo')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
                         </div>
                         @endif
                         <input
@@ -307,12 +456,20 @@
                         <label for="foto_dni_padre" class="form-label fw-bold">
                             <i class="fas fa-id-card-alt"></i> DNI del Padre/Tutor
                         </label>
-                        @if($matricula->foto_dni_padre)
-                        <div class="mb-2">
-                            <small class="text-muted">
-                                <i class="fas fa-check-circle text-success"></i> Archivo actual:
-                                <a href="{{ asset('storage/' . $matricula->foto_dni_padre) }}" target="_blank">Ver foto</a>
-                            </small>
+                        <div class="position-relative">
+                            <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="email"
+                                   class="form-control ps-5 @error('estudiante_email') is-invalid @enderror"
+                                   id="estudiante_email"
+                                   name="estudiante_email"
+                                   value="{{ old('estudiante_email') }}"
+                                   placeholder="estudiante@ejemplo.com"
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('estudiante_email')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
                         </div>
                         @endif
                         <input
@@ -336,14 +493,96 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="fas fa-save"></i> Guardar Cambios
-                        </button>
+                        <label for="estudiante_telefono" class="form-label small fw-semibold" style="color: #003b73;">
+                            Teléfono
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-phone position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                            <input type="text"
+                                   class="form-control ps-5 @error('estudiante_telefono') is-invalid @enderror"
+                                   id="estudiante_telefono"
+                                   name="estudiante_telefono"
+                                   value="{{ old('estudiante_telefono') }}"
+                                   placeholder="98765432"
+                                   maxlength="8"
+                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            @error('estudiante_telefono')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
+
+                    <!-- Dirección -->
+                    <div class="col-12">
+                        <label for="estudiante_direccion" class="form-label small fw-semibold" style="color: #003b73;">
+                            Dirección
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-map-marker-alt position-absolute" style="left: 12px; top: 18px; color: #00508f; font-size: 0.85rem;"></i>
+                            <textarea class="form-control ps-5 @error('estudiante_direccion') is-invalid @enderror"
+                                      id="estudiante_direccion"
+                                      name="estudiante_direccion"
+                                      rows="2"
+                                      placeholder="Dirección del estudiante"
+                                      style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">{{ old('estudiante_direccion') }}</textarea>
+                            @error('estudiante_direccion')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Grado -->
                     <div class="col-md-6">
-                        <a href="{{ route('matriculas.show', $matricula->id) }}" class="btn btn-outline-secondary btn-lg w-100">
-                            <i class="fas fa-times"></i> Cancelar
-                        </a>
+                        <label for="estudiante_grado" class="form-label small fw-semibold" style="color: #003b73;">
+                            Grado <span style="color: #ef4444;">*</span>
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-graduation-cap position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                            <select class="form-select ps-5 @error('estudiante_grado') is-invalid @enderror"
+                                    id="estudiante_grado"
+                                    name="estudiante_grado"
+                                    required
+                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                <option value="">Seleccionar...</option>
+                                @foreach($grados as $grado)
+                                    <option value="{{ $grado }}" {{ old('estudiante_grado') == $grado ? 'selected' : '' }}>{{ $grado }}</option>
+                                @endforeach
+                            </select>
+                            @error('estudiante_grado')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Sección -->
+                    <div class="col-md-6">
+                        <label for="estudiante_seccion" class="form-label small fw-semibold" style="color: #003b73;">
+                            Sección <span style="color: #ef4444;">*</span>
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-door-open position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                            <select class="form-select ps-5 @error('estudiante_seccion') is-invalid @enderror"
+                                    id="estudiante_seccion"
+                                    name="estudiante_seccion"
+                                    required
+                                    style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                <option value="">Seleccionar...</option>
+                                @foreach($secciones as $seccion)
+                                    <option value="{{ $seccion }}" {{ old('estudiante_seccion') == $seccion ? 'selected' : '' }}>{{ $seccion }}</option>
+                                @endforeach
+                            </select>
+                            @error('estudiante_seccion')
+                                <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </div>
@@ -522,9 +761,16 @@
     </form>
 </div>
 
-<style>
-    .form-label.fw-bold {
-        color: #003b73;
+@push('scripts')
+<script>
+function toggleOtroParentesco() {
+    const select = document.getElementById('padre_parentesco');
+    const otroDiv = document.getElementById('otro_parentesco_div');
+
+    if (select.value === 'otro') {
+        otroDiv.style.display = 'block';
+    } else {
+        otroDiv.style.display = 'none';
     }
 
     .form-control:focus, .form-select:focus {
@@ -557,4 +803,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+@endpush

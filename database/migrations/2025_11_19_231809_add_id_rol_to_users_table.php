@@ -23,7 +23,7 @@ return new class extends Migration
                       ->onDelete('set null');
             }
 
-            // Eliminar campo role antiguo si quieres
+            // Eliminar campo role antiguo si existe (opcional)
             // if (Schema::hasColumn('users', 'role')) {
             //     $table->dropColumn('role');
             // }

@@ -49,4 +49,6 @@ class Grado extends Model
     {
         return $query->where('nivel', 'secundaria');
     }
+
 }
+
