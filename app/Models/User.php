@@ -8,18 +8,35 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\NotificacionPreferencia;
 use App\Models\Notificacion;
 
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'id_rol'];
-    protected $hidden = ['password', 'remember_token'];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'id_rol',
+        'activo',
+        'user_type',
+        'fecha_registro'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token'
+    ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'activo' => 'boolean',
+            'fecha_registro' => 'datetime',
+            'is_super_admin' => 'boolean',
+            'is_protected' => 'boolean'
         ];
     }
 
@@ -67,7 +84,11 @@ public function notificaciones()
         }
         return $this->rol->permisos->contains('nombre', $nombrePermiso);
     }
+    
 
+    // ===================================
+    // MÉTODOS DE ROLES
+    // ===================================
     public function tieneRol($nombreRol)
     {
         if (!$this->rol) {
@@ -75,6 +96,7 @@ public function notificaciones()
         }
         return strtolower($this->rol->nombre) === strtolower($nombreRol);
     }
+
 
     public function obtenerPermisos()
     {

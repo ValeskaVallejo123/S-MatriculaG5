@@ -1,109 +1,3 @@
-<<<<<<< HEAD
-@extends('layouts.app')
-
-@section('title', 'Crear Grado')
-
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-2xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Crear Nuevo Grado</h1>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <form action="{{ route('grados.store') }}" method="POST">
-                @csrf
-
-                <div class="mb-4">
-                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre del Grado <span class="text-red-500">*</span>
-                    </label>
-                    <select name="nombre" id="nombre" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 @error('nombre') border-red-500 @enderror"
-                            required>
-                        <option value="">Seleccione un grado</option>
-                        <option value="Primero" {{ old('nombre') == 'Primero' ? 'selected' : '' }}>Primero</option>
-                        <option value="Segundo" {{ old('nombre') == 'Segundo' ? 'selected' : '' }}>Segundo</option>
-                        <option value="Tercero" {{ old('nombre') == 'Tercero' ? 'selected' : '' }}>Tercero</option>
-                        <option value="Cuarto" {{ old('nombre') == 'Cuarto' ? 'selected' : '' }}>Cuarto</option>
-                        <option value="Quinto" {{ old('nombre') == 'Quinto' ? 'selected' : '' }}>Quinto</option>
-                        <option value="Sexto" {{ old('nombre') == 'Sexto' ? 'selected' : '' }}>Sexto</option>
-                    </select>
-                    @error('nombre')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="seccion" class="block text-sm font-medium text-gray-700 mb-2">
-                        Sección
-                    </label>
-                    <input type="text" 
-                           name="seccion" 
-                           id="seccion" 
-                           value="{{ old('seccion') }}" 
-                           placeholder="Ej: A, B, Nocturna"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 @error('seccion') border-red-500 @enderror">
-                    
-                    @error('seccion')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="nombre_maestro" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre del Maestro <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                           name="nombre_maestro" 
-                           id="nombre_maestro"
-                           value="{{ old('nombre_maestro') }}"
-                           placeholder="Ingrese el nombre completo del maestro"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 @error('nombre_maestro') border-red-500 @enderror"
-                           required>
-                    
-                    @error('nombre_maestro')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Seleccione la Jornada: <span class="text-red-500">*</span>
-                    </label>
-
-                    <label class="inline-flex items-center mr-6">
-                        <input type="radio" 
-                               name="jornada" 
-                               value="Matutina" 
-                               {{ old('jornada', 'Matutina') == 'Matutina' ? 'checked' : '' }}
-                               class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
-                               required>
-                        <span class="ml-2 text-sm text-gray-700">Matutina</span>
-                    </label>
-
-                    <label class="inline-flex items-center">
-                        <input type="radio" 
-                               name="jornada" 
-                               value="Vespertina" 
-                               {{ old('jornada') == 'Vespertina' ? 'checked' : '' }}
-                               class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
-                               required>
-                        <span class="ml-2 text-sm text-gray-700">Vespertina</span>
-                    </label>
-
-                    @error('jornada')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="flex gap-4">
-                    <button type="submit" 
-                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition">
-                        Crear Grado
-                    </button>
-                    <a href="{{ route('grados.index') }}" 
-                       class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold text-center transition">
-                        Cancelar
-=======
 @extends('layouts.admin')
 
 @section('title', 'Nuevo Grado')
@@ -136,8 +30,8 @@
                         <label for="nivel" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-layer-group text-primary"></i> Nivel Educativo *
                         </label>
-                        <select class="form-select @error('nivel') is-invalid @enderror" 
-                                id="nivel" 
+                        <select class="form-select @error('nivel') is-invalid @enderror"
+                                id="nivel"
                                 name="nivel"
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
@@ -159,8 +53,8 @@
                         <label for="numero" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-sort-numeric-up text-success"></i> Número de Grado *
                         </label>
-                        <select class="form-select @error('numero') is-invalid @enderror" 
-                                id="numero" 
+                        <select class="form-select @error('numero') is-invalid @enderror"
+                                id="numero"
                                 name="numero"
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
@@ -185,8 +79,8 @@
                         <label for="seccion" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-list-ol text-info"></i> Sección
                         </label>
-                        <select class="form-select @error('seccion') is-invalid @enderror" 
-                                id="seccion" 
+                        <select class="form-select @error('seccion') is-invalid @enderror"
+                                id="seccion"
                                 name="seccion"
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Sin sección</option>
@@ -207,10 +101,10 @@
                         <label for="anio_lectivo" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-calendar-alt text-warning"></i> Año Lectivo *
                         </label>
-                        <input type="number" 
-                               class="form-control @error('anio_lectivo') is-invalid @enderror" 
-                               id="anio_lectivo" 
-                               name="anio_lectivo" 
+                        <input type="number"
+                               class="form-control @error('anio_lectivo') is-invalid @enderror"
+                               id="anio_lectivo"
+                               name="anio_lectivo"
                                value="{{ old('anio_lectivo', date('Y')) }}"
                                min="2020"
                                max="2100"
@@ -224,10 +118,10 @@
                     <!-- Estado Activo -->
                     <div class="col-12">
                         <div class="form-check form-switch" style="padding-left: 2.5rem;">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
-                                   id="activo" 
-                                   name="activo" 
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="activo"
+                                   name="activo"
                                    value="1"
                                    {{ old('activo', true) ? 'checked' : '' }}
                                    style="width: 3rem; height: 1.5rem; cursor: pointer;">
@@ -254,15 +148,11 @@
                     </button>
                     <a href="{{ route('grados.index') }}" class="btn flex-fill" style="background: white; color: #6b7280; border: 2px solid #e5e7eb; border-radius: 8px; padding: 0.7rem; font-weight: 600;">
                         <i class="fas fa-times"></i> Cancelar
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
                     </a>
                 </div>
             </form>
         </div>
     </div>
-<<<<<<< HEAD
-</div>
-=======
 
 </div>
 
@@ -294,12 +184,12 @@
         const nivel = this.value;
         const numeroSelect = document.getElementById('numero');
         const options = numeroSelect.querySelectorAll('option');
-        
+
         options.forEach(option => {
             if (option.value === '') return;
-            
+
             const numero = parseInt(option.value);
-            
+
             if (nivel === 'primaria') {
                 option.style.display = (numero >= 1 && numero <= 6) ? '' : 'none';
             } else if (nivel === 'secundaria') {
@@ -308,7 +198,7 @@
                 option.style.display = '';
             }
         });
-        
+
         // Reset selection if current value is not valid
         const currentValue = parseInt(numeroSelect.value);
         if (nivel === 'primaria' && (currentValue < 1 || currentValue > 6)) {
@@ -320,5 +210,4 @@
 </script>
 @endpush
 
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
 @endsection

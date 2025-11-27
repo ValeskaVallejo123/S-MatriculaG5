@@ -2,87 +2,6 @@
 
 @section('title', 'Grados')
 
-<<<<<<< HEAD
-@section('content')
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Gestión de Grados</h1>
-            <a href="{{ route('grados.create') }}"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition">
-                + Nuevo Grado
-            </a>
-            <a href="{{ route('plantilla') }}"
-                class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition">
-                Volver
-            </a>
-        </div>
-
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sección</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre del Maestro</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jornada</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($grados as $grado)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $grado->id }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $grado->nombre }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $grado->seccion ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <span class="font-medium text-indigo-600">
-                                    {{ $grado->nombre_maestro ?? 'Sin asignar' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <span
-                                    class="px-2 py-1 text-xs rounded-full {{ $grado->jornada == 'Matutina' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800' }}">
-                                    {{ $grado->jornada == 'Matutina' ? '☀️ Matutina' : '🌙 Vespertina' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <a href="{{ route('grados.show', $grado) }}"
-                                    class="text-blue-600 hover:text-blue-900 mr-3">Clases</a>
-                                <a href="{{ route('grados.edit', $grado) }}"
-                                    class="text-indigo-600 hover:text-indigo-900 mr-3">Editar</a>
-                                <form action="{{ route('grados.destroy', $grado) }}" method="POST" class="inline"
-                                    onsubmit="return confirm('¿Está seguro de eliminar este grado?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                                No hay grados registrados
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-=======
 @section('page-title', 'Gestión de Grados y Secciones')
 
 @section('topbar-actions')
@@ -108,10 +27,10 @@
                 <div class="col-md-4">
                     <div class="position-relative">
                         <i class="fas fa-search position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.9rem;"></i>
-                        <input type="text" 
-                               id="searchInput" 
-                               class="form-control form-control-sm ps-5" 
-                               placeholder="Buscar por grado, sección, año..." 
+                        <input type="text"
+                               id="searchInput"
+                               class="form-control form-control-sm ps-5"
+                               placeholder="Buscar por grado, sección, año..."
                                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 1rem 0.5rem 2.5rem; transition: all 0.3s ease;">
                     </div>
                 </div>
@@ -123,7 +42,7 @@
                         <option value="secundaria">Secundaria (7° - 9°)</option>
                     </select>
                 </div>
-                
+
                 <div class="col-md-5">
                     <div class="d-flex align-items-center justify-content-md-end gap-3">
                         <div class="d-flex align-items-center gap-2">
@@ -209,18 +128,18 @@
             </div>
 
             <div class="d-flex gap-2">
-                <a href="{{ route('grados.show', $grado) }}" 
-                   class="btn btn-sm flex-fill" 
+                <a href="{{ route('grados.show', $grado) }}"
+                   class="btn btn-sm flex-fill"
                    style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem;">
                     <i class="fas fa-eye"></i> Ver
                 </a>
-                <a href="{{ route('grados.asignar-materias', $grado) }}" 
-                   class="btn btn-sm flex-fill" 
+                <a href="{{ route('grados.asignar-materias', $grado) }}"
+                   class="btn btn-sm flex-fill"
                    style="border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem;">
                     <i class="fas fa-tasks"></i> Materias
                 </a>
-                <a href="{{ route('grados.edit', $grado) }}" 
-                   class="btn btn-sm" 
+                <a href="{{ route('grados.edit', $grado) }}"
+                   class="btn btn-sm"
                    style="border: 1.5px solid #f59e0b; color: #f59e0b; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem 0.5rem;">
                     <i class="fas fa-edit"></i>
                 </a>
@@ -435,19 +354,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const filterNivel = document.getElementById('filterNivel');
     const cards = document.querySelectorAll('.grado-card');
-    
+
     function filterCards() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const nivelFilter = filterNivel.value;
         let visibleCount = 0;
-        
+
         cards.forEach(function(card) {
             const text = card.textContent.toLowerCase();
             const nivel = card.dataset.nivel;
-            
+
             const matchesSearch = text.includes(searchTerm);
             const matchesNivel = !nivelFilter || nivel === nivelFilter;
-            
+
             if (matchesSearch && matchesNivel) {
                 card.style.display = '';
                 visibleCount++;
@@ -456,11 +375,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     searchInput.addEventListener('keyup', filterCards);
     filterNivel.addEventListener('change', filterCards);
 });
 </script>
 @endpush
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
 @endsection

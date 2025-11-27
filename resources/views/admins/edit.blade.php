@@ -35,50 +35,21 @@
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
                             Datos Personales
                         </h3>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 
-=======
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
->>>>>>> dev/valeska
                         <div class="space-y-6">
                             <!-- Nombre -->
                             <div>
                                 <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Nombre Completo <span class="text-red-500">*</span>
                                 </label>
-<<<<<<< HEAD
+
                                 <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $admin->nombre) }}"
                                     class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                     required minlength="3" maxlength="50">
-=======
-<<<<<<< HEAD
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        id="nombre"
-                                        name="nombre"
-                                        value="{{ old('nombre', $admin->nombre) }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all @error('nombre') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ingrese el nombre completo"
-                                        required
-                                        minlength="3"
-                                        maxlength="50"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Entre 3 y 50 caracteres</p>
-=======
-                                <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $admin->nombre) }}" 
-                                    class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $admin->nombre) }}"
+                                    class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                     required minlength="3" maxlength="50">
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
->>>>>>> dev/valeska
+
                                 @error('nombre')
                                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                 @enderror
@@ -89,36 +60,14 @@
                                 <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Correo Electrónico Institucional <span class="text-red-500">*</span>
                                 </label>
-<<<<<<< HEAD
+
                                 <input type="email" name="email" id="email" value="{{ old('email', $admin->email) }}"
                                     class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                     required maxlength="100">
-=======
-<<<<<<< HEAD
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                        </svg>
-                                    </div>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        name="email"
-                                        value="{{ old('email', $admin->email) }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all @error('email') border-red-400 bg-red-50 @enderror"
-                                        placeholder="admin@institucion.edu"
-                                        required
-                                        maxlength="100"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Dirección de correo válida (máximo 100 caracteres)</p>
-=======
+
                                 <input type="email" name="email" id="email" value="{{ old('email', $admin->email) }}"
-                                    class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500" 
+                                    class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                                     required maxlength="100">
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
->>>>>>> dev/valeska
                                 @error('email')
                                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                 @enderror
@@ -128,14 +77,12 @@
 
                     <!-- Cambiar Contraseña -->
                     <div>
-<<<<<<< HEAD
+
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">Cambiar Contraseña</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Nueva Contraseña</label>
                                 <input type="password" name="password" id="password" placeholder="Mínimo 8 caracteres" class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl" minlength="8" maxlength="50">
-=======
-<<<<<<< HEAD
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
                             Cambiar Contraseña
                         </h3>
@@ -152,12 +99,8 @@
                             </div>
                         </div>
 
-=======
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">Cambiar Contraseña</h3>
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-<<<<<<< HEAD
                                 <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Nueva Contraseña
                                 </label>
@@ -187,21 +130,13 @@
                                         </svg>
                                     </button>
                                 </div>
-=======
-                                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Nueva Contraseña</label>
-                                <input type="password" name="password" id="password" placeholder="Mínimo 8 caracteres" class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl" minlength="8" maxlength="50">
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
->>>>>>> dev/valeska
                                 @error('password')
                                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div>
-<<<<<<< HEAD
                                 <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">Confirmar Nueva Contraseña</label>
                                 <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Repita la contraseña" class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl">
-=======
-<<<<<<< HEAD
                                 <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Confirmar Nueva Contraseña
                                 </label>
@@ -229,20 +164,13 @@
                                         </svg>
                                     </button>
                                 </div>
-=======
-                                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">Confirmar Nueva Contraseña</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Repita la contraseña" class="w-full pl-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl">
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
->>>>>>> dev/valeska
+
                             </div>
                         </div>
                     </div>
 
                     <!-- Permisos -->
                     <div>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
                             Permisos y Privilegios
                         </h3>
@@ -265,8 +193,6 @@
                                     </label>
                                 @endforeach
                             </div>
-=======
->>>>>>> dev/valeska
                         <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">Permisos y Privilegios</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($permisos as $key => $label)
@@ -275,16 +201,12 @@
                                     <span>{{ $label }}</span>
                                 </label>
                             @endforeach
-<<<<<<< HEAD
                         </div>
                     </div>
 
-=======
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
                         </div>
                     </div>
 
-<<<<<<< HEAD
                 <!-- Botones de acción -->
                 <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t-2 border-gray-100">
                     <button
@@ -305,17 +227,11 @@
                         </svg>
                         Cancelar
                     </a>
-=======
->>>>>>> dev/valeska
                     <!-- Botones -->
                     <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t-2 border-gray-100">
                         <button type="submit" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-xl font-semibold">Actualizar Información</button>
                         <a href="{{ route('superadmin.administradores.index') }}" class="flex-1 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300">Cancelar</a>
                     </div>
-<<<<<<< HEAD
-=======
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
->>>>>>> dev/valeska
                 </div>
             </form>
         </div>
@@ -326,10 +242,7 @@
 <script>
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
-<<<<<<< HEAD
     input.type = input.type === 'password' ? 'text' : 'password';
-=======
-<<<<<<< HEAD
     const eye = document.getElementById('eye-' + inputId);
 
     if (input.type === 'password') {
@@ -337,10 +250,6 @@ function togglePassword(inputId) {
     } else {
         input.type = 'password';
     }
-=======
-    input.type = input.type === 'password' ? 'text' : 'password';
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
->>>>>>> dev/valeska
 }
 </script>
 @endpush

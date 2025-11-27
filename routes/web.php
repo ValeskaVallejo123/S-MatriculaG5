@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminController;
@@ -32,6 +31,17 @@ use App\Http\Controllers\NotificacionController;
 | RUTAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
+// Ruta raíz - Redirige al login
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+// PLANTILLA PRINCIPAL (PÚBLICA) - Para el botón del login
+Route::get('/inicio', function () {
+    return view('plantilla');
+})->name('inicio');
+
+
 
 // Home y Plantilla
 Route::get('/', fn() => view('plantilla'))->name('home');
@@ -63,8 +73,6 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
 /*
 |--------------------------------------------------------------------------

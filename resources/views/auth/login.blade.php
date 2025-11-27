@@ -84,11 +84,11 @@
     }
 
     .school-logo {
-      width: 180px;
-      height: 180px;
+      width: 140px;
+      height: 140px;
       background: rgba(255, 255, 255, 0.15);
       border-radius: 50%;
-      margin: 0 auto 30px;
+      margin: 0 auto 20px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -98,21 +98,21 @@
     }
 
     .school-logo i {
-      font-size: 5rem;
+      font-size: 4rem;
       color: #4ec7d2;
       filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
     }
 
     .left-content h1 {
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: 800;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       line-height: 1.2;
       text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     .left-content p {
-      font-size: 1.1rem;
+      font-size: 1rem;
       opacity: 0.95;
       font-weight: 400;
       color: #bfd9ea;
@@ -120,8 +120,8 @@
     }
 
     .left-content .subtitle {
-      font-size: 0.95rem;
-      margin-top: 10px;
+      font-size: 0.85rem;
+      margin-top: 8px;
       opacity: 0.8;
       font-weight: 300;
       letter-spacing: 1px;
@@ -133,14 +133,36 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px;
+      padding: 30px;
       background: #ffffff;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    /* Scroll personalizado para el lado derecho */
+    .right-section::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .right-section::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .right-section::-webkit-scrollbar-thumb {
+      background: #4ec7d2;
+      border-radius: 10px;
+    }
+
+    .right-section::-webkit-scrollbar-thumb:hover {
+      background: #3ab0bc;
     }
 
     .login-container {
       width: 100%;
-      max-width: 480px;
+      max-width: 420px;
       animation: slideIn 0.8s ease-out;
+      padding: 10px 0;
     }
 
     @keyframes slideIn {
@@ -150,31 +172,31 @@
 
     .login-header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 25px;
     }
 
     .login-header h2 {
-      font-size: 2rem;
+      font-size: 1.75rem;
       color: #003b73;
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .login-header p {
       color: #00508f;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 500;
     }
 
     .form-group {
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: #003b73;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
     }
 
@@ -184,20 +206,20 @@
 
     .input-icon {
       position: absolute;
-      left: 16px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
       color: #00508f;
-      font-size: 1rem;
+      font-size: 0.95rem;
       z-index: 2;
     }
 
     .input-wrapper input {
       width: 100%;
-      padding: 14px 16px 14px 48px;
+      padding: 12px 14px 12px 44px;
       border: 2px solid #e1e8ed;
-      border-radius: 12px;
-      font-size: 0.95rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
       transition: all 0.3s ease;
       outline: none;
       color: #003b73;
@@ -224,8 +246,8 @@
 
     .invalid-feedback {
       color: #e74c3c;
-      font-size: 0.82rem;
-      margin-top: 6px;
+      font-size: 0.78rem;
+      margin-top: 5px;
       display: block;
       font-weight: 500;
     }
@@ -234,22 +256,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      font-size: 0.88rem;
+      margin-bottom: 18px;
+      font-size: 0.82rem;
     }
 
     .remember-me {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       color: #00508f;
       cursor: pointer;
       font-weight: 500;
     }
 
     .remember-me input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       accent-color: #4ec7d2;
       cursor: pointer;
     }
@@ -268,16 +290,16 @@
 
     .login-button {
       width: 100%;
-      padding: 15px;
+      padding: 12px;
       background: linear-gradient(135deg, #1e5a8e 0%, #0d3d66 100%);
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 1rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.4s ease;
-      box-shadow: 0 10px 30px rgba(30, 90, 142, 0.3);
+      box-shadow: 0 8px 25px rgba(30, 90, 142, 0.3);
       position: relative;
       overflow: hidden;
       font-family: 'Poppins', sans-serif;
@@ -286,7 +308,7 @@
 
     .login-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 15px 40px rgba(30, 90, 142, 0.4);
+      box-shadow: 0 12px 35px rgba(30, 90, 142, 0.4);
       background: linear-gradient(135deg, #0d3d66 0%, #003153 100%);
     }
 
@@ -295,22 +317,22 @@
     }
 
     .login-button i {
-      margin-right: 8px;
+      margin-right: 6px;
     }
 
     .alert {
-      padding: 12px 16px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      font-size: 0.88rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.82rem;
       animation: slideDown 0.5s ease;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .alert i {
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
 
     .alert-danger {
@@ -332,7 +354,7 @@
 
     .divider {
       text-align: center;
-      margin: 30px 0;
+      margin: 20px 0;
       position: relative;
     }
 
@@ -348,44 +370,64 @@
 
     .divider span {
       background: white;
-      padding: 0 20px;
+      padding: 0 15px;
       color: #00508f;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       position: relative;
       font-weight: 600;
     }
 
-    .register-link {
-      text-align: center;
-      color: #00508f;
-      font-size: 0.92rem;
-      font-weight: 500;
-      margin-bottom: 24px;
-    }
-
-    .register-link a {
-      color: #4ec7d2;
-      text-decoration: none;
-      font-weight: 700;
-      transition: all 0.3s ease;
-    }
-
-    .register-link a:hover {
-      color: #00508f;
-      text-decoration: underline;
-    }
-
-    .footer-info {
-      text-align: center;
-      padding-top: 20px;
-      border-top: 1px solid #e1e8ed;
-      color: #00508f;
-      font-size: 0.8rem;
-      font-weight: 500;
+    /* Botón para ir a la plantilla - CORREGIDO */
+    .btn-inicio {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      width: 100%;
+      padding: 11px 20px;
+      background: white;
+      color: #00508f;
+      border: 2px solid #4ec7d2;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 15px rgba(78, 199, 210, 0.2);
+      text-align: center;
+      text-decoration: none;
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-inicio:hover {
+      background: linear-gradient(135deg, #4ec7d2 0%, #3ab0bc 100%);
+      color: white;
+      border-color: #3ab0bc;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(78, 199, 210, 0.35);
+    }
+
+    .btn-inicio:active {
+      transform: translateY(0);
+    }
+
+    .btn-inicio i {
+      font-size: 1rem;
+    }
+
+    .footer-info {
+      text-align: center;
+      padding-top: 15px;
+      margin-top: 15px;
+      border-top: 1px solid #e1e8ed;
+      color: #00508f;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     /* Responsive */
@@ -393,6 +435,7 @@
       .left-section {
         display: none;
       }
+
       .right-section {
         flex: 1;
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -401,7 +444,7 @@
 
     @media (max-width: 768px) {
       .right-section {
-        padding: 30px 20px;
+        padding: 25px 18px;
       }
 
       .login-container {
@@ -409,39 +452,48 @@
       }
 
       .login-header h2 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
       }
 
       .login-header p {
-        font-size: 0.88rem;
+        font-size: 0.85rem;
       }
     }
 
     @media (max-width: 480px) {
       .right-section {
-        padding: 20px 16px;
+        padding: 18px 14px;
       }
 
       .login-header {
-        margin-bottom: 30px;
-      }
-
-      .login-header h2 {
-        font-size: 1.4rem;
-      }
-
-      .form-group {
         margin-bottom: 20px;
       }
 
+      .login-header h2 {
+        font-size: 1.35rem;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
       .input-wrapper input {
-        padding: 12px 16px 12px 44px;
-        font-size: 0.9rem;
+        padding: 11px 14px 11px 42px;
+        font-size: 0.88rem;
       }
 
       .login-button {
-        padding: 13px;
-        font-size: 0.95rem;
+        padding: 11px;
+        font-size: 0.9rem;
+      }
+
+      .btn-inicio {
+        padding: 10px 18px;
+        font-size: 0.85rem;
+      }
+
+      .footer-info {
+        font-size: 0.7rem;
       }
     }
 
@@ -483,6 +535,19 @@
       .login-button:active {
         transform: scale(0.98);
       }
+
+      .btn-inicio:hover {
+        transform: none;
+      }
+
+      .btn-inicio:active {
+        transform: scale(0.98);
+      }
+    }
+
+    /* Scroll suave */
+    html {
+      scroll-behavior: smooth;
     }
   </style>
 </head>
@@ -512,6 +577,7 @@
   <!-- Lado derecho con formulario -->
   <div class="right-section">
     <div class="login-container">
+
       <div class="login-header">
         <h2>Iniciar Sesión</h2>
         <p>Ingresa tus credenciales para acceder</p>
@@ -575,7 +641,7 @@
         </div>
 
         <div class="remember-forgot">
-        <label class="remember-me">
+          <label class="remember-me">
             <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
             <span>Recordarme</span>
           </label>
@@ -599,14 +665,11 @@
         <span>O</span>
       </div>
 
-      <div class="register-link">
-        ¿No tienes una cuenta?
-        @if (Route::has('register'))
-          <a href="{{ route('register') }}">Regístrate aquí</a>
-        @else
-          <a href="{{ url('/registro') }}">Regístrate aquí</a>
-        @endif
-      </div>
+      <!-- Botón para ver página principal - CORREGIDO -->
+      <a href="{{ route('inicio') }}" class="btn-inicio">
+        <i class="fas fa-home"></i>
+        <span>Ver Página Principal</span>
+      </a>
 
       <div class="footer-info">
         <i class="fas fa-shield-alt"></i>
@@ -636,6 +699,17 @@
           feedback.style.display = 'none';
         }
       });
+    });
+
+    // Scroll automático hacia arriba cuando aparece un mensaje de error
+    window.addEventListener('DOMContentLoaded', function() {
+      const alertDanger = document.querySelector('.alert-danger');
+      if (alertDanger) {
+        const rightSection = document.querySelector('.right-section');
+        if (rightSection) {
+          rightSection.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
     });
   </script>
 

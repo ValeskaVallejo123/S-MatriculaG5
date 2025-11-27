@@ -7,9 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 @section('title', 'Crear Administrador')
 
 @section('content')
@@ -275,8 +272,6 @@ function togglePassword(inputId) {
 </script>
 @endpush
 @endsection
-=======
->>>>>>> dev/valeska
   <style>
     * {
       margin: 0;
@@ -710,7 +705,4 @@ function togglePassword(inputId) {
   </script>
 </body>
 </html>
-<<<<<<< HEAD
-=======
->>>>>>> 5567870dc482cc51bd50123ee3f8d77b5b73b3b6
->>>>>>> dev/valeska
+

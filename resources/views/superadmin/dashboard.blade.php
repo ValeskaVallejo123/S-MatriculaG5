@@ -6,19 +6,18 @@
 
 @section('topbar-actions')
     <div class="d-flex align-items-center gap-2">
-        <span class="text-muted small">{{ now()->format('d/m/Y') }}</span>
-        @if(auth()->user()->rol)
-        <div class="vr"></div>
-        <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: #00508f; padding: 0.4rem 0.8rem; font-weight: 600; border: 1px solid #4ec7d2;">
-            <i class="fas fa-user-shield"></i> {{ auth()->user()->rol->nombre }}
-        </span>
-        @else
-        <div class="vr"></div>
-        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #991b1b; padding: 0.4rem 0.8rem; font-weight: 600; border: 1px solid #ef4444;">
-            <i class="fas fa-exclamation-triangle"></i> Sin rol asignado
-        </span>
-        @endif
-    </div>
+    @if(auth()->user()->rol)
+    <div class="vr"></div>
+    <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: #00508f; padding: 0.4rem 0.8rem; font-weight: 600; border: 1px solid #4ec7d2;">
+        <i class="fas fa-user-shield"></i> {{ auth()->user()->rol->nombre }}
+    </span>
+    @else
+    <div class="vr"></div>
+    <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #991b1b; padding: 0.4rem 0.8rem; font-weight: 600; border: 1px solid #ef4444;">
+        <i class="fas fa-exclamation-triangle"></i> Sin rol asignado
+    </span>
+    @endif
+</div>
 @endsection
 
 @section('content')
@@ -41,11 +40,10 @@
                         <i class="fas fa-sun me-2" style="color: #ffd700;"></i>
                         ¡Bienvenido de nuevo, {{ auth()->user()->name }}!
                     </h3>
-                    <p class="text-white opacity-75 mb-0">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        {{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
-                    </p>
+
+                    <!-- FECHA ELIMINADA -->
                 </div>
+
                 <div class="col-md-4 text-md-end">
                     <div class="text-white">
                         <i class="fas fa-clock me-2"></i>
@@ -55,6 +53,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Estadísticas Principales -->
     <div class="row g-3 mb-4">
@@ -393,7 +392,7 @@
     .card {
         transition: all 0.3s ease;
     }
-    
+
     .card:hover {
         box-shadow: 0 8px 16px rgba(0, 80, 143, 0.1) !important;
     }
@@ -402,18 +401,7 @@
 
 @push('scripts')
 <script>
-// Reloj en tiempo real
-function updateTime() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds}`;
-}
 
-// Actualizar cada segundo
-setInterval(updateTime, 1000);
-updateTime(); // Llamar inmediatamente
 </script>
 @endpush
 @endsection

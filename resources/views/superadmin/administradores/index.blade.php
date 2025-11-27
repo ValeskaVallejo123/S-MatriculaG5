@@ -191,7 +191,7 @@
 <!-- Mensaje de bienvenida -->
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show mb-4 fade-in-up" style="animation-delay: 0.1s;">
-    <i class="fas fa-check-circle me-2"></i> 
+    <i class="fas fa-check-circle me-2"></i>
     <strong>{{ session('success') }}</strong>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
@@ -203,7 +203,7 @@
         <div class="card border-0 shadow-sm fade-in-up" style="animation-delay: 0.1s; border-radius: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
             <div class="card-body text-white p-4">
                 <h2 class="mb-2 fw-bold">
-                    👋 ¡Bienvenido, {{ Auth::user()->name }}!
+                     ¡Bienvenido, {{ Auth::user()->name }}!
                 </h2>
                 <p class="mb-0 opacity-75">Panel de Administración - Sistema de Matrículas Gabriela Mistral</p>
             </div>
@@ -460,7 +460,7 @@
                         </td>
                         <td class="text-center align-middle">
                             @if(!$admin->is_protected)
-                                <a href="{{ route('superadmin.administradores.edit', $admin) }}" 
+                                <a href="{{ route('superadmin.administradores.edit', $admin) }}"
                                    class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>
