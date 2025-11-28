@@ -12,7 +12,8 @@
 @endsection
 
 @section('content')
-    <div class="container" style="max-width: 1400px;">
+<div class="container" style="max-width: 1400px;">
+
     <!-- Barra de búsqueda y resumen compacto -->
     <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px;">
         <div class="card-body p-3">
@@ -28,24 +29,33 @@
                                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 1rem 0.5rem 2.5rem; transition: all 0.3s ease;">
                     </div>
                 </div>
+
                 <!-- Resumen compacto -->
                 <div class="col-md-6">
                     <div class="d-flex align-items-center justify-content-md-end gap-3">
                         <div class="d-flex align-items-center gap-2">
                             <i class="fas fa-users" style="color: #00508f; font-size: 0.9rem;"></i>
                             <span class="small"><strong style="color: #00508f;">{{ $estudiantes->total() }}</strong> <span class="text-muted">Total</span></span>
-
                         </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-check-circle" style="color: #4ec7d2; font-size: 0.9rem;"></i>
+                            <span class="small"><strong style="color: #4ec7d2;">{{ $estudiantes->where('estado', 'activo')->count() }}</strong> <span class="text-muted">Activos</span></span>
+                        </div>
+                        <button class="btn btn-sm" style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; padding: 0.3rem 0.8rem; font-size: 0.85rem;">
+                            <i class="fas fa-download"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Tabla compacta de Estudiantes -->
-        <div class="card border-0 shadow-sm" style="border-radius: 10px;">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="studentsTable">
-                        <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+    </div>
+
+    <!-- Tabla compacta de Estudiantes -->
+    <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="studentsTable">
+                    <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
                         <tr>
                             <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Foto</th>
                             <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Nombre</th>
@@ -55,8 +65,8 @@
                             <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Estado</th>
                             <th class="px-3 py-2 text-uppercase small fw-semibold text-end" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Acciones</th>
                         </tr>
-                        </thead>
-                        <tbody>
+                    </thead>
+                    <tbody>
                         @forelse ($estudiantes as $estudiante)
                         <tr style="border-bottom: 1px solid #f1f5f9; transition: all 0.2s ease;" class="student-row">
                             <td class="px-3 py-2">
@@ -83,11 +93,10 @@
                             <td class="px-3 py-2">
                                 @if($estudiante->estado === 'activo')
                                     <span class="badge rounded-pill" style="background: rgba(78, 199, 210, 0.2); color: #00508f; padding: 0.3rem 0.7rem; font-weight: 600; border: 1px solid #4ec7d2; font-size: 0.75rem;">
-
                                         <i class="fas fa-circle" style="font-size: 0.4rem; color: #4ec7d2;"></i> Activo
                                     </span>
-                                    @else
-                                        <span class="badge rounded-pill" style="background: #fee2e2; color: #991b1b; padding: 0.3rem 0.7rem; font-weight: 600; border: 1px solid #ef4444; font-size: 0.75rem;">
+                                @else
+                                    <span class="badge rounded-pill" style="background: #fee2e2; color: #991b1b; padding: 0.3rem 0.7rem; font-weight: 600; border: 1px solid #ef4444; font-size: 0.75rem;">
                                         <i class="fas fa-circle" style="font-size: 0.4rem;"></i> Inactivo
                                     </span>
                                 @endif
@@ -123,38 +132,37 @@
                             </td>
                         </tr>
                         @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="fas fa-inbox fa-2x mb-2" style="color: #00508f; opacity: 0.5;"></i>
-                                        <h6 style="color: #003b73;">No hay estudiantes registrados</h6>
-                                        <p class="small mb-3">Comienza agregando el primer estudiante</p>
-                                        <a href="{{ route('estudiantes.create') }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem;">
-                                            <i class="fas fa-plus me-1"></i>Registrar Estudiante
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-inbox fa-2x mb-2" style="color: #00508f; opacity: 0.5;"></i>
+                                    <h6 style="color: #003b73;">No hay estudiantes registrados</h6>
+                                    <p class="small mb-3">Comienza agregando el primer estudiante</p>
+                                    <a href="{{ route('estudiantes.create') }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem;">
+                                        <i class="fas fa-plus me-1"></i>Registrar Estudiante
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
                         @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
             </div>
-            <!-- Paginación compacta -->
-            @if($estudiantes->hasPages())
-                <div class="card-footer bg-white border-0 py-2 px-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-muted small" style="font-size: 0.8rem;">
-                            {{ $estudiantes->firstItem() }} - {{ $estudiantes->lastItem() }} de {{ $estudiantes->total() }}
-                        </div>
-                        <div>
-                            {{ $estudiantes->links() }}
-                        </div>
-                    </div>
-                </div>
-            @endif
         </div>
 
+        <!-- Paginación compacta -->
+        @if($estudiantes->hasPages())
+        <div class="card-footer bg-white border-0 py-2 px-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small" style="font-size: 0.8rem;">
+                    {{ $estudiantes->firstItem() }} - {{ $estudiantes->lastItem() }} de {{ $estudiantes->total() }}
+                </div>
+                <div>
+                    {{ $estudiantes->links() }}
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 
 </div>
@@ -216,6 +224,7 @@
     }
 </style>
 @endpush
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -245,13 +254,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const noResultsRow = document.createElement('tr');
                 noResultsRow.className = 'no-results-row';
                 noResultsRow.innerHTML = `
-
                     <td colspan="7" class="text-center py-4">
                         <i class="fas fa-search" style="color: #00508f; opacity: 0.5; font-size: 1.5rem;"></i>
                         <p class="text-muted mt-2 mb-0">No se encontraron resultados para "<strong>${searchTerm}</strong>"</p>
                     </td>
                 `;
-
                 table.querySelector('tbody').appendChild(noResultsRow);
             }
         } else {

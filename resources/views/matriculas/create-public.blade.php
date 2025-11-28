@@ -531,11 +531,6 @@
                             <p style="color: #00508f; font-size: 0.85rem; margin-bottom: 0;">o arrastra y suelta aquí</p>
                             <small style="color: #6c757d;">Formatos: PDF, JPG, PNG (máx. 5MB por archivo)</small>
                         </div>
-<<<<<<< HEAD
-
-=======
-
->>>>>>> origin/main
                         <input type="file" id="documentos" name="documentos[]" multiple accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivos(this)">
 
                         <div id="listaArchivos" class="mt-3"></div>
@@ -555,11 +550,6 @@
                         <i class="fas fa-paper-plane"></i>
                         <span>Enviar Solicitud de Matrícula</span>
                     </button>
-<<<<<<< HEAD
-
-=======
-
->>>>>>> origin/main
                    <a href="{{ route('plantilla') }}" class="btn-cancel">
     <i class="fas fa-times"></i>
     <span>Cancelar</span>

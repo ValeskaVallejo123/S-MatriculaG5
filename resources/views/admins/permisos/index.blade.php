@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Gestión de Permisos de Padres')
 
@@ -162,6 +162,7 @@
                 </table>
             </div>
         </div>
+
         @if($padres->hasPages())
         <div class="card-footer bg-white">
             <div class="d-flex justify-content-between align-items-center">
@@ -188,6 +189,7 @@
         background-color: #f8f9fa;
         transform: translateX(2px);
     }
+
     .btn-sm {
         padding: 0.375rem 0.75rem;
         font-size: 0.875rem;

@@ -161,24 +161,36 @@ class User extends Authenticatable
             || $this->is_super_admin == 1;
     }
 
-    public function isAdministrador()
+     public function isAdministrador()
     {
-        return $this->hasAnyRole(['Administrador', 'administrador', 'admin']);
+        return $this->tieneRol('Administrador')
+            || $this->tieneRol('administrador')
+            || $this->tieneRol('admin');
     }
 
-    public function isDocente()
+
+     public function isDocente()
     {
-        return $this->hasAnyRole(['Docente', 'docente', 'Profesor', 'profesor']);
+        return $this->tieneRol('Docente')
+            || $this->tieneRol('docente')
+            || $this->tieneRol('Profesor')
+            || $this->tieneRol('profesor');
     }
 
     public function isEstudiante()
     {
-        return $this->hasAnyRole(['Estudiante', 'estudiante', 'Alumno', 'alumno']);
+        return $this->tieneRol('Estudiante')
+            || $this->tieneRol('estudiante')
+            || $this->tieneRol('Alumno')
+            || $this->tieneRol('alumno');
     }
 
     public function isPadre()
     {
-        return $this->hasAnyRole(['Padre', 'padre', 'Tutor', 'tutor']);
+        return $this->tieneRol('Padre')
+            || $this->tieneRol('padre')
+            || $this->tieneRol('Tutor')
+            || $this->tieneRol('tutor');
     }
 
     // ===================================

@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    
+
     <!-- Formulario de Búsqueda -->
     <div class="row mb-4">
         <div class="col-12">
@@ -31,56 +31,56 @@
                                         <i class="fas fa-user"></i>
                                         Nombre
                                     </label>
-                                    <input type="text" 
-                                           name="nombre" 
-                                           class="form-control-modern" 
+                                    <input type="text"
+                                           name="nombre"
+                                           class="form-control-modern"
                                            placeholder="Nombre del estudiante"
                                            value="{{ request('nombre') }}">
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-3">
                                 <div class="form-group-modern">
                                     <label class="form-label-modern">
                                         <i class="fas fa-id-card"></i>
                                         DNI/Identidad
                                     </label>
-                                    <input type="text" 
-                                           name="dni" 
-                                           class="form-control-modern" 
+                                    <input type="text"
+                                           name="dni"
+                                           class="form-control-modern"
                                            placeholder="Número de identidad"
                                            value="{{ request('dni') }}">
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-3">
                                 <div class="form-group-modern">
                                     <label class="form-label-modern">
                                         <i class="fas fa-hashtag"></i>
                                         Código
                                     </label>
-                                    <input type="text" 
-                                           name="codigo" 
-                                           class="form-control-modern" 
+                                    <input type="text"
+                                           name="codigo"
+                                           class="form-control-modern"
                                            placeholder="Código"
                                            value="{{ request('codigo') }}">
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-3">
                                 <div class="form-group-modern">
                                     <label class="form-label-modern">
                                         <i class="fas fa-graduation-cap"></i>
                                         Grado
                                     </label>
-                                    <input type="text" 
-                                           name="grado" 
-                                           class="form-control-modern" 
+                                    <input type="text"
+                                           name="grado"
+                                           class="form-control-modern"
                                            placeholder="Ej: 5°"
                                            value="{{ request('grado') }}">
                                 </div>
                             </div>
-                            
+
                             <div class="col-12">
                                 <div class="action-buttons">
                                     <button type="submit" class="btn-search">
@@ -574,17 +574,17 @@
     .search-card-body {
         padding: 1.5rem;
     }
-    
+
     .action-buttons {
         flex-direction: column;
     }
-    
+
     .btn-search,
     .btn-cancel {
         width: 100%;
         justify-content: center;
     }
-    
+
     .btn-view-student {
         width: 100%;
         justify-content: center;

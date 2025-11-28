@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Editar Grado')
 
@@ -212,5 +212,5 @@
     document.getElementById('nivel').dispatchEvent(new Event('change'));
 </script>
 @endpush
-@endsection
 
+@endsection

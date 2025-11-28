@@ -45,28 +45,6 @@
     </div>
 
     <div class="row g-3">
-<<<<<<< HEAD:resources/views/estudiante/create.blade.php
-        <!-- Nombre -->
-        <div class="col-md-6">
-            <label for="nombre" class="form-label small fw-semibold" style="color: #003b73;">
-                Nombre <span style="color: #ef4444;">*</span>
-            </label>
-            <div class="position-relative">
-                <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                <input type="text"
-                       class="form-control ps-5 @error('nombre') is-invalid @enderror"
-                       id="nombre"
-                       name="nombre"
-                       value="{{ old('nombre') }}"
-                       placeholder="Ej: Juan Carlos"
-                       required
-                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
-                @error('nombre')
-                    <div class="invalid-feedback" style="font-size: 0.8rem;">
-                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                    </div>
-                @enderror
-=======
        <!-- Primer Nombre -->
 <div class="col-md-6">
     <label for="nombre1" class="form-label small fw-semibold" style="color: #003b73;">
@@ -74,45 +52,22 @@
     </label>
     <div class="position-relative">
         <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-        <input type="text" 
-               class="form-control ps-5 @error('nombre1') is-invalid @enderror" 
-               id="nombre1" 
-               name="nombre1" 
-               value="{{ old('nombre1') }}" 
+        <input type="text"
+               class="form-control ps-5 @error('nombre1') is-invalid @enderror"
+               id="nombre1"
+               name="nombre1"
+               value="{{ old('nombre1') }}"
                placeholder="Ej: Juan"
                required
                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
         @error('nombre1')
             <div class="invalid-feedback" style="font-size: 0.8rem;">
                 <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
->>>>>>> origin/main:resources/views/estudiantes/create.blade.php
             </div>
         @enderror
     </div>
 </div>
 
-<<<<<<< HEAD:resources/views/estudiante/create.blade.php
-        <!-- Apellido -->
-        <div class="col-md-6">
-            <label for="apellido" class="form-label small fw-semibold" style="color: #003b73;">
-                Apellido <span style="color: #ef4444;">*</span>
-            </label>
-            <div class="position-relative">
-                <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                <input type="text"
-                       class="form-control ps-5 @error('apellido') is-invalid @enderror"
-                       id="apellido"
-                       name="apellido"
-                       value="{{ old('apellido') }}"
-                       placeholder="Ej: Pérez García"
-                       required
-                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
-                @error('apellido')
-                    <div class="invalid-feedback" style="font-size: 0.8rem;">
-                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                    </div>
-                @enderror
-=======
 <!-- Segundo Nombre -->
 <div class="col-md-6">
     <label for="nombre2" class="form-label small fw-semibold" style="color: #003b73;">
@@ -120,17 +75,16 @@
     </label>
     <div class="position-relative">
         <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-        <input type="text" 
-               class="form-control ps-5 @error('nombre2') is-invalid @enderror" 
-               id="nombre2" 
-               name="nombre2" 
-               value="{{ old('nombre2') }}" 
+        <input type="text"
+               class="form-control ps-5 @error('nombre2') is-invalid @enderror"
+               id="nombre2"
+               name="nombre2"
+               value="{{ old('nombre2') }}"
                placeholder="Ej: Carlos"
                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
         @error('nombre2')
             <div class="invalid-feedback" style="font-size: 0.8rem;">
                 <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
->>>>>>> origin/main:resources/views/estudiantes/create.blade.php
             </div>
         @enderror
     </div>
@@ -143,11 +97,11 @@
     </label>
     <div class="position-relative">
         <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-        <input type="text" 
-               class="form-control ps-5 @error('apellido1') is-invalid @enderror" 
-               id="apellido1" 
-               name="apellido1" 
-               value="{{ old('apellido1') }}" 
+        <input type="text"
+               class="form-control ps-5 @error('apellido1') is-invalid @enderror"
+               id="apellido1"
+               name="apellido1"
+               value="{{ old('apellido1') }}"
                placeholder="Ej: Pérez"
                required
                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -166,11 +120,11 @@
     </label>
     <div class="position-relative">
         <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-        <input type="text" 
-               class="form-control ps-5 @error('apellido2') is-invalid @enderror" 
-               id="apellido2" 
-               name="apellido2" 
-               value="{{ old('apellido2') }}" 
+        <input type="text"
+               class="form-control ps-5 @error('apellido2') is-invalid @enderror"
+               id="apellido2"
+               name="apellido2"
+               value="{{ old('apellido2') }}"
                placeholder="Ej: García"
                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
         @error('apellido2')

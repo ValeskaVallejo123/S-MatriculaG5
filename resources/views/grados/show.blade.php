@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Detalle de Grado')
 
@@ -299,5 +299,5 @@
     }
 </style>
 @endpush
-@endsection
 
+@endsection

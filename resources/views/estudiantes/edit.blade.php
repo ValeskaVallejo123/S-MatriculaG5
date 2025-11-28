@@ -13,7 +13,7 @@
 
 @section('content')
 <div class="container" style="max-width: 1200px;">
-    
+
     <!-- Header compacto -->
     <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px;">
         <div class="card-body p-3">
@@ -46,18 +46,18 @@
                     <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
                         <i class="fas fa-user me-2" style="font-size: 0.9rem;"></i>Información Personal
                     </h6>
-                    
+
                     <div class="row g-2">
                         <!-- Nombre -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small mb-1">
                                 Nombre <span class="text-danger">*</span>
                             </label>
-                            <input 
-                                type="text" 
-                                name="nombre" 
+                            <input
+                                type="text"
+                                name="nombre"
                                 value="{{ old('nombre', $estudiante->nombre) }}"
-                                class="form-control form-control-sm @error('nombre') is-invalid @enderror" 
+                                class="form-control form-control-sm @error('nombre') is-invalid @enderror"
                                 placeholder="Ej: Juan Carlos"
                                 required
                                 minlength="2"
@@ -73,11 +73,11 @@
                             <label class="form-label fw-semibold small mb-1">
                                 Apellido <span class="text-danger">*</span>
                             </label>
-                            <input 
-                                type="text" 
-                                name="apellido" 
+                            <input
+                                type="text"
+                                name="apellido"
                                 value="{{ old('apellido', $estudiante->apellido) }}"
-                                class="form-control form-control-sm @error('apellido') is-invalid @enderror" 
+                                class="form-control form-control-sm @error('apellido') is-invalid @enderror"
                                 placeholder="Ej: Pérez García"
                                 required
                                 minlength="2"
@@ -93,11 +93,11 @@
                             <label class="form-label fw-semibold small mb-1">
                                 Número de Identidad <span class="text-danger">*</span>
                             </label>
-                            <input 
-                                type="text" 
-                                name="dni" 
+                            <input
+                                type="text"
+                                name="dni"
                                 value="{{ old('dni', $estudiante->dni) }}"
-                                class="form-control form-control-sm @error('dni') is-invalid @enderror" 
+                                class="form-control form-control-sm @error('dni') is-invalid @enderror"
                                 placeholder="0000000000000"
                                 required
                                 pattern="[0-9]{13}"
@@ -114,11 +114,11 @@
                             <label class="form-label fw-semibold small mb-1">
                                 Fecha de Nacimiento <span class="text-danger">*</span>
                             </label>
-                            <input 
-                                type="date" 
-                                name="fecha_nacimiento" 
+                            <input
+                                type="date"
+                                name="fecha_nacimiento"
                                 value="{{ old('fecha_nacimiento', $estudiante->fecha_nacimiento->format('Y-m-d')) }}"
-                                class="form-control form-control-sm @error('fecha_nacimiento') is-invalid @enderror" 
+                                class="form-control form-control-sm @error('fecha_nacimiento') is-invalid @enderror"
                                 required
                             >
                             @error('fecha_nacimiento')
@@ -133,16 +133,16 @@
                     <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
                         <i class="fas fa-address-book me-2" style="font-size: 0.9rem;"></i>Información de Contacto
                     </h6>
-                    
+
                     <div class="row g-2">
                         <!-- Email -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small mb-1">Correo Electrónico</label>
-                            <input 
-                                type="email" 
-                                name="email" 
+                            <input
+                                type="email"
+                                name="email"
                                 value="{{ old('email', $estudiante->email) }}"
-                                class="form-control form-control-sm @error('email') is-invalid @enderror" 
+                                class="form-control form-control-sm @error('email') is-invalid @enderror"
                                 placeholder="estudiante@correo.com"
                                 maxlength="100"
                             >
@@ -154,11 +154,11 @@
                         <!-- Teléfono -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small mb-1">Teléfono</label>
-                            <input 
-                                type="text" 
-                                name="telefono" 
+                            <input
+                                type="text"
+                                name="telefono"
                                 value="{{ old('telefono', $estudiante->telefono) }}"
-                                class="form-control form-control-sm @error('telefono') is-invalid @enderror" 
+                                class="form-control form-control-sm @error('telefono') is-invalid @enderror"
                                 placeholder="00000000"
                                 pattern="[0-9]{8}"
                                 maxlength="8"
@@ -172,8 +172,8 @@
                         <!-- Dirección -->
                         <div class="col-12">
                             <label class="form-label fw-semibold small mb-1">Dirección</label>
-                            <textarea 
-                                name="direccion" 
+                            <textarea
+                                name="direccion"
                                 rows="2"
                                 maxlength="200"
                                 class="form-control form-control-sm @error('direccion') is-invalid @enderror"
@@ -192,16 +192,16 @@
                     <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
                         <i class="fas fa-graduation-cap me-2" style="font-size: 0.9rem;"></i>Información Académica
                     </h6>
-                    
+
                     <div class="row g-2">
                         <!-- Grado -->
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small mb-1">
                                 Grado <span class="text-danger">*</span>
                             </label>
-                            <select 
-                                name="grado" 
-                                class="form-select form-select-sm @error('grado') is-invalid @enderror" 
+                            <select
+                                name="grado"
+                                class="form-select form-select-sm @error('grado') is-invalid @enderror"
                                 required
                             >
                                 <option value="">Seleccione</option>
@@ -221,9 +221,9 @@
                             <label class="form-label fw-semibold small mb-1">
                                 Sección <span class="text-danger">*</span>
                             </label>
-                            <select 
-                                name="seccion" 
-                                class="form-select form-select-sm @error('seccion') is-invalid @enderror" 
+                            <select
+                                name="seccion"
+                                class="form-select form-select-sm @error('seccion') is-invalid @enderror"
                                 required
                             >
                                 <option value="">Seleccione</option>
@@ -243,9 +243,9 @@
                             <label class="form-label fw-semibold small mb-1">
                                 Estado <span class="text-danger">*</span>
                             </label>
-                            <select 
-                                name="estado" 
-                                class="form-select form-select-sm @error('estado') is-invalid @enderror" 
+                            <select
+                                name="estado"
+                                class="form-select form-select-sm @error('estado') is-invalid @enderror"
                                 required
                             >
                                 <option value="activo" {{ old('estado', $estudiante->estado) == 'activo' ? 'selected' : '' }}>Activo</option>
@@ -263,12 +263,12 @@
                     <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center" style="color: #00508f; font-weight: 600; font-size: 0.95rem;">
                         <i class="fas fa-clipboard me-2" style="font-size: 0.9rem;"></i>Información Adicional
                     </h6>
-                    
+
                     <div class="row g-2">
                         <div class="col-12">
                             <label class="form-label fw-semibold small mb-1">Observaciones</label>
-                            <textarea 
-                                name="observaciones" 
+                            <textarea
+                                name="observaciones"
                                 rows="2"
                                 maxlength="500"
                                 class="form-control form-control-sm @error('observaciones') is-invalid @enderror"

@@ -5,55 +5,45 @@
 @section('page-title', 'Panel de Control')
 
 @section('topbar-actions')
-    <div class="d-flex align-items-center gap-2">
-    @if(auth()->user()->rol)
-    <div class="vr"></div>
-    <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: #00508f; padding: 0.4rem 0.8rem; font-weight: 600; border: 1px solid #4ec7d2;">
-        <i class="fas fa-user-shield"></i> {{ auth()->user()->rol->nombre }}
-    </span>
-    @else
-    <div class="vr"></div>
-    <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #991b1b; padding: 0.4rem 0.8rem; font-weight: 600; border: 1px solid #ef4444;">
-        <i class="fas fa-exclamation-triangle"></i> Sin rol asignado
-    </span>
-    @endif
-</div>
+    <div class="d-flex align-items-center gap-3">
+
+        @if(auth()->user()->rol)
+        <div class="vr"></div>
+        <span class="badge bg-primary" style="padding: 0.5rem 1rem; font-weight: 500;">
+            <i class="fas fa-user-shield me-1"></i> {{ auth()->user()->rol->nombre }}
+        </span>
+        @else
+        <span class="badge bg-warning text-dark" style="padding: 0.5rem 1rem; font-weight: 500;">
+            <i class="fas fa-exclamation-triangle me-1"></i> Sin rol asignado
+        </span>
+        @endif
+    </div>
 @endsection
 
 @section('content')
 <div class="container-fluid px-4">
 
-    <!-- Mensaje de bienvenida -->
-    @if(session('success'))
-    <div class="alert alert-dismissible fade show mb-3" style="background: rgba(78, 199, 210, 0.1); border: 1px solid #4ec7d2; border-radius: 10px; color: #003b73;">
-        <i class="fas fa-check-circle" style="color: #4ec7d2;"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    <!-- Tarjeta de Bienvenida -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%);">
-        <div class="card-body p-4">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h3 class="text-white mb-2">
-                        <i class="fas fa-sun me-2" style="color: #ffd700;"></i>
-                        ¡Bienvenido de nuevo, {{ auth()->user()->name }}!
-                    </h3>
-
-                    <!-- FECHA ELIMINADA -->
-                </div>
-
-                <div class="col-md-4 text-md-end">
-                    <div class="text-white">
-                        <i class="fas fa-clock me-2"></i>
-                        <span id="currentTime" style="font-size: 1.2rem; font-weight: 600;"></span>
+    <!-- Header de Bienvenida -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="welcome-content">
+                            <h2 class="welcome-title">
+                                <i class="fas fa-school me-2"></i>
+                                Bienvenido, {{ auth()->user()->name }}
+                            </h2>
+                            <p class="welcome-subtitle mb-0">
+                                Sistema de Gestión Escolar - Gabriela Mistral
+                            </p>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
-
 
     <!-- Estadísticas Principales -->
     <div class="row g-4 mb-4">
@@ -1000,9 +990,8 @@
     from {
         transform: translateX(-100%);
     }
-
-    .card:hover {
-        box-shadow: 0 8px 16px rgba(0, 80, 143, 0.1) !important;
+    to {
+        transform: translateX(0);
     }
 }
 
@@ -1275,7 +1264,6 @@
 
 @push('scripts')
 <script>
-
 // Reloj en tiempo real
 function updateTime() {
     const now = new Date();

@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="container" style="max-width: 1000px;">
-    
+
     <!-- Tarjeta de Bienvenida -->
     <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.15) 0%, rgba(0, 80, 143, 0.1) 100%);">
         <div class="card-body p-4">
