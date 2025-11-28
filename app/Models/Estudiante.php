@@ -9,6 +9,8 @@ class Estudiante extends Model
 {
     use HasFactory;
 
+    protected $table = 'estudiantes';
+
     protected $fillable = [
         'nombre1',
         'nombre2',
@@ -29,13 +31,19 @@ class Estudiante extends Model
         'email_padre',
         'foto',
         'dni_doc',
+        'curso_id', // recomendado
     ];
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
     ];
 
-    // Accessor para nombre completo corregido
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESORES
+    |--------------------------------------------------------------------------
+    */
+
     public function getNombreCompletoAttribute()
     {
         $nombre = trim("{$this->nombre1} {$this->nombre2}");
@@ -43,7 +51,60 @@ class Estudiante extends Model
         return trim("{$nombre} {$apellido}");
     }
 
-    // Opciones de grados
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONES
+    |--------------------------------------------------------------------------
+    */
+
+    // Permisos por padre
+    public function permisosPadres()
+    {
+        return $this->hasMany(PadrePermiso::class, 'estudiante_id');
+    }
+
+    // Padres con permisos configurados
+    public function padresConPermisos()
+    {
+        return $this->belongsToMany(Padre::class, 'padre_permisos', 'estudiante_id', 'padre_id')
+                    ->withPivot([
+                        'ver_calificaciones',
+                        'ver_asistencias',
+                        'ver_comportamiento',
+                        'ver_tareas',
+                        'descargar_boletas',
+                        'recibir_notificaciones',
+                        'comunicarse_profesores',
+                        'autorizar_salidas',
+                        'subir_documentos_matricula',
+                        'notas_adicionales'
+                    ]);
+    }
+
+    // Documentos del estudiante (fotos, acta de nacimiento, certificados)
+    public function documentos()
+    {
+        return $this->hasOne(Documento::class, 'estudiante_id');
+    }
+
+    // Relación con curso
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'curso_id');
+    }
+
+    // Relación con calificaciones
+    public function calificaciones()
+    {
+        return $this->hasMany(Calificacion::class, 'estudiante_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | LISTAS ESTÁTICAS (opcional mejorar luego)
+    |--------------------------------------------------------------------------
+    */
+
     public static function grados()
     {
         return [
@@ -62,33 +123,5 @@ class Estudiante extends Model
     public static function secciones()
     {
         return ['A', 'B', 'C'];
-    }
-
-    /**
-     * Relación con permisos de padres
-     */
-    public function permisospadres()
-    {
-        return $this->hasMany(PadrePermiso::class);
-    }
-
-    /**
-     * Obtener padres con permisos configurados
-     */
-    public function padresConPermisos()
-    {
-        return $this->belongsToMany(Padre::class, 'padre_permisos')
-                    ->withPivot([
-                        'ver_calificaciones',
-                        'ver_asistencias',
-                        'comunicarse_profesores',
-                        'autorizar_salidas',
-                        'modificar_datos_contacto',
-                        'ver_comportamiento',
-                        'descargar_boletas',
-                        'ver_tareas',
-                        'recibir_notificaciones'
-                    ])
-                    ->withTimestamps();
     }
 }

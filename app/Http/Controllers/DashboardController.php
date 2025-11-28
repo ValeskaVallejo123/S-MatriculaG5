@@ -16,44 +16,29 @@ use Illuminate\Support\Facades\Log;
 class DashboardController extends Controller
 {
     /**
-     * Dashboard genérico - Redirige según el rol del usuario
+     * Redirigir al dashboard según id_rol del usuario
      */
     public function redirect()
     {
-        // Usar Auth facade en lugar de auth()
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
         $usuario = Auth::user();
 
-        if (!$usuario->rol) {
-            Log::warning('Usuario sin rol', ['id' => $usuario->id]);
-
-            return view('superadmin.dashboard', [
-                'totalEstudiantes' => 0,
-                'totalProfesores' => 0,
-                'totalMatriculas' => 0
-            ]);
-        }
-
-        switch ($usuario->rol->nombre) {
-            case 'Super Administrador':
+        switch ($usuario->id_rol) {
+            case 1: // Super Administrador
                 return redirect()->route('superadmin.dashboard');
-            case 'Administrador':
+            case 2: // Administrador
                 return $this->admin();
-            case 'Profesor':
+            case 3: // Profesor
                 return redirect()->route('profesor.dashboard');
-            case 'Estudiante':
+            case 4: // Estudiante
                 return redirect()->route('estudiante.dashboard');
-            case 'Padre':
+            case 5: // Padre
                 return redirect()->route('padre.dashboard');
             default:
-                return view('superadmin.dashboard', [
-                    'totalEstudiantes' => 0,
-                    'totalProfesores' => 0,
-                    'totalMatriculas' => 0
-                ]);
+                return $this->dashboardFallback();
         }
     }
 
@@ -64,9 +49,9 @@ class DashboardController extends Controller
     {
         try {
             // Estadísticas generales
-            $totalEstudiantes = Estudiante::count();
+            $totalEstudiantes = Estudiante::where('activo', 1)->count();
             $estudiantesActivos = Estudiante::where('estado', 'activo')->count();
-            $totalProfesores = Profesor::count();
+            $totalProfesores = Profesor::where('activo', 1)->count();
             $profesoresActivos = Profesor::where('estado', 'activo')->count();
             $totalCursos = Curso::count();
             $totalMatriculas = Matricula::count();
@@ -74,16 +59,14 @@ class DashboardController extends Controller
             $matriculasPendientes = Matricula::where('estado', 'pendiente')->count();
 
             // Usuarios del sistema
-            $totalUsuarios = User::count();
-            $totalAdministradores = User::whereHas('rol', function($query) {
-                $query->whereIn('nombre', ['Administrador', 'Super Administrador']);
-            })->count();
+            $totalUsuarios = User::where('activo', 1)->count();
+            $totalAdministradores = User::whereIn('id_rol', [1, 2])->where('activo',1)->count();
 
             // Estudiantes por grado
             $estudiantesPorGrado = Estudiante::select('grado', DB::raw('count(*) as total'))
                 ->where('estado', 'activo')
                 ->groupBy('grado')
-                ->orderByRaw("FIELD(grado, '1ro Primaria', '2do Primaria', '3ro Primaria', '4to Primaria', '5to Primaria', '6to Primaria', '1ro Secundaria', '2do Secundaria', '3ro Secundaria')")
+                ->orderBy('grado')
                 ->get();
 
             // Estudiantes por sección
@@ -101,21 +84,15 @@ class DashboardController extends Controller
                 ->limit(5)
                 ->get();
 
-            // Últimas matrículas registradas
+            // Últimas matrículas
             $ultimasMatriculas = Matricula::with(['estudiante', 'padre'])
                 ->orderByDesc('created_at')
                 ->limit(5)
                 ->get();
 
-            // Estudiantes registrados recientemente
-            $estudiantesRecientes = Estudiante::orderByDesc('created_at')
-                ->limit(5)
-                ->get();
-
-            // Profesores registrados recientemente
-            $profesoresRecientes = Profesor::orderByDesc('created_at')
-                ->limit(5)
-                ->get();
+            // Estudiantes y profesores recientes
+            $estudiantesRecientes = Estudiante::orderByDesc('created_at')->limit(5)->get();
+            $profesoresRecientes = Profesor::orderByDesc('created_at')->limit(5)->get();
 
             // Período académico actual
             $periodoActual = PeriodoAcademico::where('fecha_inicio', '<=', now())
@@ -150,16 +127,24 @@ class DashboardController extends Controller
     /**
      * Dashboard genérico (fallback)
      */
-    public function index()
+    public function dashboardFallback()
     {
-        // Estadísticas básicas
-        $totalEstudiantes = Estudiante::count();
-        $totalProfesores = Profesor::count();
+        $totalEstudiantes = Estudiante::where('activo',1)->count();
+        $totalProfesores = Profesor::where('activo',1)->count();
         $totalMatriculas = Matricula::count();
+
         return view('superadmin.dashboard', compact(
             'totalEstudiantes',
             'totalProfesores',
             'totalMatriculas'
         ));
+    }
+
+    /**
+     * Dashboard básico para usuarios no redirigidos
+     */
+    public function index()
+    {
+        return $this->dashboardFallback();
     }
 }

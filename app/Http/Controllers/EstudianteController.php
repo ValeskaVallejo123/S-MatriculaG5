@@ -3,140 +3,44 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
+use App\Models\Notificacion; // Asegúrate de tener un modelo Notificacion
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class EstudianteController extends Controller
 {
-    public function index()
-    {
-        $estudiantes = Estudiante::latest()->paginate(10);
-        return view('estudiantes.index', compact('estudiantes'));
-    }
+    // ... tu CRUD actual ...
 
-    public function create()
-    {
-        $grados = Estudiante::grados();
-        $secciones = Estudiante::secciones();
-        return view('estudiantes.create', compact('grados', 'secciones'));
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nombre1' => 'required|string|min:2|max:50',
-            'nombre2' => 'nullable|string|min:2|max:50',
-            'apellido1' => 'required|string|min:2|max:50',
-            'apellido2' => 'nullable|string|min:2|max:50',
-            'dni' => 'nullable|string|max:13',
-            'fecha_nacimiento' => 'required|date|before:today',
-            'sexo' => 'required|in:masculino,femenino',
-            'email' => 'nullable|email|max:100',
-            'telefono' => 'nullable|string|max:15',
-            'direccion' => 'nullable|string|max:255',
-            'grado' => 'required|string',
-            'seccion' => 'required|string|max:1',
-            'estado' => 'nullable|string|in:activo,inactivo,retirado',
-            'observaciones' => 'nullable|string|max:500',
-            'nombre_padre' => 'nullable|string|max:100',
-            'telefono_padre' => 'nullable|string|max:15',
-            'email_padre' => 'nullable|email|max:100',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'dni_doc' => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
-        ]);
-
-        // Establecer estado por defecto si no se proporciona
-        $validated['estado'] = $validated['estado'] ?? 'activo';
-
-        if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')->store('fotos', 'public');
-        }
-
-        if ($request->hasFile('dni_doc')) {
-            $validated['dni_doc'] = $request->file('dni_doc')->store('documentos', 'public');
-        }
-
-        Estudiante::create($validated);
-
-        return redirect()->route('estudiantes.index')
-            ->with('success', 'Estudiante registrado exitosamente.');
-    }
-
-    public function show($id)
-    {
-        $estudiante = Estudiante::findOrFail($id);
-        return view('estudiantes.show', compact('estudiante'));
-    }
-
-    public function edit($id)
-    {
-        $estudiante = Estudiante::findOrFail($id);
-        $grados = Estudiante::grados();
-        $secciones = Estudiante::secciones();
-        return view('estudiantes.edit', compact('estudiante', 'grados', 'secciones'));
-    }
-
-    public function update(Request $request, $id)
+    /**
+     * Mostrar las notificaciones del estudiante
+     */
+    public function notificaciones($id)
     {
         $estudiante = Estudiante::findOrFail($id);
 
-        $validated = $request->validate([
-            'nombre1' => 'required|string|min:2|max:50',
-            'nombre2' => 'nullable|string|min:2|max:50',
-            'apellido1' => 'required|string|min:2|max:50',
-            'apellido2' => 'nullable|string|min:2|max:50',
-            'dni' => 'nullable|string|max:13',
-            'fecha_nacimiento' => 'required|date|before:today',
-            'sexo' => 'required|in:masculino,femenino',
-            'email' => 'nullable|email|max:100',
-            'telefono' => 'nullable|string|max:15',
-            'direccion' => 'nullable|string|max:255',
-            'grado' => 'required|string',
-            'seccion' => 'required|string|max:1',
-            'estado' => 'nullable|string|in:activo,inactivo,retirado',
-            'observaciones' => 'nullable|string|max:500',
-            'nombre_padre' => 'nullable|string|max:100',
-            'telefono_padre' => 'nullable|string|max:15',
-            'email_padre' => 'nullable|email|max:100',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'dni_doc' => 'nullable|mimes:pdf,jpg,jpeg,png|max:4096',
-        ]);
+        // Obtener solo notificaciones dirigidas a este estudiante
+        $notificaciones = Notificacion::where('estudiante_id', $estudiante->id)
+            ->orderByDesc('created_at')
+            ->get();
 
-        if ($request->hasFile('foto')) {
-            if ($estudiante->foto && Storage::disk('public')->exists($estudiante->foto)) {
-                Storage::disk('public')->delete($estudiante->foto);
-            }
-            $validated['foto'] = $request->file('foto')->store('fotos', 'public');
-        }
-
-        if ($request->hasFile('dni_doc')) {
-            if ($estudiante->dni_doc && Storage::disk('public')->exists($estudiante->dni_doc)) {
-                Storage::disk('public')->delete($estudiante->dni_doc);
-            }
-            $validated['dni_doc'] = $request->file('dni_doc')->store('documentos', 'public');
-        }
-
-        $estudiante->update($validated);
-
-        return redirect()->route('estudiantes.index')
-            ->with('success', 'Estudiante actualizado exitosamente.');
+        return view('estudiantes.notificaciones', compact('estudiante', 'notificaciones'));
     }
 
-    public function destroy($id)
+    /**
+     * Marcar notificación como leída
+     */
+    public function marcarLeida($id)
     {
-        $estudiante = Estudiante::findOrFail($id);
+        $notificacion = Notificacion::findOrFail($id);
 
-        if ($estudiante->foto && Storage::disk('public')->exists($estudiante->foto)) {
-            Storage::disk('public')->delete($estudiante->foto);
+        // Verificar que la notificación pertenece al estudiante
+        if ($notificacion->estudiante_id !== Auth::user()->estudiante->id) {
+            abort(403, 'No tienes permiso para esta acción.');
         }
 
-        if ($estudiante->dni_doc && Storage::disk('public')->exists($estudiante->dni_doc)) {
-            Storage::disk('public')->delete($estudiante->dni_doc);
-        }
+        $notificacion->update(['leida' => true]);
 
-        $estudiante->delete();
-
-        return redirect()->route('estudiantes.index')
-            ->with('success', 'Estudiante eliminado exitosamente.');
+        return back()->with('success', 'Notificación marcada como leída.');
     }
 }

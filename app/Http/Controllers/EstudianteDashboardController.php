@@ -10,52 +10,51 @@ use Illuminate\Support\Facades\Auth;
 class EstudianteDashboardController extends Controller
 {
     public function index()
-{
-    // Obtener el usuario logueado
-    $usuario = Auth::user();
+    {
+        // Usuario autenticado
+        $usuario = Auth::user();
+        $estudiante = $usuario->estudiante;
 
-    // Obtener el estudiante asociado
-    $estudiante = $usuario->estudiante;
+        // Datos de ejemplo del dashboard
+        $misClases = 8;
+        $asistencia = 95;
+        $promedioGeneral = 88;
+        $tareasPendientes = 3;
 
-    // Datos de ejemplo del dashboard
-    $misClases = 8;
-    $asistencia = 95;
-    $promedioGeneral = 88;
-    $tareasPendientes = 3;
+        $misMaterias = [
+            ['nombre' => 'Matemáticas', 'profesor' => 'Prof. Juan Pérez', 'promedio' => 90, 'asistencia' => 95],
+            ['nombre' => 'Lenguaje', 'profesor' => 'Prof. María López', 'promedio' => 88, 'asistencia' => 98],
+            ['nombre' => 'Ciencias', 'profesor' => 'Prof. Carlos Martínez', 'promedio' => 85, 'asistencia' => 92],
+            ['nombre' => 'Estudios Sociales', 'profesor' => 'Prof. Ana Rodríguez', 'promedio' => 92, 'asistencia' => 100],
+        ];
 
-    $misMaterias = [
-        ['nombre' => 'Matemáticas', 'profesor' => 'Prof. Juan Pérez', 'promedio' => 90, 'asistencia' => 95],
-        ['nombre' => 'Lenguaje', 'profesor' => 'Prof. María López', 'promedio' => 88, 'asistencia' => 98],
-        ['nombre' => 'Ciencias', 'profesor' => 'Prof. Carlos Martínez', 'promedio' => 85, 'asistencia' => 92],
-        ['nombre' => 'Estudios Sociales', 'profesor' => 'Prof. Ana Rodríguez', 'promedio' => 92, 'asistencia' => 100],
-    ];
+        $tareasProximas = [
+            ['materia' => 'Matemáticas', 'titulo' => 'Ejercicios de álgebra', 'fecha_entrega' => '2025-11-20', 'estado' => 'pendiente'],
+            ['materia' => 'Lenguaje', 'titulo' => 'Ensayo sobre la lectura', 'fecha_entrega' => '2025-11-22', 'estado' => 'pendiente'],
+            ['materia' => 'Ciencias', 'titulo' => 'Proyecto del sistema solar', 'fecha_entrega' => '2025-11-25', 'estado' => 'pendiente'],
+        ];
 
-    $tareasProximas = [
-        ['materia' => 'Matemáticas', 'titulo' => 'Ejercicios de álgebra', 'fecha_entrega' => '2025-11-20', 'estado' => 'pendiente'],
-        ['materia' => 'Lenguaje', 'titulo' => 'Ensayo sobre la lectura', 'fecha_entrega' => '2025-11-22', 'estado' => 'pendiente'],
-        ['materia' => 'Ciencias', 'titulo' => 'Proyecto del sistema solar', 'fecha_entrega' => '2025-11-25', 'estado' => 'pendiente'],
-    ];
+        // ✅ Notificaciones solo del estudiante
+        $notificacionesNoLeidas = Notificacion::where('estudiante_id', $estudiante->id)
+                                              ->where('leida', false)
+                                              ->get();
 
-   // ✅ Esto es correcto
-$usuario = auth()->user(); // Usuario real (User)
-$estudiante = $usuario->estudiante; // Relación con estudiante
+        $todasNotificaciones = Notificacion::where('estudiante_id', $estudiante->id)
+                                           ->orderByDesc('created_at')
+                                           ->get();
 
-$notificacionesNoLeidas = $usuario->notificaciones()->where('leida', false)->get();
-$todasNotificaciones = $usuario->notificaciones()->orderByDesc('created_at')->get();
-
-    // Retornar la vista con todos los datos
-    return view('estudiante.dashboard.index', compact(
-        'usuario',
-        'estudiante',
-        'misClases',
-        'asistencia',
-        'promedioGeneral',
-        'tareasPendientes',
-        'misMaterias',
-        'tareasProximas',
-        'notificacionesNoLeidas',
-        'todasNotificaciones'
-    ));
-}
-
+        // Retornar vista con los datos
+        return view('estudiante.dashboard.index', compact(
+            'usuario',
+            'estudiante',
+            'misClases',
+            'asistencia',
+            'promedioGeneral',
+            'tareasPendientes',
+            'misMaterias',
+            'tareasProximas',
+            'notificacionesNoLeidas',
+            'todasNotificaciones'
+        ));
+    }
 }

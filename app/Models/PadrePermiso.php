@@ -13,82 +13,79 @@ class PadrePermiso extends Model
         'estudiante_id',
         'ver_calificaciones',
         'ver_asistencias',
+        'ver_comportamiento',
+        'ver_tareas',
+        'descargar_boletas',
+        'recibir_notificaciones',
         'comunicarse_profesores',
         'autorizar_salidas',
-        'modificar_datos_contacto',
-        'ver_comportamiento',
-        'descargar_boletas',
-        'ver_tareas',
-        'recibir_notificaciones',
-        'notas_adicionales'
+        'subir_documentos_matricula',
+        'notas_adicionales',
     ];
 
     protected $casts = [
         'ver_calificaciones' => 'boolean',
         'ver_asistencias' => 'boolean',
+        'ver_comportamiento' => 'boolean',
+        'ver_tareas' => 'boolean',
+        'descargar_boletas' => 'boolean',
+        'recibir_notificaciones' => 'boolean',
         'comunicarse_profesores' => 'boolean',
         'autorizar_salidas' => 'boolean',
-        'modificar_datos_contacto' => 'boolean',
-        'ver_comportamiento' => 'boolean',
-        'descargar_boletas' => 'boolean',
-        'ver_tareas' => 'boolean',
-        'recibir_notificaciones' => 'boolean',
+        'subir_documentos_matricula' => 'boolean',
     ];
 
-    /**
-     * Relación con Padre
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONES
+    |--------------------------------------------------------------------------
+    */
+
     public function padre()
     {
-        return $this->belongsTo(Padre::class);
+        return $this->belongsTo(Padre::class, 'padre_id');
     }
 
-    /**
-     * Relación con Estudiante
-     */
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class);
+        return $this->belongsTo(Estudiante::class, 'estudiante_id');
     }
 
-    /**
-     * Obtener todos los permisos como array
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | MÉTODOS DE PERMISOS
+    |--------------------------------------------------------------------------
+    */
+
+    // Devuelve array de permisos con su valor
     public function getPermisosArray()
     {
         return [
             'ver_calificaciones' => $this->ver_calificaciones,
             'ver_asistencias' => $this->ver_asistencias,
+            'ver_comportamiento' => $this->ver_comportamiento,
+            'ver_tareas' => $this->ver_tareas,
+            'descargar_boletas' => $this->descargar_boletas,
+            'recibir_notificaciones' => $this->recibir_notificaciones,
             'comunicarse_profesores' => $this->comunicarse_profesores,
             'autorizar_salidas' => $this->autorizar_salidas,
-            'modificar_datos_contacto' => $this->modificar_datos_contacto,
-            'ver_comportamiento' => $this->ver_comportamiento,
-            'descargar_boletas' => $this->descargar_boletas,
-            'ver_tareas' => $this->ver_tareas,
-            'recibir_notificaciones' => $this->recibir_notificaciones,
+            'subir_documentos_matricula' => $this->subir_documentos_matricula,
         ];
     }
 
-    /**
-     * Verificar si tiene un permiso específico
-     */
+    // Verifica un permiso específico
     public function tienePermiso($permiso)
     {
-        return $this->{$permiso} ?? false;
+        return isset($this->{$permiso}) && $this->{$permiso} === true;
     }
 
-    /**
-     * Obtener permisos activos
-     */
+    // Lista de permisos activos
     public function getPermisosActivosAttribute()
     {
-        $permisos = $this->getPermisosArray();
-        return array_keys(array_filter($permisos));
+        return array_keys(array_filter($this->getPermisosArray()));
     }
 
-    /**
-     * Contar permisos activos
-     */
+    // Número de permisos activos
     public function getCantidadPermisosActivosAttribute()
     {
         return count($this->permisos_activos);

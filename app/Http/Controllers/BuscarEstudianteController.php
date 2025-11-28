@@ -7,8 +7,20 @@ use App\Models\Estudiante;
 
 class BuscarEstudianteController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function buscar(Request $request)
     {
+        $request->validate([
+            'nombre' => 'nullable|string|max:50',
+            'dni' => 'nullable|string|max:20',
+            'codigo' => 'nullable|string|max:20',
+            'grado' => 'nullable|string|max:20',
+        ]);
+
         $nombre = $request->input('nombre');
         $dni = $request->input('dni');
         $codigo = $request->input('codigo');
@@ -18,37 +30,34 @@ class BuscarEstudianteController extends Controller
         $busquedaRealizada = false;
         $mensaje = null;
 
-        // Verificar si se realizó alguna búsqueda
         if ($nombre || $dni || $codigo || $grado) {
             $busquedaRealizada = true;
 
             $query = Estudiante::query();
 
-            // Buscar por nombre
-            if ($nombre) {
-                $query->where(function ($q) use ($nombre) {
-                    $q->where('nombre1', 'like', "%$nombre%")
-                        ->orWhere('nombre2', 'like', "%$nombre%")
-                        ->orWhere('apellido1', 'like', "%$nombre%")
-                        ->orWhere('apellido2', 'like', "%$nombre%");
-                });
-            }
+            $query->where(function($q) use ($nombre, $dni, $codigo, $grado) {
+                if ($nombre) {
+                    $q->where(function($q2) use ($nombre) {
+                        $q2->where('nombre1', 'like', "%$nombre%")
+                           ->orWhere('nombre2', 'like', "%$nombre%")
+                           ->orWhere('apellido1', 'like', "%$nombre%")
+                           ->orWhere('apellido2', 'like', "%$nombre%");
+                    });
+                }
 
-            // Buscar por DNI normalizado
-            if ($dni) {
-                $dni = preg_replace('/[^0-9]/', '', $dni);
-                $query->orWhere('dni', 'like', "%$dni%");
-            }
+                if ($dni) {
+                    $dni = preg_replace('/[^0-9]/', '', $dni);
+                    $q->where('dni', 'like', "%$dni%");
+                }
 
-            // Buscar por código
-            if ($codigo) {
-                $query->where('codigo', 'like', "%$codigo%");
-            }
+                if ($codigo) {
+                    $q->where('codigo', 'like', "%$codigo%");
+                }
 
-            // Buscar por grado
-            if ($grado) {
-                $query->where('grado', 'like', "%$grado%");
-            }
+                if ($grado) {
+                    $q->where('grado', 'like', "%$grado%");
+                }
+            });
 
             $estudiantes = $query->get();
 

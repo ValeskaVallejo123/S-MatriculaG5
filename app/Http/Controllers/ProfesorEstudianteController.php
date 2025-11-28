@@ -10,16 +10,25 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfesorEstudianteController extends Controller
 {
+    public function __construct()
+    {
+        // Solo PROFESORES pueden ver esta sección
+        $this->middleware(['auth', 'rol:profesor']);
+    }
+
+    /**
+     * Lista de estudiantes asignados al profesor
+     */
     public function index()
     {
-        $usuario = Auth::user(); // Usuario autenticado
+        $usuario = Auth::user();
         $profesor = $usuario->docente;
 
         if (!$profesor) {
-            Session::flash('error', 'No se encontró información del profesor.');
-            return redirect()->back();
+            return redirect()->back()->with('error', 'No se encontró información del profesor.');
         }
 
+        // Buscar estudiantes asignados al profesor
         $estudiantes = Estudiante::where('profesor_id', $profesor->id)->get();
 
         if ($estudiantes->isEmpty()) {
@@ -29,29 +38,37 @@ class ProfesorEstudianteController extends Controller
         return view('profesor.estudiantes.index', compact('estudiantes'));
     }
 
+    /**
+     * Exportar a PDF los estudiantes asignados al profesor
+     */
     public function exportPDF()
     {
         $usuario = Auth::user();
         $profesor = $usuario->docente;
 
         if (!$profesor) {
-            Session::flash('error', 'No se encontró información del profesor.');
-            return redirect()->route('profesor.estudiantes.index');
+            return redirect()->route('profesor.estudiantes.index')
+                ->with('error', 'No se encontró información del profesor.');
         }
 
         $estudiantes = Estudiante::where('profesor_id', $profesor->id)->get();
 
         if ($estudiantes->isEmpty()) {
-            Session::flash('error', 'No hay estudiantes para generar el PDF.');
-            return redirect()->route('profesor.estudiantes.index');
+            return redirect()->route('profesor.estudiantes.index')
+                ->with('error', 'No hay estudiantes para generar el PDF.');
         }
 
         try {
-            $pdf = Pdf::loadView('profesor.estudiantes.pdf', compact('estudiantes'));
+            $pdf = Pdf::loadView('profesor.estudiantes.pdf', [
+                'estudiantes' => $estudiantes,
+                'profesor' => $profesor
+            ]);
+
             return $pdf->download('lista_estudiantes.pdf');
+
         } catch (\Exception $e) {
-            Session::flash('error', 'Ocurrió un error al generar el PDF.');
-            return redirect()->route('profesor.estudiantes.index');
+            return redirect()->route('profesor.estudiantes.index')
+                ->with('error', 'Ocurrió un error al generar el PDF.');
         }
     }
 }

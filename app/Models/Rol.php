@@ -14,11 +14,23 @@ class Rol extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
+    // ⚠ Asegura que no falle si roles no tiene created_at/updated_at
+    public $timestamps = false;
+
     protected $fillable = ['nombre', 'descripcion'];
+
+    // =============================
+    // RELACIONES
+    // =============================
 
     public function permisos()
     {
-        return $this->belongsToMany(Permiso::class, 'permiso_rol', 'id_rol', 'id_permiso');
+        return $this->belongsToMany(
+            Permiso::class,
+            'permiso_rol',
+            'id_rol',
+            'permiso_id'
+        );
     }
 
     public function usuarios()
@@ -26,12 +38,38 @@ class Rol extends Model
         return $this->hasMany(User::class, 'id_rol', 'id');
     }
 
+    // =============================
+    // PERMISOS
+    // =============================
+
     public function tienePermiso($nombrePermiso)
     {
-        if (!$this->permisos) {
+        if (!$nombrePermiso) {
             return false;
         }
 
-        return $this->permisos->contains('nombre', $nombrePermiso);
+        // Normalizar nombre
+        $nombrePermiso = strtolower(trim($nombrePermiso));
+
+        // ✔ Si ya está cargado (eager loaded) → usar colección
+        if ($this->relationLoaded('permisos')) {
+            return $this->permisos
+                ->contains(fn($permiso) => strtolower($permiso->nombre) === $nombrePermiso);
+        }
+
+        // ✔ Si NO está cargado → consulta directa (mejor rendimiento)
+        return $this->permisos()
+            ->whereRaw('LOWER(nombre) = ?', [$nombrePermiso])
+            ->exists();
+    }
+
+    public function tienePermisos(array $permisos)
+    {
+        foreach ($permisos as $permiso) {
+            if ($this->tienePermiso($permiso)) {
+                return true; // basta con uno
+            }
+        }
+        return false;
     }
 }

@@ -1131,10 +1131,10 @@
       <div class="categories">
         <h3>Servicios Disponibles</h3>
         <div class="category-tags">
-          <a href="#matricula" class="category-tag">Matrícula en Línea</a>
-          <a href="{{ route('matriculas.index') }}" class="category-tag">Consultar Solicitud</a>
           <a href="#nosotros" class="category-tag">Sobre Nosotros</a>
+
           <a href="#contacto" class="category-tag">Contacto</a>
+
         </div>
       </div>
     </div>

@@ -10,17 +10,23 @@ use Illuminate\Support\Facades\DB;
 
 class PadrePermisoController extends Controller
 {
+    public function __construct()
+    {
+        // Solo ADMIN y SUPERADMIN pueden manejar permisos
+        $this->middleware(['auth', 'rol:admin,super_admin']);
+    }
+
     /**
      * Mostrar lista de padres con sus permisos
      */
     public function index(Request $request)
     {
-        $query = Padre::with(['estudiantes']);
+        $query = Padre::with('estudiantes');
 
-        // Búsqueda
+        // Filtro de búsqueda
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
-            $query->where(function($q) use ($buscar) {
+            $query->where(function ($q) use ($buscar) {
                 $q->where('nombre', 'like', "%{$buscar}%")
                   ->orWhere('apellido', 'like', "%{$buscar}%")
                   ->orWhere('dni', 'like', "%{$buscar}%")
@@ -34,18 +40,19 @@ class PadrePermisoController extends Controller
     }
 
     /**
-     * Mostrar formulario de configuración de permisos para un padre
+     * Formulario de configuración de permisos para un padre
      */
     public function configurar($padreId)
     {
-        $padre = Padre::with(['estudiantes'])->findOrFail($padreId);
+        $padre = Padre::with('estudiantes')->findOrFail($padreId);
 
-        // Obtener permisos existentes para cada estudiante
+        // Cargar permisos existentes por estudiante
         $permisosExistentes = [];
         foreach ($padre->estudiantes as $estudiante) {
             $permiso = PadrePermiso::where('padre_id', $padreId)
                                    ->where('estudiante_id', $estudiante->id)
                                    ->first();
+
             $permisosExistentes[$estudiante->id] = $permiso;
         }
 
@@ -53,7 +60,7 @@ class PadrePermisoController extends Controller
     }
 
     /**
-     * Guardar configuración de permisos
+     * Guardar o actualizar permisos
      */
     public function guardar(Request $request, $padreId)
     {
@@ -71,25 +78,32 @@ class PadrePermisoController extends Controller
             'notas_adicionales' => 'nullable|string|max:500',
         ]);
 
+        // Verificar que el estudiante realmente pertenece a este padre
+        if (!Estudiante::where('id', $request->estudiante_id)
+                       ->where('padre_id', $padreId)
+                       ->exists())
+        {
+            return back()->with('error', 'Este estudiante no pertenece a este padre.');
+        }
+
         try {
             DB::beginTransaction();
 
-            // Actualizar o crear permisos
             PadrePermiso::updateOrCreate(
                 [
                     'padre_id' => $padreId,
-                    'estudiante_id' => $request->estudiante_id
+                    'estudiante_id' => $request->estudiante_id,
                 ],
                 [
-                    'ver_calificaciones' => $request->has('ver_calificaciones'),
-                    'ver_asistencias' => $request->has('ver_asistencias'),
-                    'comunicarse_profesores' => $request->has('comunicarse_profesores'),
-                    'autorizar_salidas' => $request->has('autorizar_salidas'),
-                    'modificar_datos_contacto' => $request->has('modificar_datos_contacto'),
-                    'ver_comportamiento' => $request->has('ver_comportamiento'),
-                    'descargar_boletas' => $request->has('descargar_boletas'),
-                    'ver_tareas' => $request->has('ver_tareas'),
-                    'recibir_notificaciones' => $request->has('recibir_notificaciones'),
+                    'ver_calificaciones' => $request->boolean('ver_calificaciones'),
+                    'ver_asistencias' => $request->boolean('ver_asistencias'),
+                    'comunicarse_profesores' => $request->boolean('comunicarse_profesores'),
+                    'autorizar_salidas' => $request->boolean('autorizar_salidas'),
+                    'modificar_datos_contacto' => $request->boolean('modificar_datos_contacto'),
+                    'ver_comportamiento' => $request->boolean('ver_comportamiento'),
+                    'descargar_boletas' => $request->boolean('descargar_boletas'),
+                    'ver_tareas' => $request->boolean('ver_tareas'),
+                    'recibir_notificaciones' => $request->boolean('recibir_notificaciones'),
                     'notas_adicionales' => $request->notas_adicionales,
                 ]
             );
@@ -102,105 +116,80 @@ class PadrePermisoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()
-                ->back()
-                ->with('error', 'Error al guardar los permisos: ' . $e->getMessage())
-                ->withInput();
+            return back()->with('error', 'Error al guardar los permisos: ' . $e->getMessage());
         }
     }
 
     /**
-     * Establecer permisos por defecto para un padre y estudiante
+     * Establecer permisos por defecto
      */
     public function establecerDefecto($padreId, $estudianteId)
     {
-        try {
-            PadrePermiso::updateOrCreate(
-                [
-                    'padre_id' => $padreId,
-                    'estudiante_id' => $estudianteId
-                ],
-                [
-                    'ver_calificaciones' => true,
-                    'ver_asistencias' => true,
-                    'comunicarse_profesores' => true,
-                    'autorizar_salidas' => false,
-                    'modificar_datos_contacto' => false,
-                    'ver_comportamiento' => true,
-                    'descargar_boletas' => true,
-                    'ver_tareas' => true,
-                    'recibir_notificaciones' => true,
-                ]
-            );
-
-            return redirect()
-                ->back()
-                ->with('success', 'Permisos por defecto establecidos correctamente.');
-
-        } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Error al establecer permisos: ' . $e->getMessage());
+        if (!Estudiante::where('id', $estudianteId)->where('padre_id', $padreId)->exists()) {
+            return back()->with('error', 'Este estudiante no pertenece al padre.');
         }
+
+        PadrePermiso::updateOrCreate(
+            [
+                'padre_id' => $padreId,
+                'estudiante_id' => $estudianteId,
+            ],
+            [
+                'ver_calificaciones' => true,
+                'ver_asistencias' => true,
+                'comunicarse_profesores' => true,
+                'autorizar_salidas' => false,
+                'modificar_datos_contacto' => false,
+                'ver_comportamiento' => true,
+                'descargar_boletas' => true,
+                'ver_tareas' => true,
+                'recibir_notificaciones' => true,
+            ]
+        );
+
+        return back()->with('success', 'Permisos por defecto establecidos correctamente.');
     }
 
     /**
-     * Eliminar configuración de permisos
+     * Eliminar permisos del estudiante
      */
     public function eliminar($padreId, $estudianteId)
     {
-        try {
-            PadrePermiso::where('padre_id', $padreId)
-                       ->where('estudiante_id', $estudianteId)
-                       ->delete();
+        PadrePermiso::where('padre_id', $padreId)
+                    ->where('estudiante_id', $estudianteId)
+                    ->delete();
 
-            return redirect()
-                ->back()
-                ->with('success', 'Configuración de permisos eliminada.');
-
-        } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Error al eliminar permisos: ' . $e->getMessage());
-        }
+        return back()->with('success', 'Configuración eliminada.');
     }
 
     /**
-     * Activar/Desactivar todos los permisos
+     * Activar o desactivar todos los permisos
      */
     public function toggleTodos(Request $request, $padreId, $estudianteId)
     {
-        $activar = $request->input('activar', true);
+        $activar = $request->boolean('activar');
 
-        try {
-            PadrePermiso::updateOrCreate(
-                [
-                    'padre_id' => $padreId,
-                    'estudiante_id' => $estudianteId
-                ],
-                [
-                    'ver_calificaciones' => $activar,
-                    'ver_asistencias' => $activar,
-                    'comunicarse_profesores' => $activar,
-                    'autorizar_salidas' => $activar,
-                    'modificar_datos_contacto' => $activar,
-                    'ver_comportamiento' => $activar,
-                    'descargar_boletas' => $activar,
-                    'ver_tareas' => $activar,
-                    'recibir_notificaciones' => $activar,
-                ]
-            );
+        PadrePermiso::updateOrCreate(
+            [
+                'padre_id' => $padreId,
+                'estudiante_id' => $estudianteId,
+            ],
+            [
+                'ver_calificaciones' => $activar,
+                'ver_asistencias' => $activar,
+                'comunicarse_profesores' => $activar,
+                'autorizar_salidas' => $activar,
+                'modificar_datos_contacto' => $activar,
+                'ver_comportamiento' => $activar,
+                'descargar_boletas' => $activar,
+                'ver_tareas' => $activar,
+                'recibir_notificaciones' => $activar,
+            ]
+        );
 
-            $mensaje = $activar ? 'Todos los permisos activados.' : 'Todos los permisos desactivados.';
-
-            return redirect()
-                ->back()
-                ->with('success', $mensaje);
-
-        } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Error al modificar permisos: ' . $e->getMessage());
-        }
+        return back()->with(
+            'success',
+            $activar ? 'Todos los permisos activados.' : 'Todos los permisos desactivados.'
+        );
     }
 }

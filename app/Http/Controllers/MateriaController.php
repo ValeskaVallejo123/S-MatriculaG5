@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class MateriaController extends Controller
 {
+    public function __construct()
+    {
+        // Solo el superadmin puede crear, editar o eliminar materias
+        $this->middleware('role:superadmin')->only([
+            'create', 'store', 'edit', 'update', 'destroy'
+        ]);
+    }
+
     public function index()
     {
         $materias = Materia::orderBy('nivel')->orderBy('nombre')->paginate(15);

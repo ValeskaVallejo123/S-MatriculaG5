@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
 use App\Models\Padre;
-use App\Models\Matricula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,102 +11,47 @@ class PadreDashboardController extends Controller
 {
     public function index()
     {
+        // Usuario logueado
         $usuario = Auth::user();
-<<<<<<< HEAD
 
-        // Aquí deberías buscar el padre y sus hijos asociados
-        // Por ahora, datos de ejemplo
+        // Obtener el registro de "Padre" asociado a este usuario
+        $padre = Padre::where('user_id', $usuario->id)->first();
 
-        $padre = Padre::first(); // Reemplazar con el padre real del usuario
+        if (!$padre) {
+            // En caso de que el usuario no tenga un perfil de padre
+            return redirect()->route('home')->with('error', 'No se encontró un perfil de padre asociado.');
+        }
 
-=======
-        
-        // Aquí deberías buscar el padre y sus hijos asociados
-        // Por ahora, datos de ejemplo
-        
-        $padre = Padre::first(); // Reemplazar con el padre real del usuario
-        
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
-        // Obtener los hijos del padre
-        $misHijos = Estudiante::where('estado', 'activo')
-            ->limit(3)
+        // Obtener hijos reales del padre (asumiendo que Estudiante tiene padre_id)
+        $misHijos = Estudiante::where('padre_id', $padre->id)
+            ->where('estado', 'activo')
             ->get();
-<<<<<<< HEAD
 
         $totalHijos = $misHijos->count();
-        $citasPendientes = 2; // Citas con profesores pendientes
-        $pagosVencidos = 1; // Pagos de matrícula vencidos
 
-=======
-        
-        $totalHijos = $misHijos->count();
-        $citasPendientes = 2; // Citas con profesores pendientes
-        $pagosVencidos = 1; // Pagos de matrícula vencidos
-        
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
-        // Resumen por hijo
+        // Estos valores quedan como "placeholder" hasta tener lógica real
+        $citasPendientes = 0;
+        $pagosVencidos = 0;
+
+        // Resumen por hijo (placeholder hasta tener calificaciones reales)
         $resumenHijos = [];
         foreach ($misHijos as $hijo) {
             $resumenHijos[] = [
                 'nombre' => $hijo->nombre_completo,
                 'grado' => $hijo->grado,
                 'seccion' => $hijo->seccion,
-                'promedio' => rand(80, 95),
-                'asistencia' => rand(90, 100),
-                'comportamiento' => 'Excelente'
+                'promedio' => null,
+                'asistencia' => null,
+                'comportamiento' => null,
             ];
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
-        // Próximos eventos (datos de ejemplo)
-        $proximosEventos = [
-            [
-                'titulo' => 'Reunión de Padres',
-                'fecha' => '2025-11-20',
-                'hora' => '3:00 PM',
-                'tipo' => 'reunion'
-            ],
-            [
-                'titulo' => 'Entrega de Notas',
-                'fecha' => '2025-11-25',
-                'hora' => '2:00 PM',
-                'tipo' => 'academico'
-            ],
-            [
-                'titulo' => 'Festival Cultural',
-                'fecha' => '2025-12-01',
-                'hora' => '10:00 AM',
-                'tipo' => 'evento'
-            ]
-        ];
-<<<<<<< HEAD
+        // Próximos eventos (placeholder)
+        $proximosEventos = [];
 
-=======
-        
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
-        // Notificaciones recientes
-        $notificaciones = [
-            [
-                'titulo' => 'Recordatorio de Pago',
-                'mensaje' => 'El pago de la mensualidad vence el 15 de noviembre',
-                'fecha' => '2025-11-10',
-                'leido' => false
-            ],
-            [
-                'titulo' => 'Citación con Profesor',
-                'mensaje' => 'El profesor de matemáticas solicita una reunión',
-                'fecha' => '2025-11-09',
-                'leido' => false
-            ]
-        ];
-<<<<<<< HEAD
+        // Notificaciones (placeholder)
+        $notificaciones = [];
 
-=======
-        
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
         return view('padre.dashboard.index', compact(
             'usuario',
             'padre',
@@ -120,8 +64,4 @@ class PadreDashboardController extends Controller
             'notificaciones'
         ));
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92

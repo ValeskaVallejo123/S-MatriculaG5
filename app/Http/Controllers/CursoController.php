@@ -7,14 +7,20 @@ use App\Models\Curso;
 
 class CursoController extends Controller
 {
+    public function __construct()
+    {
+        // Solo usuarios autenticados pueden acceder
+        $this->middleware('auth');
+    }
+
     public function index(Request $request)
     {
-        // Obtener los valores de los filtros del request
+        // Obtener filtros del request
         $searchNombre = $request->input('searchNombre');
         $filterJornada = $request->input('filterJornada');
         $filterSeccion = $request->input('filterSeccion');
 
-        // Construir la consulta
+        // Construir consulta
         $query = Curso::query();
 
         if ($searchNombre) {
@@ -29,13 +35,11 @@ class CursoController extends Controller
             $query->where('seccion', $filterSeccion);
         }
 
-        // Ejecutar la consulta
-        $cursos = $query->get();
+        // Paginación con 10 cursos por página
+        $cursos = $query->orderBy('nombre')->paginate(10)->appends($request->all());
 
-        // Pasar los cursos a la vista
         return view('cupos_maximos.index', compact('cursos'));
     }
-
 
     public function create()
     {
@@ -44,19 +48,20 @@ class CursoController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required',
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
             'cupo_maximo' => 'required|integer|min:30|max:35',
-            'jornada' => 'required',
-            'seccion' => 'required',
+            'jornada' => 'required|string|max:50',
+            'seccion' => 'required|string|max:50',
         ], [
-            'cupo_maximo.min' => 'El campo Cupo máximo debe ser al menos 30.',
-            'cupo_maximo.max' => 'El campo Cupo máximo no puede ser mayor a 35.',
+            'cupo_maximo.min' => 'El cupo mínimo debe ser 30.',
+            'cupo_maximo.max' => 'El cupo máximo no puede exceder 35.',
         ]);
 
-        Curso::create($request->only(['nombre','cupo_maximo','jornada','seccion']));
+        Curso::create($validated);
 
-        return redirect()->route('cupos_maximos.index')->with('success','Cupo creado correctamente.');
+        return redirect()->route('cupos_maximos.index')
+            ->with('success', 'Cupo creado correctamente.');
     }
 
     public function edit($id)
@@ -69,19 +74,19 @@ class CursoController extends Controller
     {
         $curso = Curso::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'nombre' => 'required',
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
             'cupo_maximo' => 'required|integer|min:30|max:35',
-            'jornada' => 'required',
-            'seccion' => 'required',
+            'jornada' => 'required|string|max:50',
+            'seccion' => 'required|string|max:50',
         ], [
-            'cupo_maximo.min' => 'El campo cupo estudiante debe ser al menos 30.',
-            'cupo_maximo.max' => 'El campo cupo estudiante no puede ser mayor a 35.',
+            'cupo_maximo.min' => 'El cupo mínimo debe ser 30.',
+            'cupo_maximo.max' => 'El cupo máximo no puede exceder 35.',
         ]);
 
         // Verificar si hay cambios
         $cambios = false;
-        foreach ($validatedData as $campo => $valor) {
+        foreach ($validated as $campo => $valor) {
             if ($curso->$campo != $valor) {
                 $cambios = true;
                 break;
@@ -93,7 +98,7 @@ class CursoController extends Controller
                 ->with('info', 'No se realizaron cambios en el cupo.');
         }
 
-        $curso->update($validatedData);
+        $curso->update($validated);
 
         return redirect()->route('cupos_maximos.index')
             ->with('success', 'Cupo actualizado correctamente.');
@@ -104,6 +109,7 @@ class CursoController extends Controller
         $curso = Curso::findOrFail($id);
         $curso->delete();
 
-        return redirect()->route('cupos_maximos.index')->with('success','Cupo eliminado correctamente.');
+        return redirect()->route('cupos_maximos.index')
+            ->with('success', 'Cupo eliminado correctamente.');
     }
 }

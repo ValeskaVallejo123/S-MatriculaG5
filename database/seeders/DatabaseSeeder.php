@@ -15,21 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(BuscarEstudianteSeeder::class);
-        // User::factory(10)->create();
-
+        // Crear usuario de prueba (opcional)
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
-       $this->call([
+        // Ejecutar seeders en orden correcto
+        $this->call([
             SuperAdminSeeder::class,
-            BuscarEstudianteSeeder::class,
             ProfesorSeeder::class,
         ]);
-
-
     }
-
 }

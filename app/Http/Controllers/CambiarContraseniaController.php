@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-
 class CambiarContraseniaController extends Controller
 {
-    // Constructor opcional: quitamos el middleware auth
+    /**
+     * Constructor: solo usuarios autenticados
+     */
     public function __construct()
     {
-        // $this->middleware('auth'); // Comentado para permitir acceso sin login
+        $this->middleware('auth');
     }
 
     /**
@@ -33,7 +34,7 @@ class CambiarContraseniaController extends Controller
         // Verifica si hay usuario autenticado
         if (!$user) {
             return redirect()->back()->withErrors([
-                'general' => 'No hay usuario autenticado. Esta acción requiere autenticación.'
+                'general' => 'No hay usuario autenticado. Esta acción requiere iniciar sesión.'
             ]);
         }
 
@@ -60,7 +61,3 @@ class CambiarContraseniaController extends Controller
         return back()->with('success', '¡Tu contraseña ha sido cambiada correctamente!');
     }
 }
-
-
-
-

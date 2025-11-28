@@ -7,31 +7,37 @@ use Illuminate\Http\Request;
 
 class ProfesorController extends Controller
 {
+    public function __construct()
+    {
+        // Solo admin y super_admin pueden manejar profesores
+        $this->middleware(['auth', 'rol:admin,super_admin']);
+    }
+
     public function index(Request $request)
     {
         $busqueda = $request->input('busqueda');
-        
+
         $profesores = Profesor::query()
             ->when($busqueda, function ($query, $busqueda) {
                 return $query->where(function ($q) use ($busqueda) {
                     $q->where('nombre', 'like', "%{$busqueda}%")
-                      ->orWhere('apellido', 'like', "%{$busqueda}%")
-                      ->orWhere('dni', 'like', "%{$busqueda}%")
-                      ->orWhere('email', 'like', "%{$busqueda}%")
-                      ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
+                    ->orWhere('apellido', 'like', "%{$busqueda}%")
+                    ->orWhere('dni', 'like', "%{$busqueda}%")
+                    ->orWhere('email', 'like', "%{$busqueda}%")
+                    ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
                 });
             })
             ->latest()
             ->paginate(10)
             ->appends(['busqueda' => $busqueda]);
-        
+
         return view('profesor.index', compact('profesores'));
     }
 
     public function dashboard()
-{
-    return view('profesor.dashboard');
-}
+    {
+        return view('profesor.dashboard');
+    }
 
     public function create()
     {
@@ -71,11 +77,10 @@ class ProfesorController extends Controller
 
     public function edit(Profesor $profesor)
     {
-        // Traemos las opciones para los selects
         $especialidades = Profesor::especialidades();
         $tiposContrato = Profesor::tiposContrato();
 
-        return view('profesores.edit', compact('profesor', 'especialidades', 'tiposContrato'));
+        return view('profesor.edit', compact('profesor', 'especialidades', 'tiposContrato'));
     }
 
     public function update(Request $request, Profesor $profesor)
@@ -109,6 +114,4 @@ class ProfesorController extends Controller
         return redirect()->route('profesor.index')
             ->with('success', 'Profesor eliminado exitosamente');
     }
-
-    
 }

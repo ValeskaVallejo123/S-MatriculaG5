@@ -3,26 +3,43 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Grado; // Modelo de Grados
 use Illuminate\Support\Facades\Auth;
 
 class ProfesorGradosController extends Controller
 {
+    public function __construct()
+    {
+        // Solo profesores pueden ver esto
+        $this->middleware(['auth', 'rol:profesor']);
+    }
+
     /**
-     * Mostrar los grados donde enseña el profesor
+     * Mostrar grado y sección donde el profesor es GUIA
+     * Y los grados donde IMPARTE clases
      */
     public function index()
     {
-        // Obtener el profesor relacionado con el usuario autenticado
-        $profesor = Auth::user()->docente; // Asegúrate de tener la relación docente() en User
+        $profesor = Auth::user()->docente;
 
         if (!$profesor) {
-            return redirect()->route('dashboard')->with('error', 'No tienes perfil de profesor asignado.');
+            return redirect()->route('dashboard')
+                ->with('error', 'No tienes perfil de profesor asignado.');
         }
 
-        // Obtener los grados donde enseña este profesor
-        $grados = $profesor->grados ?? collect(); // relación profesor->grados()
+        // Grado donde es profesor guía
+        $gradoGuia = $profesor->gradoGuia;
 
-        return view('profesor.grados.index', compact('grados', 'profesor'));
+        // Sección donde es profesor guía
+        $seccionGuia = $profesor->seccion_guia;
+
+        // Grados donde IMPARTE clases (si tienes esa relación)
+        $gradosImpartidos = $profesor->gradosImpartidos ?? collect();
+
+        return view('profesor.grados.index', compact(
+            'profesor',
+            'gradoGuia',
+            'seccionGuia',
+            'gradosImpartidos'
+        ));
     }
 }

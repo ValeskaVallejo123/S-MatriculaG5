@@ -13,8 +13,8 @@ class CambioContrasenia extends Model
 
     protected $fillable = [
         'user_id',
-        'old_password',
-        'new_password',
+        'ip_address',
+        'descripcion',   // opcional: “El usuario cambió su contraseña”
     ];
 
     /**
@@ -25,4 +25,3 @@ class CambioContrasenia extends Model
         return $this->belongsTo(User::class);
     }
 }
-

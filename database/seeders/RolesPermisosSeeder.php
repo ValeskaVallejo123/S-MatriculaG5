@@ -3,170 +3,179 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Rol;
-use App\Models\Permiso;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class RolesPermisosSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // ========================================
-        // CREAR PERMISOS
-        // ========================================
+        // ============================
+        // 1️⃣ Insertar Roles
+        // ============================
+        $roles = [
+            ['nombre' => 'Super Administrador', 'descripcion' => 'Acceso total al sistema', 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Administrador', 'descripcion' => 'Gestión general del sistema escolar', 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Maestro', 'descripcion' => 'Gestión de clases, calificaciones y asistencias', 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Estudiante', 'descripcion' => 'Acceso a consultas de calificaciones y asistencias', 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Padre', 'descripcion' => 'Consulta de información de sus hijos', 'created_at' => now(), 'updated_at' => now()],
+        ];
+
+        foreach ($roles as $rol) {
+            DB::table('roles')->updateOrInsert(['nombre' => $rol['nombre']], $rol);
+        }
+
+        // ============================
+        // 2️⃣ Insertar Permisos
+        // ============================
         $permisos = [
-            // Permisos de Usuarios
-            ['nombre' => 'ver_usuarios', 'descripcion' => 'Ver lista de usuarios'],
-            ['nombre' => 'crear_usuarios', 'descripcion' => 'Crear nuevos usuarios'],
-            ['nombre' => 'editar_usuarios', 'descripcion' => 'Editar usuarios existentes'],
-            ['nombre' => 'eliminar_usuarios', 'descripcion' => 'Eliminar usuarios'],
+            ['nombre' => 'ver-dashboard'],
 
-            // Permisos de Estudiantes
-            ['nombre' => 'ver_estudiantes', 'descripcion' => 'Ver lista de estudiantes'],
-            ['nombre' => 'crear_estudiantes', 'descripcion' => 'Crear nuevos estudiantes'],
-            ['nombre' => 'editar_estudiantes', 'descripcion' => 'Editar estudiantes existentes'],
-            ['nombre' => 'eliminar_estudiantes', 'descripcion' => 'Eliminar estudiantes'],
+            // Usuarios
+            ['nombre' => 'gestionar-usuarios'],
+            ['nombre' => 'crear-usuarios'],
+            ['nombre' => 'editar-usuarios'],
+            ['nombre' => 'eliminar-usuarios'],
+            ['nombre' => 'ver-usuarios'],
 
-            // Permisos de Profesores
-            ['nombre' => 'ver_profesores', 'descripcion' => 'Ver lista de profesores'],
-            ['nombre' => 'crear_profesores', 'descripcion' => 'Crear nuevos profesores'],
-            ['nombre' => 'editar_profesores', 'descripcion' => 'Editar profesores existentes'],
-            ['nombre' => 'eliminar_profesores', 'descripcion' => 'Eliminar profesores'],
+            // Estudiantes
+            ['nombre' => 'gestionar-estudiantes'],
+            ['nombre' => 'crear-estudiantes'],
+            ['nombre' => 'editar-estudiantes'],
+            ['nombre' => 'eliminar-estudiantes'],
+            ['nombre' => 'ver-estudiantes'],
 
-            // Permisos de Matrículas
-            ['nombre' => 'ver_matriculas', 'descripcion' => 'Ver matrículas'],
-            ['nombre' => 'crear_matriculas', 'descripcion' => 'Crear matrículas'],
-            ['nombre' => 'editar_matriculas', 'descripcion' => 'Editar matrículas'],
-            ['nombre' => 'eliminar_matriculas', 'descripcion' => 'Eliminar matrículas'],
+            // Profesores
+            ['nombre' => 'gestionar-profesores'],
+            ['nombre' => 'crear-profesores'],
+            ['nombre' => 'editar-profesores'],
+            ['nombre' => 'eliminar-profesores'],
+            ['nombre' => 'ver-profesores'],
 
-            // Permisos de Cursos
-            ['nombre' => 'ver_cursos', 'descripcion' => 'Ver cursos'],
-            ['nombre' => 'crear_cursos', 'descripcion' => 'Crear cursos'],
-            ['nombre' => 'editar_cursos', 'descripcion' => 'Editar cursos'],
-            ['nombre' => 'eliminar_cursos', 'descripcion' => 'Eliminar cursos'],
+            // Cursos
+            ['nombre' => 'gestionar-cursos'],
+            ['nombre' => 'crear-cursos'],
+            ['nombre' => 'editar-cursos'],
+            ['nombre' => 'eliminar-cursos'],
+            ['nombre' => 'ver-cursos'],
 
-            // Permisos de Secciones
-            ['nombre' => 'ver_secciones', 'descripcion' => 'Ver secciones'],
-            ['nombre' => 'crear_secciones', 'descripcion' => 'Crear secciones'],
-            ['nombre' => 'editar_secciones', 'descripcion' => 'Editar secciones'],
-            ['nombre' => 'eliminar_secciones', 'descripcion' => 'Eliminar secciones'],
+            // Calificaciones
+            ['nombre' => 'gestionar-calificaciones'],
+            ['nombre' => 'crear-calificaciones'],
+            ['nombre' => 'editar-calificaciones'],
+            ['nombre' => 'ver-calificaciones'],
 
-            // Permisos de Calificaciones
-            ['nombre' => 'ver_calificaciones', 'descripcion' => 'Ver calificaciones'],
-            ['nombre' => 'registrar_calificaciones', 'descripcion' => 'Registrar calificaciones'],
-            ['nombre' => 'editar_calificaciones', 'descripcion' => 'Editar calificaciones'],
+            // Reportes
+            ['nombre' => 'ver-reportes'],
+            ['nombre' => 'exportar-reportes'],
 
-            // Permisos de Reportes
-            ['nombre' => 'ver_reportes', 'descripcion' => 'Ver reportes del sistema'],
-            ['nombre' => 'generar_reportes', 'descripcion' => 'Generar reportes'],
-            ['nombre' => 'exportar_datos', 'descripcion' => 'Exportar datos del sistema'],
-
-            // Permisos de Configuración
-            ['nombre' => 'configurar_sistema', 'descripcion' => 'Configurar parámetros del sistema'],
-            ['nombre' => 'gestionar_roles', 'descripcion' => 'Gestionar roles y permisos'],
-            ['nombre' => 'ver_logs', 'descripcion' => 'Ver registros del sistema'],
-
-            // Permisos de Notificaciones
-            ['nombre' => 'notificacion', 'descripcion' => 'Permite recibir notificaciones'],
-            ['nombre' => 'notificacionPreferencia', 'descripcion' => 'Permite configurar preferencias de notificaciones'],
+            // Notificaciones
+            ['nombre' => 'notificacion'],
+            ['nombre' => 'notificacionPreferencia'],
         ];
 
         foreach ($permisos as $permiso) {
-            Permiso::firstOrCreate(
+            DB::table('permisos')->updateOrInsert(
                 ['nombre' => $permiso['nombre']],
-                ['descripcion' => $permiso['descripcion']]
+                [
+                    'descripcion' => $permiso['descripcion'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
             );
         }
 
-        // ========================================
-        // CREAR ROLES
-        // ========================================
+        // ============================
+        // 3️⃣ Obtener IDs de roles
+        // ============================
+        $superAdminId = DB::table('roles')->where('nombre', 'Super Administrador')->value('id');
+        $adminId      = DB::table('roles')->where('nombre', 'Administrador')->value('id');
+        $maestroId    = DB::table('roles')->where('nombre', 'Maestro')->value('id');
+        $estudianteId = DB::table('roles')->where('nombre', 'Estudiante')->value('id');
+        $padreId      = DB::table('roles')->where('nombre', 'Padre')->value('id');
 
-        // 1. Super Administrador (Acceso total)
-        $superAdmin = Rol::firstOrCreate(
-            ['nombre' => 'Super Administrador'],
-            ['descripcion' => 'Acceso completo al sistema']
-        );
+        // ============================
+        // 4️⃣ Asignar permisos al Super Admin
+        // ============================
+        $todosLosPermisos = DB::table('permisos')->pluck('id');
 
-        // Asignar TODOS los permisos al Super Administrador
-        $todosLosPermisos = Permiso::all();
-        $superAdmin->permisos()->sync($todosLosPermisos->pluck('id'));
+        foreach ($todosLosPermisos as $permisoId) {
+            DB::table('permiso_rol')->updateOrInsert(
+                ['rol_id' => $superAdminId, 'permiso_id' => $permisoId]
+            );
+        }
 
-        // 2. Administrador (Acceso amplio pero limitado)
-        $admin = Rol::firstOrCreate(
-            ['nombre' => 'Administrador'],
-            ['descripcion' => 'Administrador de área específica']
-        );
+        // ============================
+        // 5️⃣ Asignar permisos al Administrador
+        // ============================
+        $permisosAdmin = DB::table('permisos')
+            ->whereIn('nombre', [
+                'ver-dashboard',
+                'ver-usuarios', 'crear-usuarios', 'editar-usuarios',
+                'ver-estudiantes', 'crear-estudiantes', 'editar-estudiantes',
+                'ver-profesores', 'crear-profesores', 'editar-profesores',
+                'ver-cursos', 'crear-cursos', 'editar-cursos',
+                'ver-reportes',
+            ])
+            ->pluck('id');
 
-        $permisosAdmin = Permiso::whereIn('nombre', [
-            'ver_usuarios', 'crear_usuarios', 'editar_usuarios',
-            'ver_estudiantes', 'crear_estudiantes', 'editar_estudiantes',
-            'ver_profesores', 'crear_profesores', 'editar_profesores',
-            'ver_matriculas', 'crear_matriculas', 'editar_matriculas',
-            'ver_cursos', 'crear_cursos', 'editar_cursos',
-            'ver_secciones', 'crear_secciones', 'editar_secciones',
-            'ver_calificaciones', 'ver_reportes', 'generar_reportes',
-            'notificacion', 'notificacionPreferencia',
-        ])->get();
-        $admin->permisos()->sync($permisosAdmin->pluck('id'));
+        foreach ($permisosAdmin as $permisoId) {
+            DB::table('permiso_rol')->updateOrInsert(
+                ['rol_id' => $adminId, 'permiso_id' => $permisoId]
+            );
+        }
 
-        // 3. Profesor
-        $profesor = Rol::firstOrCreate(
-            ['nombre' => 'Profesor'],
-            ['descripcion' => 'Docente del centro educativo']
-        );
+        // ============================
+        // 6️⃣ Asignar permisos al Maestro
+        // ============================
+        $permisosMaestro = DB::table('permisos')
+            ->whereIn('nombre', [
+                'ver-estudiantes',
+                'ver-cursos',
+                'gestionar-calificaciones',
+                'crear-calificaciones',
+                'editar-calificaciones',
+                'ver-calificaciones',
+                'ver-reportes',
+            ])
+            ->pluck('id');
 
-        $permisosProfesor = Permiso::whereIn('nombre', [
-            'ver_estudiantes',
-            'ver_cursos',
-            'ver_secciones',
-            'ver_calificaciones', 'registrar_calificaciones', 'editar_calificaciones',
-            'ver_reportes',
-            'notificacion', 'notificacionPreferencia',
-        ])->get();
-        $profesor->permisos()->sync($permisosProfesor->pluck('id'));
+        foreach ($permisosMaestro as $permisoId) {
+            DB::table('permiso_rol')->updateOrInsert(
+                ['rol_id' => $maestroId, 'permiso_id' => $permisoId]
+            );
+        }
 
-        // 4. Estudiante
-        $estudiante = Rol::firstOrCreate(
-            ['nombre' => 'Estudiante'],
-            ['descripcion' => 'Alumno del centro educativo']
-        );
+        // ============================
+        // 7️⃣ Asignar permisos al Estudiante
+        // ============================
+        $permisosEstudiante = DB::table('permisos')
+            ->whereIn('nombre', [
+                'ver-cursos',
+                'ver-calificaciones',
+            ])
+            ->pluck('id');
 
-        $permisosEstudiante = Permiso::whereIn('nombre', [
-            'ver_cursos',
-            'ver_calificaciones', // Solo las propias
-        ])->get();
-        $estudiante->permisos()->sync($permisosEstudiante->pluck('id'));
+        foreach ($permisosEstudiante as $permisoId) {
+            DB::table('permiso_rol')->updateOrInsert(
+                ['rol_id' => $estudianteId, 'permiso_id' => $permisoId]
+            );
+        }
 
-        // 5. Padre/Tutor
-        $padre = Rol::firstOrCreate(
-            ['nombre' => 'Padre'],
-            ['descripcion' => 'Padre o tutor legal del estudiante']
-        );
+        // ============================
+        // 8️⃣ Asignar permisos al Padre
+        // ============================
+        $permisosPadre = DB::table('permisos')
+            ->whereIn('nombre', [
+                'ver-estudiantes',
+                'ver-calificaciones',
+                'ver-reportes',
+            ])
+            ->pluck('id');
 
-        $permisosPadre = Permiso::whereIn('nombre', [
-            'ver_estudiantes', // Solo sus hijos
-            'ver_calificaciones', // Solo de sus hijos
-            'ver_reportes', // Solo de sus hijos
-        ])->get();
-        $padre->permisos()->sync($permisosPadre->pluck('id'));
-
-        // ========================================
-        // CREAR SUPER ADMINISTRADOR POR DEFECTO
-        // ========================================
-        User::firstOrCreate(
-            ['email' => 'superadmin@egm.edu.hn'],
-            [
-                'name' => 'Super Administrador',
-                'password' => Hash::make('SuperAdmin2024#'),
-                'id_rol' => $superAdmin->id,
-            ]
-        );
-
-        $this->command->info('Roles, permisos y super administrador creados exitosamente.');
+        foreach ($permisosPadre as $permisoId) {
+            DB::table('permiso_rol')->updateOrInsert(
+                ['rol_id' => $padreId, 'permiso_id' => $permisoId]
+            );
+        }
     }
 }

@@ -7,20 +7,59 @@ use App\Models\Calificacion;
 use App\Models\Materia;
 use App\Models\PeriodoAcademico;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CalificacionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth'); // Todos deben estar autenticados
+    }
+
+    /**
+     * SOLO estudiantes pueden ver sus propias calificaciones
+     */
+    public function misCalificaciones()
+    {
+        $usuario = Auth::user();
+
+        if ($usuario->id_rol != 4) { // 4 = estudiante
+            return back()->with('error', 'No tienes permisos para ver esta sección.');
+        }
+
+        $calificaciones = Calificacion::where('estudiante_id', $usuario->id)
+            ->with(['materia', 'periodo'])
+            ->get();
+
+        $promedio = $calificaciones->avg('nota');
+
+        return view('calificaciones.misCalificaciones', compact('calificaciones', 'promedio'));
+    }
+
+    /**
+     * VISTA GENERAL PARA PROFESORES, ADMIN Y SUPERADMIN
+     */
     public function indexCalificaciones(Request $request)
     {
-        // Filtros
-        $periodoId = $request->input('periodo_id');
-        $materiaId = $request->input('materia_id');
+        $usuario = Auth::user();
 
-        // Consulta base
+        if (!in_array($usuario->id_rol, [1, 2, 3])) {
+            return redirect()->route('calificaciones.mis')
+                ->with('error', 'No tienes permisos para ver todas las calificaciones.');
+        }
+
+        $periodoId = $request->periodo_id;
+        $materiaId = $request->materia_id;
+
         $query = Calificacion::with(['materia', 'periodo']);
 
         if ($periodoId) $query->where('periodo_id', $periodoId);
         if ($materiaId) $query->where('materia_id', $materiaId);
+
+        // Profesores solo ven sus materias si lo deseas
+        if ($usuario->id_rol == 3) {
+            $query->where('profesor_id', $usuario->id);
+        }
 
         $calificaciones = $query->get();
         $promedio = $calificaciones->avg('nota');
@@ -28,44 +67,43 @@ class CalificacionController extends Controller
         $materias = Materia::all();
         $periodos = PeriodoAcademico::all();
 
-        // Retornar la vista
-        return view('calificaciones.indexCalificaciones', compact('calificaciones', 'promedio', 'materias', 'periodos'));
+        return view('calificaciones.indexCalificaciones', compact(
+            'calificaciones', 'promedio', 'materias', 'periodos'
+        ));
     }
 
     /**
-     * Display a listing of the resource.
+     * CRUD RESTRINGIDO PARA PROFESORES, ADMIN Y SUPERADMIN
      */
     public function index()
     {
+        $usuario = Auth::user();
+
+        if (!in_array($usuario->id_rol, [1, 2, 3])) {
+            return redirect()->route('calificaciones.mis')
+                ->with('error', 'No tienes permisos para ver todas las calificaciones.');
+        }
+
         $calificaciones = Calificacion::orderBy('nombre_alumno')->get();
+
         return view('calificaciones.index', compact('calificaciones'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
+        $this->autorizarProfesor();
+
         return view('calificaciones.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre_alumno' => 'required|string|max:255',
-            'primer_parcial' => 'nullable|numeric|min:0|max:100',
-            'segundo_parcial' => 'nullable|numeric|min:0|max:100',
-            'tercer_parcial' => 'nullable|numeric|min:0|max:100',
-            'cuarto_parcial' => 'nullable|numeric|min:0|max:100',
-            'recuperacion' => 'nullable|numeric|min:0|max:100',
-        ]);
+        $this->autorizarProfesor();
 
-        $calificacion = Calificacion::create($request->all());
+        $validated = $this->validar($request);
 
-        // Calcular nota final automáticamente
+        $calificacion = Calificacion::create($validated);
+
         $calificacion->calcularNotaFinal();
         $calificacion->save();
 
@@ -73,39 +111,26 @@ class CalificacionController extends Controller
             ->with('success', 'Calificación registrada exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Calificacion $calificacion)
     {
         return view('calificaciones.show', compact('calificacion'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Calificacion $calificacion)
     {
+        $this->autorizarProfesor();
+
         return view('calificaciones.edit', compact('calificacion'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Calificacion $calificacion)
     {
-        $request->validate([
-            'nombre_alumno' => 'required|string|max:255',
-            'primer_parcial' => 'nullable|numeric|min:0|max:100',
-            'segundo_parcial' => 'nullable|numeric|min:0|max:100',
-            'tercer_parcial' => 'nullable|numeric|min:0|max:100',
-            'cuarto_parcial' => 'nullable|numeric|min:0|max:100',
-            'recuperacion' => 'nullable|numeric|min:0|max:100',
-        ]);
+        $this->autorizarProfesor();
 
-        $calificacion->update($request->all());
+        $validated = $this->validar($request);
 
-        // Recalcular nota final
+        $calificacion->update($validated);
+
         $calificacion->calcularNotaFinal();
         $calificacion->save();
 
@@ -113,14 +138,40 @@ class CalificacionController extends Controller
             ->with('success', 'Calificación actualizada exitosamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Calificacion $calificacion)
     {
+        $this->autorizarProfesor();
+
         $calificacion->delete();
 
         return redirect()->route('calificaciones.index')
             ->with('success', 'Calificación eliminada exitosamente.');
+    }
+
+    /**
+     * Validación común
+     */
+    private function validar(Request $request)
+    {
+        return $request->validate([
+            'nombre_alumno' => 'required|string|max:255',
+            'primer_parcial' => 'nullable|numeric|min:0|max:100',
+            'segundo_parcial' => 'nullable|numeric|min:0|max:100',
+            'tercer_parcial' => 'nullable|numeric|min:0|max:100',
+            'cuarto_parcial' => 'nullable|numeric|min:0|max:100',
+            'recuperacion' => 'nullable|numeric|min:0|max:100',
+        ]);
+    }
+
+    /**
+     * Autorizar solo admin, superadmin y profesor
+     */
+    private function autorizarProfesor()
+    {
+        $usuario = Auth::user();
+
+        if (!in_array($usuario->id_rol, [1, 2, 3])) {
+            abort(403, 'No tienes permisos para realizar esta acción.');
+        }
     }
 }

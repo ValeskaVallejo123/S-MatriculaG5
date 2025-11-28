@@ -7,17 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Padre extends Model
 {
-    protected $table = 'padres';
-
     use HasFactory;
 
+    protected $table = 'padres';
+
     protected $fillable = [
+        'user_id',
         'nombre',
         'apellido',
         'dni',
         'parentesco',
         'parentesco_otro',
-         'correo',
+        'correo',
         'telefono',
         'telefono_secundario',
         'direccion',
@@ -25,70 +26,80 @@ class Padre extends Model
         'lugar_trabajo',
         'telefono_trabajo',
         'estado',
-        'observaciones'
+        'observaciones',
     ];
 
-    // Accessor para nombre completo
+    public $timestamps = false;
+
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESORES
+    |--------------------------------------------------------------------------
+    */
+
     public function getNombreCompletoAttribute()
     {
         return $this->nombre . ' ' . $this->apellido;
     }
 
-    // Accessor para parentesco formateado
     public function getParentescoFormateadoAttribute()
     {
         if ($this->parentesco === 'otro' && $this->parentesco_otro) {
             return ucfirst($this->parentesco_otro);
         }
 
-        $parentescos = [
+        return match ($this->parentesco) {
             'padre' => 'Padre',
             'madre' => 'Madre',
             'tutor_legal' => 'Tutor Legal',
-            'abuelo' => 'Abuelo',
-            'abuela' => 'Abuela',
-            'tio' => 'Tío',
-            'tia' => 'Tía',
-            'otro' => 'Otro'
-        ];
-
-        return $parentescos[$this->parentesco] ?? 'No especificado';
+            'otro' => 'Otro',
+            default => 'No especificado',
+        };
     }
 
-    // Relaciones
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONES
+    |--------------------------------------------------------------------------
+    */
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function matriculas()
     {
-        return $this->hasMany(Matricula::class);
+        return $this->hasMany(Matricula::class, 'padre_id', 'id');
     }
 
+    // Padre → Estudiantes a través de matrículas
     public function estudiantes()
     {
-        return $this->belongsToMany(Estudiante::class, 'matriculas');
-         return $this->hasMany(Estudiante::class, 'padre_id');
+        return $this->belongsToMany(
+            Estudiante::class,
+            'matriculas',
+            'padre_id',
+            'estudiante_id'
+        );
     }
 
-    /**
- * Relación con permisos
- */
-public function permisos()
-{
-    return $this->hasMany(PadrePermiso::class);
-}
+    // Permisos por estudiante
+    public function permisos()
+    {
+        return $this->hasMany(PadrePermiso::class, 'padre_id');
+    }
 
-/**
- * Obtener permisos para un estudiante específico
- */
-public function permisosParaEstudiante($estudianteId)
-{
-    return $this->permisos()->where('estudiante_id', $estudianteId)->first();
-}
+    public function permisosParaEstudiante($estudianteId)
+    {
+        return $this->permisos()
+            ->where('estudiante_id', $estudianteId)
+            ->first();
+    }
 
-/**
- * Verificar si tiene permiso para un estudiante
- */
-public function tienePermiso($estudianteId, $permiso)
-{
-    $permisoConfig = $this->permisosParaEstudiante($estudianteId);
-    return $permisoConfig ? $permisoConfig->tienePermiso($permiso) : false;
-}
+    public function tienePermiso($estudianteId, $permiso)
+    {
+        $config = $this->permisosParaEstudiante($estudianteId);
+        return $config ? $config->tienePermiso($permiso) : false;
+    }
 }

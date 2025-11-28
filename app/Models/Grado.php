@@ -49,4 +49,13 @@ class Grado extends Model
     {
         return $query->where('nivel', 'secundaria');
     }
+    public function profesores()
+{
+    return $this->hasMany(ProfesorGradoSeccion::class, 'grado_id');
+}
+public function profesoresMaterias()
+{
+    return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
+}
+
 }

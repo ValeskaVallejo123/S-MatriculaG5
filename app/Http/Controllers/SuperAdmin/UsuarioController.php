@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UsuarioController extends Controller
 {
@@ -15,16 +16,29 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = User::findOrFail($id);
-            
-            // Activar el usuario
-            $usuario->activo = true;
+
+            // No aprobar Super Administrador
+            if ($usuario->id_rol == 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede aprobar un Super Administrador'
+                ], 403);
+            }
+
+            $usuario->activo = 1; // Asegurarse que sea compatible con DB
             $usuario->save();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario aprobado exitosamente'
             ]);
-            
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado'
+            ], 404);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -32,7 +46,7 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Rechazar y eliminar un usuario pendiente
      */
@@ -40,15 +54,28 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = User::findOrFail($id);
-            
-            // Eliminar el usuario
+
+            // No eliminar Super Administrador
+            if ($usuario->id_rol == 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede eliminar un Super Administrador'
+                ], 403);
+            }
+
             $usuario->delete();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario rechazado y eliminado'
             ]);
-            
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado'
+            ], 404);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

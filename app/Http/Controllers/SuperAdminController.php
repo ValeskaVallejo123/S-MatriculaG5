@@ -11,34 +11,38 @@ use Illuminate\Validation\Rule;
 
 class SuperAdminController extends Controller
 {
+    public function __construct()
+    {
+        // Solo super admin puede manejar administradores
+        $this->middleware(['auth', 'rol:super_admin']);
+    }
+
+    /**
+     * Dashboard principal
+     */
     public function dashboard()
     {
-        // Obtener matrículas pendientes (más recientes primero)
         $matriculasPendientes = Matricula::with(['estudiante', 'padre'])
             ->where('estado', 'pendiente')
             ->latest()
             ->take(10)
             ->get();
 
-        // Contar todas las matrículas por estado
-        $totalPendientes = Matricula::where('estado', 'pendiente')->count();
-        $totalAprobadas = Matricula::where('estado', 'aprobada')->count();
-        $totalRechazadas = Matricula::where('estado', 'rechazada')->count();
-
-        return view('superadmin.dashboard', compact(
-            'matriculasPendientes',
-            'totalPendientes',
-            'totalAprobadas',
-            'totalRechazadas'
-        ));
+        return view('superadmin.dashboard', [
+            'matriculasPendientes' => $matriculasPendientes,
+            'totalPendientes'      => Matricula::where('estado', 'pendiente')->count(),
+            'totalAprobadas'       => Matricula::where('estado', 'aprobada')->count(),
+            'totalRechazadas'      => Matricula::where('estado', 'rechazada')->count(),
+        ]);
     }
 
+    /**
+     * Listado de administradores
+     */
     public function index()
     {
-        $administradores = User::whereHas('rol', function ($query) {
-            $query->whereIn('nombre', ['admin', 'super_admin']);
-        })
-            ->orderByRaw("CASE WHEN id_rol = 1 THEN 0 ELSE 1 END") // Super Admin primero
+        $administradores = User::whereIn('id_rol', [1, 2]) // 1 = superadmin, 2 = admin
+            ->orderByRaw("CASE WHEN id_rol = 1 THEN 0 ELSE 1 END")
             ->orderBy('name')
             ->get();
 
@@ -46,7 +50,7 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Mostrar formulario para crear nuevo administrador
+     * Formulario de creación
      */
     public function create()
     {
@@ -55,51 +59,43 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Guardar nuevo administrador
+     * Guardar un nuevo administrador
      */
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-            'permissions' => 'nullable|array',
-        ], [
-            'name.required' => 'El nombre es obligatorio',
-            'email.required' => 'El email es obligatorio',
-            'email.email' => 'El email debe ser válido',
-            'email.unique' => 'Este email ya está registrado',
-            'password.required' => 'La contraseña es obligatoria',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres',
-            'password.confirmed' => 'Las contraseñas no coinciden',
+            'name'       => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email',
+            'password'   => 'required|min:8|confirmed',
+            'permissions'=> 'nullable|array',
+            'id_rol'     => 'required|in:2', // Solo ADMIN (super admin no se crea por aquí)
         ]);
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'rol' => 'admin',
-            'permissions' => $request->permissions ?? [],
-            'is_super_admin' => false,
-            'is_protected' => false,
+            'name'          => $request->name,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
+            'id_rol'        => $request->id_rol,
+            'permissions'   => $request->permissions ?? [],
+            'is_super_admin'=> false,
+            'is_protected'  => false,
         ]);
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', ' Administrador creado exitosamente');
+            ->with('success', 'Administrador creado exitosamente.');
     }
 
     /**
-     * Mostrar formulario para editar administrador
+     * Editar administrador
      */
     public function edit(User $administrador)
     {
-        // Proteger al super admin de ser editado
         if ($administrador->is_protected) {
-            return redirect()->route('superadmin.administradores.index')
-                ->with('error', ' Este usuario no puede ser editado');
+            return back()->with('error', 'Este usuario no puede editarse.');
         }
 
         $permisos = $this->getAvailablePermissions();
+
         return view('superadmin.administradores.edit', compact('administrador', 'permisos'));
     }
 
@@ -109,159 +105,134 @@ class SuperAdminController extends Controller
     public function update(Request $request, User $administrador)
     {
         if ($administrador->is_protected) {
-            return redirect()->route('superadmin.administradores.index')
-                ->with('error', ' Este usuario no puede ser modificado');
+            return back()->with('error', 'Este usuario no puede modificarse.');
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($administrador->id)],
+            'name'        => 'required|string|max:255',
+            'email'       => ['required','email', Rule::unique('users')->ignore($administrador->id)],
             'permissions' => 'nullable|array',
         ]);
 
-        $administrador->name = $request->name;
-        $administrador->email = $request->email;
-        $administrador->permissions = $request->permissions ?? [];
-        $administrador->save();
+        $administrador->update([
+            'name'        => $request->name,
+            'email'       => $request->email,
+            'permissions' => $request->permissions ?? [],
+        ]);
 
-        // Si se proporciona una nueva contraseña
         if ($request->filled('password')) {
             $request->validate([
                 'password' => 'min:8|confirmed',
             ]);
 
-            $administrador->password = Hash::make($request->password);
-            $administrador->save();
+            $administrador->update([
+                'password' => Hash::make($request->password),
+            ]);
         }
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', ' Administrador actualizado exitosamente');
+            ->with('success', 'Administrador actualizado exitosamente.');
     }
 
     /**
-     * Eliminar administrador
+     * Eliminar admin
      */
     public function destroy(User $administrador)
     {
-        if (!$administrador->canBeDeleted()) {
-            return redirect()->route('superadmin.administradores.index')
-                ->with('error', ' Este usuario no puede ser eliminado');
+        if ($administrador->is_protected || $administrador->id_rol == 1) {
+            return back()->with('error', 'Este usuario no puede eliminarse.');
         }
 
         $administrador->delete();
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', ' Administrador eliminado exitosamente');
+            ->with('success', 'Administrador eliminado.');
     }
 
     /**
-     * Mostrar perfil del Super Admin
+     * Perfil super admin
      */
     public function perfil()
     {
-        $user = User::findOrFail(Auth::id());
+        $user = Auth::user();
         return view('superadmin.perfil.index', compact('user'));
     }
 
     /**
-     * Actualizar información del perfil
+     * Actualizar perfil
      */
     public function actualizarPerfil(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->ignore(Auth::id())],
-        ], [
-            'name.required' => 'El nombre es obligatorio',
-            'email.required' => 'El email es obligatorio',
-            'email.email' => 'El email debe ser válido',
-            'email.unique' => 'Este email ya está en uso',
+            'name'  => 'required|string|max:255',
+            'email' => ['required','email', Rule::unique('users')->ignore(Auth::id())],
         ]);
 
-        $user = User::findOrFail(Auth::id());
+        Auth::user()->update($request->only('name', 'email'));
 
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->save();
-
-        return back()->with('success', ' Perfil actualizado correctamente');
+        return back()->with('success', 'Perfil actualizado.');
     }
 
     /**
-     * Cambiar contraseña del Super Admin
+     * Cambiar contraseña
      */
     public function cambiarPassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|min:8|confirmed',
-        ], [
-            'current_password.required' => 'La contraseña actual es obligatoria',
-            'password.required' => 'La nueva contraseña es obligatoria',
-            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres',
-            'password.confirmed' => 'Las contraseñas no coinciden',
+            'password'         => 'required|min:8|confirmed',
         ]);
 
-        $user = User::findOrFail(Auth::id());
+        $user = Auth::user();
 
-        // Verificar contraseña actual
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'La contraseña actual es incorrecta']);
+            return back()->withErrors([
+                'current_password' => 'La contraseña actual es incorrecta'
+            ]);
         }
 
-        // Actualizar contraseña
-        $user->password = Hash::make($request->password);
-        $user->save();
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
 
-        return back()->with('success', ' Contraseña actualizada correctamente');
+        return back()->with('success', 'Contraseña actualizada.');
     }
 
-     /**
-     * Mostrar vista de permisos y roles
+    /**
+     * Vista de permisos para administradores
      */
-   public function permisosRoles()
-{
-    $permisos = $this->getAvailablePermissions();
+    public function permisosRoles()
+    {
+        $permisos = $this->getAvailablePermissions();
 
-    // Solo obtener usuarios del sistema (tabla users) que sean configurables
-    $usuarios = User::where(function($query) {
-            // Solo administradores regulares
-            $query->where('role', 'admin')
-                  // O super admins no protegidos
-                  ->orWhere(function($q) {
-                      $q->where('role', 'super_admin')
-                        ->where('is_protected', 0);
-                  });
-        })
-        ->orderBy('role')
-        ->orderBy('name')
-        ->get();
+        $usuarios = User::where('id_rol', 2)
+            ->where('is_protected', 0)
+            ->orderBy('name')
+            ->get();
 
-    return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
-}
+        return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
+    }
 
     /**
-     * Actualizar permisos de un usuario
+     * Actualizar permisos
      */
     public function actualizarPermisos(Request $request, $userId)
     {
         $usuario = User::findOrFail($userId);
 
-        // Proteger al super admin principal
         if ($usuario->is_protected) {
-            return redirect()->back()->with('error', ' No se pueden modificar los permisos de este usuario');
+            return back()->with('error', 'Este usuario no puede modificarse.');
         }
 
-        // Actualizar permisos
-        $usuario->permissions = $request->input('permisos', []);
+        $usuario->permissions = $request->permisos ?? [];
         $usuario->save();
 
         return redirect()->route('superadmin.administradores.permisos')
-            ->with('success', " Permisos actualizados correctamente para {$usuario->name}");
+            ->with('success', "Permisos actualizados para {$usuario->name}");
     }
 
     /**
-     * Permisos disponibles en el sistema
+     * Permisos disponibles
      */
     private function getAvailablePermissions()
     {
