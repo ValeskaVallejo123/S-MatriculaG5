@@ -1232,7 +1232,8 @@
           </div>
           <h3>Consulta de Solicitudes</h3>
           <p>Verifica el estado de tu solicitud de matrícula en tiempo real con tu número de identidad.</p>
-          <a href="{{ route('matriculas.index') }}" class="btn-feature">Consultar Ahora</a>
+          <a href="{{ route('estado-solicitud') }}">Consultar Solicitud</a>
+
         </div>
 
         <div class="feature-card">
@@ -1342,7 +1343,8 @@
           <a href="#inicio">Inicio</a>
           <a href="#matricula">Matrícula</a>
           <a href="#nosotros">Nosotros</a>
-          <a href="{{ route('matriculas.index') }}">Consultar Solicitud</a>
+          <a href="{{ route('estado-solicitud') }}">Consultar Solicitud</a>
+
         </div>
 
         <div class="footer-section">

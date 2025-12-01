@@ -24,7 +24,6 @@ class Estudiante extends Model
         'direccion',
         'grado',
         'seccion',
-        'estado',
         'observaciones',
         'nombre_padre',
         'telefono_padre',

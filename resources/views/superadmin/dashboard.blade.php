@@ -355,12 +355,32 @@
                     <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-outline-primary w-100 mb-2">
                         <i class="fas fa-users-cog me-2"></i> Administradores
                     </a>
-                    <a href="{{ route('admins.index') }}" class="btn btn-primary w-100">
-                        <i class="fas fa-user-tie me-2"></i> Gestión de Admins
-                    </a>
+
                 </div>
             </div>
         </div>
+
+        <!-- Horarios -->
+<div class="col-lg-4 col-md-6">
+    <div class="action-card">
+        <div class="action-card-header">
+            <div class="action-icon bg-info">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div>
+                <h6 class="action-title">Horarios</h6>
+                <p class="action-subtitle">Gestión de horarios de clases</p>
+            </div>
+        </div>
+        <div class="action-card-body">
+            <a href="{{ route('horarios_grado.index') }}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="fas fa-list me-2"></i> Ver Horarios
+            </a>
+           
+        </div>
+    </div>
+</div>
+
     </div>
 
 </div>

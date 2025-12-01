@@ -667,9 +667,10 @@
 
       <!-- Botón para ver página principal - CORREGIDO -->
       <a href="{{ route('plantilla') }}" class="btn-inicio">
-        <i class="fas fa-home"></i>
-        <span>Ver Página Principal</span>
+         <i class="fas fa-home"></i>
+         <span>Ver Página Principal</span>
       </a>
+
 
       <div class="footer-info">
         <i class="fas fa-shield-alt"></i>

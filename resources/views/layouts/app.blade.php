@@ -572,16 +572,18 @@
 </head>
 <body>
 
-    @php
-        // Sistema de roles corregido usando 'role'
-        $user = auth()->user();
-        $isSuperAdmin = $user->is_super_admin || $user->role === 'super_admin';
-        $isAdmin = in_array($user->role, ['admin', 'super_admin']) || $user->is_super_admin;
-        $showSidebar = $isSuperAdmin || $isAdmin;
+   @php
+    $user = Auth::user();   // <-- Necesario para evitar error
 
-        // Obtener el nombre del rol para mostrar
-        $roleName = $isSuperAdmin ? 'Super Administrador' : ucfirst($user->role ?? 'Usuario');
-    @endphp
+    // Sistema de roles corregido usando 'role'
+    $isSuperAdmin = $user?->id_rol == 1;
+    $isAdmin = $user?->id_rol == 1 || $user?->id_rol == 2;
+
+    $roleName = $user?->rol->nombre ?? 'Usuario';
+     // Sidebar solo para admin y superadmin
+    $showSidebar = $isAdmin || $isSuperAdmin;
+@endphp
+
 
     <!-- SIDEBAR (solo para admins) -->
     @if($showSidebar)
@@ -753,7 +755,7 @@
             <li class="menu-section-title">PERMISOS</li>
 
             <li class="menu-item">
-                <a href="{{ route('admins.permisos.index') }}" class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.administradores.permisos') }}" class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
                     <i class="fas fa-user-lock"></i>
                     <span>Permisos de Padres</span>
                 </a>

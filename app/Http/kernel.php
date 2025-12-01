@@ -49,5 +49,7 @@ class Kernel extends HttpKernel
 
         // 🚀 Middleware de permisos especiales para padres/tutores
         'permiso.padre' => \App\Http\Middleware\VerificarPermisoPadre::class,
+
+        
     ];
 }

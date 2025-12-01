@@ -3,175 +3,116 @@
 namespace App\Http\Controllers;
 
 use App\Models\Horario;
+use App\Models\Profesor;
+use App\Models\Materia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class HorarioController extends Controller
 {
-    public function __construct()
-    {
-        // CRUD solo disponible para ADMIN y SUPERADMIN
-        $this->middleware(['auth', 'rol:admin,super_admin'])
-            ->only(['create', 'store', 'edit', 'update', 'destroy']);
-
-        // index, PDF y miHorario accesibles para todos los roles permitidos
-        $this->middleware('auth');
-    }
-
-    /**
-     * Mostrar horarios (según el rol)
-     */
     public function index()
     {
         $user = Auth::user();
 
-        $query = Horario::with('profesor')
+        $query = Horario::with(['profesor', 'materia'])
             ->orderBy('dia')
             ->orderBy('hora_inicio');
 
-        // PROFESOR: solo ve sus horarios
-        if ($user->role === 'profesor') {
-            $query->where('profesor_id', $user->id);
+        // Profesor (rol 3)
+        if ($user->id_rol == 3) {
+            $query->where('profesor_id', $user->profesor_id);
         }
 
-        // ESTUDIANTE: ve su horario por grado & sección
-        if ($user->role === 'estudiante') {
-            $query->where('grado', $user->grado)
-                  ->where('seccion', $user->seccion);
+        // Estudiante (rol 4)
+        if ($user->id_rol == 4) {
+            $query->where('seccion', $user->seccion);
         }
 
-        // ADMIN y SUPERADMIN ven todos
         $horarios = $query->paginate(10);
 
         return view('horarios.index', compact('horarios'));
     }
 
-    /**
-     * Descargar PDF del horario (Profesor / Estudiante)
-     */
-    public function exportPDF()
-    {
-        $user = Auth::user();
 
-        if ($user->role === 'profesor') {
-            $horarios = Horario::with('profesor')
-                ->where('profesor_id', $user->id)
-                ->orderBy('dia')
-                ->orderBy('hora_inicio')
-                ->get();
+    /** FORMULARIO CREAR */
+   public function create()
+{
+    $profesores = \App\Models\Profesor::orderBy('nombre')->get();
+    $materias   = \App\Models\Materia::orderBy('nombre')->get();
+    $grados     = \App\Models\Grado::orderBy('nivel')
+                    ->orderBy('numero')
+                    ->orderBy('seccion')
+                    ->get();
 
-            return Pdf::loadView('horarios.pdf', [
-                'horarios' => $horarios,
-                'usuario' => $user
-            ])->download('horario_profesor.pdf');
-        }
+    return view('horarios.create', compact('profesores', 'materias', 'grados'));
+}
 
-        if ($user->role === 'estudiante') {
-            $horarios = Horario::with('profesor')
-                ->where('grado', $user->grado)
-                ->where('seccion', $user->seccion)
-                ->orderBy('dia')
-                ->orderBy('hora_inicio')
-                ->get();
 
-            return Pdf::loadView('horarios.pdf', [
-                'horarios' => $horarios,
-                'usuario' => $user
-            ])->download('horario_estudiante.pdf');
-        }
-
-        abort(403, 'No tienes permisos para descargar PDF.');
-    }
-
-    /**
-     * Crear horario (solo ADMIN / SUPERADMIN)
-     */
-    public function create()
-    {
-        return view('horarios.create');
-    }
-
+    /** GUARDAR */
     public function store(Request $request)
     {
         $request->validate([
-            'profesor_id' => 'required|exists:users,id',
-            'dia' => 'required|string',
+            'profesor_id' => 'required|exists:profesores,id',
+            'materia_id'  => 'required|exists:materias,id',
+            'seccion'     => 'required',
+            'dia'         => 'required',
             'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
-            'grado' => 'required|string',
-            'seccion' => 'required|string',
-            'aula' => 'nullable|string',
-            'observaciones' => 'nullable|string',
+            'hora_fin'    => 'required|date_format:H:i|after:hora_inicio',
+            'salon'       => 'nullable|string|max:100',
         ]);
 
-        Horario::create($request->only([
-            'profesor_id', 'dia', 'hora_inicio', 'hora_fin',
-            'grado', 'seccion', 'aula', 'observaciones'
-        ]));
+        Horario::create($request->all());
 
         return redirect()->route('horarios.index')
             ->with('success', 'Horario creado correctamente.');
     }
 
-    public function show(Horario $horario)
-    {
-        return view('horarios.show', compact('horario'));
-    }
 
+    /** EDITAR */
     public function edit(Horario $horario)
     {
-        return view('horarios.edit', compact('horario'));
+        if (!in_array(Auth::user()->id_rol, [1,2])) {
+            abort(403);
+        }
+
+        return view('horarios.edit', [
+            'horario'    => $horario,
+            'profesores' => Profesor::all(),
+            'materias'   => Materia::all(),
+        ]);
     }
 
+
+    /** ACTUALIZAR */
     public function update(Request $request, Horario $horario)
     {
         $request->validate([
-            'profesor_id' => 'required|exists:users,id',
-            'dia' => 'required|string',
+            'profesor_id' => 'required|exists:profesores,id',
+            'materia_id'  => 'required|exists:materias,id',
+            'seccion'     => 'required',
+            'dia'         => 'required',
             'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
-            'grado' => 'required|string',
-            'seccion' => 'required|string',
-            'aula' => 'nullable|string',
-            'observaciones' => 'nullable|string',
+            'hora_fin'    => 'required|date_format:H:i|after:hora_inicio',
+            'salon'       => 'nullable|string|max:100',
         ]);
 
-        $horario->update($request->only([
-            'profesor_id', 'dia', 'hora_inicio', 'hora_fin',
-            'grado', 'seccion', 'aula', 'observaciones'
-        ]));
+        $horario->update($request->all());
 
         return redirect()->route('horarios.index')
             ->with('success', 'Horario actualizado correctamente.');
     }
 
+
+    /** ELIMINAR */
     public function destroy(Horario $horario)
     {
+        if (!in_array(Auth::user()->id_rol, [1,2])) {
+            abort(403);
+        }
+
         $horario->delete();
 
         return redirect()->route('horarios.index')
             ->with('success', 'Horario eliminado correctamente.');
-    }
-
-    /**
-     * Horario del estudiante (solo rol estudiante)
-     */
-    public function miHorario()
-    {
-        $user = Auth::user();
-
-        if ($user->role !== 'estudiante') {
-            abort(403, 'No tienes permisos para ver este horario.');
-        }
-
-        $horario = Horario::with('profesor')
-            ->where('grado', $user->grado)
-            ->where('seccion', $user->seccion)
-            ->orderBy('dia')
-            ->orderBy('hora_inicio')
-            ->get();
-
-        return view('estudiante.miHorario', compact('horario'));
     }
 }

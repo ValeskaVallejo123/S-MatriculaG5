@@ -14,12 +14,13 @@ class Horario extends Model
     protected $fillable = [
         'profesor_id',
         'materia_id',
-        'curso_id',
+        'grado_id',
         'dia',
         'hora_inicio',
         'hora_fin',
         'aula',
         'observaciones',
+
     ];
 
     protected $casts = [
@@ -44,12 +45,13 @@ class Horario extends Model
     {
         return $this->belongsTo(Materia::class);
     }
-
-    // Curso (grado + sección) asignado
-    public function curso()
+    public function grado()
     {
-        return $this->belongsTo(Curso::class);
-    }
+      return $this->belongsTo(Grado::class);
+  }
+
+
+
 
     /*
     |--------------------------------------------------------------------------

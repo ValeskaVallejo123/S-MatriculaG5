@@ -79,39 +79,45 @@ class LoginController extends Controller
                 ])->withInput();
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | 🔀 REDIRIGIR SEGÚN ROL
-            |--------------------------------------------------------------------------
-            */
-            $nombreRol = $usuario->rol->nombre;
+           /*
+|--------------------------------------------------------------------------
+| 🔀 REDIRIGIR SEGÚN ROL (POR ID, NO POR NOMBRE)
+|--------------------------------------------------------------------------
+*/
+$rolId = $usuario->id_rol;
 
-            switch ($nombreRol) {
-                case 'Super Administrador':
-                    return redirect()->route('superadmin.dashboard')
-                        ->with('success', 'Bienvenido Super Administrador');
+switch ($rolId) {
 
-                case 'Administrador':
-                    return redirect()->route('admin.dashboard')
-                        ->with('success', 'Bienvenido Administrador');
+    case 1: // super_admin
+        return redirect()->route('superadmin.dashboard')
+            ->with('success', 'Bienvenido Super Administrador');
 
-                case 'Profesor':
-                    return redirect()->route('profesor.dashboard')
-                        ->with('success', 'Bienvenido Profesor');
+    case 7: // Administrador
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'Bienvenido Administrador');
 
-                case 'Estudiante':
-                    return redirect()->route('estudiante.dashboard')
-                        ->with('success', 'Bienvenido Estudiante');
+    case 3: // Profesor
+        return redirect()->route('profesor.dashboard')
+            ->with('success', 'Bienvenido Profesor');
 
-                case 'Padre':
-                    return redirect()->route('padre.dashboard')
-                        ->with('success', 'Bienvenido Padre/Tutor');
+    case 4: // Estudiante
+        return redirect()->route('estudiante.dashboard')
+            ->with('success', 'Bienvenido Estudiante');
 
-                default:
-                    Auth::logout();
-                    return redirect()->route('login')
-                        ->with('warning', 'Rol no reconocido. Contacta al administrador.');
-            }
+    case 5: // Padre
+        return redirect()->route('padre.dashboard')
+            ->with('success', 'Bienvenido Padre/Tutor');
+
+    case 8: // Maestro
+        return redirect()->route('profesor.dashboard')
+            ->with('success', 'Bienvenido Maestro');
+
+    default:
+        Auth::logout();
+        return redirect()->route('login')
+            ->with('warning', 'Rol no reconocido. Contacta al administrador.');
+}
+
         }
 
         /*
