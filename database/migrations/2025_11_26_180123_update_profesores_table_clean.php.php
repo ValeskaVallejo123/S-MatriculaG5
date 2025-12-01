@@ -53,7 +53,7 @@ return new class extends Migration
 
             // Solo renombrar de vuelta si fecha_ingreso NO existe y fecha_contratacion sí
             if (Schema::hasColumn('profesores', 'fecha_contratacion') && !Schema::hasColumn('profesores', 'fecha_ingreso')) {
-                $table->renameColumn('fecha_contratacion', 'fecha_ingreso');
+                 $table->renameColumn('fecha_contratacion', 'fecha_ingreso');
             }
             });
     }

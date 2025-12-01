@@ -676,6 +676,13 @@
             </li>
 
             <li class="menu-item">
+                <a href="{{ route('buscarregistro') }}" class="menu-link {{ request()->routeIs('buscarregistro') ? 'active' : '' }}">
+                    <i class="fas fa-search"></i>
+                    <span>Registro de estudiante</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
                 <a href="{{ route('padres.buscar') }}" class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
                     <i class="fas fa-user-search"></i>
                     <span>Buscar Padre/Tutor</span>
@@ -741,12 +748,7 @@
             @if($isSuperAdmin)
             <li class="menu-section-title">PERMISOS Y ROLES</li>
 
-            <li class="menu-item">
-                <a href="{{ route('superadmin.administradores.permisos') }}" class="menu-link {{ request()->routeIs('superadmin.administradores.permisos') ? 'active' : '' }}">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Permisos y Roles</span>
-                </a>
-            </li>
+       c
             @endif
 
             <!-- PERMISOS -->
