@@ -203,4 +203,8 @@
             }
         </style>
     @endpush
+<<<<<<< HEAD
 @endsection
+=======
+@endsection
+>>>>>>> dev/valeska

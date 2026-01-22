@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Nueva Materia')
 
@@ -37,10 +37,10 @@
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar nivel...</option>
                             <option value="primaria" {{ old('nivel') == 'primaria' ? 'selected' : '' }}>
-                                🎒 Primaria (1° - 6° Grado)
+                                 Primaria (1° - 6° Grado)
                             </option>
                             <option value="secundaria" {{ old('nivel') == 'secundaria' ? 'selected' : '' }}>
-                                🎓 Secundaria (7° - 9° Grado)
+                                 Secundaria (7° - 9° Grado)
                             </option>
                         </select>
                         @error('nivel')
@@ -96,15 +96,15 @@
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar área...</option>
-                            <option value="Matemáticas" {{ old('area') == 'Matemáticas' ? 'selected' : '' }}>📐 Matemáticas</option>
-                            <option value="Español" {{ old('area') == 'Español' ? 'selected' : '' }}>📖 Español</option>
-                            <option value="Ciencias Naturales" {{ old('area') == 'Ciencias Naturales' ? 'selected' : '' }}>🔬 Ciencias Naturales</option>
-                            <option value="Ciencias Sociales" {{ old('area') == 'Ciencias Sociales' ? 'selected' : '' }}>🌍 Ciencias Sociales</option>
-                            <option value="Educación Física" {{ old('area') == 'Educación Física' ? 'selected' : '' }}>⚽ Educación Física</option>
-                            <option value="Educación Artística" {{ old('area') == 'Educación Artística' ? 'selected' : '' }}>🎨 Educación Artística</option>
-                            <option value="Inglés" {{ old('area') == 'Inglés' ? 'selected' : '' }}>🇬🇧 Inglés</option>
-                            <option value="Informática" {{ old('area') == 'Informática' ? 'selected' : '' }}>💻 Informática</option>
-                            <option value="Formación Ciudadana" {{ old('area') == 'Formación Ciudadana' ? 'selected' : '' }}>🏛️ Formación Ciudadana</option>
+                            <option value="Matemáticas" {{ old('area') == 'Matemáticas' ? 'selected' : '' }}> Matemáticas</option>
+                            <option value="Español" {{ old('area') == 'Español' ? 'selected' : '' }}> Español</option>
+                            <option value="Ciencias Naturales" {{ old('area') == 'Ciencias Naturales' ? 'selected' : '' }}> Ciencias Naturales</option>
+                            <option value="Ciencias Sociales" {{ old('area') == 'Ciencias Sociales' ? 'selected' : '' }}> Ciencias Sociales</option>
+                            <option value="Educación Física" {{ old('area') == 'Educación Física' ? 'selected' : '' }}> Educación Física</option>
+                            <option value="Educación Artística" {{ old('area') == 'Educación Artística' ? 'selected' : '' }}> Educación Artística</option>
+                            <option value="Inglés" {{ old('area') == 'Inglés' ? 'selected' : '' }}> Inglés</option>
+                            <option value="Informática" {{ old('area') == 'Informática' ? 'selected' : '' }}> Informática</option>
+                            <option value="Formación Ciudadana" {{ old('area') == 'Formación Ciudadana' ? 'selected' : '' }}> Formación Ciudadana</option>
                         </select>
                         @error('area')
                             <div class="invalid-feedback">{{ $message }}</div>

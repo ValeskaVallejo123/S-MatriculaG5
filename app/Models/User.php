@@ -30,6 +30,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'permissions' => 'array',
             'activo' => 'boolean',
             'fecha_registro' => 'datetime',
             'is_super_admin' => 'boolean',
@@ -43,7 +44,7 @@ class User extends Authenticatable
 
     public function rol()
     {
-        return $this->belongsTo(Rol::class, 'id_rol', 'id'); // ✅ Usa 'id_rol' de users y 'id' de roles
+        return $this->belongsTo(Rol::class, 'id_rol', 'id'); //  Usa 'id_rol' de users y 'id' de roles
     }
 
     public function padre()

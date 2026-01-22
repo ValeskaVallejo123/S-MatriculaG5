@@ -9,13 +9,13 @@ class Grado extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'nivel',
-        'numero',
-        'seccion',
-        'anio_lectivo',
-        'activo'
-    ];
+   protected $fillable = [
+    'nivel',
+    'numero',
+    'seccion',
+    'anio_lectivo',
+    'activo',
+];
 
     protected $casts = [
         'activo' => 'boolean',
