@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 class DashboardController extends Controller
 {
     /**
-     * Redirigir al dashboard según id_rol del usuario
+     * Redirigir según el rol del usuario
      */
     public function redirect()
     {
@@ -27,28 +27,33 @@ class DashboardController extends Controller
         $usuario = Auth::user();
 
         switch ($usuario->id_rol) {
-            case 1: // Super Administrador
+            case 1: // SuperAdmin
                 return redirect()->route('superadmin.dashboard');
+
             case 2: // Administrador
-                return $this->admin();
+                return redirect()->route('admins.dashboard');
+
             case 3: // Profesor
                 return redirect()->route('profesor.dashboard');
+
             case 4: // Estudiante
                 return redirect()->route('estudiante.dashboard');
+
             case 5: // Padre
                 return redirect()->route('padre.dashboard');
+
             default:
                 return $this->dashboardFallback();
         }
     }
 
     /**
-     * Dashboard del Administrador
+     * Dashboard de Administrador
      */
     public function admin()
     {
         try {
-            // Estadísticas generales
+            // Estadísticas
             $totalEstudiantes = Estudiante::where('activo', 1)->count();
             $estudiantesActivos = Estudiante::where('estado', 'activo')->count();
             $totalProfesores = Profesor::where('activo', 1)->count();
@@ -60,7 +65,8 @@ class DashboardController extends Controller
 
             // Usuarios del sistema
             $totalUsuarios = User::where('activo', 1)->count();
-            $totalAdministradores = User::whereIn('id_rol', [1, 2])->where('activo',1)->count();
+            $totalAdministradores = User::whereIn('id_rol', [1, 2])
+                ->where('activo', 1)->count();
 
             // Estudiantes por grado
             $estudiantesPorGrado = Estudiante::select('grado', DB::raw('count(*) as total'))
@@ -76,7 +82,7 @@ class DashboardController extends Controller
                 ->orderBy('seccion')
                 ->get();
 
-            // Profesores por especialidad (top 5)
+            // Profesores por especialidad
             $profesoresPorEspecialidad = Profesor::select('especialidad', DB::raw('count(*) as total'))
                 ->where('estado', 'activo')
                 ->groupBy('especialidad')
@@ -90,7 +96,7 @@ class DashboardController extends Controller
                 ->limit(5)
                 ->get();
 
-            // Estudiantes y profesores recientes
+            // Recientes
             $estudiantesRecientes = Estudiante::orderByDesc('created_at')->limit(5)->get();
             $profesoresRecientes = Profesor::orderByDesc('created_at')->limit(5)->get();
 
@@ -99,7 +105,8 @@ class DashboardController extends Controller
                 ->where('fecha_fin', '>=', now())
                 ->first();
 
-            return view('admin.dashboard', compact(
+            // 👉 Vista correcta del dashboard admin
+            return view('admins.dashboard', compact(
                 'totalEstudiantes',
                 'estudiantesActivos',
                 'totalProfesores',
@@ -125,12 +132,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Dashboard genérico (fallback)
+     * Dashboard genérico si el rol no coincide
      */
     public function dashboardFallback()
     {
-        $totalEstudiantes = Estudiante::where('activo',1)->count();
-        $totalProfesores = Profesor::where('activo',1)->count();
+        $totalEstudiantes = Estudiante::where('activo', 1)->count();
+        $totalProfesores = Profesor::where('activo', 1)->count();
         $totalMatriculas = Matricula::count();
 
         return view('superadmin.dashboard', compact(
@@ -138,13 +145,5 @@ class DashboardController extends Controller
             'totalProfesores',
             'totalMatriculas'
         ));
-    }
-
-    /**
-     * Dashboard básico para usuarios no redirigidos
-     */
-    public function index()
-    {
-        return $this->dashboardFallback();
     }
 }

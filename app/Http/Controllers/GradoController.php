@@ -158,7 +158,7 @@ public function generarMasivo(Request $request)
         ['nombre' => 'Noveno Grado', 'nivel' => 'Básica', 'orden' => 9],
     ];
 
-    $secciones = ['A', 'B', 'C', 'D'];
+    $secciones = ['A', 'B', 'C'];
     $contador = 0;
 
     foreach ($grados as $gradoData) {

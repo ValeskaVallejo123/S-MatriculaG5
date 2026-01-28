@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +17,7 @@ class User extends Authenticatable
         'activo',
         'user_type',
         'fecha_registro',
-        'permissions',
+        'permissions',      // permisos JSON
         'is_super_admin',
         'is_protected',
     ];
@@ -37,7 +36,6 @@ class User extends Authenticatable
         'is_super_admin' => 'boolean',
         'is_protected' => 'boolean',
     ];
-    
 
     // =============================
     // RELACIONES
@@ -55,7 +53,7 @@ class User extends Authenticatable
 
     public function estudiante()
     {
-        return $this->hasOne(Estudiante::class, 'email', 'email');
+    return $this->hasOne(\App\Models\Estudiante::class);
     }
 
     public function docente()
@@ -74,7 +72,7 @@ class User extends Authenticatable
     }
 
     // =============================
-    // MÉTODOS DE ROLES
+    // ROLES
     // =============================
 
     public function tieneRol($nombreRol)
@@ -134,28 +132,57 @@ class User extends Authenticatable
     }
 
     // =============================
-    // PERMISOS (SOLO ADMIN)
+    // PERMISOS (JSON + por Rol)
     // =============================
+
 
     public function tienePermiso($permiso)
     {
-        $permisos = $this->permissions ?? [];
+        $permiso = strtolower(trim($permiso));
 
-        return is_array($permisos) &&
-               in_array($permiso, $permisos);
+        // ✔ Permisos JSON directos
+        $jsonPerms = $this->permissions ?? [];
+        if (is_array($jsonPerms) && in_array($permiso, array_map('strtolower', $jsonPerms))) {
+            return true;
+        }
+
+        // ✔ Permisos por Rol
+        if ($this->rol && $this->rol->tienePermiso($permiso)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function tieneAlgunPermiso(array $permisos)
+    {
+        foreach ($permisos as $permiso) {
+            if ($this->tienePermiso($permiso)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function tieneTodosLosPermisos(array $permisos)
+    {
+        foreach ($permisos as $permiso) {
+            if (!$this->tienePermiso($permiso)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // =============================
-    // PROTECCIÓN SUPER ADMIN
+    // SEGURIDAD
     // =============================
 
     public function canBeDeleted()
     {
-        // super admin o usuario protegido NO se elimina
         if ($this->isSuperAdmin() || $this->is_protected) {
             return false;
         }
-
         return true;
     }
 
@@ -181,31 +208,31 @@ class User extends Authenticatable
     }
 
     // =============================
-    // OBSERVACIONES PERMITIDAS
+    // OBSERVACIONES
     // =============================
 
     public function observacionesPermitidas()
     {
         if ($this->isSuperAdmin()) {
-            return \App\Models\Observacion::query();
+            return Observacion::query();
         }
 
         if ($this->isDocente() && $this->docente) {
-            return \App\Models\Observacion::where('profesor_id', $this->docente->id)
+            return Observacion::where('profesor_id', $this->docente->id)
                 ->orWhereHas('estudiante.user', function ($q) {
                     $q->where('id', $this->id);
                 });
         }
 
         if ($this->isEstudiante() && $this->estudiante) {
-            return \App\Models\Observacion::where('estudiante_id', $this->estudiante->id);
+            return Observacion::where('estudiante_id', $this->estudiante->id);
         }
 
-        return \App\Models\Observacion::whereRaw('0=1');
+        return Observacion::whereRaw('0=1');
     }
 
     // =============================
-    // NOTIFICACIONES PERMITIDAS
+    // NOTIFICACIONES
     // =============================
 
     public function notificacionesPermitidas()
@@ -214,7 +241,7 @@ class User extends Authenticatable
     }
 
     // =============================
-    // PADRES PERMITIDOS
+    // PADRES
     // =============================
 
     public function padresPermitidos()
@@ -229,4 +256,57 @@ class User extends Authenticatable
 
         return Padre::whereRaw('0=1');
     }
+
+    // =============================
+    // OBTENER TODOS LOS PERMISOS
+    // =============================
+
+    public function obtenerPermisos()
+{
+    $lista = [];
+
+    // 1️⃣ Permisos JSON directos del usuario
+    if (is_array($this->permissions)) {
+        $lista = array_merge($lista, $this->permissions);
+    }
+
+    // 2️⃣ Permisos del rol (si el rol existe y tiene permisos)
+    if ($this->relationLoaded('rol') || $this->rol) {
+        if ($this->rol->permisos instanceof \Illuminate\Support\Collection) {
+            $lista = array_merge($lista, $this->rol->permisos->pluck('nombre')->toArray());
+        }
+    }
+
+    // 3️⃣ Limpiar duplicados y valores vacíos
+    $lista = array_filter($lista);
+    $lista = array_unique($lista);
+    sort($lista);
+
+    return $lista;
+}
+// =============================
+// NOTIFICACIONES (CAMPANA 🔔)
+// =============================
+
+/**
+ * Relación de notificaciones no leídas
+ */
+public function notificacionesNoLeidas()
+{
+    return $this->notificaciones()->where('leida', false);
+}
+
+/**
+ * Atributo: total de notificaciones no leídas
+ * Uso: auth()->user()->total_notificaciones_no_leidas
+ */
+public function getTotalNotificacionesNoLeidasAttribute()
+{
+    return $this->notificaciones()->where('leida', false)->count();
+}
+public function hasPermission($permission)
+{
+    return $this->tienePermiso($permission);
+
+}
 }

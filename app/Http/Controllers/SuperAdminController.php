@@ -14,7 +14,8 @@ class SuperAdminController extends Controller
     public function __construct()
     {
         // Solo super admin puede manejar administradores
-        $this->middleware(['auth', 'rol:super_admin']);
+        // Asegúrate de tener 'role' => RoleMiddleware::class en Kernel.php
+        $this->middleware(['auth', 'role:super_admin']);
     }
 
     /**
@@ -37,7 +38,7 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Listado de administradores
+     * Listado de administradores (super admin + admin)
      */
     public function index()
     {
@@ -64,21 +65,22 @@ class SuperAdminController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'       => 'required|string|max:255',
-            'email'      => 'required|email|unique:users,email',
-            'password'   => 'required|min:8|confirmed',
-            'permissions'=> 'nullable|array',
-            'id_rol'     => 'required|in:2', // Solo ADMIN (super admin no se crea por aquí)
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email',
+            'password'    => 'required|min:8|confirmed',
+            'permissions' => 'nullable|array',
+            'id_rol'      => 'required|in:2', // Solo ADMIN (super admin no se crea por aquí)
         ]);
 
         User::create([
-            'name'          => $request->name,
-            'email'         => $request->email,
-            'password'      => Hash::make($request->password),
-            'id_rol'        => $request->id_rol,
-            'permissions'   => $request->permissions ?? [],
-            'is_super_admin'=> false,
-            'is_protected'  => false,
+            'name'           => $request->name,
+            'email'          => $request->email,
+            'password'       => Hash::make($request->password),
+            'id_rol'         => $request->id_rol,
+            'permissions'    => $request->permissions ?? [],
+            'is_super_admin' => false,
+            'is_protected'   => false,
+            'activo'         => true,
         ]);
 
         return redirect()->route('superadmin.administradores.index')
@@ -110,7 +112,7 @@ class SuperAdminController extends Controller
 
         $request->validate([
             'name'        => 'required|string|max:255',
-            'email'       => ['required','email', Rule::unique('users')->ignore($administrador->id)],
+            'email'       => ['required', 'email', Rule::unique('users')->ignore($administrador->id)],
             'permissions' => 'nullable|array',
         ]);
 
@@ -120,6 +122,7 @@ class SuperAdminController extends Controller
             'permissions' => $request->permissions ?? [],
         ]);
 
+        // Si se envía contraseña nueva, actualizarla
         if ($request->filled('password')) {
             $request->validate([
                 'password' => 'min:8|confirmed',
@@ -165,7 +168,7 @@ class SuperAdminController extends Controller
     {
         $request->validate([
             'name'  => 'required|string|max:255',
-            'email' => ['required','email', Rule::unique('users')->ignore(Auth::id())],
+            'email' => ['required', 'email', Rule::unique('users')->ignore(Auth::id())],
         ]);
 
         Auth::user()->update($request->only('name', 'email'));
@@ -187,12 +190,12 @@ class SuperAdminController extends Controller
 
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors([
-                'current_password' => 'La contraseña actual es incorrecta'
+                'current_password' => 'La contraseña actual es incorrecta',
             ]);
         }
 
         $user->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('success', 'Contraseña actualizada.');
@@ -214,7 +217,7 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Actualizar permisos
+     * Actualizar permisos de un administrador
      */
     public function actualizarPermisos(Request $request, $userId)
     {
@@ -224,6 +227,7 @@ class SuperAdminController extends Controller
             return back()->with('error', 'Este usuario no puede modificarse.');
         }
 
+        // Ojo: aquí el formulario debe enviar 'permisos[]'
         $usuario->permissions = $request->permisos ?? [];
         $usuario->save();
 
@@ -237,19 +241,37 @@ class SuperAdminController extends Controller
     private function getAvailablePermissions()
     {
         return [
-            'gestionar_matriculas' => 'Gestionar Matrículas',
-            'gestionar_estudiantes' => 'Gestionar Estudiantes',
-            'gestionar_profesores' => 'Gestionar Profesores',
-            'gestionar_secciones' => 'Gestionar Secciones',
-            'gestionar_grados' => 'Gestionar Grados',
-            'ver_reportes' => 'Ver Reportes',
-            'gestionar_pagos' => 'Gestionar Pagos',
-            'gestionar_calificaciones' => 'Gestionar Calificaciones',
-            'gestionar_asistencias' => 'Gestionar Asistencias',
-            'gestionar_observaciones' => 'Gestionar Observaciones',
-            'gestionar_documentos' => 'Gestionar Documentos',
-            'gestionar_mensajes' => 'Gestionar Mensajes',
-            'gestionar_avisos' => 'Gestionar Avisos y Comunicados',
+            'gestionar_matriculas'      => 'Gestionar Matrículas',
+            'gestionar_estudiantes'     => 'Gestionar Estudiantes',
+            'gestionar_profesores'      => 'Gestionar Profesores',
+            'gestionar_secciones'       => 'Gestionar Secciones',
+            'gestionar_grados'          => 'Gestionar Grados',
+            'ver_reportes'              => 'Ver Reportes',
+            'gestionar_pagos'           => 'Gestionar Pagos',
+            'gestionar_calificaciones'  => 'Gestionar Calificaciones',
+            'gestionar_asistencias'     => 'Gestionar Asistencias',
+            'gestionar_observaciones'   => 'Gestionar Observaciones',
+            'gestionar_documentos'      => 'Gestionar Documentos',
+            'gestionar_mensajes'        => 'Gestionar Mensajes',
+            'gestionar_avisos'          => 'Gestionar Avisos y Comunicados',
+            'configurar_sistema'        => 'Configurar Sistema',
+            'administrar_usuarios'      => 'Administrar Usuarios',
+            'asignar_roles'             => 'Asignar Roles y Permisos',
+            'auditar_actividades'       => 'Auditar Actividades del Sistema',
+            'personalizar_perfil'       => 'Personalizar Perfil',
+            'cambiar_contraseña'        => 'Cambiar Contraseña',
+            'ver_notificaciones'        => 'Ver Notificaciones',
+            'gestionar_eventos'         => 'Gestionar Eventos y Calendario',
+            'exportar_datos'            => 'Exportar Datos',
+            'importar_datos'            => 'Importar Datos',
+            'realizar_backup'           => 'Realizar Backup del Sistema',
+            'restaurar_backup'          => 'Restaurar Backup del Sistema',
+            'monitorizar_rendimiento'   => 'Monitorizar Rendimiento del Sistema',
+            'configurar_notificaciones' => 'Configurar Notificaciones',
+            'gestionar_roles'           => 'Gestionar Roles',
+            'asignar_permisos'          => 'Asignar Permisos',
+            'ver_auditorias'            => 'Ver Auditorías',
+            'configurar_seguridad'      => 'Configurar Seguridad',
         ];
     }
 }

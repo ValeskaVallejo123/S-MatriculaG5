@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Estudiante;
 use App\Models\Notificacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,11 +10,25 @@ class EstudianteDashboardController extends Controller
 {
     public function index()
     {
-        // Usuario autenticado
-        $usuario = Auth::user();
-        $estudiante = $usuario->estudiante;
+        // ✅ Usuario autenticado
+        $user = Auth::user();
 
-        // Datos de ejemplo del dashboard
+        if (!$user) {
+            abort(403, 'Usuario no autenticado');
+        }
+
+        // ✅ Perfil estudiante (NO usuario)
+        $estudiante = $user->estudiante;
+
+        if (!$estudiante) {
+            abort(403, 'Este usuario no tiene perfil de estudiante');
+        }
+
+        /*
+        |------------------------------------------------------------------
+        | DATOS DE EJEMPLO DEL DASHBOARD (NO SE BORRA NADA)
+        |------------------------------------------------------------------
+        */
         $misClases = 8;
         $asistencia = 95;
         $promedioGeneral = 88;
@@ -34,18 +47,26 @@ class EstudianteDashboardController extends Controller
             ['materia' => 'Ciencias', 'titulo' => 'Proyecto del sistema solar', 'fecha_entrega' => '2025-11-25', 'estado' => 'pendiente'],
         ];
 
-        // ✅ Notificaciones solo del estudiante
-        $notificacionesNoLeidas = Notificacion::where('estudiante_id', $estudiante->id)
-                                              ->where('leida', false)
-                                              ->get();
+        /*
+        |------------------------------------------------------------------
+        | NOTIFICACIONES (POR user_id, CORRECTO)
+        |------------------------------------------------------------------
+        */
+        $notificacionesNoLeidas = Notificacion::where('user_id', $user->id)
+            ->where('leida', false)
+            ->get();
 
-        $todasNotificaciones = Notificacion::where('estudiante_id', $estudiante->id)
-                                           ->orderByDesc('created_at')
-                                           ->get();
+        $todasNotificaciones = Notificacion::where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->get();
 
-        // Retornar vista con los datos
+        /*
+        |------------------------------------------------------------------
+        | RETORNAR VISTA
+        |------------------------------------------------------------------
+        */
         return view('estudiante.dashboard.index', compact(
-            'usuario',
+            'user',
             'estudiante',
             'misClases',
             'asistencia',

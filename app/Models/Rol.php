@@ -12,9 +12,6 @@ class Rol extends Model
     protected $table = 'roles';
     protected $primaryKey = 'id';
     public $incrementing = true;
-    protected $keyType = 'int';
-
-    // ⚠ Asegura que no falle si roles no tiene created_at/updated_at
     public $timestamps = false;
 
     protected $fillable = ['nombre', 'descripcion'];
@@ -28,7 +25,7 @@ class Rol extends Model
         return $this->belongsToMany(
             Permiso::class,
             'permiso_rol',
-            'id_rol',
+            'rol_id',       // ✔ CORRECTO según tu tabla pivote
             'permiso_id'
         );
     }
@@ -39,27 +36,19 @@ class Rol extends Model
     }
 
     // =============================
-    // PERMISOS
+    // PERMISOS DEL ROL
     // =============================
 
-    public function tienePermiso($nombrePermiso)
+    public function tienePermiso($permiso)
     {
-        if (!$nombrePermiso) {
+        if (!$permiso) {
             return false;
         }
 
-        // Normalizar nombre
-        $nombrePermiso = strtolower(trim($nombrePermiso));
+        $permiso = strtolower(trim($permiso));
 
-        // ✔ Si ya está cargado (eager loaded) → usar colección
-        if ($this->relationLoaded('permisos')) {
-            return $this->permisos
-                ->contains(fn($permiso) => strtolower($permiso->nombre) === $nombrePermiso);
-        }
-
-        // ✔ Si NO está cargado → consulta directa (mejor rendimiento)
         return $this->permisos()
-            ->whereRaw('LOWER(nombre) = ?', [$nombrePermiso])
+            ->whereRaw('LOWER(nombre) = ?', [$permiso])
             ->exists();
     }
 
@@ -67,7 +56,7 @@ class Rol extends Model
     {
         foreach ($permisos as $permiso) {
             if ($this->tienePermiso($permiso)) {
-                return true; // basta con uno
+                return true;
             }
         }
         return false;

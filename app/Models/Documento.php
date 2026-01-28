@@ -28,30 +28,23 @@ class Documento extends Model
         'constancia_medica'        => 'string',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relaciones
-    |--------------------------------------------------------------------------
-    */
-
+    /* ============================
+       RELACIÓN
+       ============================ */
     public function estudiante()
     {
         return $this->belongsTo(Estudiante::class, 'estudiante_id');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers (Opcionales)
-    |--------------------------------------------------------------------------
-    */
+    /* ============================
+       HELPERS
+       ============================ */
 
-    // Saber si un documento está cargado
     public function tiene($campo)
     {
         return !empty($this->{$campo});
     }
 
-    // Devuelve la URL pública del archivo
     public function urlDe($campo)
     {
         return $this->{$campo}

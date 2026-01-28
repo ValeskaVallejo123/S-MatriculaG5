@@ -24,6 +24,7 @@ class Estudiante extends Model
         'direccion',
         'grado',
         'seccion',
+        'estado',          // 👈👉 IMPORTANTE: agregar esto
         'observaciones',
         'nombre_padre',
         'telefono_padre',
@@ -38,11 +39,10 @@ class Estudiante extends Model
     ];
 
     /*
-    |--------------------------------------------------------------------------
-    | ACCESORES
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
+    | ACCESOR: nombre completo
+    |----------------------------------------------------------------------
     */
-
     public function getNombreCompletoAttribute()
     {
         $nombre = trim("{$this->nombre1} {$this->nombre2}");
@@ -51,18 +51,16 @@ class Estudiante extends Model
     }
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | RELACIONES
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     */
 
-    // Permisos por padre
     public function permisosPadres()
     {
         return $this->hasMany(PadrePermiso::class, 'estudiante_id');
     }
 
-    // Padres con permisos configurados
     public function padresConPermisos()
     {
         return $this->belongsToMany(Padre::class, 'padre_permisos', 'estudiante_id', 'padre_id')
@@ -80,28 +78,25 @@ class Estudiante extends Model
                     ]);
     }
 
-    // Documentos del estudiante (fotos, acta de nacimiento, certificados)
     public function documentos()
     {
         return $this->hasOne(Documento::class, 'estudiante_id');
     }
 
-    // Relación con curso
     public function curso()
     {
         return $this->belongsTo(Curso::class, 'curso_id');
     }
 
-    // Relación con calificaciones
     public function calificaciones()
     {
         return $this->hasMany(Calificacion::class, 'estudiante_id');
     }
 
     /*
-    |--------------------------------------------------------------------------
-    | LISTAS ESTÁTICAS (opcional mejorar luego)
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
+    | LISTAS ESTÁTICAS
+    |----------------------------------------------------------------------
     */
 
     public static function grados()
@@ -117,6 +112,10 @@ class Estudiante extends Model
             '2do Secundaria',
             '3ro Secundaria',
         ];
+    }
+    public function user()
+    {
+    return $this->belongsTo(\App\Models\User::class);
     }
 
     public static function secciones()

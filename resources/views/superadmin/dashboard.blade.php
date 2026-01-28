@@ -339,26 +339,32 @@
             </div>
         </div>
 
-        <!-- Administración -->
-        <div class="col-lg-4 col-md-6">
-            <div class="action-card">
-                <div class="action-card-header">
-                    <div class="action-icon bg-admin">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    <div>
-                        <h6 class="action-title">Administración</h6>
-                        <p class="action-subtitle">Usuarios y permisos</p>
-                    </div>
-                </div>
-                <div class="action-card-body">
-                    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-outline-primary w-100 mb-2">
-                        <i class="fas fa-users-cog me-2"></i> Administradores
-                    </a>
-
-                </div>
+       <!-- Administración -->
+<div class="col-lg-4 col-md-6">
+    <div class="action-card">
+        <div class="action-card-header">
+            <div class="action-icon bg-admin">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div>
+                <h6 class="action-title">Administración</h6>
+                <p class="action-subtitle">Usuarios y permisos</p>
             </div>
         </div>
+
+        <div class="action-card-body">
+
+            <!-- ⭐ Botón de usuarios confirmados y pendientes -->
+            <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-primary w-100 mb-2">
+                <i class="fas fa-users me-2"></i> Lista de Usuarios
+            </a>
+            <a href="{{ route('superadmin.usuarios.pendientes') }}" class="btn btn-warning w-100">
+                <i class="fas fa-user-clock me-2"></i> Usuarios Pendientes
+            </a>
+
+        </div>
+    </div>
+</div>
 
         <!-- Horarios -->
 <div class="col-lg-4 col-md-6">
@@ -376,7 +382,7 @@
             <a href="{{ route('horarios_grado.index') }}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="fas fa-list me-2"></i> Ver Horarios
             </a>
-           
+
         </div>
     </div>
 </div>
@@ -1332,7 +1338,8 @@ function showNotification(type, title, message) {
             </button>
         </div>
         <div class="notification-progress"></div>
-    `;
+    `
+    ;
 
     document.body.appendChild(notification);
 
@@ -1359,10 +1366,10 @@ function closeNotification(button) {
 // MODAL DE CONFIRMACIÓN PERSONALIZADO
 // ========================================
 function showConfirmModal(title, message, onConfirm, type = 'warning') {
+
+    // Si existe un modal previo, eliminarlo
     const existingModal = document.querySelector('.custom-confirm-modal-overlay');
-    if (existingModal) {
-        existingModal.remove();
-    }
+    if (existingModal) existingModal.remove();
 
     const overlay = document.createElement('div');
     overlay.className = 'custom-confirm-modal-overlay';
@@ -1388,24 +1395,38 @@ function showConfirmModal(title, message, onConfirm, type = 'warning') {
             </div>
             <h4 class="custom-confirm-title">${title}</h4>
             <p class="custom-confirm-message">${message}</p>
+
             <div class="custom-confirm-actions">
                 <button class="custom-confirm-btn custom-confirm-btn-cancel" onclick="closeConfirmModal()">
                     <i class="fas fa-times me-2"></i>Cancelar
                 </button>
-                <button class="custom-confirm-btn custom-confirm-btn-confirm custom-confirm-btn-${type}" onclick="confirmModalAction()">
+
+                <button
+                    class="custom-confirm-btn custom-confirm-btn-confirm custom-confirm-btn-${type}"
+                    id="confirmActionBtn">
                     <i class="fas fa-check me-2"></i>Confirmar
                 </button>
             </div>
         </div>
     `;
 
+    // Agregar el modal al DOM
     document.body.appendChild(overlay);
-    window.currentModalCallback = onConfirm;
 
+    // ⭐⭐ ASIGNAR FUNCIÓN AL BOTÓN CONFIRMAR ⭐⭐
+    document.getElementById('confirmActionBtn').onclick = () => {
+        if (typeof onConfirm === 'function') {
+            onConfirm();
+        }
+        closeConfirmModal();
+    };
+
+    // Animación
     setTimeout(() => {
         overlay.classList.add('show');
     }, 10);
 
+    // Cerrar con tecla ESC
     document.addEventListener('keydown', function escHandler(e) {
         if (e.key === 'Escape') {
             closeConfirmModal();
@@ -1418,45 +1439,60 @@ function closeConfirmModal() {
     const modal = document.querySelector('.custom-confirm-modal-overlay');
     if (modal) {
         modal.classList.remove('show');
-        setTimeout(() => {
-            modal.remove();
-        }, 300);
+        setTimeout(() => modal.remove(), 300);
     }
-    window.currentModalCallback = null;
-}
-
-function confirmModalAction() {
-    if (window.currentModalCallback) {
-        window.currentModalCallback();
-    }
-    closeConfirmModal();
 }
 
 // ========================================
 // EVENT LISTENERS CON DELEGACIÓN DE EVENTOS
 // ========================================
+document.addEventListener('click', function (e) {
 
-// Ver detalles de matrícula
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-ver-detalles')) {
+    // Botón "Ver Detalles"
+    const btnDetalles = e.target.closest('.btn-ver-detalles');
+    if (btnDetalles) {
         e.preventDefault();
-        const btn = e.target.closest('.btn-ver-detalles');
-        const matriculaId = btn.getAttribute('data-matricula-id');
-        console.log('Botón clickeado, ID:', matriculaId);
-        verDetallesMatricula(matriculaId);
+        verDetallesMatricula(btnDetalles.dataset.matriculaId);
+        return;
     }
+
+    // Botón "Aprobar Matrícula"
+    const btnAprobar = e.target.closest('.btn-aprobar-matricula');
+    if (btnAprobar) {
+        e.preventDefault();
+
+        showConfirmModal(
+            "¿Aprobar Matrícula?",
+            "El estudiante será registrado en el sistema inmediatamente.",
+            () => document.getElementById("formAprobarMatricula").submit(),
+            "success"
+        );
+        return;
+    }
+
+    // Botón "Rechazar desde modal"
+    const btnRechazar = e.target.closest('.btn-rechazar-desde-modal');
+    if (btnRechazar) {
+        e.preventDefault();
+        const id = btnRechazar.dataset.matriculaId;
+
+        // Cerrar modal anterior
+        const modal = bootstrap.Modal.getInstance(document.getElementById("modalDetallesMatricula"));
+        if (modal) modal.hide();
+
+        setTimeout(() => mostrarModalRechazoMatricula(id), 350);
+    }
+
 });
 
 // ========================================
-// FUNCIONES PARA MATRÍCULAS
+// FUNCIÓN PRINCIPAL: Ver Detalles Matrícula
 // ========================================
-
-function verDetallesMatricula(matriculaId) {
-    console.log('Abriendo detalles de matrícula:', matriculaId);
+function verDetallesMatricula(id) {
 
     const modalElement = document.getElementById('modalDetallesMatricula');
     if (!modalElement) {
-        console.error('Modal no encontrado');
+        console.error("Modal no encontrado");
         showNotification('error', 'Error', 'No se pudo abrir el modal de detalles');
         return;
     }
@@ -1464,222 +1500,30 @@ function verDetallesMatricula(matriculaId) {
     const modal = new bootstrap.Modal(modalElement);
     const contenido = document.getElementById('contenidoDetallesMatricula');
 
+    // Spinner de carga
     contenido.innerHTML = `
         <div class="text-center py-5">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="visually-hidden">Cargando...</span>
-            </div>
-            <p class="mt-3 text-muted fw-medium">Cargando información de la solicitud...</p>
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 text-muted">Cargando información de la solicitud...</p>
         </div>
     `;
-
     modal.show();
 
-    const url = `/matriculas/${matriculaId}/detalles`;
-    console.log('Fetching:', url);
-
-    fetch(url)
-        .then(response => {
-            console.log('Status:', response.status);
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            return response.json();
-        })
+    fetch(`/matriculas/${id}/detalles`)
+        .then(res => res.ok ? res.json() : Promise.reject(res))
         .then(data => {
-            console.log('Datos recibidos:', data);
-
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
-            contenido.innerHTML = `
-                <div class="row g-4">
-                    <!-- Encabezado con código -->
-                    <div class="col-12">
-                        <div class="alert alert-primary border-0 d-flex align-items-center" style="background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.1) 100%); border-left: 4px solid #00508f !important;">
-                            <i class="fas fa-file-alt fa-2x me-3" style="color: #00508f;"></i>
-                            <div>
-                                <strong style="color: #003b73; font-size: 1.1rem;">Código de Matrícula:</strong>
-                                <h5 class="mb-0 mt-1" style="color: #00508f; font-weight: 700;">${data.matricula.codigo}</h5>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Información del Estudiante -->
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, rgba(0, 80, 143, 0.03) 0%, rgba(78, 199, 210, 0.03) 100%);">
-                            <div class="card-header bg-transparent border-0 pt-4 px-4">
-                                <h6 class="fw-bold mb-0" style="color: #003b73; font-size: 1.1rem;">
-                                    <i class="fas fa-user-graduate me-2"></i>Información del Estudiante
-                                </h6>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Nombre Completo</label>
-                                        <p class="mb-0 fw-bold" style="color: #003b73; font-size: 1.05rem;">${data.estudiante.nombre_completo}</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="text-muted small fw-semibold mb-1">DNI</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-id-card me-1"></i>${data.estudiante.dni}</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="text-muted small fw-semibold mb-1">Fecha de Nacimiento</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-birthday-cake me-1"></i>${data.estudiante.fecha_nacimiento}</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="text-muted small fw-semibold mb-1">Sexo</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-venus-mars me-1"></i>${data.estudiante.sexo}</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="text-muted small fw-semibold mb-1">Grado</label>
-                                        <p class="mb-0"><span class="badge bg-primary" style="font-size: 0.95rem; padding: 0.5rem 1rem;">${data.estudiante.grado}</span></p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="text-muted small fw-semibold mb-1">Sección</label>
-                                        <p class="mb-0"><span class="badge bg-info" style="font-size: 0.95rem; padding: 0.5rem 1rem;">Sección ${data.estudiante.seccion}</span></p>
-                                    </div>
-                                    ${data.estudiante.email ? `
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Email</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-envelope me-1"></i>${data.estudiante.email}</p>
-                                    </div>
-                                    ` : ''}
-                                    ${data.estudiante.telefono ? `
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Teléfono</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-phone me-1"></i>${data.estudiante.telefono}</p>
-                                    </div>
-                                    ` : ''}
-                                    ${data.estudiante.direccion ? `
-                                    <div class="col-12">
-                                        <label class="text-muted small fw-semibold mb-1">Dirección</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-map-marker-alt me-1"></i>${data.estudiante.direccion}</p>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Información del Padre -->
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.03) 0%, rgba(0, 80, 143, 0.03) 100%);">
-                            <div class="card-header bg-transparent border-0 pt-4 px-4">
-                                <h6 class="fw-bold mb-0" style="color: #003b73; font-size: 1.1rem;">
-                                    <i class="fas fa-user-friends me-2"></i>Información del Padre/Tutor
-                                </h6>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Nombre Completo</label>
-                                        <p class="mb-0 fw-bold" style="color: #003b73; font-size: 1.05rem;">${data.padre.nombre_completo}</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="text-muted small fw-semibold mb-1">DNI</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-id-card me-1"></i>${data.padre.dni}</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="text-muted small fw-semibold mb-1">Parentesco</label>
-                                        <p class="mb-0"><span class="badge bg-secondary" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">${data.padre.parentesco}</span></p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Email</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-envelope me-1"></i>${data.padre.correo || 'No proporcionado'}</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Teléfono</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-phone me-1"></i>${data.padre.telefono}</p>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="text-muted small fw-semibold mb-1">Dirección</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-map-marker-alt me-1"></i>${data.padre.direccion}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Información de Matrícula -->
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.03) 0%, rgba(0, 59, 115, 0.03) 100%);">
-                            <div class="card-header bg-transparent border-0 pt-4 px-4">
-                                <h6 class="fw-bold mb-0" style="color: #003b73; font-size: 1.1rem;">
-                                    <i class="fas fa-clipboard-list me-2"></i>Datos de la Matrícula
-                                </h6>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Año Lectivo</label>
-                                        <p class="mb-0 fw-bold" style="color: #003b73; font-size: 1.2rem;"><i class="fas fa-calendar-alt me-2"></i>${data.matricula.anio_lectivo}</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Fecha de Matrícula</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-calendar me-1"></i>${data.matricula.fecha_matricula}</p>
-                                    </div>
-                                    ${data.matricula.observaciones ? `
-                                    <div class="col-12">
-                                        <label class="text-muted small fw-semibold mb-1">Observaciones</label>
-                                        <div class="alert alert-info border-0 mb-0" style="background: rgba(78, 199, 210, 0.1); border-left: 4px solid #4ec7d2 !important;">
-                                            <i class="fas fa-comment-alt me-2"></i>${data.matricula.observaciones}
-                                        </div>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Botones de acción con diseño mejorado -->
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm" style="background: #f8f9fa; border-radius: 12px;">
-                            <div class="card-body p-4">
-                                <h6 class="fw-bold mb-3" style="color: #003b73;">
-                                    <i class="fas fa-tasks me-2"></i>Acciones Disponibles
-                                </h6>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <form action="/matriculas/${matriculaId}/confirmar" method="POST" class="mb-0" id="formAprobarMatricula">
-                                            <input type="hidden" name="_token" value="${csrfToken}">
-                                            <button type="button" class="btn btn-success w-100 py-3 d-flex align-items-center justify-content-center btn-aprobar-matricula" style="font-size: 1.05rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" data-matricula-id="${matriculaId}">
-                                                <i class="fas fa-check-circle me-2" style="font-size: 1.3rem;"></i>
-                                                <span class="fw-bold">Aprobar Matrícula</span>
-                                            </button>
-                                        </form>
-                                        <small class="text-muted d-block mt-2 text-center">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            El estudiante será registrado en el sistema
-                                        </small>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button type="button" class="btn btn-danger w-100 py-3 d-flex align-items-center justify-content-center btn-rechazar-desde-modal" style="font-size: 1.05rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);" data-matricula-id="${matriculaId}">
-                                            <i class="fas fa-times-circle me-2" style="font-size: 1.3rem;"></i>
-                                            <span class="fw-bold">Rechazar Matrícula</span>
-                                        </button>
-                                        <small class="text-muted d-block mt-2 text-center">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Se solicitará un motivo de rechazo
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            contenido.innerHTML = generarVistaDetalles(data, id);
         })
-        .catch(error => {
-            console.error('Error completo:', error);
+        .catch(err => {
             contenido.innerHTML = `
                 <div class="alert alert-danger border-0 mx-4 my-5">
                     <div class="d-flex align-items-start">
                         <i class="fas fa-exclamation-triangle fa-2x me-3 text-danger"></i>
                         <div>
                             <h6 class="alert-heading fw-bold">Error al cargar los detalles</h6>
-                            <p class="mb-2">${error.message}</p>
+                            <p class="mb-2">${err.status ? "Error " + err.status : err.message}</p>
                             <hr>
-                            <small class="mb-0">Por favor, intente nuevamente o contacte al administrador del sistema.</small>
+                            <small>Intente nuevamente o contacte al administrador.</small>
                         </div>
                     </div>
                 </div>
@@ -1687,121 +1531,303 @@ function verDetallesMatricula(matriculaId) {
         });
 }
 
-// Aprobar matrícula desde modal con confirmación
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-aprobar-matricula')) {
-        e.preventDefault();
-        const btn = e.target.closest('.btn-aprobar-matricula');
-        const matriculaId = btn.getAttribute('data-matricula-id');
+// ========================================
+// FUNCIÓN: Genera todo el contenido del modal
+// ========================================
+function generarVistaDetalles(data, matriculaId) {
 
-        showConfirmModal(
-            '¿Aprobar Matrícula?',
-            'El estudiante y padre serán registrados en el sistema inmediatamente.',
-            function() {
-                const form = document.getElementById('formAprobarMatricula');
-                if (form) {
-                    form.submit();
-                }
-            },
-            'success'
-        );
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    // ESTA FUNCIÓN SOLO DEVUELVE HTML
+    // No toca lógica, solo construye las tarjetas.
+    // Manteniendo exacto tu diseño original.
+
+    return `
+        <div class="row g-4">
+
+            <!-- CÓDIGO DE MATRÍCULA -->
+            <div class="col-12">
+                <div class="alert alert-primary border-0 d-flex align-items-center"
+                    style="background: linear-gradient(135deg, rgba(78,199,210,0.1) 0%, rgba(0,80,143,0.1) 100%);
+                           border-left: 4px solid #00508f;">
+                    <i class="fas fa-file-alt fa-2x me-3" style="color:#00508f;"></i>
+                    <div>
+                        <strong style="color:#003b73;">Código de Matrícula:</strong>
+                        <h5 class="mb-0 mt-1" style="color:#00508f; font-weight:700;">${data.matricula.codigo}</h5>
+                    </div>
+                </div>
+            </div>
+
+            ${generarDatosEstudiante(data.estudiante)}
+            ${generarDatosPadre(data.padre)}
+            ${generarDatosMatricula(data.matricula)}
+            ${generarAcciones(matriculaId, csrfToken)}
+
+        </div>
+    `;
+}
+
+// ========================================
+// SUBSECCIONES (Mantienen tu diseño exacto)
+// ========================================
+function generarDatosEstudiante(e) {
+    return `
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius:12px;">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h6 class="fw-bold"><i class="fas fa-user-graduate me-2"></i>Información del Estudiante</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="text-muted small">Nombre Completo</label>
+                            <p class="fw-bold">${e.nombre_completo}</p>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="text-muted small">DNI</label>
+                            <p><i class="fas fa-id-card me-1"></i>${e.dni}</p>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="text-muted small">Nacimiento</label>
+                            <p><i class="fas fa-birthday-cake me-1"></i>${e.fecha_nacimiento}</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Sexo</label>
+                            <p><i class="fas fa-venus-mars me-1"></i>${e.sexo}</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Grado</label>
+                            <p><span class="badge bg-primary">${e.grado}</span></p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Sección</label>
+                            <p><span class="badge bg-info">Sección ${e.seccion}</span></p>
+                        </div>
+
+                        ${e.email ? `<div class="col-md-6"><label>Email</label><p>${e.email}</p></div>` : ""}
+                        ${e.telefono ? `<div class="col-md-6"><label>Teléfono</label><p>${e.telefono}</p></div>` : ""}
+                        ${e.direccion ? `<div class="col-12"><label>Dirección</label><p>${e.direccion}</p></div>` : ""}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generarDatosPadre(p) {
+    return `
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent pt-4 px-4">
+                    <h6 class="fw-bold"><i class="fas fa-user-friends me-2"></i>Información del Padre/Tutor</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6"><label>Nombre</label><p>${p.nombre_completo}</p></div>
+                        <div class="col-md-3"><label>DNI</label><p>${p.dni}</p></div>
+                        <div class="col-md-3"><label>Parentesco</label><p><span class="badge bg-secondary">${p.parentesco}</span></p></div>
+                        <div class="col-md-6"><label>Email</label><p>${p.correo || "No proporcionado"}</p></div>
+                        <div class="col-md-6"><label>Teléfono</label><p>${p.telefono}</p></div>
+                        <div class="col-12"><label>Dirección</label><p>${p.direccion}</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generarDatosMatricula(m) {
+    return `
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent pt-4 px-4">
+                    <h6 class="fw-bold"><i class="fas fa-clipboard-list me-2"></i>Datos de Matrícula</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6"><label>Año Lectivo</label><p class="fw-bold">${m.anio_lectivo}</p></div>
+                        <div class="col-md-6"><label>Fecha</label><p>${m.fecha_matricula}</p></div>
+                        ${m.observaciones ? `<div class="col-12"><label>Observaciones</label><p>${m.observaciones}</p></div>` : ""}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generarAcciones(id, csrf) {
+    return `
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="background:#f8f9fa;">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-tasks me-2"></i>Acciones Disponibles</h6>
+                    <div class="row g-3">
+
+                        <!-- Aprobar -->
+                        <div class="col-md-6">
+                            <form action="/matriculas/${id}/confirmar" method="POST" id="formAprobarMatricula">
+                                <input type="hidden" name="_token" value="${csrf}">
+                                <button type="button" class="btn btn-success w-100 py-3 btn-aprobar-matricula">
+                                    <i class="fas fa-check-circle me-2"></i>Aprobar Matrícula
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Rechazar -->
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-danger w-100 py-3 btn-rechazar-desde-modal" data-matricula-id="${id}">
+                                <i class="fas fa-times-circle me-2"></i>Rechazar Matrícula
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+// ========================================
+// APROBAR MATRÍCULA DESDE EL MODAL
+// ========================================
+document.addEventListener('click', function (e) {
+
+    const btn = e.target.closest('.btn-aprobar-matricula');
+    if (!btn) return; // No es el botón, ignorar
+
+    e.preventDefault();
+
+    // El formulario está dentro del modal
+    const form = document.getElementById('formAprobarMatricula');
+
+    if (!form) {
+        showNotification('error', 'Error', 'No se encontró el formulario de aprobación.');
+        return;
     }
+
+    showConfirmModal(
+        '¿Aprobar Matrícula?',
+        'El estudiante será registrado en el sistema inmediatamente.',
+        () => form.submit(), // 🟦 Acción que se ejecutará al confirmar
+        'success'
+    );
+
 });
 
-// Botón rechazar desde modal
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-rechazar-desde-modal')) {
-        e.preventDefault();
-        const btn = e.target.closest('.btn-rechazar-desde-modal');
-        const matriculaId = btn.getAttribute('data-matricula-id');
 
-        const modalDetalles = bootstrap.Modal.getInstance(document.getElementById('modalDetallesMatricula'));
-        if (modalDetalles) {
-            modalDetalles.hide();
-        }
+// ========================================
+// BOTÓN "RECHAZAR MATRÍCULA" DESDE EL MODAL
+// ========================================
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-rechazar-desde-modal');
+    if (!btn) return;
 
-        setTimeout(() => {
-            mostrarModalRechazoMatricula(matriculaId);
-        }, 400);
-    }
+    e.preventDefault();
+
+    const matriculaId = btn.dataset.matriculaId;
+
+    // Cerrar modal de detalles
+    const modalDetalles = bootstrap.Modal.getInstance(
+        document.getElementById('modalDetallesMatricula')
+    );
+    if (modalDetalles) modalDetalles.hide();
+
+    // Abrir el modal de rechazo después de una transición suave
+    setTimeout(() => mostrarModalRechazoMatricula(matriculaId), 350);
 });
 
 function mostrarModalRechazoMatricula(matriculaId) {
+
     const form = document.getElementById('formRechazoMatricula');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    // Actualizar ruta del form dinámicamente
     form.action = `/matriculas/${matriculaId}/rechazar`;
 
+    // Limpiar textarea
     document.getElementById('motivo_rechazo_matricula').value = '';
 
+    // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('modalRechazoMatricula'));
     modal.show();
 
-    form.onsubmit = function(e) {
+    // Eliminar cualquier submit anterior para evitar duplicación
+    form.onsubmit = null;
+
+    // Nuevo comportamiento del formulario
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
+
         const motivo = document.getElementById('motivo_rechazo_matricula').value.trim();
 
+        // Validaciones
         if (!motivo) {
-            showNotification('warning', 'Campo Requerido', 'Por favor, indique el motivo del rechazo.');
-            return false;
+            showNotification('warning', 'Campo requerido', 'Por favor ingrese el motivo del rechazo.');
+            return;
         }
 
         if (motivo.length < 10) {
-            showNotification('warning', 'Motivo Muy Corto', 'Por favor, proporcione un motivo más detallado (mínimo 10 caracteres).');
-            return false;
+            showNotification('warning', 'Motivo muy corto', 'Debe proporcionar al menos 10 caracteres.');
+            return;
         }
 
+        // Abre el modal de confirmación
         showConfirmModal(
             '¿Rechazar Matrícula?',
-            'Esta acción no se puede deshacer. El padre/tutor recibirá el motivo del rechazo.',
-            function() {
-                showNotification('warning', 'Procesando...', 'Rechazando matrícula, por favor espere.');
-
-                fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: new URLSearchParams({
-                        '_token': csrfToken,
-                        'motivo_rechazo': motivo
-                    })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        modal.hide();
-                        showNotification('success', 'Matrícula Rechazada', 'La solicitud ha sido rechazada correctamente.');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1500);
-                    } else {
-                        throw new Error('Error en la respuesta del servidor');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('error', 'Error', 'No se pudo rechazar la matrícula. Intente nuevamente.');
-                });
-            },
+            'Esta acción no se puede deshacer. El padre/tutor recibirá el motivo.',
+            () => enviarRechazoMatricula(form.action, motivo, csrfToken, modal),
             'error'
         );
-
-        return false;
-    };
+    }, { once: true }); // ← evita varios submits duplicados
 }
+function enviarRechazoMatricula(url, motivo, csrfToken, modal) {
+
+    showNotification('warning', 'Procesando...', 'Rechazando matrícula, espere...');
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: new URLSearchParams({
+            '_token': csrfToken,
+            'motivo_rechazo': motivo
+        })
+    })
+        .then(res => {
+            if (!res.ok) throw new Error('Error en el servidor');
+            modal.hide();
+            showNotification('success', 'Rechazo exitoso', 'La matrícula fue rechazada correctamente.');
+            setTimeout(() => location.reload(), 1200);
+        })
+        .catch(err => {
+            console.error(err);
+            showNotification('error', 'Error', 'No se pudo rechazar la matrícula. Intente más tarde.');
+        });
+}
+
+
 
 // DEBUG: Verificar que el evento se está capturando
 console.log('Script cargado correctamente');
 
 // Test manual del botón
-setTimeout(function() {
+setTimeout(() => {
     const botones = document.querySelectorAll('.btn-ver-detalles');
-    console.log('Botones encontrados:', botones.length);
+    if (botones.length === 0) {
+        console.warn('⚠ No se encontraron botones .btn-ver-detalles');
+    }
+}, 800);
 
-    botones.forEach(function(boton) {
-        console.log('Botón con ID:', boton.getAttribute('data-matricula-id'));
-    });
-}, 1000);
 </script>
 @endpush
 @endsection

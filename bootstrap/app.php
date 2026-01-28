@@ -31,4 +31,17 @@ return Application::configure(basePath: dirname(__DIR__))
         //     return response()->view('errors.500', [], 500);
         // });
     })
+    ->withMiddleware(function (Middleware $middleware) {
+
+    // Alias para middlewares personalizados
+    $middleware->alias([
+        'verificar.permiso' => \App\Http\Middleware\VerificarPermiso::class,
+        'verificar.rol'     => \App\Http\Middleware\VerificarRol::class,
+
+        // ✅ ESTE ES EL QUE FALTABA
+        'role'              => \App\Http\Middleware\RoleMiddleware::class,
+    ]);
+
+})
+
     ->create();

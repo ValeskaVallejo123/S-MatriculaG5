@@ -32,24 +32,21 @@ class Kernel extends HttpKernel
     ];
 
     protected $routeMiddleware = [
+    'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+    'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+    'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
-        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+    // Super Admin
+    'check.superadmin' => \App\Http\Middleware\CheckSuperAdmin::class,
 
-        // Super Admin
-        'check.superadmin' => \App\Http\Middleware\CheckSuperAdmin::class,
+    // Middleware REAL de roles
+    'role' => \App\Http\Middleware\RoleMiddleware::class,
 
-        // 🚀 Middleware de roles
-        'rol' => \App\Http\Middleware\VerificarRol::class,
+    // Permisos
+    'permiso' => \App\Http\Middleware\VerificarPermiso::class,
+    'permiso.padre' => \App\Http\Middleware\VerificarPermisoPadre::class,
+];
 
-        // 🚀 Middleware de permisos generales
-        'permiso' => \App\Http\Middleware\VerificarPermiso::class,
 
-        // 🚀 Middleware de permisos especiales para padres/tutores
-        'permiso.padre' => \App\Http\Middleware\VerificarPermisoPadre::class,
-
-        
-    ];
 }

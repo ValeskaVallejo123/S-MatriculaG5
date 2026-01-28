@@ -1,140 +1,123 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Consulta de Estado de Solicitud</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
-        }
+@extends('layouts.app')
 
-        .contenedor {
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 30px 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            text-align: center;
-        }
+@section('title', 'Consulta de Solicitud')
 
-        h2 {
-            color: #333;
-            margin-bottom: 25px;
-        }
+@section('page-title', 'Estado de Solicitud del Estudiante')
 
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+@section('content')
+<div class="container-fluid px-4">
 
-        label {
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Consulta de Solicitud</h2>
+            <p class="text-muted mb-0">Verifica el estado de la solicitud de un estudiante</p>
+        </div>
 
-        input[type="text"] {
-            padding: 10px;
-            width: 100%;
-            max-width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
+        <span class="badge bg-primary p-2 px-3">
+            <i class="fas fa-search me-1"></i> Consulta
+        </span>
+    </div>
 
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    <!-- CARD PRINCIPAL -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
 
-        button:hover {
-            background-color: #0056b3;
-        }
+            <h5 class="fw-semibold mb-3">
+                <i class="fas fa-id-card me-2 text-primary"></i>
+                Buscar solicitud por DNI
+            </h5>
 
-        .estado, .datos, .mensaje {
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
+            <!-- FORMULARIO -->
+            <form method="POST" action="/estado-solicitud" class="row g-3">
+                @csrf
 
-        .aprobada { background-color: #d4edda; color: #155724; }
-        .rechazada { background-color: #f8d7da; color: #721c24; }
-        .pendiente { background-color: #fff3cd; color: #856404; }
-        .no-solicitud { background-color: #e2e3e5; color: #6c757d; }
+                <div class="col-md-6">
+                    <label for="dni" class="form-label fw-bold">DNI del estudiante</label>
+                    <input type="text" id="dni" name="dni"
+                           class="form-control"
+                           pattern="\d{4}-\d{4}-\d{5}"
+                           placeholder="Ej: 0801-1990-12345"
+                           title="Formato: ####-####-#####"
+                           required>
+                </div>
 
-        .datos {
-            background-color: #eef;
-            color: #333;
-            font-weight: normal;
-            text-align: left;
-        }
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i> Buscar solicitud
+                    </button>
+                </div>
+            </form>
 
-        .datos p {
-            margin: 5px 0;
-        }
+        </div>
+    </div>
 
-        .datos h4 {
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-<div class="contenedor">
-    <h2>Consulta de estado de solicitud</h2>
-
-    <form method="POST" action="/estado-solicitud">
-        @csrf
-        <label for="dni">Buscar solicitud por DNI:</label>
-        <input type="text" name="dni" id="dni" required
-               pattern="\d{4}-\d{4}-\d{5}"
-               title="Formato: ####-####-#####"
-               placeholder="Ej: 0801-1990-12345">
-        <button type="submit">Buscar solicitud de estudiante</button>
-    </form>
-
+    <!-- RESULTADO -->
     @if(isset($solicitud))
+
         @if($solicitud)
-            <div class="estado
-                    @if($solicitud->estado === 'aprobada') aprobada
-                    @elseif($solicitud->estado === 'rechazada') rechazada
-                    @else pendiente @endif">
-                @if($solicitud->estado === 'aprobada')
-                     Tu solicitud ha sido aprobada.
-                @elseif($solicitud->estado === 'rechazada')
-                     Tu solicitud fue rechazada.
-                @else
-                     Tu solicitud está en revisión.
-                @endif
+
+            <!-- ESTADO -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+
+                    <h5 class="fw-semibold mb-3">
+                        <i class="fas fa-info-circle me-2 text-secondary"></i>
+                        Resultado de la búsqueda
+                    </h5>
+
+                    <div class="p-3 rounded fw-bold
+                        @if($solicitud->estado === 'aprobada') bg-success-subtle text-success
+                        @elseif($solicitud->estado === 'rechazada') bg-danger-subtle text-danger
+                        @else bg-warning-subtle text-warning
+                        @endif">
+
+                        @if($solicitud->estado === 'aprobada')
+                            <i class="fas fa-check-circle me-2"></i> Tu solicitud ha sido aprobada.
+                        @elseif($solicitud->estado === 'rechazada')
+                            <i class="fas fa-times-circle me-2"></i> Tu solicitud fue rechazada.
+                        @else
+                            <i class="fas fa-hourglass-half me-2"></i> Tu solicitud está en revisión.
+                        @endif
+                    </div>
+
+                </div>
             </div>
 
-            <div class="datos">
-                <h4>📋 Datos del estudiante</h4>
-                <p><strong>Nombre:</strong> {{ $solicitud->nombre }}</p>
-                <p><strong>DNI:</strong> {{ $solicitud->dni }}</p>
-                <p><strong>Correo:</strong> {{ $solicitud->correo }}</p>
-                <p><strong>Teléfono:</strong> {{ $solicitud->telefono }}</p>
-                <p><strong>Fecha de solicitud:</strong> {{ $solicitud->created_at->format('d/m/Y') }}</p>
+            <!-- DATOS DEL ESTUDIANTE -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+
+                    <h5 class="fw-semibold mb-3">
+                        <i class="fas fa-user-graduate me-2 text-primary"></i>
+                        Datos del estudiante
+                    </h5>
+
+                    <div class="row gy-2">
+                        <div class="col-md-6"><strong>Nombre:</strong> {{ $solicitud->nombre }}</div>
+                        <div class="col-md-6"><strong>DNI:</strong> {{ $solicitud->dni }}</div>
+                        <div class="col-md-6"><strong>Correo:</strong> {{ $solicitud->correo }}</div>
+                        <div class="col-md-6"><strong>Teléfono:</strong> {{ $solicitud->telefono }}</div>
+                        <div class="col-md-6"><strong>Fecha de solicitud:</strong> {{ $solicitud->created_at->format('d/m/Y') }}</div>
+                    </div>
+
+                    @if($solicitud->notificar)
+                        <p class="mt-3 text-primary">
+                            <i class="fas fa-bell me-1"></i> Recibirás notificaciones cuando el estado cambie.
+                        </p>
+                    @endif
+
+                </div>
             </div>
 
-            @if($solicitud->notificar)
-                <p style="margin-top: 10px;"> Recibirás notificaciones cuando el estado cambie.</p>
-            @endif
         @else
-            <div class="mensaje no-solicitud">
-                 No se encontró ninguna solicitud con ese DNI. Verifica e intenta nuevamente.
+            <div class="alert alert-secondary text-center shadow-sm">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                No se encontró ninguna solicitud con ese DNI.
             </div>
         @endif
+
     @endif
+
 </div>
-</body>
-</html>
+@endsection
