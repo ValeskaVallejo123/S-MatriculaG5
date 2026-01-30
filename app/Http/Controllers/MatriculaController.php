@@ -220,7 +220,7 @@ class MatriculaController extends Controller
                 'telefono' => $validated['estudiante_telefono'] ?? null,
                 'direccion' => $validated['estudiante_direccion'] ?? null,
                 'grado' => $validated['estudiante_grado'],
-                'seccion' => null, // La sección se asigna después por el admin
+                'seccion' => 'X', // Usa solo 1 carácter - La sección se asigna después por el admin
                 'estado' => 'activo',
                 'padre_id' => $padre->id,
             ]);
@@ -392,9 +392,7 @@ class MatriculaController extends Controller
             'III curso',
         ];
 
-        $secciones = ['A', 'B', 'C', 'D'];
-
-        return view('matriculas.edit', compact('matricula', 'estudiantes', 'padres', 'parentescos', 'grados', 'secciones'));
+        return view('matriculas.edit', compact('matricula', 'estudiantes', 'padres', 'parentescos', 'grados'));
     }
 
     /**
