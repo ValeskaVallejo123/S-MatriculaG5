@@ -10,7 +10,7 @@ class Documento extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre_estudiante',
+        'foto',
         'acta_nacimiento',
         'calificaciones',
     ];
