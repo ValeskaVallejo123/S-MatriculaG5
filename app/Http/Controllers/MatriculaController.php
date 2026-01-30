@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-
 class MatriculaController extends Controller
 {
     /**
@@ -63,41 +62,35 @@ class MatriculaController extends Controller
      * Formulario para crear matrícula
      * Puede ser accedido desde admin (con sidebar) o público (sin sidebar)
      */
-   public function create(Request $request)
-{
-    $estudiantes = Estudiante::orderBy('nombre1', 'asc')->get();
-    $padres = Padre::orderBy('nombre', 'asc')->get();
+    public function create(Request $request)
+    {
+        $estudiantes = Estudiante::orderBy('nombre1', 'asc')->get();
+        $padres = Padre::orderBy('nombre', 'asc')->get();
 
-    $parentescos = [
-        'padre' => 'Padre',
-        'madre' => 'Madre',
-        'tutor_legal' => 'Tutor Legal',
-        'abuelo' => 'Abuelo',
-        'abuela' => 'Abuela',
-        'tio' => 'Tío',
-        'tia' => 'Tía',
-        'otro' => 'Otro'
-    ];
+        $parentescos = [
+            'padre' => 'Padre',
+            'madre' => 'Madre',
+            'otro' => 'Otro'
+        ];
 
-    $grados = [
-        '1er Grado',
-        '2do Grado',
-        '3er Grado',
-        '4to Grado',
-        '5to Grado',
-        '6to Grado'
-    ];
+        $grados = [
+            '1er Grado',
+            '2do Grado',
+            '3er Grado',
+            '4to Grado',
+            '5to Grado',
+            '6to Grado'
+        ];
 
-    $secciones = ['A', 'B', 'C', 'D'];
+        // Si es ruta pública → Vista SIN sidebar
+        if ($request->route()->getName() === 'matriculas.public.create') {
+            return view('matriculas.create-public', compact('estudiantes', 'padres', 'parentescos', 'grados'));
+        }
 
-    // Si es ruta pública → Vista SIN sidebar
-    if ($request->route()->getName() === 'matriculas.public.create') {
-        return view('matriculas.create-public', compact('estudiantes', 'padres', 'parentescos', 'grados', 'secciones'));
+        // Si es ruta admin → Vista CON sidebar
+        return view('matriculas.create', compact('estudiantes', 'padres', 'parentescos', 'grados'));
     }
 
-    // Si es ruta admin → Vista CON sidebar
-    return view('matriculas.create', compact('estudiantes', 'padres', 'parentescos', 'grados', 'secciones'));
-}
     /**
      * Guardar nueva matrícula
      * Maneja tanto matrículas admin como públicas
@@ -113,9 +106,9 @@ class MatriculaController extends Controller
             'padre_nombre' => 'required|string|min:2|max:50',
             'padre_apellido' => 'required|string|min:2|max:50',
             'padre_dni' => 'required|string|max:13',
-            'padre_parentesco' => 'required|string|in:padre,madre,tutor_legal,abuelo,abuela,tio,tia,otro',
+            'padre_parentesco' => 'required|string|in:padre,madre,otro',
             'padre_parentesco_otro' => 'nullable|required_if:padre_parentesco,otro|string|max:50',
-            'padre_email' => $esPublico ? 'required|email|max:100|unique:users,email' : 'nullable|email|max:100',
+            'padre_email' => 'nullable|email|max:100|unique:users,email',
             'padre_telefono' => 'required|string|min:8|max:15',
             'padre_direccion' => 'required|string|max:255',
 
@@ -129,16 +122,16 @@ class MatriculaController extends Controller
             'estudiante_telefono' => 'nullable|string|max:15',
             'estudiante_direccion' => 'nullable|string|max:255',
             'estudiante_grado' => 'required|string|max:20',
-            'estudiante_seccion' => 'required|string|max:1',
 
             // Matrícula
             'anio_lectivo' => 'required|digits:4|integer|min:2020|max:2100',
-            'fecha_matricula' => 'nullable|date',
             'estado' => 'nullable|in:pendiente,aprobada,rechazada,cancelada',
             'observaciones' => 'nullable|string|max:500',
 
-            // Documentos
-            'documentos.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120', // 5MB máximo
+            // Documentos específicos
+            'foto_perfil' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'calificaciones' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'acta_nacimiento' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         try {
@@ -187,7 +180,7 @@ class MatriculaController extends Controller
                 ]);
             }
 
-            // Si es matrícula pública, crear usuario padre
+            // Si es matrícula pública y tiene email, crear usuario padre
             if ($esPublico && !empty($validated['padre_email']) && !empty($validated['padre_dni'])) {
                 // Verificar que no exista el usuario
                 $usuarioExistente = User::where('email', $validated['padre_email'])->first();
@@ -212,7 +205,7 @@ class MatriculaController extends Controller
             $apellido1 = !empty($apellidoCompleto[0]) ? $apellidoCompleto[0] : 'Sin apellido';
             $apellido2 = !empty($apellidoCompleto[1]) ? $apellidoCompleto[1] : null;
 
-            // Crear Estudiante
+            // Crear Estudiante (sin sección asignada aún)
             $estudiante = Estudiante::create([
                 'nombre1' => $nombre1,
                 'nombre2' => $nombre2,
@@ -227,7 +220,7 @@ class MatriculaController extends Controller
                 'telefono' => $validated['estudiante_telefono'] ?? null,
                 'direccion' => $validated['estudiante_direccion'] ?? null,
                 'grado' => $validated['estudiante_grado'],
-                'seccion' => $validated['estudiante_seccion'],
+                'seccion' => null, // La sección se asigna después por el admin
                 'estado' => 'activo',
                 'padre_id' => $padre->id,
             ]);
@@ -236,32 +229,59 @@ class MatriculaController extends Controller
             $ultimaMatricula = Matricula::whereYear('created_at', date('Y'))->count();
             $codigoMatricula = 'MAT-' . $validated['anio_lectivo'] . '-' . str_pad($ultimaMatricula + 1, 4, '0', STR_PAD_LEFT);
 
-            // Crear Matrícula
+            // Crear Matrícula con fecha automática
             $matricula = Matricula::create([
                 'padre_id' => $padre->id,
                 'estudiante_id' => $estudiante->id,
                 'codigo_matricula' => $codigoMatricula,
                 'anio_lectivo' => $validated['anio_lectivo'],
-                'fecha_matricula' => $validated['fecha_matricula'] ?? now()->format('Y-m-d'),
+                'fecha_matricula' => now()->format('Y-m-d'), // Fecha automática
                 'estado' => $esPublico ? 'pendiente' : ($validated['estado'] ?? 'pendiente'),
                 'observaciones' => $esPublico
                     ? 'Matrícula registrada desde el portal público'
                     : ($validated['observaciones'] ?? null),
             ]);
 
-            // Manejar documentos si se subieron
-            if ($request->hasFile('documentos')) {
-                foreach ($request->file('documentos') as $documento) {
-                    $nombreArchivo = time() . '_' . $documento->getClientOriginalName();
-                    $ruta = $documento->storeAs('documentos_matriculas', $nombreArchivo, 'public');
+            // Manejar documentos específicos
+            $documentosRutas = [];
 
-                    // Aquí puedes guardar la ruta en una tabla de documentos si la tienes
-                    // Documento::create([
-                    //     'matricula_id' => $matricula->id,
-                    //     'nombre' => $documento->getClientOriginalName(),
-                    //     'ruta' => $ruta,
-                    // ]);
-                }
+            // Foto de perfil
+            if ($request->hasFile('foto_perfil')) {
+                $archivo = $request->file('foto_perfil');
+                $nombreArchivo = 'foto_perfil_' . $estudiante->id . '_' . time() . '.' . $archivo->getClientOriginalExtension();
+                $ruta = $archivo->storeAs('documentos_matriculas/fotos', $nombreArchivo, 'public');
+                $documentosRutas['foto_perfil'] = $ruta;
+            }
+
+            // Calificaciones
+            if ($request->hasFile('calificaciones')) {
+                $archivo = $request->file('calificaciones');
+                $nombreArchivo = 'calificaciones_' . $estudiante->id . '_' . time() . '.' . $archivo->getClientOriginalExtension();
+                $ruta = $archivo->storeAs('documentos_matriculas/calificaciones', $nombreArchivo, 'public');
+                $documentosRutas['calificaciones'] = $ruta;
+            }
+
+            // Acta de nacimiento
+            if ($request->hasFile('acta_nacimiento')) {
+                $archivo = $request->file('acta_nacimiento');
+                $nombreArchivo = 'acta_' . $estudiante->id . '_' . time() . '.' . $archivo->getClientOriginalExtension();
+                $ruta = $archivo->storeAs('documentos_matriculas/actas', $nombreArchivo, 'public');
+                $documentosRutas['acta_nacimiento'] = $ruta;
+            }
+
+            // Guardar rutas de documentos en la matrícula (si tienes campos para ello)
+            if (!empty($documentosRutas)) {
+                // Si tienes campos en la tabla matriculas para guardar las rutas:
+                // $matricula->update($documentosRutas);
+                
+                // O si tienes una tabla separada de documentos:
+                // foreach ($documentosRutas as $tipo => $ruta) {
+                //     Documento::create([
+                //         'matricula_id' => $matricula->id,
+                //         'tipo' => $tipo,
+                //         'ruta' => $ruta,
+                //     ]);
+                // }
             }
 
             DB::commit();
@@ -271,7 +291,7 @@ class MatriculaController extends Controller
                 return redirect()->route('matriculas.success')
                     ->with('success', '¡Matrícula registrada exitosamente!')
                     ->with('codigo', $codigoMatricula)
-                    ->with('email', $validated['padre_email'])
+                    ->with('email', $validated['padre_email'] ?? null)
                     ->with('identidad', $validated['padre_dni'])
                     ->with('estado', 'pendiente');
             } else {
@@ -292,45 +312,48 @@ class MatriculaController extends Controller
      * Página de éxito para matrícula pública
      */
     public function success()
-{
-    return view('matriculas.success');
-}
+    {
+        return view('matriculas.success');
+    }
 
-public function detalles(Matricula $matricula)
-{
-    $matricula->load(['estudiante', 'padre']);
+    /**
+     * Obtener detalles de matrícula en formato JSON
+     */
+    public function detalles(Matricula $matricula)
+    {
+        $matricula->load(['estudiante', 'padre']);
 
-    return response()->json([
-        'estudiante' => [
-            'nombre_completo' => trim($matricula->estudiante->nombre1 . ' ' .
-                                ($matricula->estudiante->nombre2 ?? '') . ' ' .
-                                $matricula->estudiante->apellido1 . ' ' .
-                                ($matricula->estudiante->apellido2 ?? '')),
-            'dni' => $matricula->estudiante->dni,
-            'fecha_nacimiento' => \Carbon\Carbon::parse($matricula->estudiante->fecha_nacimiento)->format('d/m/Y'),
-            'sexo' => ucfirst($matricula->estudiante->sexo),
-            'grado' => $matricula->estudiante->grado,
-            'seccion' => $matricula->estudiante->seccion,
-            'email' => $matricula->estudiante->email,
-            'telefono' => $matricula->estudiante->telefono,
-            'direccion' => $matricula->estudiante->direccion,
-        ],
-        'padre' => [
-            'nombre_completo' => $matricula->padre->nombre . ' ' . $matricula->padre->apellido,
-            'dni' => $matricula->padre->dni,
-            'parentesco' => ucfirst($matricula->padre->parentesco),
-            'correo' => $matricula->padre->correo,
-            'telefono' => $matricula->padre->telefono,
-            'direccion' => $matricula->padre->direccion,
-        ],
-        'matricula' => [
-            'codigo' => $matricula->codigo_matricula,
-            'anio_lectivo' => $matricula->anio_lectivo,
-            'fecha_matricula' => \Carbon\Carbon::parse($matricula->fecha_matricula)->format('d/m/Y'),
-            'observaciones' => $matricula->observaciones,
-        ]
-    ]);
-}
+        return response()->json([
+            'estudiante' => [
+                'nombre_completo' => trim($matricula->estudiante->nombre1 . ' ' .
+                                    ($matricula->estudiante->nombre2 ?? '') . ' ' .
+                                    $matricula->estudiante->apellido1 . ' ' .
+                                    ($matricula->estudiante->apellido2 ?? '')),
+                'dni' => $matricula->estudiante->dni,
+                'fecha_nacimiento' => \Carbon\Carbon::parse($matricula->estudiante->fecha_nacimiento)->format('d/m/Y'),
+                'sexo' => ucfirst($matricula->estudiante->sexo),
+                'grado' => $matricula->estudiante->grado,
+                'seccion' => $matricula->estudiante->seccion ?? 'Sin asignar',
+                'email' => $matricula->estudiante->email,
+                'telefono' => $matricula->estudiante->telefono,
+                'direccion' => $matricula->estudiante->direccion,
+            ],
+            'padre' => [
+                'nombre_completo' => $matricula->padre->nombre . ' ' . $matricula->padre->apellido,
+                'dni' => $matricula->padre->dni,
+                'parentesco' => ucfirst($matricula->padre->parentesco),
+                'correo' => $matricula->padre->correo,
+                'telefono' => $matricula->padre->telefono,
+                'direccion' => $matricula->padre->direccion,
+            ],
+            'matricula' => [
+                'codigo' => $matricula->codigo_matricula,
+                'anio_lectivo' => $matricula->anio_lectivo,
+                'fecha_matricula' => \Carbon\Carbon::parse($matricula->fecha_matricula)->format('d/m/Y'),
+                'observaciones' => $matricula->observaciones,
+            ]
+        ]);
+    }
 
     /**
      * Mostrar detalles de la matrícula
@@ -354,11 +377,6 @@ public function detalles(Matricula $matricula)
         $parentescos = [
             'padre' => 'Padre',
             'madre' => 'Madre',
-            'tutor_legal' => 'Tutor Legal',
-            'abuelo' => 'Abuelo',
-            'abuela' => 'Abuela',
-            'tio' => 'Tío',
-            'tia' => 'Tía',
             'otro' => 'Otro'
         ];
 
@@ -372,10 +390,7 @@ public function detalles(Matricula $matricula)
             'I curso',
             'II curso',
             'III curso',
-
-
         ];
-
 
         $secciones = ['A', 'B', 'C', 'D'];
 

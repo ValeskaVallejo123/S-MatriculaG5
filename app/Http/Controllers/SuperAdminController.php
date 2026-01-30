@@ -35,15 +35,15 @@ class SuperAdminController extends Controller
 
     public function index()
     {
-<<<<<<< HEAD
-        $administradores = User::whereHas('rol', function ($query) {
-            $query->whereIn('nombre', ['admin', 'super_admin']);
-        })
-            ->orderByRaw("CASE WHEN id_rol = 1 THEN 0 ELSE 1 END") // Super Admin primero
-=======
-        $administradores = User::whereIn('role', ['admin', 'super_admin'])
+        // Obtener administradores (unificado)
+        $administradores = User::where(function($query) {
+                $query->where('user_type', 'admin')
+                      ->orWhere('user_type', 'super_admin')
+                      ->orWhere('role', 'admin')
+                      ->orWhere('role', 'super_admin')
+                      ->orWhere('is_super_admin', true);
+            })
             ->orderBy('is_super_admin', 'desc')
->>>>>>> dev/valeska
             ->orderBy('name')
             ->get();
 
@@ -84,13 +84,14 @@ class SuperAdminController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'admin',
+            'user_type' => 'admin',
             'permissions' => $request->permissions ?? [],
             'is_super_admin' => false,
             'is_protected' => false,
         ]);
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', ' Administrador creado exitosamente');
+            ->with('success', 'Administrador creado exitosamente');
     }
 
     /**
@@ -101,7 +102,7 @@ class SuperAdminController extends Controller
         // Proteger al super admin de ser editado
         if ($administrador->is_protected) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', ' Este usuario no puede ser editado');
+                ->with('error', 'Este usuario no puede ser editado');
         }
 
         $permisos = $this->getAvailablePermissions();
@@ -115,7 +116,7 @@ class SuperAdminController extends Controller
     {
         if ($administrador->is_protected) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', ' Este usuario no puede ser modificado');
+                ->with('error', 'Este usuario no puede ser modificado');
         }
 
         $request->validate([
@@ -140,7 +141,7 @@ class SuperAdminController extends Controller
         }
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', ' Administrador actualizado exitosamente');
+            ->with('success', 'Administrador actualizado exitosamente');
     }
 
     /**
@@ -148,15 +149,22 @@ class SuperAdminController extends Controller
      */
     public function destroy(User $administrador)
     {
-        if (!$administrador->canBeDeleted()) {
+        // Verificar si está protegido
+        if ($administrador->is_protected) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'Este usuario no puede ser eliminado');
+                ->with('error', 'Este usuario no puede ser eliminado (está protegido)');
+        }
+
+        // No permitir que se elimine a sí mismo
+        if ($administrador->id === Auth::id()) {
+            return redirect()->route('superadmin.administradores.index')
+                ->with('error', 'No puedes eliminarte a ti mismo');
         }
 
         $administrador->delete();
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', ' Administrador eliminado exitosamente');
+            ->with('success', 'Administrador eliminado exitosamente');
     }
 
     /**
@@ -189,7 +197,7 @@ class SuperAdminController extends Controller
         $user->email = $request->email;
         $user->save();
 
-        return back()->with('success', ' Perfil actualizado correctamente');
+        return back()->with('success', 'Perfil actualizado correctamente');
     }
 
     /**
@@ -218,32 +226,36 @@ class SuperAdminController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return back()->with('success', ' Contraseña actualizada correctamente');
+        return back()->with('success', 'Contraseña actualizada correctamente');
     }
 
     /**
      * Mostrar vista de permisos y roles
      */
-   public function permisosRoles()
-{
-    $permisos = $this->getAvailablePermissions();
-    
-    // Solo obtener usuarios del sistema (tabla users) que sean configurables
-    $usuarios = User::where(function($query) {
-            // Solo administradores regulares
-            $query->where('role', 'admin')
-                  // O super admins no protegidos
-                  ->orWhere(function($q) {
-                      $q->where('role', 'super_admin')
-                        ->where('is_protected', 0);
-                  });
-        })
-        ->orderBy('role')
-        ->orderBy('name')
-        ->get();
-    
-    return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
-}
+    public function permisosRoles()
+    {
+        $permisos = $this->getAvailablePermissions();
+        
+        // Solo obtener usuarios del sistema (tabla users) que sean configurables
+        $usuarios = User::where(function($query) {
+                // Solo administradores regulares
+                $query->where('role', 'admin')
+                      ->orWhere('user_type', 'admin')
+                      // O super admins no protegidos
+                      ->orWhere(function($q) {
+                          $q->where(function($q2) {
+                              $q2->where('role', 'super_admin')
+                                 ->orWhere('user_type', 'super_admin');
+                          })
+                          ->where('is_protected', 0);
+                      });
+            })
+            ->orderBy('role')
+            ->orderBy('name')
+            ->get();
+        
+        return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
+    }
 
     /**
      * Actualizar permisos de un usuario
@@ -254,7 +266,7 @@ class SuperAdminController extends Controller
         
         // Proteger al super admin principal
         if ($usuario->is_protected) {
-            return redirect()->back()->with('error', ' No se pueden modificar los permisos de este usuario');
+            return redirect()->back()->with('error', 'No se pueden modificar los permisos de este usuario');
         }
         
         // Actualizar permisos
@@ -262,7 +274,7 @@ class SuperAdminController extends Controller
         $usuario->save();
         
         return redirect()->route('superadmin.administradores.permisos')
-            ->with('success', " Permisos actualizados correctamente para {$usuario->name}");
+            ->with('success', "Permisos actualizados correctamente para {$usuario->name}");
     }
 
     /**
@@ -276,6 +288,7 @@ class SuperAdminController extends Controller
             'gestionar_profesores' => 'Gestionar Profesores',
             'gestionar_secciones' => 'Gestionar Secciones',
             'gestionar_grados' => 'Gestionar Grados',
+            'gestionar_materias' => 'Gestionar Materias',
             'ver_reportes' => 'Ver Reportes',
             'gestionar_pagos' => 'Gestionar Pagos',
             'gestionar_calificaciones' => 'Gestionar Calificaciones',

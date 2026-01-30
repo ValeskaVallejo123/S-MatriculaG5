@@ -150,6 +150,12 @@
             font-weight: 700;
         }
 
+        .optional-mark {
+            color: #6c757d;
+            font-weight: 400;
+            font-size: 0.8rem;
+        }
+
         .alert {
             border-radius: 12px;
             border: none;
@@ -172,45 +178,80 @@
             justify-content: center;
         }
 
-        .file-upload-area {
+        .file-upload-box {
             border: 2px dashed #4ec7d2;
             border-radius: 12px;
-            padding: 25px;
+            padding: 15px;
             text-align: center;
             background: rgba(78, 199, 210, 0.05);
             transition: all 0.3s ease;
             cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 150px;
         }
 
-        .file-upload-area:hover {
+        .file-upload-box:hover {
             background: rgba(78, 199, 210, 0.1);
             border-color: #00508f;
         }
 
-        .file-item {
+        .file-upload-box i {
+            font-size: 2rem;
+            color: #4ec7d2;
+            margin-bottom: 8px;
+        }
+
+        .file-upload-box p {
+            color: #003b73;
+            font-weight: 600;
+            margin-bottom: 3px;
+            font-size: 0.85rem;
+        }
+
+        .file-upload-box small {
+            color: #6c757d;
+            font-size: 0.7rem;
+        }
+
+        .file-preview {
             background: #f8f9fa;
-            padding: 12px 15px;
+            padding: 8px 12px;
             border-radius: 8px;
-            margin-top: 10px;
+            margin-top: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border: 1px solid #e1e8ed;
+            font-size: 0.8rem;
         }
 
-        .file-item .btn-remove {
+        .file-preview .btn-clear {
             background: #ef4444;
             color: white;
             border: none;
-            padding: 6px 14px;
+            padding: 3px 10px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             transition: all 0.3s ease;
         }
 
-        .file-item .btn-remove:hover {
+        .file-preview .btn-clear:hover {
             background: #dc2626;
+        }
+
+        .file-preview span {
+            font-size: 0.75rem;
+            color: #003b73;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
         }
 
         .position-relative {
@@ -231,6 +272,20 @@
         .is-invalid {
             border-color: #ef4444 !important;
         }
+
+        .documento-item {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .documento-label {
+            font-weight: 600;
+            color: #00508f;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -243,12 +298,12 @@
 
     <div class="container">
         <div class="form-container">
-           <div class="mb-4">
-    <a href="{{ route('plantilla') }}" class="btn-back">
-        <i class="fas fa-arrow-left"></i>
-        <span>Volver al Inicio</span>
-    </a>
-</div>
+            <div class="mb-4">
+                <a href="{{ route('plantilla') }}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Volver al Inicio</span>
+                </a>
+            </div>
 
             <div class="info-alert">
                 <h6 style="color: #003b73; font-weight: 700; margin-bottom: 10px;">
@@ -256,9 +311,11 @@
                 </h6>
                 <ul style="color: #00508f; margin-bottom: 0; font-size: 0.9rem; line-height: 1.8;">
                     <li>Tu solicitud será revisada por nuestro equipo administrativo</li>
-                    <li>Se creará automáticamente una cuenta con tu correo electrónico</li>
+                    <li>Si proporcionas un correo electrónico, se creará automáticamente una cuenta de acceso</li>
                     <li>Tu contraseña será tu número de DNI (podrás cambiarla después)</li>
-                    <li>El estado inicial será <strong>PENDIENTE</strong> hasta ser aprobado por el Super Administrador</li>
+                    <li>El estado inicial será <strong>PENDIENTE</strong> hasta ser aprobado por el administrador</li>
+                    <li>La fecha de matrícula se registrará automáticamente al enviar el formulario</li>
+                    <li><strong>Debes adjuntar los 3 documentos requeridos para completar la matrícula</strong></li>
                 </ul>
             </div>
 
@@ -331,10 +388,10 @@
                             </div>
 
                             <div class="col-md-6" id="otro_parentesco_div" style="display: none;">
-                                <label for="padre_parentesco_otro" class="form-label">Especificar Parentesco</label>
+                                <label for="padre_parentesco_otro" class="form-label">Especificar Parentesco <span class="required-mark">*</span></label>
                                 <div class="position-relative">
                                     <i class="fas fa-pen position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                                    <input type="text" class="form-control @error('padre_parentesco_otro') is-invalid @enderror" id="padre_parentesco_otro" name="padre_parentesco_otro" value="{{ old('padre_parentesco_otro') }}" placeholder="Ej: Tío, Hermano">
+                                    <input type="text" class="form-control @error('padre_parentesco_otro') is-invalid @enderror" id="padre_parentesco_otro" name="padre_parentesco_otro" value="{{ old('padre_parentesco_otro') }}" placeholder="Ej: Tío, Abuelo, Hermano">
                                     @error('padre_parentesco_otro')<div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                                 </div>
                             </div>
@@ -343,19 +400,21 @@
                                 <label for="padre_telefono" class="form-label">Teléfono <span class="required-mark">*</span></label>
                                 <div class="position-relative">
                                     <i class="fas fa-phone position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                                    <input type="text" class="form-control @error('padre_telefono') is-invalid @enderror" id="padre_telefono" name="padre_telefono" value="{{ old('padre_telefono') }}" placeholder="98765432" maxlength="8" pattern="[0-9]{8}" required>
+                                    <input type="text" class="form-control @error('padre_telefono') is-invalid @enderror" id="padre_telefono" name="padre_telefono" value="{{ old('padre_telefono') }}" placeholder="98765432" maxlength="15" required>
                                     @error('padre_telefono')<div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <label for="padre_email" class="form-label">Email <span class="required-mark">*</span></label>
+                                <label for="padre_email" class="form-label">
+                                    Email <span class="optional-mark">(Opcional)</span>
+                                </label>
                                 <div class="position-relative">
                                     <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                                    <input type="email" class="form-control @error('padre_email') is-invalid @enderror" id="padre_email" name="padre_email" value="{{ old('padre_email') }}" placeholder="padre@ejemplo.com" required>
+                                    <input type="email" class="form-control @error('padre_email') is-invalid @enderror" id="padre_email" name="padre_email" value="{{ old('padre_email') }}" placeholder="padre@ejemplo.com">
                                     @error('padre_email')<div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                                 </div>
-                                <small class="text-muted" style="font-size: 0.75rem;"><i class="fas fa-info-circle me-1"></i>Usarás este correo para iniciar sesión</small>
+                                <small class="text-muted" style="font-size: 0.75rem;"><i class="fas fa-info-circle me-1"></i>Si proporcionas un email, podrás acceder al sistema</small>
                             </div>
 
                             <div class="col-12">
@@ -443,20 +502,7 @@
                                     </select>
                                     @error('estudiante_grado')<div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                                 </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="estudiante_seccion" class="form-label">Sección <span class="required-mark">*</span></label>
-                                <div class="position-relative">
-                                    <i class="fas fa-door-open position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                                    <select class="form-select @error('estudiante_seccion') is-invalid @enderror" id="estudiante_seccion" name="estudiante_seccion" required>
-                                        <option value="">Seleccionar...</option>
-                                        @foreach($secciones as $seccion)
-                                            <option value="{{ $seccion }}" {{ old('estudiante_seccion') == $seccion ? 'selected' : '' }}>{{ $seccion }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('estudiante_seccion')<div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
-                                </div>
+                                <small class="text-muted" style="font-size: 0.75rem;"><i class="fas fa-info-circle me-1"></i>La sección será asignada por el administrador</small>
                             </div>
                         </div>
                     </div>
@@ -474,15 +520,6 @@
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="fecha_matricula" class="form-label">Fecha de Matrícula <span class="required-mark">*</span></label>
-                                <div class="position-relative">
-                                    <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                                    <input type="date" class="form-control @error('fecha_matricula') is-invalid @enderror" id="fecha_matricula" name="fecha_matricula" value="{{ old('fecha_matricula', date('Y-m-d')) }}" required>
-                                    @error('fecha_matricula')<div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
                                 <label for="anio_lectivo" class="form-label">Año Lectivo <span class="required-mark">*</span></label>
                                 <div class="position-relative">
                                     <i class="fas fa-calendar-alt position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
@@ -491,8 +528,20 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6">
+                                <div class="p-3" style="background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.05) 100%); border-radius: 10px; border-left: 4px solid #4ec7d2;">
+                                    <p class="small fw-semibold mb-1" style="color: #003b73;">
+                                        <i class="fas fa-calendar-check me-2" style="color: #4ec7d2;"></i>
+                                        Fecha de Matrícula
+                                    </p>
+                                    <p class="mb-0" style="color: #00508f; font-size: 0.9rem;">
+                                        Se registrará automáticamente al enviar
+                                    </p>
+                                </div>
+                            </div>
+
                             <div class="col-12">
-                                <label for="observaciones" class="form-label">Observaciones</label>
+                                <label for="observaciones" class="form-label">Observaciones <span class="optional-mark">(Opcional)</span></label>
                                 <div class="position-relative">
                                     <i class="fas fa-comment-alt position-absolute" style="left: 12px; top: 18px; color: #00508f; font-size: 0.85rem;"></i>
                                     <textarea class="form-control @error('observaciones') is-invalid @enderror" id="observaciones" name="observaciones" rows="3" placeholder="Notas adicionales sobre la matrícula" style="padding-left: 2.8rem;">{{ old('observaciones') }}</textarea>
@@ -503,7 +552,7 @@
                     </div>
                 </div>
 
-                {{-- DOCUMENTOS --}}
+                {{-- DOCUMENTOS EN FILA --}}
                 <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-2 mb-3">
@@ -513,34 +562,68 @@
                             <h6 class="mb-0 fw-bold section-title">Documentos Requeridos</h6>
                         </div>
 
-                        <div class="mb-3 p-3" style="background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.05) 100%); border-radius: 10px; border-left: 4px solid #4ec7d2;">
-                            <p class="small fw-semibold mb-2" style="color: #003b73;">
-                                <i class="fas fa-clipboard-check me-2" style="color: #4ec7d2;"></i>
-                                Documentos que deberá presentar:
+                        <div class="mb-3 p-3" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%); border-radius: 10px; border-left: 4px solid #ef4444;">
+                            <p class="small fw-semibold mb-0" style="color: #dc2626;">
+                                <i class="fas fa-exclamation-triangle me-2" style="color: #ef4444;"></i>
+                                Los 3 documentos son obligatorios para completar la matrícula
                             </p>
-                            <ul class="small mb-0" style="color: #003b73; line-height: 1.8; list-style: none; padding-left: 0;">
-                                <li class="mb-1"><i class="fas fa-check-circle me-2" style="color: #4ec7d2;"></i>Foto del estudiante (formato JPG/PNG)</li>
-                                <li class="mb-1"><i class="fas fa-check-circle me-2" style="color: #4ec7d2;"></i>Acta de nacimiento</li>
-                                <li class="mb-1"><i class="fas fa-check-circle me-2" style="color: #4ec7d2;"></i>Calificaciones del año anterior</li>
-                            </ul>
                         </div>
 
-                        <div class="file-upload-area" onclick="document.getElementById('documentos').click()">
-                            <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #4ec7d2; margin-bottom: 10px;"></i>
-                            <p style="color: #003b73; font-weight: 600; margin-bottom: 5px;">Haz clic para subir documentos</p>
-                            <p style="color: #00508f; font-size: 0.85rem; margin-bottom: 0;">o arrastra y suelta aquí</p>
-                            <small style="color: #6c757d;">Formatos: PDF, JPG, PNG (máx. 5MB por archivo)</small>
-                        </div>
-                        
-                        <input type="file" id="documentos" name="documentos[]" multiple accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivos(this)">
+                        {{-- DOCUMENTOS EN FILA --}}
+                        <div class="row g-3">
+                            {{-- Foto de Perfil --}}
+                            <div class="col-md-4">
+                                <div class="documento-item">
+                                    <label class="documento-label">
+                                        <i class="fas fa-camera me-1" style="color: #4ec7d2;"></i>
+                                        Foto del Estudiante <span class="required-mark">*</span>
+                                    </label>
+                                    <div class="file-upload-box" onclick="document.getElementById('foto_perfil').click()">
+                                        <i class="fas fa-image"></i>
+                                        <p>Subir foto</p>
+                                        <small>JPG, PNG<br>(máx. 2MB)</small>
+                                    </div>
+                                    <input type="file" id="foto_perfil" name="foto_perfil" accept=".jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_foto')" required>
+                                    @error('foto_perfil')<div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
+                                    <div id="preview_foto"></div>
+                                </div>
+                            </div>
 
-                        <div id="listaArchivos" class="mt-3"></div>
+                            {{-- Calificaciones --}}
+                            <div class="col-md-4">
+                                <div class="documento-item">
+                                    <label class="documento-label">
+                                        <i class="fas fa-file-alt me-1" style="color: #4ec7d2;"></i>
+                                        Calificaciones <span class="required-mark">*</span>
+                                    </label>
+                                    <div class="file-upload-box" onclick="document.getElementById('calificaciones').click()">
+                                        <i class="fas fa-file-pdf"></i>
+                                        <p>Subir calificaciones</p>
+                                        <small>PDF, JPG, PNG<br>(máx. 5MB)</small>
+                                    </div>
+                                    <input type="file" id="calificaciones" name="calificaciones" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_calificaciones')" required>
+                                    @error('calificaciones')<div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
+                                    <div id="preview_calificaciones"></div>
+                                </div>
+                            </div>
 
-                        <div class="mt-3 d-flex gap-2 align-items-start" style="background: rgba(78, 199, 210, 0.1); padding: 0.75rem; border-radius: 8px; border-left: 3px solid #4ec7d2;">
-                            <i class="fas fa-info-circle" style="color: #00508f; margin-top: 2px;"></i>
-                            <p class="small mb-0" style="color: #003b73;">
-                                Los documentos pueden ser cargados después de registrar la matrícula. Máximo 5MB por archivo.
-                            </p>
+                            {{-- Acta de Nacimiento --}}
+                            <div class="col-md-4">
+                                <div class="documento-item">
+                                    <label class="documento-label">
+                                        <i class="fas fa-file-contract me-1" style="color: #4ec7d2;"></i>
+                                        Acta de Nacimiento <span class="required-mark">*</span>
+                                    </label>
+                                    <div class="file-upload-box" onclick="document.getElementById('acta_nacimiento').click()">
+                                        <i class="fas fa-file-signature"></i>
+                                        <p>Subir acta</p>
+                                        <small>PDF, JPG, PNG<br>(máx. 5MB)</small>
+                                    </div>
+                                    <input type="file" id="acta_nacimiento" name="acta_nacimiento" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_acta')" required>
+                                    @error('acta_nacimiento')<div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
+                                    <div id="preview_acta"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -552,10 +635,10 @@
                         <span>Enviar Solicitud de Matrícula</span>
                     </button>
                     
-                   <a href="{{ route('plantilla') }}" class="btn-cancel">
-    <i class="fas fa-times"></i>
-    <span>Cancelar</span>
-</a>
+                    <a href="{{ route('plantilla') }}" class="btn-cancel">
+                        <i class="fas fa-times"></i>
+                        <span>Cancelar</span>
+                    </a>
                 </div>
 
             </form>
@@ -570,54 +653,60 @@
         
         if (select && otroDiv) {
             otroDiv.style.display = select.value === 'otro' ? 'block' : 'none';
-        }
-    }
-
-    function mostrarArchivos(input) {
-        const listaArchivos = document.getElementById('listaArchivos');
-        if (!listaArchivos) return;
-        
-        listaArchivos.innerHTML = '';
-        
-        if (input.files.length > 0) {
-            Array.from(input.files).forEach((file, index) => {
-                if (file.size > 5 * 1024 * 1024) {
-                    alert(`El archivo ${file.name} excede el tamaño máximo de 5MB`);
-                    return;
+            
+            const otroInput = document.getElementById('padre_parentesco_otro');
+            if (otroInput) {
+                if (select.value === 'otro') {
+                    otroInput.setAttribute('required', 'required');
+                } else {
+                    otroInput.removeAttribute('required');
                 }
-
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                
-                let icono = 'fa-file';
-                if (file.type.includes('pdf')) icono = 'fa-file-pdf';
-                else if (file.type.includes('image')) icono = 'fa-file-image';
-                
-                fileItem.innerHTML = `
-                    <div>
-                        <i class="fas ${icono} me-2" style="color: #4ec7d2; font-size: 1.2rem;"></i>
-                        <span style="font-size: 0.95rem; color: #003b73; font-weight: 500;">${file.name}</span>
-                        <small style="color: #6c757d; margin-left: 10px;">(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
-                    </div>
-                    <button type="button" class="btn-remove" onclick="removerArchivo(${index})">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                `;
-                listaArchivos.appendChild(fileItem);
-            });
+            }
         }
     }
 
-    function removerArchivo(index) {
-        const input = document.getElementById('documentos');
-        if (!input) return;
+    function mostrarArchivo(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (!preview) return;
         
-        const dt = new DataTransfer();
-        Array.from(input.files).forEach((file, i) => {
-            if (i !== index) dt.items.add(file);
-        });
-        input.files = dt.files;
-        mostrarArchivos(input);
+        preview.innerHTML = '';
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const maxSize = input.id === 'foto_perfil' ? 2 * 1024 * 1024 : 5 * 1024 * 1024;
+            
+            if (file.size > maxSize) {
+                alert(`El archivo ${file.name} excede el tamaño máximo permitido`);
+                input.value = '';
+                return;
+            }
+
+            const filePreview = document.createElement('div');
+            filePreview.className = 'file-preview';
+            
+            let icono = 'fa-file';
+            if (file.type.includes('pdf')) icono = 'fa-file-pdf';
+            else if (file.type.includes('image')) icono = 'fa-file-image';
+            
+            filePreview.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
+                    <i class="fas ${icono}" style="color: #4ec7d2; font-size: 0.9rem;"></i>
+                    <span>${file.name}</span>
+                </div>
+                <button type="button" class="btn-clear" onclick="limpiarArchivo('${input.id}', '${previewId}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            preview.appendChild(filePreview);
+        }
+    }
+
+    function limpiarArchivo(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        
+        if (input) input.value = '';
+        if (preview) preview.innerHTML = '';
     }
 
     document.addEventListener('DOMContentLoaded', function() {

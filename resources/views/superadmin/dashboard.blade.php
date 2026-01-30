@@ -6,20 +6,15 @@
 
 @section('topbar-actions')
     <div class="d-flex align-items-center gap-3">
-        <div class="d-flex align-items-center gap-2">
-            <i class="fas fa-calendar-day" style="color: #00508f;"></i>
-            <span class="text-muted small">{{ now()->format('d/m/Y') }}</span>
-        </div>
-        @if(auth()->user()->rol)
-        <div class="vr"></div>
+        @php
+            $user = auth()->user();
+            $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
+            $displayRole = $isSuperAdmin ? 'Super Administrador' : ucfirst($user->role ?? 'Usuario');
+        @endphp
+        
         <span class="badge bg-primary" style="padding: 0.5rem 1rem; font-weight: 500;">
-            <i class="fas fa-user-shield me-1"></i> {{ auth()->user()->rol->nombre }}
+            <i class="fas fa-user-shield me-1"></i> {{ $displayRole }}
         </span>
-        @else
-        <span class="badge bg-warning text-dark" style="padding: 0.5rem 1rem; font-weight: 500;">
-            <i class="fas fa-exclamation-triangle me-1"></i> Sin rol asignado
-        </span>
-        @endif
     </div>
 @endsection
 
@@ -43,15 +38,9 @@
                         </div>
                     </div>
                     <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                        <div class="d-flex flex-column align-items-lg-end">
-                            <div class="date-display">
-                                <i class="fas fa-calendar-alt me-2"></i>
-                                {{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
-                            </div>
-                            <div class="time-display mt-2">
-                                <i class="fas fa-clock me-2"></i>
-                                <span id="currentTime"></span>
-                            </div>
+                        <div class="time-display">
+                            <i class="fas fa-clock me-2"></i>
+                            <span id="currentTime"></span>
                         </div>
                     </div>
                 </div>
@@ -134,7 +123,7 @@
         </div>
     </div>
 
-    <!-- SOLICITUDES DE MATRÍCULA PENDIENTES - DISEÑO COMPACTO -->
+    <!-- SOLICITUDES DE MATRÍCULA PENDIENTES -->
     @if(isset($matriculasPendientes) && $matriculasPendientes->count() > 0)
     <div class="row mb-4">
         <div class="col-12">
@@ -432,7 +421,7 @@
                                   name="motivo_rechazo"
                                   rows="5"
                                   required
-                                  placeholder="Ej: Documentación incompleta, datos incorrectos del estudiante, cupo agotado para el grado solicitado, no cumple con los requisitos de edad..."
+                                  placeholder="Ej: Documentación incompleta, datos incorrectos del estudiante, cupo agotado para el grado solicitado..."
                                   style="border: 2px solid #dee2e6; border-radius: 8px;"></textarea>
                         <small class="text-muted">
                             <i class="fas fa-info-circle me-1"></i>
@@ -487,7 +476,7 @@
     opacity: 0.9;
 }
 
-.date-display, .time-display {
+.time-display {
     background: rgba(255, 255, 255, 0.15);
     padding: 0.5rem 1rem;
     border-radius: 8px;
@@ -593,9 +582,7 @@
     color: var(--danger-color);
 }
 
-/* ========================================
-   MATRÍCULAS PENDIENTES - DISEÑO COMPACTO
-   ======================================== */
+/* Matrículas Pendientes */
 .matriculas-pendientes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -843,331 +830,7 @@
     border-color: var(--primary-color);
 }
 
-/* Card Styles */
-.card {
-    border-radius: 12px;
-}
-
-.card-header {
-    border-radius: 12px 12px 0 0 !important;
-}
-
-/* ========================================
-   SISTEMA DE NOTIFICACIONES MEJORADO
-   ======================================== */
-.custom-notification {
-    position: fixed;
-    top: 20px;
-    right: -400px;
-    width: 380px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    z-index: 99999;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    overflow: hidden;
-    border: 2px solid transparent;
-}
-
-.custom-notification.show {
-    right: 20px;
-}
-
-.custom-notification-success {
-    border-color: #10b981;
-}
-
-.custom-notification-error {
-    border-color: #ef4444;
-}
-
-.custom-notification-warning {
-    border-color: #fbbf24;
-}
-
-.custom-notification-info {
-    border-color: #3b82f6;
-}
-
-.notification-content {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.25rem;
-}
-
-.notification-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.custom-notification-success .notification-icon {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
-}
-
-.custom-notification-error .notification-icon {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-}
-
-.custom-notification-warning .notification-icon {
-    background: rgba(251, 191, 36, 0.15);
-    color: #fbbf24;
-}
-
-.custom-notification-info .notification-icon {
-    background: rgba(59, 130, 246, 0.15);
-    color: #3b82f6;
-}
-
-.notification-text {
-    flex: 1;
-}
-
-.notification-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 0.25rem;
-}
-
-.notification-message {
-    font-size: 0.875rem;
-    color: #64748b;
-    margin: 0;
-    line-height: 1.5;
-}
-
-.notification-close {
-    background: none;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    padding: 0;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    font-size: 1.1rem;
-}
-
-.notification-close:hover {
-    background: #f1f5f9;
-    color: #475569;
-}
-
-.notification-progress {
-    height: 4px;
-    background: #e2e8f0;
-    position: relative;
-    overflow: hidden;
-}
-
-.notification-progress::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    animation: progress 5s linear;
-}
-
-.custom-notification-success .notification-progress::after {
-    background: #10b981;
-}
-
-.custom-notification-error .notification-progress::after {
-    background: #ef4444;
-}
-
-.custom-notification-warning .notification-progress::after {
-    background: #fbbf24;
-}
-
-.custom-notification-info .notification-progress::after {
-    background: #3b82f6;
-}
-
-@keyframes progress {
-    from {
-        transform: translateX(-100%);
-    }
-    to {
-        transform: translateX(0);
-    }
-}
-
-/* ========================================
-   MODAL DE CONFIRMACIÓN PERSONALIZADO
-   ======================================== */
-.custom-confirm-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    backdrop-filter: blur(4px);
-}
-
-.custom-confirm-modal-overlay.show {
-    opacity: 1;
-}
-
-.custom-confirm-modal {
-    background: white;
-    border-radius: 16px;
-    padding: 2.5rem;
-    max-width: 450px;
-    width: 90%;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    transform: scale(0.9);
-    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    text-align: center;
-}
-
-.custom-confirm-modal-overlay.show .custom-confirm-modal {
-    transform: scale(1);
-}
-
-.custom-confirm-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin: 0 auto 1.5rem;
-}
-
-.custom-confirm-modal-success .custom-confirm-icon {
-    background: rgba(16, 185, 129, 0.15);
-}
-
-.custom-confirm-modal-error .custom-confirm-icon {
-    background: rgba(239, 68, 68, 0.15);
-}
-
-.custom-confirm-modal-warning .custom-confirm-icon {
-    background: rgba(251, 191, 36, 0.15);
-}
-
-.custom-confirm-modal-info .custom-confirm-icon {
-    background: rgba(59, 130, 246, 0.15);
-}
-
-.custom-confirm-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 0.75rem;
-}
-
-.custom-confirm-message {
-    font-size: 1rem;
-    color: #64748b;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-}
-
-.custom-confirm-actions {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: center;
-}
-
-.custom-confirm-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.938rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 120px;
-}
-
-.custom-confirm-btn-cancel {
-    background: #f1f5f9;
-    color: #475569;
-}
-
-.custom-confirm-btn-cancel:hover {
-    background: #e2e8f0;
-    transform: translateY(-2px);
-}
-
-.custom-confirm-btn-confirm {
-    color: white;
-}
-
-.custom-confirm-btn-success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.custom-confirm-btn-success:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-}
-
-.custom-confirm-btn-error {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-.custom-confirm-btn-error:hover {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-}
-
-.custom-confirm-btn-warning {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
-}
-
-.custom-confirm-btn-warning:hover {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
-}
-
-.custom-confirm-btn-info {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.custom-confirm-btn-info:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-/* Responsive ajustes */
+/* Responsive */
 @media (max-width: 1200px) {
     .matriculas-pendientes-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1192,86 +855,6 @@
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-
-    .matricula-header {
-        padding: 0.75rem;
-    }
-
-    .codigo-badge {
-        font-size: 0.75rem;
-        padding: 0.35rem 0.65rem;
-    }
-
-    .estado-badge {
-        font-size: 0.7rem;
-        padding: 0.35rem 0.65rem;
-    }
-
-    .matricula-content {
-        padding: 1rem;
-        gap: 0.875rem;
-    }
-
-    .info-icon {
-        width: 38px;
-        height: 38px;
-        font-size: 1rem;
-    }
-
-    .info-value {
-        font-size: 0.875rem;
-    }
-
-    .info-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    .custom-notification {
-        width: calc(100% - 40px);
-        right: -100%;
-    }
-
-    .custom-notification.show {
-        right: 20px;
-    }
-
-    .custom-confirm-modal {
-        padding: 1.5rem;
-        max-width: calc(100% - 40px);
-    }
-
-    .custom-confirm-icon {
-        width: 64px;
-        height: 64px;
-        font-size: 2rem;
-    }
-
-    .custom-confirm-title {
-        font-size: 1.25rem;
-    }
-
-    .custom-confirm-actions {
-        flex-direction: column;
-    }
-
-    .custom-confirm-btn {
-        width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .matricula-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-    }
-
-    .codigo-badge,
-    .estado-badge {
-        justify-content: center;
-    }
 }
 </style>
 @endpush
@@ -1293,165 +876,20 @@ function updateTime() {
 setInterval(updateTime, 1000);
 updateTime();
 
-// ========================================
-// SISTEMA DE NOTIFICACIONES MEJORADO
-// ========================================
-function showNotification(type, title, message) {
-    const existingNotification = document.querySelector('.custom-notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-
-    const notification = document.createElement('div');
-    notification.className = `custom-notification custom-notification-${type}`;
-
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-times-circle',
-        warning: 'fa-exclamation-triangle',
-        info: 'fa-info-circle'
-    };
-
-    notification.innerHTML = `
-        <div class="notification-content">
-            <div class="notification-icon">
-                <i class="fas ${icons[type]}"></i>
-            </div>
-            <div class="notification-text">
-                <h6 class="notification-title">${title}</h6>
-                <p class="notification-message">${message}</p>
-            </div>
-            <button class="notification-close" onclick="closeNotification(this)">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="notification-progress"></div>
-    `;
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-
-    setTimeout(() => {
-        closeNotification(notification.querySelector('.notification-close'));
-    }, 5000);
-}
-
-function closeNotification(button) {
-    const notification = button.closest('.custom-notification');
-    if (notification) {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }
-}
-
-// ========================================
-// MODAL DE CONFIRMACIÓN PERSONALIZADO
-// ========================================
-function showConfirmModal(title, message, onConfirm, type = 'warning') {
-    const existingModal = document.querySelector('.custom-confirm-modal-overlay');
-    if (existingModal) {
-        existingModal.remove();
-    }
-
-    const overlay = document.createElement('div');
-    overlay.className = 'custom-confirm-modal-overlay';
-
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-times-circle',
-        warning: 'fa-exclamation-triangle',
-        info: 'fa-info-circle'
-    };
-
-    const colors = {
-        success: '#10b981',
-        error: '#ef4444',
-        warning: '#ffc107',
-        info: '#3b82f6'
-    };
-
-    overlay.innerHTML = `
-        <div class="custom-confirm-modal custom-confirm-modal-${type}">
-            <div class="custom-confirm-icon" style="color: ${colors[type]}">
-                <i class="fas ${icons[type]}"></i>
-            </div>
-            <h4 class="custom-confirm-title">${title}</h4>
-            <p class="custom-confirm-message">${message}</p>
-            <div class="custom-confirm-actions">
-                <button class="custom-confirm-btn custom-confirm-btn-cancel" onclick="closeConfirmModal()">
-                    <i class="fas fa-times me-2"></i>Cancelar
-                </button>
-                <button class="custom-confirm-btn custom-confirm-btn-confirm custom-confirm-btn-${type}" onclick="confirmModalAction()">
-                    <i class="fas fa-check me-2"></i>Confirmar
-                </button>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(overlay);
-    window.currentModalCallback = onConfirm;
-
-    setTimeout(() => {
-        overlay.classList.add('show');
-    }, 10);
-
-    document.addEventListener('keydown', function escHandler(e) {
-        if (e.key === 'Escape') {
-            closeConfirmModal();
-            document.removeEventListener('keydown', escHandler);
-        }
-    });
-}
-
-function closeConfirmModal() {
-    const modal = document.querySelector('.custom-confirm-modal-overlay');
-    if (modal) {
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.remove();
-        }, 300);
-    }
-    window.currentModalCallback = null;
-}
-
-function confirmModalAction() {
-    if (window.currentModalCallback) {
-        window.currentModalCallback();
-    }
-    closeConfirmModal();
-}
-
-// ========================================
-// EVENT LISTENERS CON DELEGACIÓN DE EVENTOS
-// ========================================
-
 // Ver detalles de matrícula
 document.addEventListener('click', function(e) {
     if (e.target.closest('.btn-ver-detalles')) {
         e.preventDefault();
         const btn = e.target.closest('.btn-ver-detalles');
         const matriculaId = btn.getAttribute('data-matricula-id');
-        console.log('Botón clickeado, ID:', matriculaId);
         verDetallesMatricula(matriculaId);
     }
 });
 
-// ========================================
-// FUNCIONES PARA MATRÍCULAS
-// ========================================
-
 function verDetallesMatricula(matriculaId) {
-    console.log('Abriendo detalles de matrícula:', matriculaId);
-
     const modalElement = document.getElementById('modalDetallesMatricula');
     if (!modalElement) {
-        console.error('Modal no encontrado');
-        showNotification('error', 'Error', 'No se pudo abrir el modal de detalles');
+        alert('Error: No se pudo abrir el modal');
         return;
     }
 
@@ -1463,93 +901,58 @@ function verDetallesMatricula(matriculaId) {
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="visually-hidden">Cargando...</span>
             </div>
-            <p class="mt-3 text-muted fw-medium">Cargando información de la solicitud...</p>
+            <p class="mt-3 text-muted fw-medium">Cargando información...</p>
         </div>
     `;
 
     modal.show();
 
-    const url = `/matriculas/${matriculaId}/detalles`;
-    console.log('Fetching:', url);
-
-    fetch(url)
+    fetch(`/matriculas/${matriculaId}/detalles`)
         .then(response => {
-            console.log('Status:', response.status);
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
             return response.json();
         })
         .then(data => {
-            console.log('Datos recibidos:', data);
-
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
             contenido.innerHTML = `
                 <div class="row g-4">
-                    <!-- Encabezado con código -->
+                    <!-- Código de Matrícula -->
                     <div class="col-12">
-                        <div class="alert alert-primary border-0 d-flex align-items-center" style="background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.1) 100%); border-left: 4px solid #00508f !important;">
-                            <i class="fas fa-file-alt fa-2x me-3" style="color: #00508f;"></i>
-                            <div>
-                                <strong style="color: #003b73; font-size: 1.1rem;">Código de Matrícula:</strong>
-                                <h5 class="mb-0 mt-1" style="color: #00508f; font-weight: 700;">${data.matricula.codigo}</h5>
-                            </div>
+                        <div class="alert alert-primary border-0">
+                            <strong>Código de Matrícula:</strong>
+                            <h5 class="mb-0 mt-1">${data.matricula.codigo}</h5>
                         </div>
                     </div>
 
                     <!-- Información del Estudiante -->
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, rgba(0, 80, 143, 0.03) 0%, rgba(78, 199, 210, 0.03) 100%);">
-                            <div class="card-header bg-transparent border-0 pt-4 px-4">
-                                <h6 class="fw-bold mb-0" style="color: #003b73; font-size: 1.1rem;">
-                                    <i class="fas fa-user-graduate me-2"></i>Información del Estudiante
-                                </h6>
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-user-graduate me-2"></i>Información del Estudiante</h6>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="card-body">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Nombre Completo</label>
-                                        <p class="mb-0 fw-bold" style="color: #003b73; font-size: 1.05rem;">${data.estudiante.nombre_completo}</p>
+                                        <label class="text-muted small">Nombre Completo</label>
+                                        <p class="fw-bold mb-0">${data.estudiante.nombre_completo}</p>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-muted small fw-semibold mb-1">DNI</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-id-card me-1"></i>${data.estudiante.dni}</p>
+                                        <label class="text-muted small">DNI</label>
+                                        <p class="mb-0">${data.estudiante.dni}</p>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-muted small fw-semibold mb-1">Fecha de Nacimiento</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-birthday-cake me-1"></i>${data.estudiante.fecha_nacimiento}</p>
+                                        <label class="text-muted small">Fecha de Nacimiento</label>
+                                        <p class="mb-0">${data.estudiante.fecha_nacimiento}</p>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="text-muted small fw-semibold mb-1">Sexo</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-venus-mars me-1"></i>${data.estudiante.sexo}</p>
+                                        <label class="text-muted small">Grado</label>
+                                        <p class="mb-0"><span class="badge bg-primary">${data.estudiante.grado}</span></p>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="text-muted small fw-semibold mb-1">Grado</label>
-                                        <p class="mb-0"><span class="badge bg-primary" style="font-size: 0.95rem; padding: 0.5rem 1rem;">${data.estudiante.grado}</span></p>
+                                        <label class="text-muted small">Sección</label>
+                                        <p class="mb-0"><span class="badge bg-info">Sección ${data.estudiante.seccion}</span></p>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label class="text-muted small fw-semibold mb-1">Sección</label>
-                                        <p class="mb-0"><span class="badge bg-info" style="font-size: 0.95rem; padding: 0.5rem 1rem;">Sección ${data.estudiante.seccion}</span></p>
-                                    </div>
-                                    ${data.estudiante.email ? `
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Email</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-envelope me-1"></i>${data.estudiante.email}</p>
-                                    </div>
-                                    ` : ''}
-                                    ${data.estudiante.telefono ? `
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Teléfono</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-phone me-1"></i>${data.estudiante.telefono}</p>
-                                    </div>
-                                    ` : ''}
-                                    ${data.estudiante.direccion ? `
-                                    <div class="col-12">
-                                        <label class="text-muted small fw-semibold mb-1">Dirección</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-map-marker-alt me-1"></i>${data.estudiante.direccion}</p>
-                                    </div>
-                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -1557,104 +960,57 @@ function verDetallesMatricula(matriculaId) {
 
                     <!-- Información del Padre -->
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.03) 0%, rgba(0, 80, 143, 0.03) 100%);">
-                            <div class="card-header bg-transparent border-0 pt-4 px-4">
-                                <h6 class="fw-bold mb-0" style="color: #003b73; font-size: 1.1rem;">
-                                    <i class="fas fa-user-friends me-2"></i>Información del Padre/Tutor
-                                </h6>
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-user-friends me-2"></i>Información del Padre/Tutor</h6>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="card-body">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Nombre Completo</label>
-                                        <p class="mb-0 fw-bold" style="color: #003b73; font-size: 1.05rem;">${data.padre.nombre_completo}</p>
+                                        <label class="text-muted small">Nombre Completo</label>
+                                        <p class="fw-bold mb-0">${data.padre.nombre_completo}</p>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-muted small fw-semibold mb-1">DNI</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-id-card me-1"></i>${data.padre.dni}</p>
+                                        <label class="text-muted small">DNI</label>
+                                        <p class="mb-0">${data.padre.dni}</p>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="text-muted small fw-semibold mb-1">Parentesco</label>
-                                        <p class="mb-0"><span class="badge bg-secondary" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">${data.padre.parentesco}</span></p>
+                                        <label class="text-muted small">Parentesco</label>
+                                        <p class="mb-0"><span class="badge bg-secondary">${data.padre.parentesco}</span></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Email</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-envelope me-1"></i>${data.padre.correo || 'No proporcionado'}</p>
+                                        <label class="text-muted small">Email</label>
+                                        <p class="mb-0">${data.padre.correo || 'No proporcionado'}</p>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Teléfono</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-phone me-1"></i>${data.padre.telefono}</p>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="text-muted small fw-semibold mb-1">Dirección</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-map-marker-alt me-1"></i>${data.padre.direccion}</p>
+                                        <label class="text-muted small">Teléfono</label>
+                                        <p class="mb-0">${data.padre.telefono}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Información de Matrícula -->
+                    <!-- Botones de Acción -->
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.03) 0%, rgba(0, 59, 115, 0.03) 100%);">
-                            <div class="card-header bg-transparent border-0 pt-4 px-4">
-                                <h6 class="fw-bold mb-0" style="color: #003b73; font-size: 1.1rem;">
-                                    <i class="fas fa-clipboard-list me-2"></i>Datos de la Matrícula
-                                </h6>
-                            </div>
-                            <div class="card-body p-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3"><i class="fas fa-tasks me-2"></i>Acciones Disponibles</h6>
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Año Lectivo</label>
-                                        <p class="mb-0 fw-bold" style="color: #003b73; font-size: 1.2rem;"><i class="fas fa-calendar-alt me-2"></i>${data.matricula.anio_lectivo}</p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="text-muted small fw-semibold mb-1">Fecha de Matrícula</label>
-                                        <p class="mb-0 fw-semibold" style="color: #00508f;"><i class="fas fa-calendar me-1"></i>${data.matricula.fecha_matricula}</p>
-                                    </div>
-                                    ${data.matricula.observaciones ? `
-                                    <div class="col-12">
-                                        <label class="text-muted small fw-semibold mb-1">Observaciones</label>
-                                        <div class="alert alert-info border-0 mb-0" style="background: rgba(78, 199, 210, 0.1); border-left: 4px solid #4ec7d2 !important;">
-                                            <i class="fas fa-comment-alt me-2"></i>${data.matricula.observaciones}
-                                        </div>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Botones de acción con diseño mejorado -->
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm" style="background: #f8f9fa; border-radius: 12px;">
-                            <div class="card-body p-4">
-                                <h6 class="fw-bold mb-3" style="color: #003b73;">
-                                    <i class="fas fa-tasks me-2"></i>Acciones Disponibles
-                                </h6>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <form action="/matriculas/${matriculaId}/confirmar" method="POST" class="mb-0" id="formAprobarMatricula">
+                                        <form action="/matriculas/${matriculaId}/confirmar" method="POST" id="formAprobarMatricula">
                                             <input type="hidden" name="_token" value="${csrfToken}">
-                                            <button type="button" class="btn btn-success w-100 py-3 d-flex align-items-center justify-content-center btn-aprobar-matricula" style="font-size: 1.05rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" data-matricula-id="${matriculaId}">
-                                                <i class="fas fa-check-circle me-2" style="font-size: 1.3rem;"></i>
+                                            <button type="submit" class="btn btn-success w-100 py-3">
+                                                <i class="fas fa-check-circle me-2"></i>
                                                 <span class="fw-bold">Aprobar Matrícula</span>
                                             </button>
                                         </form>
-                                        <small class="text-muted d-block mt-2 text-center">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            El estudiante será registrado en el sistema
-                                        </small>
                                     </div>
                                     <div class="col-md-6">
-                                        <button type="button" class="btn btn-danger w-100 py-3 d-flex align-items-center justify-content-center btn-rechazar-desde-modal" style="font-size: 1.05rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);" data-matricula-id="${matriculaId}">
-                                            <i class="fas fa-times-circle me-2" style="font-size: 1.3rem;"></i>
+                                        <button type="button" class="btn btn-danger w-100 py-3 btn-rechazar-desde-modal" data-matricula-id="${matriculaId}">
+                                            <i class="fas fa-times-circle me-2"></i>
                                             <span class="fw-bold">Rechazar Matrícula</span>
                                         </button>
-                                        <small class="text-muted d-block mt-2 text-center">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Se solicitará un motivo de rechazo
-                                        </small>
                                     </div>
                                 </div>
                             </div>
@@ -1664,43 +1020,14 @@ function verDetallesMatricula(matriculaId) {
             `;
         })
         .catch(error => {
-            console.error('Error completo:', error);
             contenido.innerHTML = `
-                <div class="alert alert-danger border-0 mx-4 my-5">
-                    <div class="d-flex align-items-start">
-                        <i class="fas fa-exclamation-triangle fa-2x me-3 text-danger"></i>
-                        <div>
-                            <h6 class="alert-heading fw-bold">Error al cargar los detalles</h6>
-                            <p class="mb-2">${error.message}</p>
-                            <hr>
-                            <small class="mb-0">Por favor, intente nuevamente o contacte al administrador del sistema.</small>
-                        </div>
-                    </div>
+                <div class="alert alert-danger">
+                    <h6>Error al cargar los detalles</h6>
+                    <p>${error.message}</p>
                 </div>
             `;
         });
 }
-
-// Aprobar matrícula desde modal con confirmación
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-aprobar-matricula')) {
-        e.preventDefault();
-        const btn = e.target.closest('.btn-aprobar-matricula');
-        const matriculaId = btn.getAttribute('data-matricula-id');
-
-        showConfirmModal(
-            '¿Aprobar Matrícula?',
-            'El estudiante y padre serán registrados en el sistema inmediatamente.',
-            function() {
-                const form = document.getElementById('formAprobarMatricula');
-                if (form) {
-                    form.submit();
-                }
-            },
-            'success'
-        );
-    }
-});
 
 // Botón rechazar desde modal
 document.addEventListener('click', function(e) {
@@ -1734,68 +1061,40 @@ function mostrarModalRechazoMatricula(matriculaId) {
         e.preventDefault();
         const motivo = document.getElementById('motivo_rechazo_matricula').value.trim();
 
-        if (!motivo) {
-            showNotification('warning', 'Campo Requerido', 'Por favor, indique el motivo del rechazo.');
+        if (!motivo || motivo.length < 10) {
+            alert('Por favor, proporcione un motivo más detallado (mínimo 10 caracteres).');
             return false;
         }
 
-        if (motivo.length < 10) {
-            showNotification('warning', 'Motivo Muy Corto', 'Por favor, proporcione un motivo más detallado (mínimo 10 caracteres).');
-            return false;
+        if (confirm('¿Está seguro de rechazar esta matrícula?')) {
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: new URLSearchParams({
+                    '_token': csrfToken,
+                    'motivo_rechazo': motivo
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    modal.hide();
+                    alert('Matrícula rechazada correctamente');
+                    location.reload();
+                } else {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+            })
+            .catch(error => {
+                alert('Error: No se pudo rechazar la matrícula');
+            });
         }
-
-        showConfirmModal(
-            '¿Rechazar Matrícula?',
-            'Esta acción no se puede deshacer. El padre/tutor recibirá el motivo del rechazo.',
-            function() {
-                showNotification('warning', 'Procesando...', 'Rechazando matrícula, por favor espere.');
-
-                fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: new URLSearchParams({
-                        '_token': csrfToken,
-                        'motivo_rechazo': motivo
-                    })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        modal.hide();
-                        showNotification('success', 'Matrícula Rechazada', 'La solicitud ha sido rechazada correctamente.');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1500);
-                    } else {
-                        throw new Error('Error en la respuesta del servidor');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('error', 'Error', 'No se pudo rechazar la matrícula. Intente nuevamente.');
-                });
-            },
-            'error'
-        );
 
         return false;
     };
 }
-
-// DEBUG: Verificar que el evento se está capturando
-console.log('Script cargado correctamente');
-
-// Test manual del botón
-setTimeout(function() {
-    const botones = document.querySelectorAll('.btn-ver-detalles');
-    console.log('Botones encontrados:', botones.length);
-
-    botones.forEach(function(boton) {
-        console.log('Botón con ID:', boton.getAttribute('data-matricula-id'));
-    });
-}, 1000);
 </script>
 @endpush
 @endsection

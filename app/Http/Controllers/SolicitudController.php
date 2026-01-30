@@ -20,7 +20,7 @@ class SolicitudController extends Controller
             'dni' => ['required']
         ]);
 
-        // 1️⃣ Buscar estudiante por DNI
+        //  Buscar estudiante por DNI
         $estudiante = Estudiante::where('dni', $request->dni)->first();
 
         if (!$estudiante) {
@@ -30,7 +30,7 @@ class SolicitudController extends Controller
             ]);
         }
 
-        // 2️⃣ Buscar matrícula asociada a ese estudiante
+        // Buscar matrícula asociada a ese estudiante
         $matricula = Matricula::where('estudiante_id', $estudiante->id)
             ->latest()
             ->first();
@@ -42,7 +42,7 @@ class SolicitudController extends Controller
             ]);
         }
 
-        // 3️⃣ Devolver los datos a la vista
+        // Devolver los datos a la vista
         return view('solicitudes.estado')->with([
             'estudiante' => $estudiante,
             'matricula' => $matricula,
