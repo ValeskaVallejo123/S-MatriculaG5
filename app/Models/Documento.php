@@ -10,10 +10,17 @@ class Documento extends Model
     use HasFactory;
 
     protected $fillable = [
+        'estudiante_id', // ¡Importante para la relación!
         'foto',
         'acta_nacimiento',
-        'calificaciones',
+        'calificaciones'
     ];
+
+    // Relación con el estudiante (según la historia de usuario)
+    public function estudiante()
+    {
+        return $this->belongsTo(Estudiante::class);
+    }
 }
 
 

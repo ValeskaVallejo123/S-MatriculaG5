@@ -138,13 +138,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
     });
 
-     /*
-    |--------------------------------------------------------------------------
-    | GESTIÓN DE ACCIONES IMPORTANTES
-    |--------------------------------------------------------------------------
-    */
+    /*
+   |--------------------------------------------------------------------------
+   | GESTIÓN DE ACCIONES IMPORTANTES
+   |--------------------------------------------------------------------------
+   */
     Route::resource('acciones-importantes', AccionesImportantesController::class)
-         ->names('acciones_importantes');
+        ->names('acciones_importantes');
 
 
     /*
@@ -193,7 +193,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/permisos/{padre}/{estudiante}/defecto', [PadrePermisoController::class, 'establecerDefecto'])->name('permisos.defecto');
         Route::delete('/permisos/{padre}/{estudiante}', [PadrePermisoController::class, 'eliminar'])->name('permisos.eliminar');
         Route::post('/permisos/{padre}/{estudiante}/toggle', [PadrePermisoController::class, 'toggleTodos'])->name('permisos.toggle');
-        
+
         // CRUD de administradores
         Route::get('/', [AdminController::class, 'index'])->name('index');
         Route::get('/crear', [AdminController::class, 'create'])->name('create');
