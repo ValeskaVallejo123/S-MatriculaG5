@@ -282,10 +282,6 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::resource('documentos', DocumentoController::class);
-    // Esta ruta mostrará la vista del formulario
-    Route::get('/documentos/crear', [DocumentoController::class, 'create'])->name('documentos.create');
-// Esta ruta procesará la subida
-    Route::post('/documentos', [DocumentoController::class, 'store'])->name('documentos.store');
 
     /*
     |--------------------------------------------------------------------------
@@ -321,10 +317,3 @@ Route::middleware(['auth'])->group(function () {
     Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
     Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
 });
-
-
-
-Route::get('/forgot-password', [PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.actualizar');
