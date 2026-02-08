@@ -60,7 +60,3 @@ class CambiarContraseniaController extends Controller
         return back()->with('success', '¡Tu contraseña ha sido cambiada correctamente!');
     }
 }
-
-
-
-
