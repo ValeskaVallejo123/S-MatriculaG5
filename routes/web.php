@@ -340,3 +340,7 @@ Route::post('grados/generar-masivo', [GradoController::class, 'generarMasivo'])-
 
 });
 Route::resource('observaciones', ObservacionController::class)->except(['show']);
+
+
+// cursos para secundaria
+Route::resource('h20cursos', H20CursoController::class);
