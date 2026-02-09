@@ -577,7 +577,7 @@
         $user = auth()->user();
         $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
         $isAdmin = in_array($user->role, ['admin', 'super_admin']) || $user->is_super_admin == 1;
-        $showSidebar = $isSuperAdmin || $isAdmin;
+        $showSidebar = true;
         
         // Obtener el nombre del rol para mostrar
         if ($isSuperAdmin) {
@@ -590,6 +590,10 @@
     @endphp
 
     <!-- SIDEBAR (solo para admins) -->
+        {{-- DEBUG --}}
+
+
+
     @if($showSidebar)
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     
@@ -656,6 +660,22 @@
                     <span>Estudiantes</span>
                 </a>
             </li>
+
+            <li class="menu-item">
+            <a href="{{ route('calendario') }}"
+            class="menu-link {{ request()->routeIs('calendario') ? 'active' : '' }}">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Calendario Académico</span>
+            </a>
+            </li>
+
+            <li class="menu-item">
+    <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
+        <i class="fas fa-graduation-cap"></i>
+        <span>plan de estudios</span>
+    </a>
+</li>
+
 
             <li class="menu-item">
                 <a href="{{ route('profesores.index') }}" class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">

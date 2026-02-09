@@ -224,4 +224,10 @@ class User extends Authenticatable
     {
         return $query->where('id_rol', $rolId);
     }
+    // Dentro de la clase User en app/Models/User.php
+
+public function role()
+{
+    return $this->belongsTo(Role::class, 'id_rol');
+}
 }

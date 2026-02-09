@@ -27,21 +27,12 @@
             <div class="row align-items-center g-3">
                 <div class="col-md-3">
                     <div class="position-relative">
-<<<<<<< HEAD
-                        <i class="fas fa-search position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.9rem;"></i>
-                        <input type="text"
-                               id="searchInput"
-                               class="form-control form-control-sm ps-5"
-                               placeholder="Buscar por grado, sección, año..."
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 1rem 0.5rem 2.5rem; transition: all 0.3s ease;">
-=======
                         <i class="fas fa-search position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.938rem;"></i>
                         <input type="text" 
                                id="searchInput" 
                                class="form-control ps-5" 
                                placeholder="Buscar grado..." 
                                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 3rem; transition: all 0.3s ease;">
->>>>>>> dev/valeska
                     </div>
                 </div>
 
@@ -104,41 +95,6 @@
         <div class="tab-pane fade show active" id="todos">
             <div class="row g-4" id="gradosContainer">
             @forelse($grados as $grado)
-<<<<<<< HEAD
-<div class="col-md-6 col-lg-4 grado-card" data-nivel="{{ $grado->nivel }}">
-    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; transition: all 0.3s ease; border-left: 4px solid #4ec7d2;">
-        <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h5 class="mb-1 fw-bold" style="color: #003b73; font-size: 1rem;">
-                        <i class="fas fa-graduation-cap" style="color: #4ec7d2;"></i>
-                        {{ $grado->numero }}° Grado
-                        @if($grado->seccion)
-                            <span style="color: #4ec7d2;">{{ $grado->seccion }}</span>
-                        @endif
-                    </h5>
-                    <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; border: 1px solid #4ec7d2; padding: 0.25rem 0.5rem; font-size: 0.7rem;">
-                        <i class="fas fa-child"></i>
-                        {{ ucfirst($grado->nivel) }}
-                    </span>
-                </div>
-                @if($grado->activo)
-                    <span class="badge rounded-pill" style="background: rgba(78, 199, 210, 0.2); color: #00508f; padding: 0.3rem 0.7rem; border: 1px solid #4ec7d2; font-size: 0.7rem;">
-                        <i class="fas fa-circle" style="font-size: 0.35rem;"></i> Activo
-                    </span>
-                @else
-                    <span class="badge rounded-pill" style="background: #fee2e2; color: #991b1b; padding: 0.3rem 0.7rem; border: 1px solid #ef4444; font-size: 0.7rem;">
-                        <i class="fas fa-circle" style="font-size: 0.35rem;"></i> Inactivo
-                    </span>
-                @endif
-            </div>
-
-            <div class="mb-3">
-                <div class="d-flex align-items-center mb-2" style="font-size: 0.85rem;">
-                    <i class="fas fa-calendar-alt me-2" style="color: #00508f; width: 16px;"></i>
-                    <span class="text-muted small">Año Lectivo:</span>
-                    <strong class="ms-auto" style="color: #003b73;">{{ $grado->anio_lectivo }}</strong>
-=======
                 <div class="col-md-6 col-lg-4 col-xl-3 grado-card" data-nivel="{{ $grado->nivel }}" data-grado="{{ $grado->numero }}" data-seccion="{{ $grado->seccion }}" data-anio="{{ $grado->anio_lectivo }}">
                     <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; transition: all 0.3s ease; border-left: 4px solid #4ec7d2;">
                         <div class="card-body p-4">
@@ -219,51 +175,8 @@
                             </a>
                         </div>
                     </div>
->>>>>>> dev/valeska
                 </div>
-                <div class="d-flex align-items-center" style="font-size: 0.85rem;">
-                    <i class="fas fa-book me-2" style="color: #4ec7d2; width: 16px;"></i>
-                    <span class="text-muted small">Materias asignadas:</span>
-                    <span class="badge ms-auto" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.25rem 0.6rem; font-size: 0.75rem;">
-                        {{ $grado->materias->count() }}
-                    </span>
-                </div>
-            </div>
-
-            <div class="d-flex gap-2">
-                <a href="{{ route('grados.show', $grado) }}"
-                   class="btn btn-sm flex-fill"
-                   style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem;">
-                    <i class="fas fa-eye"></i> Ver
-                </a>
-                <a href="{{ route('grados.asignar-materias', $grado) }}"
-                   class="btn btn-sm flex-fill"
-                   style="border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem;">
-                    <i class="fas fa-tasks"></i> Materias
-                </a>
-                <a href="{{ route('grados.edit', $grado) }}"
-                   class="btn btn-sm"
-                   style="border: 1.5px solid #f59e0b; color: #f59e0b; background: white; border-radius: 6px; font-size: 0.8rem; padding: 0.4rem 0.5rem;">
-                    <i class="fas fa-edit"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-@empty
-<div class="col-12">
-    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-        <div class="card-body text-center py-5">
-            <i class="fas fa-inbox fa-3x mb-3" style="color: #00508f; opacity: 0.5;"></i>
-            <h5 style="color: #003b73;">No hay grados registrados</h5>
-            <p class="text-muted mb-3">Comienza agregando el primer grado</p>
-            <a href="{{ route('grados.create') }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem;">
-                <i class="fas fa-plus me-1"></i>Crear Grado
-            </a>
-        </div>
-    </div>
-</div>
-@endforelse
+            @endforelse
             </div>
 
             <!-- PAGINACIÓN PERSONALIZADA -->
@@ -661,4 +574,3 @@ function changePerPage(value) {
 </script>
 @endpush
 @endsection
-

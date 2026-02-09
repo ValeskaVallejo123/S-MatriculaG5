@@ -28,13 +28,38 @@ use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\ProfesorMateriaController;
 use App\Http\Controllers\RegistrarCalificacionController;
 use App\Http\Controllers\AccionesImportantesController;
-
+use App\Http\Controllers\CalendarioController;
+use App\Http\Controllers\CicloController;
 
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
+// Añade esto al principio de tus rutas protegidas (dentro del middleware auth)
+Route::get('/dashboard', function () {
+    $role = Auth::user()->role;
+
+    // Mapeo: 'valor_en_base_de_datos' => 'nombre_de_la_ruta_en_laravel'
+    $roleRouteMap = [
+        'super_admin' => 'superadmin.dashboard',
+        'admin'       => 'admin.dashboard',
+        'profesor'    => 'profesor.dashboard',
+        'estudiante'  => 'estudiante.dashboard',
+        'padre'       => 'padre.dashboard',
+        'user'        => 'admin.dashboard', // Aquí redirigimos el rol 'user' al panel de admin
+    ];
+
+    $routeName = $roleRouteMap[$role] ?? null;
+
+    // Si el nombre existe en el mapa y está definido en Laravel, redirige
+    if ($routeName && Route::has($routeName)) {
+        return redirect()->route($routeName);
+    }
+
+    // Si el rol no existe o no tiene ruta, envía al inicio por seguridad
+    return redirect()->route('inicio');
+})->name('dashboard');
 
 // Ruta raíz - Redirige al login
 Route::get('/', function () {
@@ -58,6 +83,17 @@ Route::get('/plantilla', function () {
 Route::get('/matricula-publica', [MatriculaController::class, 'create'])->name('matriculas.public.create');
 Route::post('/matricula-publica', [MatriculaController::class, 'store'])->name('matriculas.public.store');
 Route::get('/matricula-exitosa', [MatriculaController::class, 'success'])->name('matriculas.success');
+
+/*
+|--------------------------------------------------------------------------
+| RUTAS PÚBLICAS DE GRADOS
+|--------------------------------------------------------------------------
+*/
+Route::get('/grados/masivo', [GradoController::class, 'crearMasivo'])->name('grados.crear-masivo');
+Route::post('/grados/masivo', [GradoController::class, 'generarMasivo'])->name('grados.generar-masivo');
+
+// El resto de rutas de recursos
+Route::resource('grados', GradoController::class);
 
 // Consulta de solicitudes (PÚBLICA)
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('estado-solicitud');
@@ -138,14 +174,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
     });
 
-     /*
+    /*
     |--------------------------------------------------------------------------
     | GESTIÓN DE ACCIONES IMPORTANTES
     |--------------------------------------------------------------------------
     */
-    Route::resource('acciones-importantes', AccionesImportantesController::class)
-         ->names('acciones_importantes');
-
+    Route::resource('acciones-importantes', AccionesImportantesController::class)->names('acciones_importantes');
 
     /*
     |--------------------------------------------------------------------------
@@ -202,6 +236,40 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{admin}/editar', [AdminController::class, 'edit'])->name('edit');
         Route::put('/{admin}', [AdminController::class, 'update'])->name('update');
         Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CAMBIAR CONTRASEÑA
+    |--------------------------------------------------------------------------
+    */
+    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
+    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE CALENDARIO ACADÉMICO
+    |--------------------------------------------------------------------------
+    */
+    // Vista principal del calendario (cualquier usuario autenticado puede ver)
+    Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario');
+    
+    // Obtener eventos en formato JSON (cualquier usuario autenticado puede ver)
+    Route::get('/calendario/eventos', [CalendarioController::class, 'getEventos']);
+
+    /*
+|--------------------------------------------------------------------------
+| GESTIÓN DE PLAN DE ESTUDIO (CICLOS)
+|--------------------------------------------------------------------------
+*/
+Route::resource('ciclos', CicloController::class)->names('ciclos.index');
+
+    // Operaciones de escritura (crear, editar, eliminar eventos)
+    // Solo para usuarios con permisos de administrador
+    Route::middleware(['admin'])->group(function () {
+        Route::post('/calendario/eventos', [CalendarioController::class, 'store']);
+        Route::put('/calendario/eventos/{evento}', [CalendarioController::class, 'actualizar']);
+        Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'destroy']);
     });
 
     /*
@@ -308,12 +376,4 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{profesor}', [ProfesorMateriaController::class, 'update'])->name('update');
         Route::delete('/{profesor}', [ProfesorMateriaController::class, 'destroy'])->name('destroy');
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | CAMBIAR CONTRASEÑA
-    |--------------------------------------------------------------------------
-    */
-    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
-    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
 });
