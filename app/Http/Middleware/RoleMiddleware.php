@@ -3,26 +3,27 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    public function handle($request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
         $user = Auth::user();
 
-        // Validar que exista el rol
-        if (!$user->rol) {
-            abort(403, 'No tiene un rol asignado.');
+        if (!$user) {
+            abort(403, 'No autenticado');
         }
 
-        // Comparar con el rol requerido
-        if (strtolower($user->rol->nombre) !== strtolower($role)) {
-            abort(403, 'No tiene permisos para acceder a esta sección.');
+        // ✅ SUPER ADMINISTRADOR: acceso total
+        if ($user->is_super_admin == 1 || $user->id_rol == 1) {
+            return $next($request);
+        }
+
+        // Validar rol normal
+        if (!$user->rol || !in_array(strtolower($user->rol->nombre), $roles)) {
+            abort(403, 'Acceso denegado');
         }
 
         return $next($request);

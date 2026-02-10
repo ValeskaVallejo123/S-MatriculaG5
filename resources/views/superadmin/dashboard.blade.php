@@ -379,7 +379,7 @@
             </div>
         </div>
         <div class="action-card-body">
-            <a href="{{ route('horarios_grado.index') }}" class="btn btn-outline-primary w-100 mb-2">
+            <a href="{{ route('superadmin.horarios_grado.index') }}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="fas fa-list me-2"></i> Ver Horarios
             </a>
 

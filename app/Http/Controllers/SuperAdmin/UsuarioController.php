@@ -36,7 +36,7 @@ class UsuarioController extends Controller
     /**
      * Mostrar usuarios pendientes de aprobación
      */
-    public function usuariosPendientes()
+    public function pendientes()
     {
         $usuariosPendientes = User::with('rol')
             ->where('activo', 0)
