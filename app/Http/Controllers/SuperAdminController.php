@@ -102,19 +102,18 @@ class SuperAdminController extends Controller
         ]);
 
         User::create([
-            'name'           => $request->name,
-            'email'          => $request->email,
-            'password'       => Hash::make($request->password),
-            'role'           =>'admin',
-            'user_type'      =>'admin',
-            'id_rol'         => $request->id_rol,
-            'permissions'    => $request->permissions ?? [],
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'admin',
+            'user_type' => 'admin',
+            'permissions' => $request->permissions ?? [],
             'is_super_admin' => false,
             'is_protected'   => false,
         ]);
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', 'Administrador creado exitosamente.');
+            ->with('success', 'Administrador creado exitosamente');
     }
 
     /**
@@ -164,7 +163,7 @@ class SuperAdminController extends Controller
         }
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', 'Administrador actualizado exitosamente.');
+            ->with('success', 'Administrador actualizado exitosamente');
     }
 
     /**
@@ -305,37 +304,20 @@ class SuperAdminController extends Controller
     private function getAvailablePermissions()
     {
         return [
-            'gestionar_matriculas'      => 'Gestionar Matrículas',
-            'gestionar_estudiantes'     => 'Gestionar Estudiantes',
-            'gestionar_profesores'      => 'Gestionar Profesores',
-            'gestionar_secciones'       => 'Gestionar Secciones',
-            'gestionar_grados'          => 'Gestionar Grados',
-            'ver_reportes'              => 'Ver Reportes',
-            'gestionar_pagos'           => 'Gestionar Pagos',
-            'gestionar_calificaciones'  => 'Gestionar Calificaciones',
-            'gestionar_asistencias'     => 'Gestionar Asistencias',
-            'gestionar_observaciones'   => 'Gestionar Observaciones',
-            'gestionar_documentos'      => 'Gestionar Documentos',
-            'gestionar_mensajes'        => 'Gestionar Mensajes',
-            'gestionar_avisos'          => 'Gestionar Avisos y Comunicados',
-            'configurar_sistema'        => 'Configurar Sistema',
-            'administrar_usuarios'      => 'Administrar Usuarios',
-            'asignar_roles'             => 'Asignar Roles y Permisos',
-            'auditar_actividades'       => 'Auditar Actividades del Sistema',
-            'personalizar_perfil'       => 'Personalizar Perfil',
-            'cambiar_contraseña'        => 'Cambiar Contraseña',
-            'ver_notificaciones'        => 'Ver Notificaciones',
-            'gestionar_eventos'         => 'Gestionar Eventos y Calendario',
-            'exportar_datos'            => 'Exportar Datos',
-            'importar_datos'            => 'Importar Datos',
-            'realizar_backup'           => 'Realizar Backup del Sistema',
-            'restaurar_backup'          => 'Restaurar Backup del Sistema',
-            'monitorizar_rendimiento'   => 'Monitorizar Rendimiento del Sistema',
-            'configurar_notificaciones' => 'Configurar Notificaciones',
-            'gestionar_roles'           => 'Gestionar Roles',
-            'asignar_permisos'          => 'Asignar Permisos',
-            'ver_auditorias'            => 'Ver Auditorías',
-            'configurar_seguridad'      => 'Configurar Seguridad',
+            'gestionar_matriculas' => 'Gestionar Matrículas',
+            'gestionar_estudiantes' => 'Gestionar Estudiantes',
+            'gestionar_profesores' => 'Gestionar Profesores',
+            'gestionar_secciones' => 'Gestionar Secciones',
+            'gestionar_grados' => 'Gestionar Grados',
+            'gestionar_materias' => 'Gestionar Materias',
+            'ver_reportes' => 'Ver Reportes',
+            'gestionar_pagos' => 'Gestionar Pagos',
+            'gestionar_calificaciones' => 'Gestionar Calificaciones',
+            'gestionar_asistencias' => 'Gestionar Asistencias',
+            'gestionar_observaciones' => 'Gestionar Observaciones',
+            'gestionar_documentos' => 'Gestionar Documentos',
+            'gestionar_mensajes' => 'Gestionar Mensajes',
+            'gestionar_avisos' => 'Gestionar Avisos y Comunicados',
         ];
     }
 }

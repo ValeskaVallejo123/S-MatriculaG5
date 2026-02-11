@@ -13,7 +13,6 @@
 
 @section('content')
 <div class="container" style="max-width: 800px;">
-
     <!-- Formulario -->
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-header text-white" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
@@ -144,7 +143,6 @@
                         <label class="form-label small fw-semibold" style="color: #003b73;">
                             Tipo de Administrador <span style="color: #ef4444;">*</span>
                         </label>
-
                         <div class="row g-3">
                             <!-- Super Admin -->
                             <div class="col-md-6">

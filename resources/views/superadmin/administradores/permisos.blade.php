@@ -13,7 +13,6 @@
 
 @section('content')
 <div class="container-fluid">
-
     <!-- Header con descripción -->
     <div class="card mb-4 border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-body p-4">
@@ -33,7 +32,6 @@
 
     <!-- Cards de Roles -->
     <div class="row g-4 mb-4">
-
         <!-- SUPER ADMIN -->
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border-left: 4px solid #ef4444 !important;">
@@ -126,7 +124,6 @@
                             <i class="fas fa-list-check me-2"></i>Permisos Disponibles
                         </h6>
                         <p class="mb-3" style="color: #64748b; font-size: 0.875rem;">El Super Admin puede asignar los siguientes permisos:</p>
-
                         <div class="d-flex flex-column gap-2" style="max-height: 300px; overflow-y: auto;">
                             @foreach($permisos as $key => $nombre)
                             <div class="d-flex align-items-center gap-2 p-2 rounded" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
@@ -472,7 +469,6 @@
 
 @push('styles')
 <style>
-
     .hover-shadow:hover {
         box-shadow: 0 4px 12px rgba(78, 199, 210, 0.2);
         background: linear-gradient(135deg, rgba(78, 199, 210, 0.05) 0%, rgba(0, 80, 143, 0.05) 100%);
@@ -513,7 +509,6 @@ function abrirModalPermisosData(button) {
     const userId = button.dataset.userId;
     const userName = button.dataset.userName;
     const userPermissions = JSON.parse(button.dataset.userPermissions);
-
     abrirModalPermisos(userId, userName, userPermissions);
 }
 
@@ -533,7 +528,6 @@ function abrirModalPermisos(userId, userName, userPermissions) {
             }
         });
     }
-
     modalPermisos.show();
 }
 
@@ -572,7 +566,6 @@ function filtrarUsuarios() {
     const searchTerm = document.getElementById('searchUser').value.toLowerCase();
     const roleFilter = document.getElementById('filterRole').value.toLowerCase();
     const rows = document.querySelectorAll('#usersTable tbody tr');
-
     rows.forEach(row => {
         const name = row.dataset.name || '';
         const email = row.dataset.email || '';

@@ -13,6 +13,7 @@
 
 @section('content')
 <div class="container" style="max-width: 900px;">
+    
 
 
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">

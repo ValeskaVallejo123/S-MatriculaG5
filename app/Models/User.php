@@ -27,15 +27,18 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'activo' => 'boolean',
-        'fecha_registro' => 'datetime',
-        'permissions' => 'array',
-        'is_super_admin' => 'boolean',
-        'is_protected' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'permissions' => 'array',
+            'activo' => 'boolean',
+            'fecha_registro' => 'datetime',
+            'is_super_admin' => 'boolean',
+            'is_protected' => 'boolean'
+        ];
+    }
 
     // =============================
     // RELACIONES
@@ -43,7 +46,7 @@ class User extends Authenticatable
 
     public function rol()
     {
-        return $this->belongsTo(Rol::class, 'id_rol');
+        return $this->belongsTo(Rol::class, 'id_rol', 'id'); //  Usa 'id_rol' de users y 'id' de roles
     }
 
     public function padre()

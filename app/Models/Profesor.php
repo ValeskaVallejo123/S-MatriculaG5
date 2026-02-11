@@ -11,23 +11,22 @@ class Profesor extends Model
 
     protected $table = 'profesores';
 
-    protected $fillable = [
-        'user_id',
-        'nombre',
-        'apellido',
-        'email',
-        'telefono',
-        'dni',
-        'fecha_nacimiento',
-        'direccion',
-        'especialidad',
-        'salario',
-        'tipo_contrato',
-        'fecha_ingreso',
-        'estado',
-        'observaciones',
-        'grado_guia_id',
-    ];
+   protected $fillable = [
+    'nombre',
+    'apellido',
+    'dni',
+    'fecha_nacimiento',
+    'genero',
+    'telefono',
+    'email',
+    'direccion',
+    'especialidad',
+    'nivel_academico',
+    'fecha_contratacion',
+    'tipo_contrato',
+    'estado',
+];
+
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
