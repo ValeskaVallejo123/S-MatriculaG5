@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\H20Curso;
 
 class H20CursoController extends Controller
 {
@@ -10,6 +11,12 @@ class H20CursoController extends Controller
     {
         $cursos = H20Curso::paginate(15);
         return view('h20cursos.index', compact('cursos'));
+    }
+
+    public function create()
+    {
+        // Muestra el formulario de creación
+        return view('h20cursos.create');
     }
 
     public function store(Request $request)
@@ -22,6 +29,12 @@ class H20CursoController extends Controller
 
         H20Curso::create($request->all());
         return redirect()->route('h20cursos.index')->with('success', 'Curso creado correctamente');
+    }
+
+    public function edit(H20Curso $h20curso)
+    {
+        // Muestra el formulario de edición
+        return view('h20cursos.edit', compact('h20curso'));
     }
 
     public function update(Request $request, H20Curso $h20curso)
@@ -41,5 +54,4 @@ class H20CursoController extends Controller
         $h20curso->delete();
         return redirect()->route('h20cursos.index')->with('success', 'Curso eliminado correctamente');
     }
-
 }

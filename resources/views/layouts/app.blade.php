@@ -702,7 +702,15 @@
             <li class="menu-item">
                 <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i>
-                    <span>Grados</span>
+                    <span>Grados/Cursos</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('h20cursos.index') }}"
+                   class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Cursos</span>
                 </a>
             </li>
 

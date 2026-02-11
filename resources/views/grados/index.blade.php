@@ -28,10 +28,10 @@
                 <div class="col-md-3">
                     <div class="position-relative">
                         <i class="fas fa-search position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.938rem;"></i>
-                        <input type="text" 
-                               id="searchInput" 
-                               class="form-control ps-5" 
-                               placeholder="Buscar grado..." 
+                        <input type="text"
+                               id="searchInput"
+                               class="form-control ps-5"
+                               placeholder="Buscar grado..."
                                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 3rem; transition: all 0.3s ease;">
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                 <div class="col-md-2">
                     <select id="filterNivel" class="form-select" style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                         <option value="">Todos los niveles</option>
-                        <option value="primaria">Primaria</option>
+                        <option value="primaria">Primaria </option>
                         <option value="secundaria">Secundaria</option>
                     </select>
                 </div>
@@ -53,7 +53,7 @@
                         <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 por página</option>
                     </select>
                 </div>
-                
+
                 <div class="col-md-5">
                     <div class="d-flex align-items-center justify-content-md-end gap-3">
                         <div class="d-flex align-items-center gap-2">
@@ -102,7 +102,7 @@
                                 <div>
                                     <h5 class="mb-2 fw-bold" style="color: #003b73; font-size: 1.125rem;">
                                         <i class="fas fa-graduation-cap me-2" style="color: #4ec7d2;"></i>
-                                        {{ $grado->numero }}° 
+                                        {{ $grado->numero }}°
                                         @if($grado->seccion)
                                             <span style="color: #4ec7d2;">{{ $grado->seccion }}</span>
                                         @endif
@@ -142,18 +142,18 @@
                             </div>
 
                             <div class="d-flex gap-2 mt-3">
-                                <a href="{{ route('grados.show', $grado) }}" 
-                                   class="btn btn-sm flex-fill btn-grado-view" 
+                                <a href="{{ route('grados.show', $grado) }}"
+                                   class="btn btn-sm flex-fill btn-grado-view"
                                    style="border: 2px solid #6366f1; color: #6366f1; background: white; border-radius: 8px; font-size: 0.875rem; padding: 0.5rem; font-weight: 600; transition: all 0.3s ease;">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('grados.asignar-materias', $grado) }}" 
-                                   class="btn btn-sm flex-fill btn-grado-materias" 
+                                <a href="{{ route('grados.asignar-materias', $grado) }}"
+                                   class="btn btn-sm flex-fill btn-grado-materias"
                                    style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 8px; font-size: 0.875rem; padding: 0.5rem; font-weight: 600; transition: all 0.3s ease;">
                                     <i class="fas fa-tasks"></i>
                                 </a>
-                                <a href="{{ route('grados.edit', $grado) }}" 
-                                   class="btn btn-sm btn-grado-edit" 
+                                <a href="{{ route('grados.edit', $grado) }}"
+                                   class="btn btn-sm btn-grado-edit"
                                    style="border: 2px solid #f59e0b; color: #f59e0b; background: white; border-radius: 8px; font-size: 0.875rem; padding: 0.5rem 0.625rem; font-weight: 600; transition: all 0.3s ease;">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -184,11 +184,11 @@
                 <div class="pagination-wrapper mt-4">
                     <!-- Información de resultados -->
                     <div class="pagination-info">
-                        Mostrando 
+                        Mostrando
                         <strong>{{ $grados->firstItem() }}</strong>
-                        a 
+                        a
                         <strong>{{ $grados->lastItem() }}</strong>
-                        de 
+                        de
                         <strong>{{ $grados->total() }}</strong>
                         resultados
                     </div>
@@ -539,19 +539,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const filterNivel = document.getElementById('filterNivel');
     const cards = document.querySelectorAll('.grado-card');
-    
+
     function filterCards() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const nivelFilter = filterNivel.value;
         let visibleCount = 0;
-        
+
         cards.forEach(function(card) {
             const text = card.textContent.toLowerCase();
             const nivel = card.dataset.nivel;
-            
+
             const matchesSearch = text.includes(searchTerm);
             const matchesNivel = !nivelFilter || nivel === nivelFilter;
-            
+
             if (matchesSearch && matchesNivel) {
                 card.style.display = '';
                 visibleCount++;
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     searchInput.addEventListener('keyup', filterCards);
     filterNivel.addEventListener('change', filterCards);
 });

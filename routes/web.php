@@ -25,6 +25,7 @@ use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\SuperAdmin\UsuarioController;
 use App\Http\Controllers\RegistrarCalificacionController;
 use App\Http\Controllers\AccionesImportantesController;
+use App\Http\Controllers\H20CursoController;
 
 /*
 |--------------------------------------------------------------------------
