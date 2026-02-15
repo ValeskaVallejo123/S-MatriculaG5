@@ -6,16 +6,37 @@ use App\Models\EventoAcademico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\View\View;
 
 class CalendarioController extends Controller
 {
     /**
      * Muestra la vista del calendario
      */
-    public function index()
-    {
-        return view('calendario');
-    }
+   public function index()
+{
+    $eventos = EventoAcademico::all();
+
+    return response()->json($eventos->map(function ($evento) {
+        return [
+            'id' => $evento->id,
+            'title' => $evento->titulo,
+            'start' => $evento->fecha_inicio,
+            'end' => $evento->fecha_fin,
+            'color' => $evento->color,
+            'extendedProps' => [
+                'description' => $evento->descripcion,
+                'type' => $evento->tipo
+            ]
+        ];
+    }));
+}
+
+
+public function eventosPublicos()
+{
+    return $this->index();
+}
 
     /**
      * Obtiene todos los eventos en formato JSON para FullCalendar
@@ -55,22 +76,32 @@ class CalendarioController extends Controller
     /**
      * Guarda un nuevo evento
      */
-    public function guardar(Request $request) {
-    $validado = $request->validate([
+    public function store(Request $request)
+{
+    $request->validate([
         'titulo' => 'required|string|max:255',
-        'descripcion' => 'nullable|string',
         'fecha_inicio' => 'required|date',
         'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-        'tipo' => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
-        'color' => 'required|string',
-        'todo_el_dia' => 'nullable|boolean' // <--- DEBES AGREGAR ESTO
+        'tipo' => 'required|string',
+        'descripcion' => 'nullable|string',
+        'color' => 'nullable|string',
+        'todo_el_dia' => 'nullable|boolean',
     ]);
 
-    // Forzar el valor booleano si no viene
-    $validado['todo_el_dia'] = $request->todo_el_dia ?? true;
+    $evento = EventoAcademico::create([
+        'titulo' => $request->titulo,
+        'descripcion' => $request->descripcion,
+        'fecha_inicio' => $request->fecha_inicio,
+        'fecha_fin' => $request->fecha_fin,
+        'tipo' => $request->tipo,
+        'color' => $request->color,
+        'todo_el_dia' => $request->todo_el_dia ?? 1,
+    ]);
 
-    $evento = EventoAcademico::create($validado);
-    return response()->json(['exito' => true, 'evento' => $evento]);
+    return response()->json([
+        'mensaje' => 'Evento creado correctamente',
+        'evento' => $evento
+    ]);
 }
 
     /**

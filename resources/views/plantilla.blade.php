@@ -1218,13 +1218,22 @@
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-users"></i>
-        </div>
-        <h3>Calendario Académico</h3>
-        <p>Consulta fechas importantes, eventos y periodos académicos del año escolar 2026.</p>
-        <a href="{{ route('calendario') }}" class="btn-feature">Ver Calendario</a>
-      </div>
+  <div class="feature-icon">
+    <i class="fas fa-book-reader"></i>
+  </div>
+  <h3>Plan de Estudios</h3>
+  <p>Consulta las materias, objetivos pedagógicos y competencias por grado escolar.</p>
+  <a href="{{ route('plan-estudios') }}"    class="btn-feature">Ver Plan</a>
+  </div>
+
+      <div class="feature-card">
+    <div class="feature-icon">
+        <i class="fas fa-calendar-alt"></i>
+    </div>
+    <h3>Calendario Académico</h3>
+    <p>Consulta fechas importantes, eventos y periodos académicos del año escolar 2025.</p>
+    <a href="{{ route('calendario.publico') }}" class="btn-feature">Ver Calendario</a>
+</div>
 
       <!-- Fila 2: 3 tarjetas -->
       <div class="feature-card">

@@ -662,19 +662,30 @@
             </li>
 
             <li class="menu-item">
-            <a href="{{ route('calendario') }}"
-            class="menu-link {{ request()->routeIs('calendario') ? 'active' : '' }}">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Calendario Académico</span>
-            </a>
-            </li>
+    <a href="{{ route('calendario') }}"
+       class="menu-link {{ request()->routeIs('/calendario/eventos') ? 'active' : '' }}">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Calendario Académico</span>
+    </a>
+    </li>
 
-            <li class="menu-item">
-    <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
-        <i class="fas fa-graduation-cap"></i>
-        <span>plan de estudios</span>
+           <div class="feature-card">
+  <div class="feature-icon">
+    <i class="fas fa-book-reader"></i>
+  </div>
+  <h3>Plan de Estudios</h3>
+  <p>Consulta las materias, objetivos pedagógicos y competencias por grado escolar.</p>
+  <a href="#plan-estudios" class="btn-feature">Ver Plan</a>
+</div>
+
+<li class="menu-item">
+    <a href="{{ route('secciones.index') }}" 
+       class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
+        <i class="fas fa-layer-group"></i>
+        <span>Secciones</span>
     </a>
 </li>
+
 
 
             <li class="menu-item">
