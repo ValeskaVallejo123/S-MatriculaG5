@@ -4,26 +4,6 @@
 
 @section('content')
 
-<script>
-function activarTodos(padreId, estudianteId) {
-    const form = document.getElementById(`form-${estudianteId}`);
-    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(cb => cb.checked = true);
-}
-
-function desactivarTodos(padreId, estudianteId) {
-    const form = document.getElementById(`form-${estudianteId}`);
-    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(cb => cb.checked = false);
-}
-
-function establecerDefecto(padreId, estudianteId) {
-    if (confirm('¿Está seguro de establecer los permisos por defecto? Esto sobrescribirá la configuración actual.')) {
-        window.location.href = `/admin/permisos/${padreId}/${estudianteId}/defecto`;
-    }
-}
-</script>
-
 <div class="container-fluid" style="max-width: 1200px;">
     
     <!-- Encabezado -->
@@ -32,7 +12,7 @@ function establecerDefecto(padreId, estudianteId) {
             <h2 class="mb-1" style="color: #003b73; font-weight: 700;">
                 <i class="fas fa-user-shield"></i> Configurar Permisos
             </h2>
-            <p class="text-muted mb-0">{{ $padre->nombre_completo }}</p>
+            <p class="text-muted mb-0">{{ $padre->nombre }} {{ $padre->apellido }}</p>
         </div>
         <a href="{{ route('admin.permisos.index') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left"></i> Volver
@@ -66,7 +46,7 @@ function establecerDefecto(padreId, estudianteId) {
                 <div class="col-md-4">
                     <p class="mb-2">
                         <strong><i class="fas fa-user text-primary"></i> Nombre:</strong><br>
-                        {{ $padre->nombre_completo }}
+                        {{ $padre->nombre }} {{ $padre->apellido }}
                     </p>
                 </div>
                 <div class="col-md-4">
@@ -78,7 +58,7 @@ function establecerDefecto(padreId, estudianteId) {
                 <div class="col-md-4">
                     <p class="mb-2">
                         <strong><i class="fas fa-users text-primary"></i> Parentesco:</strong><br>
-                        {{ $padre->parentesco_formateado }}
+                        {{ ucfirst($padre->parentesco) }}
                     </p>
                 </div>
                 <div class="col-md-6">
@@ -107,28 +87,29 @@ function establecerDefecto(padreId, estudianteId) {
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0" style="color: #003b73;">
                             <i class="fas fa-child"></i> 
-                            {{ $estudiante->nombre }} {{ $estudiante->apellido }}
+                            {{ $estudiante->nombre1 }} {{ $estudiante->nombre2 ?? '' }} {{ $estudiante->apellido1 }} {{ $estudiante->apellido2 ?? '' }}
                             <small class="text-muted">({{ $estudiante->grado ?? 'N/A' }} - {{ $estudiante->seccion ?? 'N/A' }})</small>
                         </h5>
                         <div>
                             <button 
                                 type="button" 
-                                class="btn btn-sm btn-success me-2"
-                                onclick="activarTodos({{ $padre->id }}, {{ $estudiante->id }})"
+                                class="btn btn-sm btn-success me-2 btn-activar-todos"
+                                data-estudiante-id="{{ $estudiante->id }}"
                             >
                                 <i class="fas fa-check-double"></i> Activar Todos
                             </button>
                             <button 
                                 type="button" 
-                                class="btn btn-sm btn-warning me-2"
-                                onclick="desactivarTodos({{ $padre->id }}, {{ $estudiante->id }})"
+                                class="btn btn-sm btn-warning me-2 btn-desactivar-todos"
+                                data-estudiante-id="{{ $estudiante->id }}"
                             >
                                 <i class="fas fa-times-circle"></i> Desactivar Todos
                             </button>
                             <button 
                                 type="button" 
-                                class="btn btn-sm btn-info"
-                                onclick="establecerDefecto({{ $padre->id }}, {{ $estudiante->id }})"
+                                class="btn btn-sm btn-info btn-defecto"
+                                data-padre-id="{{ $padre->id }}"
+                                data-estudiante-id="{{ $estudiante->id }}"
                             >
                                 <i class="fas fa-undo"></i> Por Defecto
                             </button>
@@ -374,5 +355,47 @@ function establecerDefecto(padreId, estudianteId) {
         border-color: #4ec7d2 !important;
     }
 </style>
+
+{{-- Script al final, fuera de conflictos con Blade --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Activar todos los checkboxes
+    document.querySelectorAll('.btn-activar-todos').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var estudianteId = this.getAttribute('data-estudiante-id');
+            var form = document.getElementById('form-' + estudianteId);
+            if (form) {
+                var checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(function(cb) { cb.checked = true; });
+            }
+        });
+    });
+
+    // Desactivar todos los checkboxes
+    document.querySelectorAll('.btn-desactivar-todos').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var estudianteId = this.getAttribute('data-estudiante-id');
+            var form = document.getElementById('form-' + estudianteId);
+            if (form) {
+                var checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(function(cb) { cb.checked = false; });
+            }
+        });
+    });
+
+    // Establecer por defecto
+    document.querySelectorAll('.btn-defecto').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var padreId = this.getAttribute('data-padre-id');
+            var estudianteId = this.getAttribute('data-estudiante-id');
+            if (confirm('¿Está seguro de establecer los permisos por defecto? Esto sobrescribirá la configuración actual.')) {
+                window.location.href = '/admin/permisos/' + padreId + '/' + estudianteId + '/defecto';
+            }
+        });
+    });
+
+});
+</script>
 
 @endsection

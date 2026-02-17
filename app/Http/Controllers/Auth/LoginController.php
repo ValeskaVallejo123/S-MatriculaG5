@@ -5,118 +5,103 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 class LoginController extends Controller
 {
-    /**
-     * Mostrar formulario de login
-     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    /**
-     * Procesar el login
-     */
     public function login(Request $request)
     {
-        // Validar credenciales
+        Log::info('=== INICIO LOGIN ===');
+        
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-        ], [
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'Debe ser un correo electrónico válido.',
-            'password.required' => 'La contraseña es obligatoria.',
         ]);
 
-        // Buscar el usuario por email
         $usuario = User::where('email', $request->email)->first();
 
-        // Verificar si el usuario existe
         if (!$usuario) {
-            return back()->withErrors([
-                'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-            ])->onlyInput('email');
+            Log::info('Usuario no encontrado: ' . $request->email);
+            return back()->withErrors(['email' => 'Usuario no encontrado.'])->onlyInput('email');
         }
 
-        // Verificar si la cuenta está activa (excepto para Super Administrador)
-        if ($usuario->id_rol !== 1 && isset($usuario->activo) && !$usuario->activo) {
-            return back()->withErrors([
-                'email' => 'Tu cuenta está pendiente de aprobación. Un administrador debe activarla antes de que puedas acceder.',
-            ])->onlyInput('email');
-        }
+        Log::info('Usuario encontrado', ['email' => $usuario->email, 'id' => $usuario->id]);
 
-        // Verificar si tiene rol asignado
         if (!$usuario->rol_id && !$usuario->id_rol) {
-            return back()->withErrors([
-                'email' => 'Tu cuenta no tiene un rol asignado. Por favor contacta al administrador.',
-            ])->onlyInput('email');
+            Log::error('Sin rol asignado');
+            return back()->withErrors(['email' => 'Sin rol asignado.'])->onlyInput('email');
         }
 
-        // Intentar autenticar
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
+        if (!Auth::attempt($credentials, $request->filled('remember'))) {
+            Log::error('Credenciales incorrectas');
+            return back()->withErrors(['email' => 'Credenciales incorrectas.'])->onlyInput('email');
+        }
 
-            $usuario = Auth::user();
+        Log::info('Autenticación exitosa');
 
-            // Redirigir según el rol del usuario
-            if ($usuario->rol) {
-                $nombreRol = $usuario->rol->nombre;
+        $request->session()->regenerate();
+        $usuario = Auth::user();
 
-                switch ($nombreRol) {
-                    case 'Super Administrador':
-                        return redirect()->route('superadmin.dashboard')
-                            ->with('success', 'Bienvenido Super Administrador');
+        Log::info('Verificando activo', [
+            'activo' => $usuario->activo,
+            'user_type' => $usuario->user_type,
+        ]);
 
-                    case 'Administrador':
-                        return redirect()->route('admin.dashboard')
-                            ->with('success', 'Bienvenido Administrador');
+        if (isset($usuario->activo) && !$usuario->activo) {
+            
+            $esPadre = ($usuario->user_type === 'padre') || 
+                       ($usuario->rol && strtolower($usuario->rol->nombre) === 'padre');
 
-                    case 'Profesor':
-                        return redirect()->route('profesor.dashboard')
-                            ->with('success', 'Bienvenido Profesor');
+            Log::info('Usuario inactivo, esPadre: ' . ($esPadre ? 'SI' : 'NO'));
 
-                    case 'Estudiante':
-                        return redirect()->route('estudiante.dashboard')
-                            ->with('success', 'Bienvenido Estudiante');
-
-                    case 'Padre':
-                        return redirect()->route('padre.dashboard')
-                            ->with('success', 'Bienvenido Padre/Tutor');
-
-                    default:
-                        // Si el rol no coincide con ninguno, redirigir a /home
-                        return redirect()->route('home')
-                            ->with('warning', 'Rol no reconocido. Contacta al administrador.');
-                }
+            if ($esPadre) {
+                Log::info('Activando padre');
+                DB::table('users')->where('id', $usuario->id)->update(['activo' => 1]);
+                Log::info('Padre activado');
+            } else {
+                Log::warning('Usuario bloqueado');
+                Auth::logout();
+                return back()->withErrors(['email' => 'Cuenta pendiente de aprobación.'])->onlyInput('email');
             }
-
-            // Si no tiene rol asignado (fallback)
-            Auth::logout();
-            return back()->withErrors([
-                'email' => 'Tu cuenta no tiene un rol asignado. Por favor contacta al administrador.',
-            ])->onlyInput('email');
         }
 
-        // Si falla la autenticación
-        return back()->withErrors([
-            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-        ])->onlyInput('email');
+        Log::info('Redirigiendo');
+        return $this->redirectBasedOnRole($usuario);
     }
 
-    /**
-     * Cerrar sesión
-     */
+    private function redirectBasedOnRole($usuario)
+    {
+        if ($usuario->rol) {
+            switch ($usuario->rol->nombre) {
+                case 'Super Administrador':
+                    return redirect()->route('superadmin.dashboard');
+                case 'Administrador':
+                    return redirect()->route('admin.dashboard');
+                case 'Profesor':
+                    return redirect()->route('profesor.dashboard');
+                case 'Estudiante':
+                    return redirect()->route('estudiante.dashboard');
+                case 'Padre':
+                    return redirect()->route('padre.dashboard');
+            }
+        }
+
+        Auth::logout();
+        return back()->withErrors(['email' => 'Rol no reconocido.']);
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect('/login')->with('success', 'Sesión cerrada correctamente');
+        return redirect('/login');
     }
 }

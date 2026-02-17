@@ -6,10 +6,12 @@ use App\Models\Matricula;
 use App\Models\Padre;
 use App\Models\Estudiante;
 use App\Models\User;
+use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MatriculaController extends Controller
 {
@@ -185,13 +187,35 @@ class MatriculaController extends Controller
                 // Verificar que no exista el usuario
                 $usuarioExistente = User::where('email', $validated['padre_email'])->first();
 
-                if (!$usuarioExistente) {
+                if ($usuarioExistente) {
+                    // Si existe, actualizarlo a padre y activarlo
+                    DB::table('users')
+                        ->where('id', $usuarioExistente->id)
+                        ->update([
+                            'user_type' => 'padre',
+                            'activo' => 1,
+                            'id_rol' => 5, // Rol Padre
+                        ]);
+                } else {
+                    // Buscar o crear el rol Padre
+                    $rolPadre = Rol::firstOrCreate(
+                        ['nombre' => 'Padre'],
+                        ['descripcion' => 'Rol para padres de familia']
+                    );
+
+                    // Crear nuevo usuario padre
                     User::create([
                         'name' => $validated['padre_nombre'] . ' ' . $validated['padre_apellido'],
                         'email' => $validated['padre_email'],
-                        'password' => Hash::make($validated['padre_dni']), // Contraseña = DNI
-                        'id_rol' => 4, // Rol Padre
+                        'password' => Hash::make($validated['padre_dni']),
+                        'id_rol' => $rolPadre->id,
+                        'user_type' => 'padre',
+                        'activo' => 1,
                         'email_verified_at' => now(),
+                        'permissions' => json_encode([
+                            'ver_calificaciones' => true,
+                            'ver_asistencias' => true,
+                        ]),
                     ]);
                 }
             }
@@ -220,7 +244,7 @@ class MatriculaController extends Controller
                 'telefono' => $validated['estudiante_telefono'] ?? null,
                 'direccion' => $validated['estudiante_direccion'] ?? null,
                 'grado' => $validated['estudiante_grado'],
-                'seccion' => 'X', // Usa solo 1 carácter - La sección se asigna después por el admin
+                'seccion' => 'X',
                 'estado' => 'activo',
                 'padre_id' => $padre->id,
             ]);
@@ -235,7 +259,7 @@ class MatriculaController extends Controller
                 'estudiante_id' => $estudiante->id,
                 'codigo_matricula' => $codigoMatricula,
                 'anio_lectivo' => $validated['anio_lectivo'],
-                'fecha_matricula' => now()->format('Y-m-d'), // Fecha automática
+                'fecha_matricula' => now()->format('Y-m-d'),
                 'estado' => $esPublico ? 'pendiente' : ($validated['estado'] ?? 'pendiente'),
                 'observaciones' => $esPublico
                     ? 'Matrícula registrada desde el portal público'
@@ -269,12 +293,9 @@ class MatriculaController extends Controller
                 $documentosRutas['acta_nacimiento'] = $ruta;
             }
 
-            // Guardar rutas de documentos en la matrícula (si tienes campos para ello)
+            // Guardar rutas de documentos en la matrícula
             if (!empty($documentosRutas)) {
-                // Si tienes campos en la tabla matriculas para guardar las rutas:
                 // $matricula->update($documentosRutas);
-                
-                // O si tienes una tabla separada de documentos:
                 // foreach ($documentosRutas as $tipo => $ruta) {
                 //     Documento::create([
                 //         'matricula_id' => $matricula->id,
@@ -517,4 +538,10 @@ class MatriculaController extends Controller
                 ->withErrors(['error' => 'Error al cancelar la matrícula.']);
         }
     }
+
+    /**
+     * Generar comprobante de matrícula en PDF
+     */
+
+    
 }

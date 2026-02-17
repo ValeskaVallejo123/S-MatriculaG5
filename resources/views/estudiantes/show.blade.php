@@ -5,12 +5,7 @@
 @section('page-title', 'Detalles del Estudiante')
 
 @section('topbar-actions')
-    <div class="d-flex gap-2">
-        <a href="{{ route('estudiantes.edit', $estudiante) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3);">
-            <i class="fas fa-edit me-1"></i>Editar
-        </a>
-        <a href="{{ route('estudiantes.index') }}" class="btn btn-sm" style="background: white; color: #00508f; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 2px solid #00508f;">
-            <i class="fas fa-arrow-left me-1"></i>Volver
+    
 
             <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}" class="btn btn-primary">
     <i class="fas fa-link"></i> Vincular Padre/Tutor

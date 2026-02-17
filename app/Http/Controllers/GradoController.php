@@ -133,9 +133,6 @@ class GradoController extends Controller
         return redirect()->route('grados.show', $grado)
                         ->with('success', 'Materias asignadas exitosamente');
     }
-<<<<<<< HEAD
-}
-=======
 
     public function crearMasivo()
 {
@@ -182,4 +179,3 @@ public function generarMasivo(Request $request)
         ->with('success', " Se han creado {$contador} grados exitosamente (9 grados × 4 secciones)");
 }
 }
->>>>>>> dev/valeska

@@ -572,20 +572,23 @@
 </head>
 <body>
 
+    @auth
     @php
         // Sistema de roles corregido
         $user = auth()->user();
-        $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
-        $isAdmin = in_array($user->role, ['admin', 'super_admin']) || $user->is_super_admin == 1;
+        $isSuperAdmin = $user->is_super_admin == 1 || ($user->rol && strtolower($user->rol->nombre) === 'super administrador');
+        $isAdmin = $isSuperAdmin || ($user->rol && in_array(strtolower($user->rol->nombre), ['admin', 'administrador']));
         $showSidebar = $isSuperAdmin || $isAdmin;
         
         // Obtener el nombre del rol para mostrar
         if ($isSuperAdmin) {
             $roleName = 'Super Administrador';
-        } elseif ($user->role === 'admin') {
+        } elseif ($user->rol && strtolower($user->rol->nombre) === 'administrador') {
             $roleName = 'Administrador';
+        } elseif ($user->rol) {
+            $roleName = ucfirst($user->rol->nombre);
         } else {
-            $roleName = ucfirst($user->role ?? 'Usuario');
+            $roleName = 'Usuario';
         }
     @endphp
 
@@ -608,10 +611,10 @@
         <!-- User Info -->
         <div class="user-info">
             <div class="user-avatar">
-                {{ substr($user->name ?? 'A', 0, 1) }}
+                {{ substr($user->name, 0, 1) }}
             </div>
             <div class="user-details">
-                <h6>{{ $user->name ?? 'Administrador' }}</h6>
+                <h6>{{ $user->name }}</h6>
                 <p>{{ $roleName }}</p>
             </div>
         </div>
@@ -695,6 +698,13 @@
                 <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Matrículas</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('admin.solicitudes.index') }}" class="menu-link {{ request()->routeIs('admin.solicitudes.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Solicitudes</span>
                 </a>
             </li>
 
@@ -855,6 +865,14 @@
             @yield('content')
         </div>
     </main>
+    @else
+    <!-- VISTA PARA USUARIOS NO AUTENTICADOS -->
+    <main class="main-content no-sidebar">
+        <div class="content-wrapper">
+            @yield('content')
+        </div>
+    </main>
+    @endauth
 
     <!-- Modal de Confirmación de Eliminación -->
     <div class="modal-delete-overlay" id="modalDelete">
@@ -910,8 +928,10 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
         }
 
         // Auto-hide alerts after 5 seconds
