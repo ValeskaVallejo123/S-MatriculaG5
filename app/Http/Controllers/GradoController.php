@@ -11,7 +11,11 @@ class GradoController extends Controller
 {
     public function index()
     {
-        $grados = Grado::with('materias')->orderBy('nivel')->orderBy('numero')->paginate(15);
+        $grados = Grado::with('materias')
+            ->orderBy('nivel')
+            ->orderBy('numero')
+            ->paginate(15);
+
         return view('grados.index', compact('grados'));
     }
 
@@ -22,37 +26,43 @@ class GradoController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nivel' => 'required|string',
-            'numero' => 'required|integer',
-            'seccion' => 'required|string',
-            'anio_lectivo' => 'required|integer',
+        $validated = $request->validate([
+            'nivel' => 'required|in:Primaria,Básica,Secundaria',
+            'numero' => 'required|integer|min:1|max:12',
+            'seccion' => 'required|string|max:1',
+            'anio_lectivo' => 'required|integer|min:2020|max:2100',
+            'activo' => 'nullable|boolean',
         ]);
 
-        $existe = Grado::where('nivel', $request->nivel)
-                        ->where('numero', $request->numero)
-                        ->where('seccion', $request->seccion)
-                        ->where('anio_lectivo', $request->anio_lectivo)
-                        ->exists();
+        $existe = Grado::where('nivel', $validated['nivel'])
+            ->where('numero', $validated['numero'])
+            ->where('seccion', $validated['seccion'])
+            ->where('anio_lectivo', $validated['anio_lectivo'])
+            ->exists();
 
         if ($existe) {
-            return back()->withInput()->with('error', '¡El grado ya existe para este nivel, sección y año lectivo!');
+            return back()
+                ->withInput()
+                ->with('error', '¡El grado ya existe para este nivel, sección y año lectivo!');
         }
 
         Grado::create([
-            'nivel' => $request->nivel,
-            'numero' => $request->numero,
-            'seccion' => $request->seccion,
-            'anio_lectivo' => $request->anio_lectivo,
-            'activo' => $request->activo ?? 1,
+            'nivel' => $validated['nivel'],
+            'numero' => $validated['numero'],
+            'seccion' => $validated['seccion'],
+            'anio_lectivo' => $validated['anio_lectivo'],
+            'activo' => $request->boolean('activo', true),
         ]);
 
-        return redirect()->route('grados.index')->with('success', 'Grado creado correctamente.');
+        return redirect()
+            ->route('grados.index')
+            ->with('success', 'Grado creado correctamente.');
     }
 
     public function show(Grado $grado)
     {
         $grado->load('materias.grados');
+
         return view('grados.show', compact('grado'));
     }
 
@@ -63,36 +73,55 @@ class GradoController extends Controller
 
     public function update(Request $request, Grado $grado)
     {
-        $request->validate([
-            'nivel' => 'required|in:primaria,secundaria,Básica',
-            'numero' => 'required|integer|min:1|max:9',
-            'seccion' => 'nullable|string|max:1',
+        $validated = $request->validate([
+            'nivel' => 'required|in:Primaria,Básica,Secundaria',
+            'numero' => 'required|integer|min:1|max:12',
+            'seccion' => 'required|string|max:1',
             'anio_lectivo' => 'required|integer|min:2020|max:2100',
+            'activo' => 'nullable|boolean',
         ]);
 
-        $grado->update($request->all());
+        $grado->update([
+            'nivel' => $validated['nivel'],
+            'numero' => $validated['numero'],
+            'seccion' => $validated['seccion'],
+            'anio_lectivo' => $validated['anio_lectivo'],
+            'activo' => $request->boolean('activo', $grado->activo),
+        ]);
 
-        return redirect()->route('grados.index')->with('success', 'Grado actualizado exitosamente');
+        return redirect()
+            ->route('grados.index')
+            ->with('success', 'Grado actualizado exitosamente.');
     }
 
     public function destroy(Grado $grado)
     {
         $grado->delete();
-        return redirect()->route('grados.index')->with('success', 'Grado eliminado exitosamente');
+
+        return redirect()
+            ->route('grados.index')
+            ->with('success', 'Grado eliminado exitosamente.');
     }
 
     public function asignarMaterias(Grado $grado)
     {
-        $materias = Materia::where('nivel', $grado->nivel)->where('activo', true)->get();
+        $materias = Materia::where('nivel', $grado->nivel)
+            ->where('activo', true)
+            ->get();
+
         $profesores = User::where('role', 'profesor')->get();
+
         $materiasAsignadas = $grado->materias->pluck('id')->toArray();
 
-        return view('grados.asignar-materias', compact('grado', 'materias', 'profesores', 'materiasAsignadas'));
+        return view(
+            'grados.asignar-materias',
+            compact('grado', 'materias', 'profesores', 'materiasAsignadas')
+        );
     }
 
     public function guardarMaterias(Request $request, Grado $grado)
     {
-        $request->validate([
+        $validated = $request->validate([
             'materias' => 'required|array|min:1',
             'materias.*' => 'exists:materias,id',
             'profesores' => 'nullable|array',
@@ -100,7 +129,8 @@ class GradoController extends Controller
         ]);
 
         $syncData = [];
-        foreach ($request->materias as $materiaId) {
+
+        foreach ($validated['materias'] as $materiaId) {
             $syncData[$materiaId] = [
                 'profesor_id' => $request->profesores[$materiaId] ?? null,
                 'horas_semanales' => $request->horas[$materiaId] ?? 0,
@@ -109,7 +139,9 @@ class GradoController extends Controller
 
         $grado->materias()->sync($syncData);
 
-        return redirect()->route('grados.show', $grado)->with('success', 'Materias asignadas exitosamente');
+        return redirect()
+            ->route('grados.show', $grado)
+            ->with('success', 'Materias asignadas exitosamente.');
     }
 
     public function crearMasivo()
@@ -141,18 +173,17 @@ class GradoController extends Controller
 
         foreach ($grados as $gradoData) {
             foreach ($secciones as $seccion) {
-                // Se usa updateOrCreate para evitar errores de duplicidad si se ejecuta de nuevo
                 Grado::updateOrCreate(
                     [
                         'nivel' => $gradoData['nivel'],
                         'numero' => $gradoData['numero'],
                         'seccion' => $seccion,
-                        'anio_lectivo' => 2026 
+                        'anio_lectivo' => 2026,
                     ],
                     [
                         'nombre' => $gradoData['nombre'],
                         'capacidad_maxima' => $validated['capacidad_maxima'],
-                        'activo' => $request->has('activo'),
+                        'activo' => $request->boolean('activo', true),
                         'descripcion' => $gradoData['nombre'] . ' - Sección ' . $seccion,
                     ]
                 );
@@ -160,7 +191,8 @@ class GradoController extends Controller
             }
         }
 
-        return redirect()->route('grados.index')
+        return redirect()
+            ->route('grados.index')
             ->with('success', "Se han procesado {$contador} grados exitosamente.");
     }
-} // Fin de la clase
+}

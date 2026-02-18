@@ -572,22 +572,14 @@
 </head>
 <body>
 
+    @auth
     @php
-        // Sistema de roles corregido
-        $user = auth()->user();
-        $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
-        $isAdmin = in_array($user->role, ['admin', 'super_admin']) || $user->is_super_admin == 1;
-        $showSidebar = true;
-        
-        // Obtener el nombre del rol para mostrar
-        if ($isSuperAdmin) {
-            $roleName = 'Super Administrador';
-        } elseif ($user->role === 'admin') {
-            $roleName = 'Administrador';
-        } else {
-            $roleName = ucfirst($user->role ?? 'Usuario');
-        }
-    @endphp
+    $user = auth()->user();
+
+    // Solo permitir sidebar para usuario específico
+    $showSidebar = $user->name === 'admin123';
+@endphp
+
 
     <!-- SIDEBAR (solo para admins) -->
         {{-- DEBUG --}}
@@ -612,10 +604,10 @@
         <!-- User Info -->
         <div class="user-info">
             <div class="user-avatar">
-                {{ substr($user->name ?? 'A', 0, 1) }}
+                {{ substr($user->name, 0, 1) }}
             </div>
             <div class="user-details">
-                <h6>{{ $user->name ?? 'Administrador' }}</h6>
+                <h6>{{ $user->name }}</h6>
                 <p>{{ $roleName }}</p>
             </div>
         </div>
@@ -669,18 +661,18 @@
     </a>
     </li>
 
-           <div class="feature-card">
+        <div class="feature-card">
   <div class="feature-icon">
     <i class="fas fa-book-reader"></i>
   </div>
   <h3>Plan de Estudios</h3>
   <p>Consulta las materias, objetivos pedagógicos y competencias por grado escolar.</p>
-  <a href="#plan-estudios" class="btn-feature">Ver Plan</a>
+  <a href="{{ route('grados.index') }}" class="btn-feature">Ver Plan</a>
 </div>
 
 <li class="menu-item">
     <a href="{{ route('secciones.index') }}" 
-       class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
+    class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
         <i class="fas fa-layer-group"></i>
         <span>Secciones</span>
     </a>
@@ -726,6 +718,13 @@
                 <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Matrículas</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link {{ request()->routeIs('admin.solicitudes.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Solicitudes</span>
                 </a>
             </li>
 
@@ -886,6 +885,14 @@
             @yield('content')
         </div>
     </main>
+    @else
+    <!-- VISTA PARA USUARIOS NO AUTENTICADOS -->
+    <main class="main-content no-sidebar">
+        <div class="content-wrapper">
+            @yield('content')
+        </div>
+    </main>
+    @endauth
 
     <!-- Modal de Confirmación de Eliminación -->
     <div class="modal-delete-overlay" id="modalDelete">
@@ -941,8 +948,10 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
         }
 
         // Auto-hide alerts after 5 seconds

@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\CupoMaximoController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\{
     Auth\LoginController,
     Auth\RegisterController,
@@ -33,16 +30,15 @@ use App\Http\Controllers\{
     CicloController,
     SeccionController
 };
-use App\Http\Controllers\SuperAdmin\UsuarioController;
+use App\Http\Controllers\CupoMaximoController;
 use App\Http\Controllers\PublicoPlanEstudiosController;
+use App\Http\Controllers\SuperAdmin\UsuarioController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 
 
-/*
-|--------------------------------------------------------------------------
-| RUTAS PÚBLICAS (ACCESO LIBRE)
-|--------------------------------------------------------------------------
-*/
+
 
 // Ruta pública - Plan de Estudios (accesible sin login)
 Route::get('/publico/plan-estudios', [PublicoPlanEstudiosController::class, 'index'])
@@ -136,6 +132,9 @@ Route::middleware(['auth'])->group(function () {
     /* --- ADMIN DASHBOARD --- */
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+        
+        // Gestión de solicitudes (ADMIN)
+        
     });
 
     /* --- ROLES ESPECÍFICOS --- */

@@ -102,6 +102,13 @@
             outline: none;
         }
 
+        /* ===== ESTILO AZUL CLARO PARA CAMPOS RELLENADOS ===== */
+        .form-control.campo-rellenado,
+        .form-select.campo-rellenado {
+            background-color: #e8f4fd;
+            border-color: #4ec7d2;
+        }
+
         .btn-submit {
             background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
             color: white;
@@ -197,6 +204,13 @@
         .file-upload-box:hover {
             background: rgba(78, 199, 210, 0.1);
             border-color: #00508f;
+        }
+
+        /* Estilo cuando ya se subió un archivo */
+        .file-upload-box.archivo-subido {
+            background: #e8f4fd;
+            border-color: #4ec7d2;
+            border-style: solid;
         }
 
         .file-upload-box i {
@@ -377,7 +391,7 @@
                                 <label for="padre_parentesco" class="form-label">Parentesco <span class="required-mark">*</span></label>
                                 <div class="position-relative">
                                     <i class="fas fa-users position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                                    <select class="form-select @error('padre_parentesco') is-invalid @enderror" id="padre_parentesco" name="padre_parentesco" required onchange="toggleOtroParentesco()">
+                                    <select class="form-select @error('padre_parentesco') is-invalid @enderror" id="padre_parentesco" name="padre_parentesco" required onchange="toggleOtroParentesco(); marcarCampo(this);">
                                         <option value="">Seleccionar...</option>
                                         @foreach($parentescos as $key => $value)
                                             <option value="{{ $key }}" {{ old('padre_parentesco') == $key ? 'selected' : '' }}>{{ $value }}</option>
@@ -496,9 +510,15 @@
                                     <i class="fas fa-graduation-cap position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
                                     <select class="form-select @error('estudiante_grado') is-invalid @enderror" id="estudiante_grado" name="estudiante_grado" required>
                                         <option value="">Seleccionar...</option>
-                                        @foreach($grados as $grado)
-                                            <option value="{{ $grado }}" {{ old('estudiante_grado') == $grado ? 'selected' : '' }}>{{ $grado }}</option>
-                                        @endforeach
+                                        <option value="Primer Grado" {{ old('estudiante_grado') == 'Primer Grado' ? 'selected' : '' }}>Primer Grado</option>
+                                        <option value="Segundo Grado" {{ old('estudiante_grado') == 'Segundo Grado' ? 'selected' : '' }}>Segundo Grado</option>
+                                        <option value="Tercer Grado" {{ old('estudiante_grado') == 'Tercer Grado' ? 'selected' : '' }}>Tercer Grado</option>
+                                        <option value="Cuarto Grado" {{ old('estudiante_grado') == 'Cuarto Grado' ? 'selected' : '' }}>Cuarto Grado</option>
+                                        <option value="Quinto Grado" {{ old('estudiante_grado') == 'Quinto Grado' ? 'selected' : '' }}>Quinto Grado</option>
+                                        <option value="Sexto Grado" {{ old('estudiante_grado') == 'Sexto Grado' ? 'selected' : '' }}>Sexto Grado</option>
+                                        <option value="Séptimo Grado" {{ old('estudiante_grado') == 'Séptimo Grado' ? 'selected' : '' }}>Séptimo Grado</option>
+                                        <option value="Octavo Grado" {{ old('estudiante_grado') == 'Octavo Grado' ? 'selected' : '' }}>Octavo Grado</option>
+                                        <option value="Noveno Grado" {{ old('estudiante_grado') == 'Noveno Grado' ? 'selected' : '' }}>Noveno Grado</option>
                                     </select>
                                     @error('estudiante_grado')<div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                                 </div>
@@ -552,7 +572,7 @@
                     </div>
                 </div>
 
-                {{-- DOCUMENTOS EN FILA --}}
+                {{-- DOCUMENTOS --}}
                 <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-2 mb-3">
@@ -569,7 +589,6 @@
                             </p>
                         </div>
 
-                        {{-- DOCUMENTOS EN FILA --}}
                         <div class="row g-3">
                             {{-- Foto de Perfil --}}
                             <div class="col-md-4">
@@ -578,12 +597,12 @@
                                         <i class="fas fa-camera me-1" style="color: #4ec7d2;"></i>
                                         Foto del Estudiante <span class="required-mark">*</span>
                                     </label>
-                                    <div class="file-upload-box" onclick="document.getElementById('foto_perfil').click()">
+                                    <div class="file-upload-box" id="box_foto" onclick="document.getElementById('foto_perfil').click()">
                                         <i class="fas fa-image"></i>
                                         <p>Subir foto</p>
                                         <small>JPG, PNG<br>(máx. 2MB)</small>
                                     </div>
-                                    <input type="file" id="foto_perfil" name="foto_perfil" accept=".jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_foto')" required>
+                                    <input type="file" id="foto_perfil" name="foto_perfil" accept=".jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_foto', 'box_foto')" required>
                                     @error('foto_perfil')<div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                                     <div id="preview_foto"></div>
                                 </div>
@@ -596,12 +615,12 @@
                                         <i class="fas fa-file-alt me-1" style="color: #4ec7d2;"></i>
                                         Calificaciones <span class="required-mark">*</span>
                                     </label>
-                                    <div class="file-upload-box" onclick="document.getElementById('calificaciones').click()">
+                                    <div class="file-upload-box" id="box_calificaciones" onclick="document.getElementById('calificaciones').click()">
                                         <i class="fas fa-file-pdf"></i>
                                         <p>Subir calificaciones</p>
                                         <small>PDF, JPG, PNG<br>(máx. 5MB)</small>
                                     </div>
-                                    <input type="file" id="calificaciones" name="calificaciones" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_calificaciones')" required>
+                                    <input type="file" id="calificaciones" name="calificaciones" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_calificaciones', 'box_calificaciones')" required>
                                     @error('calificaciones')<div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                                     <div id="preview_calificaciones"></div>
                                 </div>
@@ -614,12 +633,12 @@
                                         <i class="fas fa-file-contract me-1" style="color: #4ec7d2;"></i>
                                         Acta de Nacimiento <span class="required-mark">*</span>
                                     </label>
-                                    <div class="file-upload-box" onclick="document.getElementById('acta_nacimiento').click()">
+                                    <div class="file-upload-box" id="box_acta" onclick="document.getElementById('acta_nacimiento').click()">
                                         <i class="fas fa-file-signature"></i>
                                         <p>Subir acta</p>
                                         <small>PDF, JPG, PNG<br>(máx. 5MB)</small>
                                     </div>
-                                    <input type="file" id="acta_nacimiento" name="acta_nacimiento" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_acta')" required>
+                                    <input type="file" id="acta_nacimiento" name="acta_nacimiento" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" onchange="mostrarArchivo(this, 'preview_acta', 'box_acta')" required>
                                     @error('acta_nacimiento')<div class="invalid-feedback d-block"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                                     <div id="preview_acta"></div>
                                 </div>
@@ -647,6 +666,38 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    // ===== FUNCIÓN PARA MARCAR CAMPOS COMO RELLENADOS (AZUL CLARO) =====
+    function marcarCampo(el) {
+        if (el.tagName === 'SELECT') {
+            if (el.value && el.value !== '') {
+                el.classList.add('campo-rellenado');
+            } else {
+                el.classList.remove('campo-rellenado');
+            }
+        } else {
+            if (el.value.trim() !== '') {
+                el.classList.add('campo-rellenado');
+            } else {
+                el.classList.remove('campo-rellenado');
+            }
+        }
+    }
+
+    // Aplicar a TODOS los inputs, selects y textareas del formulario
+    function inicializarMarcadoCampos() {
+        const campos = document.querySelectorAll('#formMatricula .form-control, #formMatricula .form-select');
+        
+        campos.forEach(function(campo) {
+            // Eventos para detectar cambios
+            campo.addEventListener('input', function() { marcarCampo(this); });
+            campo.addEventListener('change', function() { marcarCampo(this); });
+            campo.addEventListener('blur', function() { marcarCampo(this); });
+
+            // Marcar los que ya tienen valor al cargar (por old() de Laravel)
+            marcarCampo(campo);
+        });
+    }
+
     function toggleOtroParentesco() {
         const select = document.getElementById('padre_parentesco');
         const otroDiv = document.getElementById('otro_parentesco_div');
@@ -665,8 +716,9 @@
         }
     }
 
-    function mostrarArchivo(input, previewId) {
+    function mostrarArchivo(input, previewId, boxId) {
         const preview = document.getElementById(previewId);
+        const box = document.getElementById(boxId);
         if (!preview) return;
         
         preview.innerHTML = '';
@@ -678,8 +730,12 @@
             if (file.size > maxSize) {
                 alert(`El archivo ${file.name} excede el tamaño máximo permitido`);
                 input.value = '';
+                if (box) box.classList.remove('archivo-subido');
                 return;
             }
+
+            // Marcar la caja de upload como completada
+            if (box) box.classList.add('archivo-subido');
 
             const filePreview = document.createElement('div');
             filePreview.className = 'file-preview';
@@ -693,24 +749,29 @@
                     <i class="fas ${icono}" style="color: #4ec7d2; font-size: 0.9rem;"></i>
                     <span>${file.name}</span>
                 </div>
-                <button type="button" class="btn-clear" onclick="limpiarArchivo('${input.id}', '${previewId}')">
+                <button type="button" class="btn-clear" onclick="limpiarArchivo('${input.id}', '${previewId}', '${boxId}')">
                     <i class="fas fa-times"></i>
                 </button>
             `;
             preview.appendChild(filePreview);
+        } else {
+            if (box) box.classList.remove('archivo-subido');
         }
     }
 
-    function limpiarArchivo(inputId, previewId) {
+    function limpiarArchivo(inputId, previewId, boxId) {
         const input = document.getElementById(inputId);
         const preview = document.getElementById(previewId);
+        const box = document.getElementById(boxId);
         
         if (input) input.value = '';
         if (preview) preview.innerHTML = '';
+        if (box) box.classList.remove('archivo-subido');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         toggleOtroParentesco();
+        inicializarMarcadoCampos();
     });
     </script>
 </body>

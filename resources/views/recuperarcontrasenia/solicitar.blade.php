@@ -210,46 +210,46 @@
     </div>
 </div>
 
-    {{-- Manejo de mensaje de éxito (ej: el enlace ha sido enviado) --}}
-    @if (session('status'))
-        <div class="alert alert-success">
-            <i class="fas fa-check-circle"></i>
-            <span>{{ session('status') }}</span>
-        </div>
-    @endif
-
-    <form method="POST" action="{{ route('password.enviar') }}">
-        @csrf
-
-        <div class="form-group">
-            <label for="email">Correo electrónico</label>
-            <div class="input-wrapper">
-                <i class="fas fa-envelope input-icon"></i>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value="{{ old('email') }}"
-                    placeholder="tu-correo@ejemplo.com"
-                    required
-                    autofocus
-                    class="@error('email') is-invalid @enderror"
-                >
-            </div>
-            @error('email')
-            <span class="invalid-feedback">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <button type="submit" class="submit-button">
-            <i class="fas fa-paper-plane"></i> Enviar Enlace de Recuperación
-        </button>
-    </form>
-
-    <div class="back-link">
-        {{-- Usamos url('/login') o route('login') si la tienes definida --}}
-        <a href="{{ url('/login') }}">← Volver al inicio de sesión</a>
+{{-- Manejo de mensaje de éxito (ej: el enlace ha sido enviado) --}}
+@if (session('status'))
+    <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ session('status') }}</span>
     </div>
+@endif
+
+<form method="POST" action="{{ route('password.enviar') }}">
+    @csrf
+
+    <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="{{ old('email') }}"
+                placeholder="tu-correo@ejemplo.com"
+                required
+                autofocus
+                class="@error('email') is-invalid @enderror"
+            >
+        </div>
+        @error('email')
+        <span class="invalid-feedback">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <button type="submit" class="submit-button">
+        <i class="fas fa-paper-plane"></i> Enviar Enlace de Recuperación
+    </button>
+</form>
+
+<div class="back-link">
+    {{-- Usamos url('/login') o route('login') si la tienes definida --}}
+    <a href="{{ url('/login') }}">← Volver al inicio de sesión</a>
+</div>
 
 </div>
 

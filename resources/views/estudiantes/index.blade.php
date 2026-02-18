@@ -110,13 +110,10 @@
                                        onmouseout="this.style.background='white'; this.style.color='#4ec7d2';">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                   <button type="button"
-        class="btn btn-sm"
-        style="border-radius: 0 6px 6px 0; border: 1.5px solid #ef4444; border-left: none; color: #ef4444; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
-        title="Eliminar"
-        onclick="mostrarModalDelete('{{ route('estudiantes.destroy', $estudiante->id) }}', '¿Estás seguro de eliminar este estudiante?', '{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}')"
-        onmouseover="this.style.background='#ef4444'; this.style.color='white';"
-        onmouseout="this.style.background='white'; this.style.color='#ef4444';">
+                                   <button type="button" 
+    class="btn btn-sm btn-danger btn-delete-estudiante"
+    data-url="{{ route('estudiantes.destroy', $estudiante->id) }}"
+    data-nombre="{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}">
     <i class="fas fa-trash"></i>
 </button>
                                 </div>

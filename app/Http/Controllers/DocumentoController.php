@@ -2,48 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Documento;
 use Illuminate\Http\Request;
+use App\Models\Documento;
+use App\Models\Estudiante;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentoController extends Controller
 {
     public function index()
     {
-        $documentos = Documento::all();
+        $documentos = Documento::with('estudiante')->get();
         return view('Documentos.indexDocumento', compact('documentos'));
     }
 
     public function create()
     {
-        return view('Documentos.createDocumento');
+        $estudiantes = Estudiante::all();
+        return view('Documentos.createDocumento', compact('estudiantes'));
     }
 
     public function store(Request $request)
     {
+        // 1. Validación (Importante para tu Historia de Usuario 50)
         $request->validate([
-            'foto'              => 'nullable|image|mimes:jpg,png|max:5120',
-            'acta_nacimiento'   => 'required|file|mimes:jpg,png,pdf|max:5120',
-            'calificaciones'    => 'required|file|mimes:jpg,png,pdf|max:5120',
+            'estudiante_id' => 'required|exists:estudiantes,id',
+            'foto' => 'required|image|mimes:jpg,jpeg,png|max:5120', // Max 5MB
         ]);
 
-        $fotoPath = $request->hasFile('foto') ? $request->file('foto')->store('documentos/foto', 'public') : null;
-        $actaPath = $request->file('acta_nacimiento')->store('documentos/actas', 'public');
-        $calificacionesPath = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
+        $documento = new Documento();
+        $documento->estudiante_id = $request->estudiante_id;
 
-        Documento::create([
-            'foto'              => $fotoPath,
-            'acta_nacimiento'   => $actaPath,
-            'calificaciones'    => $calificacionesPath,
-        ]);
+        // 2. Guardar archivos en el disco 'public'
+        if($request->hasFile('foto')) {
+            $documento->foto = $request->file('foto')->store('expedientes/fotos', 'public');
+        }
 
-        return redirect()->route('documentos.index')->with('success', 'Documentos guardados correctamente.');
+        if($request->hasFile('acta_nacimiento')) {
+            $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('expedientes/actas', 'public');
+        }
+
+        if($request->hasFile('calificaciones')) {
+            $documento->calificaciones = $request->file('calificaciones')->store('expedientes/notas', 'public');
+        }
+
+        $documento->save();
+        return redirect()->route('documentos.index')->with('success', 'Documentos guardados.');
     }
-
     public function edit($id)
     {
         $documento = Documento::findOrFail($id);
-        return view('Documentos.editDocumento', compact('documento'));
+        $estudiantes = Estudiante::all(); // Agregado para que el select de edit funcione
+        return view('Documentos.editDocumento', compact('documento', 'estudiantes'));
     }
 
     public function update(Request $request, $id)
@@ -57,23 +66,17 @@ class DocumentoController extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            if (!empty($documento->foto) && Storage::disk('public')->exists($documento->foto)) {
-                Storage::disk('public')->delete($documento->foto);
-            }
-            $documento->foto = $request->file('foto')->store('documentos/foto', 'public');
+            if ($documento->foto) Storage::disk('public')->delete($documento->foto);
+            $documento->foto = $request->file('foto')->store('expedientes/fotos', 'public');
         }
 
         if ($request->hasFile('acta_nacimiento')) {
-            if (!empty($documento->acta_nacimiento) && Storage::disk('public')->exists($documento->acta_nacimiento)) {
-                Storage::disk('public')->delete($documento->acta_nacimiento);
-            }
+            if ($documento->acta_nacimiento) Storage::disk('public')->delete($documento->acta_nacimiento);
             $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('documentos/actas', 'public');
         }
 
         if ($request->hasFile('calificaciones')) {
-            if (!empty($documento->calificaciones) && Storage::disk('public')->exists($documento->calificaciones)) {
-                Storage::disk('public')->delete($documento->calificaciones);
-            }
+            if ($documento->calificaciones) Storage::disk('public')->delete($documento->calificaciones);
             $documento->calificaciones = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
         }
 
@@ -86,21 +89,20 @@ class DocumentoController extends Controller
     {
         $documento = Documento::findOrFail($id);
 
-        // Lista de archivos a eliminar
-        $archivos = [
-            'foto' => $documento->foto,
-            'acta_nacimiento' => $documento->acta_nacimiento,
-            'calificaciones' => $documento->calificaciones,
-        ];
-
-        foreach ($archivos as $tipo => $archivo) {
-            if (!empty($archivo) && Storage::disk('public')->exists($archivo)) {
-                Storage::disk('public')->delete($archivo);
-            }
-        }
+        // Borrar archivos del storage antes de eliminar el registro
+        if ($documento->foto) Storage::disk('public')->delete($documento->foto);
+        if ($documento->acta_nacimiento) Storage::disk('public')->delete($documento->acta_nacimiento);
+        if ($documento->calificaciones) Storage::disk('public')->delete($documento->calificaciones);
 
         $documento->delete();
 
-        return redirect()->route('documentos.index')->with('success', 'Documentos eliminados correctamente.');
+        return redirect()->route('documentos.index')->with('success', 'Expediente eliminado correctamente.');
     }
-}
+    public function up(): void
+    {
+        Schema::table('documentos', function (Blueprint $table) {
+            // Esto crea la columna y la relaciona con la tabla estudiantes
+            $table->foreignId('estudiante_id')->after('id')->constrained('estudiantes')->onDelete('cascade');
+        });
+    }
+} // <--- Esta es la única llave que debe cerrar la clase al final de TODO.

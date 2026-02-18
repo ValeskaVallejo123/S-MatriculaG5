@@ -240,7 +240,7 @@
                 <a href="{{ route('profesores.edit', $profesor->id) }}" class="btn flex-fill" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3); transition: all 0.3s ease;">
     <i class="fas fa-edit me-1"></i> Editar
 </a>
-                    <i class="fas fa-edit me-1"></i>Editar Profesor
+                 
                 </a>
                 <a href="{{ route('profesores.index') }}" class="btn flex-fill" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
                     <i class="fas fa-arrow-left me-1"></i>Volver a la Lista

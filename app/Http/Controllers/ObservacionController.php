@@ -6,6 +6,7 @@ use App\Models\Observacion;
 use App\Models\Estudiante;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ObservacionController extends Controller
 {
@@ -67,33 +68,23 @@ class ObservacionController extends Controller
      */
     public function store(Request $request)
     {
+        // Quitamos todas las restricciones de 'required'
         $request->validate([
-            'estudiante_id' => 'required|exists:estudiantes,id',
-            'profesor_id' => 'required|exists:profesores,id',
-            'descripcion' => 'required|string|max:1000',
-            'tipo' => 'required|in:positivo,negativo',
+            'estudiante_id' => 'nullable',
+            'descripcion'   => 'nullable',
+            'tipo'          => 'nullable',
         ]);
 
-        Observacion::create($request->only([
-            'estudiante_id',
-            'profesor_id',
-            'descripcion',
-            'tipo'
-        ]));
+        // Solo tomamos los datos que nos interesan
+        $data = $request->only(['estudiante_id', 'descripcion', 'tipo']);
+
+        // Si quieres que el profesor_id sea totalmente ignorado o nulo:
+        $data['profesor_id'] = null;
+
+
 
         return redirect()->route('observaciones.index')
-            ->with('success', 'Observación registrada correctamente.');
-    }
-
-    /**
-     * Formulario de edición
-     */
-    public function edit(Observacion $observacion)
-    {
-        $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $profesores = Profesor::orderBy('nombre')->get();
-
-        return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores'));
+            ->with('success', 'Observación guardada sin necesidad de profesor.');
     }
 
     /**
@@ -101,11 +92,12 @@ class ObservacionController extends Controller
      */
     public function update(Request $request, Observacion $observacion)
     {
+        // Mismo cambio aquí para permitir editar sin llenar todo obligatoriamente
         $request->validate([
-            'estudiante_id' => 'required|exists:estudiantes,id',
-            'profesor_id' => 'required|exists:profesores,id',
-            'descripcion' => 'required|string|max:1000',
-            'tipo' => 'required|in:positivo,negativo',
+            'estudiante_id' => 'nullable|exists:estudiantes,id',
+            'profesor_id' => 'nullable|exists:profesores,id',
+            'descripcion' => 'nullable|string|max:1000',
+            'tipo' => 'nullable|string',
         ]);
 
         $observacion->update($request->only([
@@ -119,9 +111,20 @@ class ObservacionController extends Controller
             ->with('success', 'Observación actualizada correctamente.');
     }
 
+    // ... (método destroy se mantiene igual)
+
+
     /**
-     * Eliminar observación
+     * Formulario de edición
      */
+    public function edit(Observacion $observacion)
+    {
+        $estudiantes = Estudiante::orderBy('nombre1')->get();
+        $profesores = Profesor::orderBy('nombre')->get();
+
+        return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores'));
+    }
+
     public function destroy(Observacion $observacion)
     {
         $observacion->delete();
@@ -130,3 +133,4 @@ class ObservacionController extends Controller
             ->with('success', 'Observación eliminada correctamente.');
     }
 }
+
