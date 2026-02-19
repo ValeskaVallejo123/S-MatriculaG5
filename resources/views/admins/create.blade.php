@@ -1,195 +1,329 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Administrador - Escuela Gabriela Mistral</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-@section('title', 'Crear Administrador')
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-@section('content')
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-2xl shadow-xl p-8">
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                </svg>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Registro de Administrador</h1>
-            <p class="text-gray-600">Sistema de Gestión Escolar</p>
+        .page-header p {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+        }
+
+        .header-divider {
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(135deg, #00BCD4, #00ACC1);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* FORM CARD */
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .form-card-header {
+            background: linear-gradient(135deg, #00BCD4, #00ACC1);
+            padding: 15px 20px;
+            color: white;
+        }
+
+        .form-card-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .form-card-header p {
+            font-size: 0.7rem;
+        }
+
+        .form-card-body {
+            padding: 20px;
+        }
+
+        .form-section {
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            border-bottom: 2px solid #e0f7fa;
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title i {
+            color: #00BCD4;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 8px 8px 30px;
+            border: 2px solid #e0f7fa;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: #f1f8fb;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #00BCD4;
+            background: white;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00BCD4;
+            font-size: 0.8rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #95a5a6;
+            cursor: pointer;
+        }
+
+        .form-hint {
+            font-size: 0.65rem;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+
+        .info-box {
+            background: rgba(0, 188, 212, 0.08);
+            border: 1px solid #e0f7fa;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.75rem;
+        }
+
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            background: #f1f8fb;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: white;
+            border: 1px solid #e0f7fa;
+            border-radius: 6px;
+            padding: 6px;
+            font-size: 0.75rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00BCD4, #00ACC1);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 2px solid #e0f7fa;
+            color: #5a6c7d;
+        }
+
+        .alert {
+            background: #e0f7fa;
+            border: 1px solid #80deea;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid, .permissions-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo"><i class="fas fa-graduation-cap"></i></div>
+        <div class="sidebar-brand">
+            <h2>Gabriela Mistral</h2>
+            <p>Sistema Escolar</p>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#" class="nav-item active"><i class="fas fa-user-shield"></i>Admins</a>
+        <a href="#" class="nav-item"><i class="fas fa-users"></i>Usuarios</a>
+        <a href="#" class="nav-item"><i class="fas fa-cog"></i>Configuración</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <div class="page-icon"><i class="fas fa-user-shield"></i></div>
+            <h1>Nuevo Administrador</h1>
+            <p>Complete los datos para crear la cuenta</p>
+            <div class="header-divider"></div>
         </div>
 
-        <form action="{{ route('admins.store') }}" method="POST" class="space-y-6">
-            @csrf
+        <div class="form-card">
+            <div class="form-card-header">
+                <h2>Información del Administrador</h2>
+                <p>Campos marcados con * son obligatorios</p>
+            </div>
 
-            <!-- Nombre -->
-            <div>
-                <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Nombre Completo
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
+            <div class="form-card-body">
+                <form>
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-user"></i>Datos Personales</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nombre(s) *</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input type="text" class="form-control" placeholder="Ej: Juan Carlos">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellido(s) *</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input type="text" class="form-control" placeholder="Ej: Pérez González">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <input 
-                        type="text" 
-                        id="nombre" 
-                        name="nombre" 
-                        value="{{ old('nombre') }}"
-                        class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition @error('nombre') border-red-500 @enderror"
-                        placeholder="Ej: Juan Pérez García"
-                        required
-                    >
-                </div>
-                @error('nombre')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
 
-            <!-- Email -->
-            <div>
-                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Correo Electrónico
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-lock"></i>Credenciales</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Contraseña *</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-lock input-icon"></i>
+                                    <input type="password" id="password" class="form-control" placeholder="Mínimo 8 caracteres">
+                                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye" id="eye-password"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirmar *</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-check-circle input-icon"></i>
+                                    <input type="password" id="password_confirmation" class="form-control" placeholder="Repita contraseña">
+                                    <button type="button" class="toggle-password" onclick="togglePassword('password_confirmation')">
+                                        <i class="fas fa-eye" id="eye-password_confirmation"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        value="{{ old('email') }}"
-                        class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition @error('email') border-red-500 @enderror"
-                        placeholder="admin@colegio.edu"
-                        required
-                    >
-                </div>
-                @error('email')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
 
-            <!-- Contraseña -->
-            <div>
-                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Contraseña
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-key"></i>Permisos</h3>
+                        <div class="permissions-grid">
+                            <div class="permission-item"><input type="checkbox"><label>Usuarios</label></div>
+                            <div class="permission-item"><input type="checkbox"><label>Estudiantes</label></div>
+                            <div class="permission-item"><input type="checkbox"><label>Profesores</label></div>
+                            <div class="permission-item"><input type="checkbox"><label>Reportes</label></div>
+                        </div>
                     </div>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password"
-                        class="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition @error('password') border-red-500 @enderror"
-                        placeholder="Mínimo 8 caracteres"
-                        required
-                        minlength="8"
-                    >
-                    <button 
-                        type="button" 
-                        onclick="togglePassword('password')"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                        <svg id="eye-password" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                    </button>
-                </div>
-                @error('password')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
 
-            <!-- Confirmar Contraseña -->
-            <div>
-                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Confirmar Contraseña
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Crear</button>
+                        <button type="reset" class="btn btn-secondary">Cancelar</button>
                     </div>
-                    <input 
-                        type="password" 
-                        id="password_confirmation" 
-                        name="password_confirmation"
-                        class="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                        placeholder="Repite la contraseña"
-                        required
-                    >
-                    <button 
-                        type="button" 
-                        onclick="togglePassword('password_confirmation')"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                        <svg id="eye-password_confirmation" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                    </button>
-                </div>
+                </form>
             </div>
+        </div>
 
-            <!-- Permisos -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-3">
-                    Permisos de Administrador
-                </label>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    @foreach($permisos as $key => $label)
-                        <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 transition">
-                            <input 
-                                type="checkbox" 
-                                name="permisos[]" 
-                                value="{{ $key }}"
-                                {{ in_array($key, old('permisos', [])) ? 'checked' : '' }}
-                                class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
-                            >
-                            <span class="ml-3 text-sm text-gray-700">{{ $label }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- Botones -->
-            <div class="flex gap-4">
-                <button 
-                    type="submit"
-                    class="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg"
-                >
-                    Crear Administrador
-                </button>
-                <a 
-                    href="{{ route('admins.index') }}"
-                    class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition text-center"
-                >
-                    Cancelar
-                </a>
-            </div>
-        </form>
+        <div class="alert">
+            <strong>Nota:</strong> El correo institucional se generará automáticamente como
+            <em>nombre.apellido@admin.edu</em>.
+        </div>
     </div>
-</div>
+</main>
 
-@push('scripts')
 <script>
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const eye = document.getElementById('eye-' + inputId);
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-    } else {
-        input.type = 'password';
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        const icon = document.getElementById('eye-' + id);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
     }
-}
 </script>
-@endpush
-@endsection
+</body>
+</html>
