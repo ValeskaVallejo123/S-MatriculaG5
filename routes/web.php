@@ -41,9 +41,7 @@ use Illuminate\Support\Facades\Route;
 
 
 // Ruta pública - Plan de Estudios (accesible sin login)
-Route::get('/publico/plan-estudios', [PublicoPlanEstudiosController::class, 'index'])
-    ->name('publico.plan-estudios');
-
+Route::get('/plan-estudios', [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
 
 Route::get('/', function () {
     return redirect()->route('login');

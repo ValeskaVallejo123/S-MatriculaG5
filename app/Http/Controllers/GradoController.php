@@ -195,4 +195,9 @@ class GradoController extends Controller
             ->route('grados.index')
             ->with('success', "Se han procesado {$contador} grados exitosamente.");
     }
+    public function ver(Grado $grado)
+{
+    $grado->load('materias');
+    return view('grados.ver', compact('grado'));
+}
 }

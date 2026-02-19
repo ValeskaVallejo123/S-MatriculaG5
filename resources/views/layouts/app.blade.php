@@ -574,11 +574,21 @@
 
     @auth
     @php
-    $user = auth()->user();
-
-    // Solo permitir sidebar para usuario específico
-    $showSidebar = $user->name === 'admin123';
-@endphp
+        // Sistema de roles corregido
+        $user = auth()->user();
+        $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
+        $isAdmin = in_array($user->role, ['admin', 'super_admin']) || $user->is_super_admin == 1;
+        $showSidebar = true;
+        
+        // Obtener el nombre del rol para mostrar
+        if ($isSuperAdmin) {
+            $roleName = 'Super Administrador';
+        } elseif ($user->role === 'admin') {
+            $roleName = 'Administrador';
+        } else {
+            $roleName = ucfirst($user->role ?? 'Usuario');
+        }
+    @endphp
 
 
     <!-- SIDEBAR (solo para admins) -->
@@ -648,27 +658,27 @@
             
             <li class="menu-item">
                 <a href="{{ route('estudiantes.index') }}" class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-graduate"></i>
-                    <span>Estudiantes</span>
+                <i class="fas fa-user-graduate"></i>
+                <span>Estudiantes</span>
                 </a>
             </li>
 
-            <li class="menu-item">
-    <a href="{{ route('calendario') }}"
-       class="menu-link {{ request()->routeIs('/calendario/eventos') ? 'active' : '' }}">
+    <li class="menu-item">
+        <a href="{{ route('calendario') }}"
+        class="menu-link {{ request()->routeIs('/calendario/eventos') ? 'active' : '' }}">
         <i class="fas fa-calendar-alt"></i>
         <span>Calendario Académico</span>
-    </a>
+        </a>
     </li>
 
-        <div class="feature-card">
-  <div class="feature-icon">
-    <i class="fas fa-book-reader"></i>
-  </div>
-  <h3>Plan de Estudios</h3>
-  <p>Consulta las materias, objetivos pedagógicos y competencias por grado escolar.</p>
-  <a href="{{ route('grados.index') }}" class="btn-feature">Ver Plan</a>
-</div>
+    <li class="menu-item">
+        <a href="{{ route('grados.index') }}" 
+        class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
+        <i class="fas fa-book-reader"></i>
+        <span>Plan de Estudios</span>
+        </a>
+    </li>
+
 
 <li class="menu-item">
     <a href="{{ route('secciones.index') }}" 
