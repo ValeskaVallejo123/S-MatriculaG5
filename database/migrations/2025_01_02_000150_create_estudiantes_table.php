@@ -9,7 +9,6 @@ return new class extends Migration
 {
     public function up()
     {
-        // Opcional: deshabilitar FK para recrear tabla
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         Schema::dropIfExists('estudiantes');
@@ -20,20 +19,26 @@ return new class extends Migration
             // Identidad
             $table->string('nombre1');
             $table->string('nombre2')->nullable();
-
             $table->string('apellido1');
             $table->string('apellido2')->nullable();
-
             $table->string('dni', 13)->unique();
 
             // Datos personales
             $table->date('fecha_nacimiento');
+
+            // Se usa solo 'sexo' para evitar duplicidad con 'genero'
+            // Si necesitas lógica de género diferente al sexo biológico,
+            // descomenta el campo 'genero' y documenta su propósito.
             $table->enum('sexo', ['masculino', 'femenino'])->nullable();
-            $table->string('genero')->nullable(); // si lo necesitas para otra lógica
+            // $table->string('genero')->nullable();
 
             // Información académica
             $table->string('grado');
             $table->string('seccion');
+
+            // Estado del estudiante (activo/inactivo)
+            // Necesario porque otros módulos del sistema lo usan
+            $table->enum('estado', ['activo', 'inactivo'])->default('activo');
 
             // Contacto
             $table->string('direccion')->nullable();
@@ -48,7 +53,10 @@ return new class extends Migration
 
             // Relación con Padre
             $table->unsignedBigInteger('padre_id')->nullable();
-            $table->foreign('padre_id')->references('id')->on('padres')->nullOnDelete();
+            $table->foreign('padre_id')
+                  ->references('id')
+                  ->on('padres')
+                  ->nullOnDelete();
 
             $table->timestamps();
         });

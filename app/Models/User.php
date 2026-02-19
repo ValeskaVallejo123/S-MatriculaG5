@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +18,7 @@ class User extends Authenticatable
         'activo',
         'user_type',
         'fecha_registro',
-        'permissions',      // permisos JSON
+        'permissions',
         'is_super_admin',
         'is_protected',
     ];
@@ -31,12 +32,12 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'permissions' => 'array',
-            'activo' => 'boolean',
-            'fecha_registro' => 'datetime',
-            'is_super_admin' => 'boolean',
-            'is_protected' => 'boolean'
+            'password'          => 'hashed',
+            'permissions'       => 'array',
+            'activo'            => 'boolean',
+            'fecha_registro'    => 'datetime',
+            'is_super_admin'    => 'boolean',
+            'is_protected'      => 'boolean',
         ];
     }
 
@@ -46,7 +47,7 @@ class User extends Authenticatable
 
     public function rol()
     {
-        return $this->belongsTo(Rol::class, 'id_rol', 'id'); //  Usa 'id_rol' de users y 'id' de roles
+        return $this->belongsTo(Rol::class, 'id_rol', 'id');
     }
 
     public function padre()
@@ -56,7 +57,7 @@ class User extends Authenticatable
 
     public function estudiante()
     {
-    return $this->hasOne(\App\Models\Estudiante::class);
+        return $this->hasOne(\App\Models\Estudiante::class);
     }
 
     public function docente()
@@ -138,18 +139,15 @@ class User extends Authenticatable
     // PERMISOS (JSON + por Rol)
     // =============================
 
-
     public function tienePermiso($permiso)
     {
         $permiso = strtolower(trim($permiso));
 
-        // ✔ Permisos JSON directos
         $jsonPerms = $this->permissions ?? [];
         if (is_array($jsonPerms) && in_array($permiso, array_map('strtolower', $jsonPerms))) {
             return true;
         }
 
-        // ✔ Permisos por Rol
         if ($this->rol && $this->rol->tienePermiso($permiso)) {
             return true;
         }
@@ -196,17 +194,17 @@ class User extends Authenticatable
     public function infoParaSistema()
     {
         return [
-            'id' => $this->id,
-            'nombre' => $this->name,
-            'email' => $this->email,
-            'rol' => $this->rol->nombre ?? null,
+            'id'            => $this->id,
+            'nombre'        => $this->name,
+            'email'         => $this->email,
+            'rol'           => $this->rol->nombre ?? null,
             'es_superadmin' => $this->isSuperAdmin(),
-            'es_docente' => $this->isDocente(),
+            'es_docente'    => $this->isDocente(),
             'es_estudiante' => $this->isEstudiante(),
-            'es_padre' => $this->isPadre(),
-            'profesor_id' => $this->docente->id ?? null,
+            'es_padre'      => $this->isPadre(),
+            'profesor_id'   => $this->docente->id ?? null,
             'estudiante_id' => $this->estudiante->id ?? null,
-            'padre_id' => $this->padre->id ?? null,
+            'padre_id'      => $this->padre->id ?? null,
         ];
     }
 
@@ -235,12 +233,43 @@ class User extends Authenticatable
     }
 
     // =============================
-    // NOTIFICACIONES
+    // NOTIFICACIONES (CAMPANA 🔔)
     // =============================
 
+    /**
+     * Devuelve las notificaciones del usuario ordenadas por fecha desc.
+     * Uso: $user->notificacionesPermitidas()->take(5)->get()
+     */
     public function notificacionesPermitidas()
     {
         return $this->notificaciones()->latest();
+    }
+
+    /**
+     * Relación de notificaciones no leídas (devuelve query builder).
+     * Uso: $user->notificacionesNoLeidas()->get()
+     */
+    public function notificacionesNoLeidas()
+    {
+        return $this->notificaciones()->where('leida', false);
+    }
+
+    /**
+     * Accessor: total de notificaciones no leídas como entero.
+     * Uso en blade: $user->total_notificaciones_no_leidas
+     */
+    public function getTotalNotificacionesNoLeidasAttribute()
+    {
+        return $this->notificaciones()->where('leida', false)->count();
+    }
+
+    /**
+     * Retorna las últimas N notificaciones del usuario.
+     * Uso en blade: $user->notificacionesRecientes(5)
+     */
+    public function notificacionesRecientes(int $limite = 5)
+    {
+        return $this->notificacionesPermitidas()->take($limite)->get();
     }
 
     // =============================
@@ -265,51 +294,32 @@ class User extends Authenticatable
     // =============================
 
     public function obtenerPermisos()
-{
-    $lista = [];
+    {
+        $lista = [];
 
-    // 1️⃣ Permisos JSON directos del usuario
-    if (is_array($this->permissions)) {
-        $lista = array_merge($lista, $this->permissions);
-    }
-
-    // 2️⃣ Permisos del rol (si el rol existe y tiene permisos)
-    if ($this->relationLoaded('rol') || $this->rol) {
-        if ($this->rol->permisos instanceof \Illuminate\Support\Collection) {
-            $lista = array_merge($lista, $this->rol->permisos->pluck('nombre')->toArray());
+        if (is_array($this->permissions)) {
+            $lista = array_merge($lista, $this->permissions);
         }
+
+        if ($this->relationLoaded('rol') || $this->rol) {
+            if ($this->rol->permisos instanceof \Illuminate\Support\Collection) {
+                $lista = array_merge($lista, $this->rol->permisos->pluck('nombre')->toArray());
+            }
+        }
+
+        $lista = array_filter($lista);
+        $lista = array_unique($lista);
+        sort($lista);
+
+        return $lista;
     }
 
-    // 3️⃣ Limpiar duplicados y valores vacíos
-    $lista = array_filter($lista);
-    $lista = array_unique($lista);
-    sort($lista);
+    // =============================
+    // HELPERS DE PERMISOS
+    // =============================
 
-    return $lista;
-}
-// =============================
-// NOTIFICACIONES (CAMPANA 🔔)
-// =============================
-
-/**
- * Relación de notificaciones no leídas
- */
-public function notificacionesNoLeidas()
-{
-    return $this->notificaciones()->where('leida', false);
-}
-
-/**
- * Atributo: total de notificaciones no leídas
- * Uso: auth()->user()->total_notificaciones_no_leidas
- */
-public function getTotalNotificacionesNoLeidasAttribute()
-{
-    return $this->notificaciones()->where('leida', false)->count();
-}
-public function hasPermission($permission)
-{
-    return $this->tienePermiso($permission);
-
-}
+    public function hasPermission($permission)
+    {
+        return $this->tienePermiso($permission);
+    }
 }
