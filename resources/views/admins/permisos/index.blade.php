@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container-fluid" style="max-width: 1400px;">
-    
+
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -36,7 +36,7 @@
     <!-- Información de ayuda -->
     <div class="alert alert-info mb-4">
         <i class="fas fa-info-circle"></i>
-        <strong>Instrucciones:</strong> 
+        <strong>Instrucciones:</strong>
         Seleccione un padre/tutor para configurar los permisos específicos de acceso a la información de sus hijos.
     </div>
 
@@ -50,10 +50,10 @@
                             <span class="input-group-text bg-white">
                                 <i class="fas fa-search text-muted"></i>
                             </span>
-                            <input 
-                                type="text" 
-                                name="buscar" 
-                                class="form-control" 
+                            <input
+                                type="text"
+                                name="buscar"
+                                class="form-control"
                                 placeholder="Buscar por nombre, apellido, DNI o email..."
                                 value="{{ request('buscar') }}"
                             >
@@ -136,13 +136,13 @@
                             </td>
                             <td class="px-4 py-3">
                                 <span class="badge bg-info">
-                                    {{ $padre->estudiantes->count() }} 
+                                    {{ $padre->estudiantes->count() }}
                                     {{ $padre->estudiantes->count() === 1 ? 'hijo' : 'hijos' }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-center">
-                                <a 
-                                    href="{{ route('admin.permisos.configurar', $padre->id) }}" 
+                                <a
+                                    href="{{ route('admin.permisos.configurar', $padre->id) }}"
                                     class="btn btn-sm btn-primary"
                                     title="Configurar permisos"
                                 >
@@ -162,7 +162,7 @@
                 </table>
             </div>
         </div>
-        
+
         @if($padres->hasPages())
         <div class="card-footer bg-white">
             <div class="d-flex justify-content-between align-items-center">
@@ -180,16 +180,16 @@
     .avatar-circle {
         box-shadow: 0 2px 8px rgba(0, 59, 115, 0.15);
     }
-    
+
     .table tbody tr {
         transition: all 0.2s ease;
     }
-    
+
     .table tbody tr:hover {
         background-color: #f8f9fa;
         transform: translateX(2px);
     }
-    
+
     .btn-sm {
         padding: 0.375rem 0.75rem;
         font-size: 0.875rem;

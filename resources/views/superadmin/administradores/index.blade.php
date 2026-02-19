@@ -4,12 +4,12 @@
 @section('page-title', 'Gestión de Administradores')
 
 @section('topbar-actions')
-    <a href="{{ route('superadmin.administradores.permisos') }}" 
+    <a href="{{ route('superadmin.administradores.permisos') }}"
        style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem; margin-right: 0.5rem;">
         <i class="fas fa-shield-alt"></i>
         Permisos y Roles
     </a>
-    <a href="{{ route('superadmin.administradores.create') }}" 
+    <a href="{{ route('superadmin.administradores.create') }}"
        style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; font-size: 0.9rem;">
         <i class="fas fa-plus"></i>
         Nuevo Administrador
@@ -18,7 +18,7 @@
 
 @section('content')
 <div class="container-fluid">
-    
+
     <!-- Estadísticas en Cards -->
     <div class="row g-4 mb-4">
         <!-- Total -->
@@ -161,13 +161,13 @@
                             <td class="px-4 py-3 text-center">
                                 @if(!$admin->is_protected)
                                 <div class="d-flex justify-content-center gap-2">
-                                    <a href="{{ route('superadmin.administradores.edit', $admin->id) }}" 
+                                    <a href="{{ route('superadmin.administradores.edit', $admin->id) }}"
                                        class="btn btn-sm"
                                        style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; padding: 0.5rem 0.875rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(78, 199, 210, 0.3);"
                                        title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" 
+                                    <button type="button"
                                             class="btn btn-sm"
                                             style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 0.5rem 0.875rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);"
                                             data-route="{{ route('superadmin.administradores.destroy', $admin->id) }}"
@@ -222,7 +222,7 @@
         .table {
             font-size: 0.875rem;
         }
-        
+
         .card-body {
             padding: 1rem !important;
         }
