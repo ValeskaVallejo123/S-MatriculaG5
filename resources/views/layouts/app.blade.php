@@ -117,17 +117,10 @@
         }
 
         .user-details h6 {
-            margin: 0 0 0.3rem 0;
+            margin: 0;
             color: white;
             font-size: 0.95rem;
             font-weight: 600;
-        }
-
-        .user-details p {
-            margin: 0;
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: 500;
         }
 
         /* Menu */
@@ -240,21 +233,6 @@
             gap: 1rem;
         }
 
-        .topbar-date {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #6b7280;
-            font-size: 0.9rem;
-            padding: 0.5rem 1rem;
-            background: #f9fafb;
-            border-radius: 8px;
-        }
-
-        .topbar-date i {
-            color: #00508f;
-        }
-
         .btn-logout {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
@@ -305,10 +283,6 @@
 
             .topbar {
                 padding: 1rem;
-            }
-
-            .topbar-date {
-                display: none;
             }
         }
 
@@ -578,15 +552,6 @@
         $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
         $isAdmin = in_array($user->role, ['admin', 'super_admin']) || $user->is_super_admin == 1;
         $showSidebar = $isSuperAdmin || $isAdmin;
-
-        // Obtener el nombre del rol para mostrar
-        if ($isSuperAdmin) {
-            $roleName = 'Super Administrador';
-        } elseif ($user->role === 'admin') {
-            $roleName = 'Administrador';
-        } else {
-            $roleName = ucfirst($user->role ?? 'Usuario');
-        }
     @endphp
 
     <!-- SIDEBAR (solo para admins) -->
@@ -611,7 +576,6 @@
             </div>
             <div class="user-details">
                 <h6>{{ $user->name ?? 'Administrador' }}</h6>
-                <p>{{ $roleName }}</p>
             </div>
         </div>
 
@@ -810,10 +774,6 @@
             </div>
             <div class="topbar-right">
                 @yield('topbar-actions')
-                <div class="topbar-date">
-                    <i class="far fa-clock"></i>
-                    <span>{{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</span>
-                </div>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn-logout">
@@ -913,13 +873,11 @@
         // ========== MANTENER POSICIÓN DEL SIDEBAR ==========
         const sidebar = document.getElementById('sidebar');
         if (sidebar) {
-            // Restaurar posición del scroll al cargar la página
             const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
             if (savedScrollPosition) {
                 sidebar.scrollTop = parseInt(savedScrollPosition);
             }
 
-            // Guardar posición del scroll cuando se hace clic en un enlace
             const menuLinks = sidebar.querySelectorAll('.menu-link');
             menuLinks.forEach(link => {
                 link.addEventListener('click', function() {
@@ -927,12 +885,10 @@
                 });
             });
 
-            // Guardar posición del scroll periódicamente mientras se desplaza
             sidebar.addEventListener('scroll', function() {
                 sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
             });
 
-            // Scroll automático al elemento activo si está fuera de vista
             const activeLink = sidebar.querySelector('.menu-link.active');
             if (activeLink && savedScrollPosition === null) {
                 const sidebarRect = sidebar.getBoundingClientRect();
@@ -988,7 +944,6 @@
             document.getElementById('formDelete').submit();
         }
 
-        // Función para mostrar modal de eliminación usando data attributes
         function mostrarModalDeleteData(button) {
             const route = button.dataset.route;
             const message = button.dataset.message;
@@ -996,7 +951,6 @@
             mostrarModalDelete(route, message, name);
         }
 
-        // Cerrar modal al hacer clic fuera de él
         document.addEventListener('click', function(e) {
             const modal = document.getElementById('modalDelete');
             if (e.target === modal) {
@@ -1004,7 +958,6 @@
             }
         });
 
-        // Cerrar modal con tecla ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 cerrarModalDelete();

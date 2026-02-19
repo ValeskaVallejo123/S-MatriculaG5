@@ -37,12 +37,6 @@
                             </p>
                         </div>
                     </div>
-                    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                        <div class="time-display">
-                            <i class="fas fa-clock me-2"></i>
-                            <span id="currentTime"></span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -149,7 +143,6 @@
                     <div class="matriculas-pendientes-grid">
                         @foreach($matriculasPendientes as $matricula)
                         <div class="matricula-card-compact">
-                            <!-- Header con código -->
                             <div class="matricula-header">
                                 <span class="codigo-badge">
                                     <i class="fas fa-file-alt me-1"></i>
@@ -160,9 +153,7 @@
                                 </span>
                             </div>
 
-                            <!-- Contenido principal -->
                             <div class="matricula-content">
-                                <!-- Estudiante -->
                                 <div class="info-block">
                                     <div class="info-icon bg-students">
                                         <i class="fas fa-user-graduate"></i>
@@ -174,7 +165,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Padre -->
                                 <div class="info-block">
                                     <div class="info-icon bg-parents">
                                         <i class="fas fa-user-friends"></i>
@@ -186,7 +176,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Grado y Fecha -->
                                 <div class="info-row">
                                     <div class="info-item">
                                         <i class="fas fa-graduation-cap text-primary me-1"></i>
@@ -199,7 +188,6 @@
                                 </div>
                             </div>
 
-                            <!-- Footer con botón -->
                             <div class="matricula-footer">
                                 <button type="button"
                                         class="btn btn-primary btn-ver-detalles w-100"
@@ -342,54 +330,48 @@
             </div>
         </div>
 
-       <!-- Administración -->
-<div class="col-lg-4 col-md-6">
-    <div class="action-card">
-        <div class="action-card-header">
-            <div class="action-icon bg-admin">
-                <i class="fas fa-user-shield"></i>
-            </div>
-            <div>
-                <h6 class="action-title">Administración</h6>
-                <p class="action-subtitle">Usuarios y permisos</p>
+        <!-- Administración -->
+        <div class="col-lg-4 col-md-6">
+            <div class="action-card">
+                <div class="action-card-header">
+                    <div class="action-icon bg-admin">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <h6 class="action-title">Administración</h6>
+                        <p class="action-subtitle">Usuarios y permisos</p>
+                    </div>
+                </div>
+                <div class="action-card-body">
+                    <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-users me-2"></i> Lista de Usuarios
+                    </a>
+                    <a href="{{ route('superadmin.usuarios.pendientes') }}" class="btn btn-warning w-100">
+                        <i class="fas fa-user-clock me-2"></i> Usuarios Pendientes
+                    </a>
+                </div>
             </div>
         </div>
-
-        <div class="action-card-body">
-
-            <!-- ⭐ Botón de usuarios confirmados y pendientes -->
-            <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-primary w-100 mb-2">
-                <i class="fas fa-users me-2"></i> Lista de Usuarios
-            </a>
-            <a href="{{ route('superadmin.usuarios.pendientes') }}" class="btn btn-warning w-100">
-                <i class="fas fa-user-clock me-2"></i> Usuarios Pendientes
-            </a>
-
-        </div>
-    </div>
-</div>
 
         <!-- Horarios -->
-<div class="col-lg-4 col-md-6">
-    <div class="action-card">
-        <div class="action-card-header">
-            <div class="action-icon bg-info">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div>
-                <h6 class="action-title">Horarios</h6>
-                <p class="action-subtitle">Gestión de horarios de clases</p>
+        <div class="col-lg-4 col-md-6">
+            <div class="action-card">
+                <div class="action-card-header">
+                    <div class="action-icon bg-info">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h6 class="action-title">Horarios</h6>
+                        <p class="action-subtitle">Gestión de horarios de clases</p>
+                    </div>
+                </div>
+                <div class="action-card-body">
+                    <a href="{{ route('superadmin.horarios_grado.index') }}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-list me-2"></i> Ver Horarios
+                    </a>
+                </div>
             </div>
         </div>
-        <div class="action-card-body">
-            <a href="{{ route('superadmin.horarios_grado.index') }}" class="btn btn-outline-primary w-100 mb-2">
-                <i class="fas fa-list me-2"></i> Ver Horarios
-            </a>
-
-        </div>
-    </div>
-</div>
-
     </div>
 
 </div>
@@ -481,7 +463,6 @@
     --border-color: #e2e8f0;
 }
 
-/* Welcome Card */
 .welcome-card {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     border-radius: 16px;
@@ -502,15 +483,6 @@
     opacity: 0.9;
 }
 
-.time-display {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    backdrop-filter: blur(10px);
-}
-
-/* Statistics Cards */
 .stat-card {
     background: white;
     border-radius: 12px;
@@ -537,25 +509,10 @@
     margin-bottom: 1rem;
 }
 
-.stat-card-students .stat-icon {
-    background: rgba(78, 199, 210, 0.1);
-    color: var(--secondary-color);
-}
-
-.stat-card-teachers .stat-icon {
-    background: rgba(0, 80, 143, 0.1);
-    color: var(--primary-color);
-}
-
-.stat-card-enrollments .stat-icon {
-    background: rgba(251, 191, 36, 0.1);
-    color: var(--accent-color);
-}
-
-.stat-card-users .stat-icon {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger-color);
-}
+.stat-card-students .stat-icon { background: rgba(78, 199, 210, 0.1); color: var(--secondary-color); }
+.stat-card-teachers .stat-icon { background: rgba(0, 80, 143, 0.1); color: var(--primary-color); }
+.stat-card-enrollments .stat-icon { background: rgba(251, 191, 36, 0.1); color: var(--accent-color); }
+.stat-card-users .stat-icon { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
 
 .stat-label {
     font-size: 0.875rem;
@@ -588,27 +545,11 @@
     font-weight: 500;
 }
 
-.stat-badge-success {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--success-color);
-}
+.stat-badge-success { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
+.stat-badge-info { background: rgba(0, 80, 143, 0.1); color: var(--primary-color); }
+.stat-badge-warning { background: rgba(251, 191, 36, 0.1); color: var(--accent-color); }
+.stat-badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
 
-.stat-badge-info {
-    background: rgba(0, 80, 143, 0.1);
-    color: var(--primary-color);
-}
-
-.stat-badge-warning {
-    background: rgba(251, 191, 36, 0.1);
-    color: var(--accent-color);
-}
-
-.stat-badge-danger {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger-color);
-}
-
-/* Matrículas Pendientes */
 .matriculas-pendientes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -756,7 +697,6 @@
     box-shadow: 0 4px 12px rgba(0, 80, 143, 0.3);
 }
 
-/* Section Title */
 .section-title {
     font-size: 1.25rem;
     font-weight: 700;
@@ -766,7 +706,6 @@
     border-bottom: 2px solid var(--border-color);
 }
 
-/* Action Cards */
 .action-card {
     background: white;
     border-radius: 12px;
@@ -822,11 +761,8 @@
     margin-bottom: 0;
 }
 
-.action-card-body {
-    padding: 1.5rem;
-}
+.action-card-body { padding: 1.5rem; }
 
-/* Button Customization */
 .btn {
     font-weight: 500;
     border-radius: 8px;
@@ -856,7 +792,6 @@
     border-color: var(--primary-color);
 }
 
-/* Responsive */
 @media (max-width: 1200px) {
     .matriculas-pendientes-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -865,92 +800,33 @@
 }
 
 @media (max-width: 768px) {
-    .welcome-card {
-        padding: 1.5rem;
-    }
-
-    .welcome-title {
-        font-size: 1.5rem;
-    }
-
-    .stat-value {
-        font-size: 1.75rem;
-    }
-
-    .matriculas-pendientes-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
+    .welcome-card { padding: 1.5rem; }
+    .welcome-title { font-size: 1.5rem; }
+    .stat-value { font-size: 1.75rem; }
+    .matriculas-pendientes-grid { grid-template-columns: 1fr; gap: 1rem; }
 }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-// Reloj en tiempo real
-function updateTime() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const timeElement = document.getElementById('currentTime');
-    if (timeElement) {
-        timeElement.textContent = `${hours}:${minutes}:${seconds}`;
-    }
-}
-
-setInterval(updateTime, 1000);
-updateTime();
-
-// Ver detalles de matrícula
+// ========== VER DETALLES DE MATRÍCULA ==========
 document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-ver-detalles')) {
+    const btnDetalles = e.target.closest('.btn-ver-detalles');
+    if (btnDetalles) {
         e.preventDefault();
-        const btn = e.target.closest('.btn-ver-detalles');
-        const matriculaId = btn.getAttribute('data-matricula-id');
+        const matriculaId = btnDetalles.getAttribute('data-matricula-id');
         verDetallesMatricula(matriculaId);
     }
-
-    // Botón "Aprobar Matrícula"
-    const btnAprobar = e.target.closest('.btn-aprobar-matricula');
-    if (btnAprobar) {
-        e.preventDefault();
-
-        showConfirmModal(
-            "¿Aprobar Matrícula?",
-            "El estudiante será registrado en el sistema inmediatamente.",
-            () => document.getElementById("formAprobarMatricula").submit(),
-            "success"
-        );
-        return;
-    }
-
-    // Botón "Rechazar desde modal"
-    const btnRechazar = e.target.closest('.btn-rechazar-desde-modal');
-    if (btnRechazar) {
-        e.preventDefault();
-        const id = btnRechazar.dataset.matriculaId;
-
-        // Cerrar modal anterior
-        const modal = bootstrap.Modal.getInstance(document.getElementById("modalDetallesMatricula"));
-        if (modal) modal.hide();
-
-        setTimeout(() => mostrarModalRechazoMatricula(id), 350);
-    }
-
 });
 
 function verDetallesMatricula(matriculaId) {
     const modalElement = document.getElementById('modalDetallesMatricula');
-    if (!modalElement) {
-        alert('Error: No se pudo abrir el modal');
-        return;
-    }
+    if (!modalElement) return;
 
     const modal = new bootstrap.Modal(modalElement);
     const contenido = document.getElementById('contenidoDetallesMatricula');
 
-    // Spinner de carga
     contenido.innerHTML = `
         <div class="text-center py-5">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -971,7 +847,6 @@ function verDetallesMatricula(matriculaId) {
 
             contenido.innerHTML = `
                 <div class="row g-4">
-                    <!-- Código de Matrícula -->
                     <div class="col-12">
                         <div class="alert alert-primary border-0">
                             <strong>Código de Matrícula:</strong>
@@ -979,7 +854,6 @@ function verDetallesMatricula(matriculaId) {
                         </div>
                     </div>
 
-                    <!-- Información del Estudiante -->
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
@@ -1012,7 +886,6 @@ function verDetallesMatricula(matriculaId) {
                         </div>
                     </div>
 
-                    <!-- Información del Padre -->
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
@@ -1045,7 +918,6 @@ function verDetallesMatricula(matriculaId) {
                         </div>
                     </div>
 
-                    <!-- Botones de Acción -->
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
@@ -1061,7 +933,9 @@ function verDetallesMatricula(matriculaId) {
                                         </form>
                                     </div>
                                     <div class="col-md-6">
-                                        <button type="button" class="btn btn-danger w-100 py-3 btn-rechazar-desde-modal" data-matricula-id="${matriculaId}">
+                                        <button type="button"
+                                                class="btn btn-danger w-100 py-3 btn-rechazar-desde-modal"
+                                                data-matricula-id="${matriculaId}">
                                             <i class="fas fa-times-circle me-2"></i>
                                             <span class="fw-bold">Rechazar Matrícula</span>
                                         </button>
@@ -1083,65 +957,49 @@ function verDetallesMatricula(matriculaId) {
         });
 }
 
-// Botón rechazar desde modal
+// ========== RECHAZAR MATRÍCULA DESDE MODAL ==========
 document.addEventListener('click', function(e) {
-    if (e.target.closest('.btn-rechazar-desde-modal')) {
-        e.preventDefault();
-        const btn = e.target.closest('.btn-rechazar-desde-modal');
-        const matriculaId = btn.getAttribute('data-matricula-id');
-
-// ========================================
-// BOTÓN "RECHAZAR MATRÍCULA" DESDE EL MODAL
-// ========================================
-document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.btn-rechazar-desde-modal');
-    if (!btn) return;
+    const btnRechazar = e.target.closest('.btn-rechazar-desde-modal');
+    if (!btnRechazar) return;
 
     e.preventDefault();
-
-    const matriculaId = btn.dataset.matriculaId;
+    const matriculaId = btnRechazar.dataset.matriculaId;
 
     // Cerrar modal de detalles
-    const modalDetalles = bootstrap.Modal.getInstance(
-        document.getElementById('modalDetallesMatricula')
-    );
+    const modalDetalles = bootstrap.Modal.getInstance(document.getElementById('modalDetallesMatricula'));
     if (modalDetalles) modalDetalles.hide();
 
-    // Abrir el modal de rechazo después de una transición suave
+    // Abrir modal de rechazo después de transición
     setTimeout(() => mostrarModalRechazoMatricula(matriculaId), 350);
 });
 
+// ========== FUNCIÓN MODAL RECHAZO ==========
 function mostrarModalRechazoMatricula(matriculaId) {
-
     const form = document.getElementById('formRechazoMatricula');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-    // Actualizar ruta del form dinámicamente
     form.action = `/matriculas/${matriculaId}/rechazar`;
-
-    // Limpiar textarea
     document.getElementById('motivo_rechazo_matricula').value = '';
 
-    // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('modalRechazoMatricula'));
     modal.show();
 
-    // Eliminar cualquier submit anterior para evitar duplicación
-    form.onsubmit = null;
+    // Remover listener anterior para evitar duplicados
+    const nuevoForm = form.cloneNode(true);
+    form.parentNode.replaceChild(nuevoForm, form);
 
-    // Nuevo comportamiento del formulario
-    form.addEventListener('submit', function (e) {
+    nuevoForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
         const motivo = document.getElementById('motivo_rechazo_matricula').value.trim();
 
         if (!motivo || motivo.length < 10) {
             alert('Por favor, proporcione un motivo más detallado (mínimo 10 caracteres).');
-            return false;
+            return;
         }
 
         if (confirm('¿Está seguro de rechazar esta matrícula?')) {
-            fetch(form.action, {
+            fetch(nuevoForm.action, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -1161,13 +1019,11 @@ function mostrarModalRechazoMatricula(matriculaId) {
                     throw new Error('Error en la respuesta del servidor');
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 alert('Error: No se pudo rechazar la matrícula');
             });
         }
-
-        return false;
-    };
+    });
 }
 </script>
 @endpush

@@ -2,6 +2,8 @@
 
 @section('title', 'Lista de usuarios')
 
+@section('page-title', 'Usuarios del Sistema')
+
 @section('content')
 <div class="container">
 
@@ -44,101 +46,104 @@
 
         <div class="card-body p-0">
 
-            <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Estado</th>
-                        <th>Creado</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @forelse ($usuarios as $u)
+            {{-- table-responsive evita desbordamiento en móvil --}}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td class="fw-bold">{{ $u->id }}</td>
-                            <td>{{ $u->name }}</td>
-                            <td>{{ $u->email }}</td>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
 
-                            <td>
-                                <span class="badge bg-info text-dark">
-                                    {{ $u->rol->nombre ?? 'Sin rol' }}
-                                </span>
-                            </td>
+                    <tbody>
+                        @forelse ($usuarios as $u)
+                            <tr>
+                                <td class="fw-bold">{{ $u->id }}</td>
+                                <td>{{ $u->name }}</td>
+                                <td>{{ $u->email }}</td>
 
-                            <td>
-                                @if($u->activo)
-                                    <span class="badge bg-success">Activo</span>
-                                @else
-                                    <span class="badge bg-warning text-dark">Pendiente</span>
-                                @endif
-                            </td>
+                                <td>
+                                    <span class="badge bg-info text-dark">
+                                        {{ $u->rol->nombre ?? 'Sin rol' }}
+                                    </span>
+                                </td>
 
-                            <td>{{ $u->created_at->format('d/m/Y H:i') }}</td>
+                                <td>
+                                    @if($u->activo)
+                                        <span class="badge bg-success">Activo</span>
+                                    @else
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                    @endif
+                                </td>
 
-                            <td class="text-center">
+                                <td>{{ $u->created_at->format('d/m/Y H:i') }}</td>
 
-                                {{-- Ver --}}
-                                <a href="{{ route('superadmin.usuarios.show', $u->id) }}"
-                                   class="btn btn-outline-primary btn-sm me-1">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                                <td class="text-center">
 
-                                {{-- Aprobar si está pendiente --}}
-                                @if(!$u->activo)
-                                    <form action="{{ route('superadmin.usuarios.aprobar', $u->id) }}"
-                                          method="POST" class="d-inline-block">
-                                        @csrf
-                                        <button class="btn btn-outline-success btn-sm me-1">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                    </form>
-                                @endif
+                                    {{-- Ver --}}
+                                    <a href="{{ route('superadmin.usuarios.show', $u->id) }}"
+                                       class="btn btn-outline-primary btn-sm me-1">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
 
-                                {{-- Activar / Desactivar --}}
-                                @if($u->activo)
-                                    <form method="POST" action="{{ route('superadmin.usuarios.desactivar', $u->id) }}" class="d-inline-block">
-                                        @csrf
-                                        @method('PUT')
-                                        <button class="btn btn-warning btn-sm">Desactivar</button>
-                                    </form>
-                                @else
-                                    <form method="POST" action="{{ route('superadmin.usuarios.activar', $u->id) }}" class="d-inline-block">
-                                        @csrf
-                                        @method('PUT')
-                                        <button class="btn btn-success btn-sm">Activar</button>
-                                    </form>
-                                @endif
+                                    {{-- Aprobar si está pendiente --}}
+                                    @if(!$u->activo)
+                                        <form action="{{ route('superadmin.usuarios.aprobar', $u->id) }}"
+                                              method="POST" class="d-inline-block">
+                                            @csrf
+                                            <button class="btn btn-outline-success btn-sm me-1" title="Aprobar">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                    @endif
 
-                                {{-- Eliminar --}}
-                                <form action="{{ route('superadmin.usuarios.rechazar', $u->id) }}"
-                                      method="POST" class="d-inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-outline-danger btn-sm"
-                                            onclick="return confirm('¿Eliminar este usuario?')">
+                                    {{-- Activar / Desactivar --}}
+                                    @if($u->activo)
+                                        <form method="POST" action="{{ route('superadmin.usuarios.desactivar', $u->id) }}" class="d-inline-block">
+                                            @csrf
+                                            @method('PUT')
+                                            <button class="btn btn-warning btn-sm">Desactivar</button>
+                                        </form>
+                                    @else
+                                        <form method="POST" action="{{ route('superadmin.usuarios.activar', $u->id) }}" class="d-inline-block">
+                                            @csrf
+                                            @method('PUT')
+                                            <button class="btn btn-success btn-sm">Activar</button>
+                                        </form>
+                                    @endif
+
+                                    {{-- Eliminar — usa el modal del layout, no confirm() nativo --}}
+                                    <button type="button"
+                                            class="btn btn-outline-danger btn-sm"
+                                            onclick="mostrarModalDelete(
+                                                '{{ route('superadmin.usuarios.rechazar', $u->id) }}',
+                                                '¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.',
+                                                '{{ $u->name }}'
+                                            )">
                                         <i class="fas fa-trash"></i>
                                     </button>
-                                </form>
 
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
 
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">
-                                <i class="fas fa-info-circle me-2"></i>
-                                No hay usuarios registrados.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No hay usuarios registrados.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
 
-            </table>
+                </table>
+            </div>
 
         </div>
     </div>

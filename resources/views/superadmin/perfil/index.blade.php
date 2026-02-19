@@ -45,7 +45,7 @@
                 <!-- Gestión de Administradores -->
                 <div class="col-md-4">
                     <a href="{{ route('superadmin.administradores.index') }}" class="text-decoration-none">
-                        <div class="card border-0 h-100" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 10px; transition: all 0.3s ease;">
+                        <div class="acceso-card" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);">
                             <div class="card-body text-center p-4">
                                 <i class="fas fa-users-cog" style="font-size: 2.5rem; color: white; margin-bottom: 1rem;"></i>
                                 <h6 class="text-white fw-bold mb-1">Administradores</h6>
@@ -58,7 +58,7 @@
                 <!-- Estudiantes -->
                 <div class="col-md-4">
                     <a href="{{ route('estudiantes.index') }}" class="text-decoration-none">
-                        <div class="card border-0 h-100" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px; transition: all 0.3s ease;">
+                        <div class="acceso-card" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%);">
                             <div class="card-body text-center p-4">
                                 <i class="fas fa-user-graduate" style="font-size: 2.5rem; color: white; margin-bottom: 1rem;"></i>
                                 <h6 class="text-white fw-bold mb-1">Estudiantes</h6>
@@ -71,7 +71,7 @@
                 <!-- Profesores -->
                 <div class="col-md-4">
                     <a href="{{ route('profesores.index') }}" class="text-decoration-none">
-                        <div class="card border-0 h-100" style="background: linear-gradient(135deg, #003b73 0%, #00508f 100%); border-radius: 10px; transition: all 0.3s ease;">
+                        <div class="acceso-card" style="background: linear-gradient(135deg, #003b73 0%, #00508f 100%);">
                             <div class="card-body text-center p-4">
                                 <i class="fas fa-chalkboard-teacher" style="font-size: 2.5rem; color: white; margin-bottom: 1rem;"></i>
                                 <h6 class="text-white fw-bold mb-1">Profesores</h6>
@@ -89,9 +89,16 @@
 
 @push('styles')
 <style>
-    .card:hover {
+    /* Solo las tarjetas de acceso rápido tienen hover, no todas las cards */
+    .acceso-card {
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .acceso-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 </style>
 @endpush

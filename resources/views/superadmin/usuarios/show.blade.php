@@ -2,14 +2,14 @@
 
 @section('title', 'Detalles del Usuario')
 
+@section('page-title', 'Detalles del Usuario')
+
 @section('content')
 <div class="container">
 
-
     <a href="{{ url()->previous() }}" class="btn btn-primary mb-3">
-    <i class="fas fa-arrow-left"></i> Volver
-</a>
-
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
 
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
@@ -28,7 +28,6 @@
 
             <div class="row">
 
-                {{-- Información principal --}}
                 <div class="col-md-6 mb-3">
                     <h6 class="fw-bold">ID del Usuario:</h6>
                     <p>{{ $usuario->id }}</p>
@@ -84,20 +83,21 @@
                     <form action="{{ route('superadmin.usuarios.aprobar', $usuario->id) }}" method="POST">
                         @csrf
                         <button class="btn btn-success">
-                            Aprobar usuario
+                            <i class="fas fa-check me-1"></i> Aprobar usuario
                         </button>
                     </form>
                 @endif
 
-                {{-- Eliminar --}}
-                <form action="{{ route('superadmin.usuarios.rechazar', $usuario->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-danger"
-                        onclick="return confirm('¿Seguro que deseas eliminar este usuario?')">
-                        Eliminar usuario
-                    </button>
-                </form>
+                {{-- Eliminar — usa el modal del layout --}}
+                <button type="button"
+                        class="btn btn-danger"
+                        onclick="mostrarModalDelete(
+                            '{{ route('superadmin.usuarios.rechazar', $usuario->id) }}',
+                            '¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.',
+                            '{{ $usuario->name }}'
+                        )">
+                    <i class="fas fa-trash me-1"></i> Eliminar usuario
+                </button>
 
             </div>
 
