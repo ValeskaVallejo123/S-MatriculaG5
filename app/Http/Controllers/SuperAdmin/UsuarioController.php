@@ -15,16 +15,16 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = User::findOrFail($id);
-            
+
             // Activar el usuario
             $usuario->activo = true;
             $usuario->save();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario aprobado exitosamente'
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -32,7 +32,7 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Rechazar y eliminar un usuario pendiente
      */
@@ -40,15 +40,15 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = User::findOrFail($id);
-            
+
             // Eliminar el usuario
             $usuario->delete();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario rechazado y eliminado'
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

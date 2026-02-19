@@ -28,9 +28,7 @@ use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\ProfesorMateriaController;
 use App\Http\Controllers\RegistrarCalificacionController;
 use App\Http\Controllers\AccionesImportantesController;
-use App\Http\Controllers\PadreAuthController;
-use App\Http\Controllers\PadreSolicitudDashboardController;
-use App\Http\Controllers\Admin\SolicitudAdminController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -54,44 +52,20 @@ Route::get('/plantilla', function () {
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS PÚBLICAS DE MATRÍCULA Y SOLICITUDES
+| RUTAS PÚBLICAS DE MATRÍCULA (SIN AUTH)
 |--------------------------------------------------------------------------
 */
 Route::get('/matricula-publica', [MatriculaController::class, 'create'])->name('matriculas.public.create');
 Route::post('/matricula-publica', [MatriculaController::class, 'store'])->name('matriculas.public.store');
 Route::get('/matricula-exitosa', [MatriculaController::class, 'success'])->name('matriculas.success');
 
-// Solicitudes de matrícula (públicas)
-Route::get('/solicitud/crear', [SolicitudController::class, 'create'])->name('solicitud.create');
-Route::post('/solicitud', [SolicitudController::class, 'store'])->name('solicitud.store');
-Route::get('/solicitud/confirmacion/{id}', [SolicitudController::class, 'confirmacion'])->name('solicitud.confirmacion');
-
-// Consulta de solicitudes (PÚBLICA - ANTIGUA)
+// Consulta de solicitudes (PÚBLICA)
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('estado-solicitud');
 Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
 
 /*
 |--------------------------------------------------------------------------
-| RUTAS PÚBLICAS DE AUTENTICACIÓN DE PADRES
-|--------------------------------------------------------------------------
-*/
-// Login de padres (con correo o código de matrícula)
-Route::get('/padres/login', [PadreAuthController::class, 'showLoginForm'])->name('padres.login');
-Route::post('/padres/login', [PadreAuthController::class, 'login'])->name('padres.login.post');
-
-/*
-|--------------------------------------------------------------------------
-| RUTAS PROTEGIDAS PARA PADRES (Requieren autenticación de padre)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['padre.auth'])->prefix('padres')->name('padres.')->group(function () {
-    Route::get('/dashboard', [PadreSolicitudDashboardController::class, 'index'])->name('dashboard');
-    Route::post('/logout', [PadreAuthController::class, 'logout'])->name('logout');
-});
-
-/*
-|--------------------------------------------------------------------------
-| AUTENTICACIÓN (Sistema principal)
+| AUTENTICACIÓN
 |--------------------------------------------------------------------------
 */
 
@@ -162,7 +136,16 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
-        
+
+        // Gestión de solicitudes (ADMIN)
+        Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
+            Route::get('/', [SolicitudAdminController::class, 'index'])->name('index');
+            Route::get('/{id}', [SolicitudAdminController::class, 'show'])->name('show');
+            Route::post('/{id}/aprobar', [SolicitudAdminController::class, 'aprobar'])->name('aprobar');
+            Route::post('/{id}/rechazar', [SolicitudAdminController::class, 'rechazar'])->name('rechazar');
+            Route::post('/{id}/pendiente', [SolicitudAdminController::class, 'pendiente'])->name('pendiente');
+        });
+
         // Gestión de solicitudes (ADMIN)
         Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
             Route::get('/', [SolicitudAdminController::class, 'index'])->name('index');
@@ -206,7 +189,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | RUTAS DE PADRE (Sistema principal con auth)
+    | RUTAS DE PADRE
     |--------------------------------------------------------------------------
     */
     Route::prefix('padre')->name('padre.')->group(function () {
@@ -281,7 +264,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
         Route::post('/{matricula}/rechazar', [MatriculaController::class, 'rechazar'])->name('rechazar');
         Route::post('/{matricula}/cancelar', [MatriculaController::class, 'cancelar'])->name('cancelar');
-        
     });
 
     /*
