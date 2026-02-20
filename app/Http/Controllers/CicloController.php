@@ -20,7 +20,7 @@ class CicloController extends Controller
         return view('ciclos.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:50',
