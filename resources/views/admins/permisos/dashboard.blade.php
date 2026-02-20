@@ -4,7 +4,7 @@
 @section('content')
 <div class="container">
     <h1>Dashboard</h1>
-    
+
     <div class="row">
         {{-- Verificar si tiene permiso para ver estudiantes --}}
         @if(auth()->user()->tienePermiso('ver_estudiantes'))
@@ -18,7 +18,7 @@
             </div>
         </div>
         @endif
-        
+
         {{-- Verificar si tiene permiso para crear estudiantes --}}
         @if(auth()->user()->tienePermiso('crear_estudiantes'))
         <div class="col-md-4">
@@ -31,7 +31,7 @@
             </div>
         </div>
         @endif
-        
+
         {{-- Verificar si tiene permiso para ver profesores --}}
         @if(auth()->user()->tienePermiso('ver_profesores'))
         <div class="col-md-4">
@@ -44,7 +44,7 @@
             </div>
         </div>
         @endif
-        
+
         {{-- Verificar si tiene alguno de varios permisos --}}
         @if(auth()->user()->tieneAlgunPermiso(['ver_reportes', 'generar_reportes']))
         <div class="col-md-4">
@@ -57,7 +57,7 @@
             </div>
         </div>
         @endif
-        
+
         {{-- Verificar si tiene un rol específico --}}
         @if(auth()->user()->tieneRol('Super Administrador'))
         <div class="col-md-4">
@@ -71,7 +71,7 @@
         </div>
         @endif
     </div>
-    
+
     {{-- Mostrar permisos del usuario actual (para depuración) --}}
     @if(config('app.debug'))
     <div class="row mt-4">
@@ -97,7 +97,7 @@
 </div>
 @endsection
 
-{{-- 
+{{--
 EJEMPLOS DE USO EN OTROS CONTEXTOS:
 
 1. En botones de acción:
@@ -118,11 +118,11 @@ EJEMPLOS DE USO EN OTROS CONTEXTOS:
     @if(auth()->user()->tienePermiso('ver_estudiantes'))
     <li><a href="{{ route('admin.estudiantes.index') }}">Estudiantes</a></li>
     @endif
-    
+
     @if(auth()->user()->tienePermiso('ver_profesores'))
     <li><a href="{{ route('admin.profesores.index') }}">Profesores</a></li>
     @endif
-    
+
     @if(auth()->user()->tieneRol('Super Administrador'))
     <li><a href="{{ route('superadmin.dashboard') }}">Panel de Super Admin</a></li>
     @endif

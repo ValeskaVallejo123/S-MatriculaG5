@@ -10,21 +10,21 @@ class ProfesorController extends Controller
     public function index(Request $request)
     {
         $busqueda = $request->input('busqueda');
-        
+
         $profesores = Profesor::query()
             ->when($busqueda, function ($query, $busqueda) {
                 return $query->where(function ($q) use ($busqueda) {
                     $q->where('nombre', 'like', "%{$busqueda}%")
-                      ->orWhere('apellido', 'like', "%{$busqueda}%")
-                      ->orWhere('dni', 'like', "%{$busqueda}%")
-                      ->orWhere('email', 'like', "%{$busqueda}%")
-                      ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
+                        ->orWhere('apellido', 'like', "%{$busqueda}%")
+                        ->orWhere('dni', 'like', "%{$busqueda}%")
+                        ->orWhere('email', 'like', "%{$busqueda}%")
+                        ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
                 });
             })
             ->latest()
             ->paginate(10)
             ->appends(['busqueda' => $busqueda]);
-        
+
         return view('profesores.index', compact('profesores'));
     }
 
@@ -39,41 +39,41 @@ class ProfesorController extends Controller
     }
 
     public function store(Request $request)
-{
-    
-    $validated = $request->validate([
-    'nombre' => 'required|string|max:50',
-    'apellido' => 'required|string|max:50',
-    'dni' => 'required|string|unique:profesores,dni|max:13',
-    'fecha_nacimiento' => 'nullable|date',
-    'genero' => 'nullable|in:masculino,femenino,otro',
-    'telefono' => 'nullable|string|max:20',
-    'email' => 'required|email|unique:profesores,email',
-    'direccion' => 'nullable|string',
-    'especialidad' => 'required|string|max:255',
-    'nivel_academico' => 'nullable|in:bachillerato,licenciatura,maestria,doctorado',
-    'fecha_contratacion' => 'nullable|date',
-    'tipo_contrato' => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
-    'estado' => 'required|in:activo,inactivo,licencia',
+    {
+
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:50',
+            'apellido' => 'required|string|max:50',
+            'dni' => 'required|string|unique:profesores,dni|max:13',
+            'fecha_nacimiento' => 'nullable|date',
+            'genero' => 'nullable|in:masculino,femenino,otro',
+            'telefono' => 'nullable|string|max:20',
+            'email' => 'required|email|unique:profesores,email',
+            'direccion' => 'nullable|string',
+            'especialidad' => 'required|string|max:255',
+            'nivel_academico' => 'nullable|in:bachillerato,licenciatura,maestria,doctorado',
+            'fecha_contratacion' => 'nullable|date',
+            'tipo_contrato' => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
+            'estado' => 'required|in:activo,inactivo,licencia',
 
 
-    ], [
-        'nombre1.required' => 'El primer nombre es obligatorio',
-        'apellido1.required' => 'El primer apellido es obligatorio',
-        'dni.required' => 'El DNI es obligatorio',
-        'dni.unique' => 'Este DNI ya está registrado',
-        'email.required' => 'El email es obligatorio',
-        'email.email' => 'El email debe ser válido',
-        'email.unique' => 'Este email ya está registrado',
-        'especialidad.required' => 'La especialidad es obligatoria',
-        'estado.required' => 'El estado es obligatorio',
-    ]);
+        ], [
+            'nombre1.required' => 'El primer nombre es obligatorio',
+            'apellido1.required' => 'El primer apellido es obligatorio',
+            'dni.required' => 'El DNI es obligatorio',
+            'dni.unique' => 'Este DNI ya está registrado',
+            'email.required' => 'El email es obligatorio',
+            'email.email' => 'El email debe ser válido',
+            'email.unique' => 'Este email ya está registrado',
+            'especialidad.required' => 'La especialidad es obligatoria',
+            'estado.required' => 'El estado es obligatorio',
+        ]);
 
-    Profesor::create($validated);
+        Profesor::create($validated);
 
-    return redirect()->route('profesores.index')
-        ->with('success', ' Profesor creado exitosamente');
-}
+        return redirect()->route('profesores.index')
+            ->with('success', ' Profesor creado exitosamente');
+    }
 
     public function show(Profesor $profesor)
     {

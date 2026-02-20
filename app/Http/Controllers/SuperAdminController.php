@@ -235,7 +235,7 @@ class SuperAdminController extends Controller
     public function permisosRoles()
     {
         $permisos = $this->getAvailablePermissions();
-        
+
         // Solo obtener usuarios del sistema (tabla users) que sean configurables
         $usuarios = User::where(function($query) {
                 // Solo administradores regulares
@@ -253,7 +253,7 @@ class SuperAdminController extends Controller
             ->orderBy('role')
             ->orderBy('name')
             ->get();
-        
+
         return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
     }
 
@@ -263,16 +263,16 @@ class SuperAdminController extends Controller
     public function actualizarPermisos(Request $request, $userId)
     {
         $usuario = User::findOrFail($userId);
-        
+
         // Proteger al super admin principal
         if ($usuario->is_protected) {
             return redirect()->back()->with('error', 'No se pueden modificar los permisos de este usuario');
         }
-        
+
         // Actualizar permisos
         $usuario->permissions = $request->input('permisos', []);
         $usuario->save();
-        
+
         return redirect()->route('superadmin.administradores.permisos')
             ->with('success', "Permisos actualizados correctamente para {$usuario->name}");
     }

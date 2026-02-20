@@ -26,7 +26,7 @@
 
     <!-- Cards de Roles -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         <!-- SUPER ADMIN -->
         <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl shadow-lg border-2 border-red-200 overflow-hidden">
             <!-- Header -->
@@ -140,7 +140,7 @@
                         <h4 class="font-semibold text-gray-900">Permisos Disponibles</h4>
                     </div>
                     <p class="text-xs text-gray-600 mb-3">El Super Admin puede asignar los siguientes permisos:</p>
-                    
+
                     <div class="grid grid-cols-1 gap-2">
                         @foreach($permisos as $key => $nombre)
                         <div class="flex items-center gap-2 p-2 bg-gray-50 rounded-lg hover:bg-blue-50 transition">
@@ -292,7 +292,7 @@
 
     <!-- Botón para volver -->
     <div class="flex justify-end">
-        <a href="{{ route('admins.index') }}" 
+        <a href="{{ route('admins.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 bg-primary-400 text-white rounded-lg hover:bg-primary-500 transition shadow-lg hover:shadow-xl">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
