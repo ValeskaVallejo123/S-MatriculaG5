@@ -28,10 +28,10 @@
                 <div class="col-md-3">
                     <div class="position-relative">
                         <i class="fas fa-search position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.938rem;"></i>
-                        <input type="text" 
-                               id="searchInput" 
-                               class="form-control ps-5" 
-                               placeholder="Buscar grado..." 
+                        <input type="text"
+                               id="searchInput"
+                               class="form-control ps-5"
+                               placeholder="Buscar grado..."
                                style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 3rem; transition: all 0.3s ease;">
                     </div>
                 </div>
@@ -73,152 +73,97 @@
     <!-- Tabs -->
     <ul class="nav nav-tabs mb-4" id="nivelTabs" style="border: none;">
         <li class="nav-item">
-            <button class="nav-link active" id="todos-tab" data-bs-toggle="tab" data-bs-target="#todos" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
+            <button class="nav-link active" id="todos-tab" data-nivel="" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-th-large me-2"></i>Todos
             </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" id="primaria-tab" data-bs-toggle="tab" data-bs-target="#primaria" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
+            <button class="nav-link" id="primaria-tab" data-nivel="primaria" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-child me-2"></i>Primaria
             </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" id="secundaria-tab" data-bs-toggle="tab" data-bs-target="#secundaria" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
+            <button class="nav-link" id="secundaria-tab" data-nivel="secundaria" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-user-graduate me-2"></i>Secundaria
             </button>
         </li>
     </ul>
 
-    <!-- Contenido de Tabs -->
-    <ul class="nav nav-tabs mb-4" id="nivelTabs" style="border: none;">
-    <li class="nav-item">
-        <button class="nav-link active" id="todos-tab" data-nivel="" data-bs-toggle="tab" type="button">
-            <i class="fas fa-th-large me-2"></i>Todos
-        </button>
-    </li>
-    <li class="nav-item">
-        <button class="nav-link" id="primaria-tab" data-nivel="primaria" data-bs-toggle="tab" type="button">
-            <i class="fas fa-child me-2"></i>Primaria
-        </button>
-    </li>
-    <li class="nav-item">
-        <button class="nav-link" id="secundaria-tab" data-nivel="secundaria" data-bs-toggle="tab" type="button">
-            <i class="fas fa-user-graduate me-2"></i>Secundaria
-        </button>
-    </li>
-</ul>
-
-<div class="tab-content">
-    <div class="tab-pane fade show active">
-        <div class="row g-4" id="gradosContainer">
-            @forelse($grados as $grado)
-                <div class="col-md-6 col-lg-4 col-xl-3 grado-card" data-nivel="{{ strtolower($grado->nivel) }}">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border-left: 4px solid {{ $grado->nivel == 'secundaria' ? '#00508f' : '#4ec7d2' }};">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold">{{ $grado->numero }}° {{ $grado->seccion }}</h5>
-                            <p class="text-muted small">{{ ucfirst($grado->nivel) }}</p>
-                            <div class="d-flex gap-2 mt-3">
-                                <a href="{{ route('grados.show', $grado) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
-                                <a href="{{ route('grados.asignar-materias', $grado) }}" class="btn btn-sm btn-outline-info"><i class="fas fa-tasks"></i></a>
-                                <a href="{{ route('grados.edit', $grado) }}" class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></a>
+    <!-- Contenido -->
+    <div class="tab-content">
+        <div class="tab-pane fade show active">
+            <div class="row g-4" id="gradosContainer">
+                @forelse($grados as $grado)
+                    <div class="col-md-6 col-lg-4 col-xl-3 grado-card" data-nivel="{{ strtolower($grado->nivel) }}">
+                        <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border-left: 4px solid {{ $grado->nivel == 'secundaria' ? '#00508f' : '#4ec7d2' }};">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold">{{ $grado->numero }}° {{ $grado->seccion }}</h5>
+                                <p class="text-muted small">{{ ucfirst($grado->nivel) }}</p>
+                                <div class="d-flex gap-2 mt-3">
+                                    <a href="{{ route('grados.show', $grado) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
+                                    <a href="{{ route('grados.asignar-materias', $grado) }}" class="btn btn-sm btn-outline-info"><i class="fas fa-tasks"></i></a>
+                                    <a href="{{ route('grados.edit', $grado) }}" class="btn btn-sm btn-outline-warning"><i class="fas fa-edit"></i></a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @empty
+                @empty
                 @endforelse
+            </div>
         </div>
     </div>
-</div>
 
 </div>
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const filterNivelSelect = document.getElementById('filterNivel');
-    const tabButtons = document.querySelectorAll('#nivelTabs button');
-    const cards = document.querySelectorAll('.grado-card');
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput   = document.getElementById('searchInput');
+    const filterNivel   = document.getElementById('filterNivel');
+    const tabButtons    = document.querySelectorAll('#nivelTabs button');
+    const cards         = document.querySelectorAll('.grado-card');
 
-    function filterLogic() {
+    function filterCards() {
         const searchTerm = searchInput.value.toLowerCase().trim();
-        const nivelValue = filterNivelSelect.value.toLowerCase();
+        const nivelFilter = filterNivel.value.toLowerCase();
 
-        cards.forEach(card => {
-            const text = card.textContent.toLowerCase();
-            const cardNivel = card.dataset.nivel.toLowerCase();
+        cards.forEach(function (card) {
+            const text  = card.textContent.toLowerCase();
+            const nivel = card.dataset.nivel.toLowerCase();
 
             const matchesSearch = text.includes(searchTerm);
-            const matchesNivel = nivelValue === "" || cardNivel === nivelValue;
+            const matchesNivel  = nivelFilter === '' || nivel === nivelFilter;
 
             card.style.display = (matchesSearch && matchesNivel) ? '' : 'none';
         });
     }
 
-    // 1. Sincronizar de Select a Tabs
-    filterNivelSelect.addEventListener('change', function() {
+    // Sincronizar Select → Tabs
+    filterNivel.addEventListener('change', function () {
         const val = this.value;
         const targetTab = document.querySelector(`#nivelTabs button[data-nivel="${val}"]`);
-        
         if (targetTab) {
-            const tabInstance = new bootstrap.Tab(targetTab);
-            tabInstance.show();
+            new bootstrap.Tab(targetTab).show();
         }
-        filterLogic();
+        filterCards();
     });
 
-    // 2. Sincronizar de Tabs a Select
-    tabButtons.forEach(button => {
+    // Sincronizar Tabs → Select
+    tabButtons.forEach(function (button) {
         button.addEventListener('shown.bs.tab', function (event) {
-            const selectedNivel = event.target.getAttribute('data-nivel');
-            filterNivelSelect.value = selectedNivel; // Actualiza el select
-            filterLogic();
+            filterNivel.value = event.target.getAttribute('data-nivel');
+            filterCards();
         });
     });
 
-    // 3. Buscador
-    searchInput.addEventListener('keyup', filterLogic);
-});
-</script>
-@endpush
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const filterNivel = document.getElementById('filterNivel');
-    const cards = document.querySelectorAll('.grado-card');
-
-    function filterCards() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
-        const nivelFilter = filterNivel.value;
-        let visibleCount = 0;
-
-        cards.forEach(function(card) {
-            const text = card.textContent.toLowerCase();
-            const nivel = card.dataset.nivel;
-
-            const matchesSearch = text.includes(searchTerm);
-            const matchesNivel = !nivelFilter || nivel === nivelFilter;
-
-            if (matchesSearch && matchesNivel) {
-                card.style.display = '';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-
+    // Buscador
     searchInput.addEventListener('keyup', filterCards);
-    filterNivel.addEventListener('change', filterCards);
 });
 
 function changePerPage(value) {
     const url = new URL(window.location.href);
     url.searchParams.set('per_page', value);
-    url.searchParams.delete('page'); // Reset a página 1
+    url.searchParams.delete('page');
     window.location.href = url.toString();
 }
 </script>
