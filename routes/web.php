@@ -40,7 +40,11 @@ use App\Http\Controllers\PublicoPlanEstudiosController;
 | RUTAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
+// Plan de estudios público
+Route::get('/plan-estudios', [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
 
+// AGREGAR ESTA LÍNEA:
+Route::get('/plan-estudios/{grado}', [PublicoPlanEstudiosController::class, 'show'])->name('plan-estudios.show');
 // Ruta raíz - Redirige al login
 Route::get('/', function () {
     return redirect()->route('login');
@@ -303,7 +307,7 @@ Route::middleware(['auth'])->group(function () {
     | GESTIÓN DE SECCIONES
     |--------------------------------------------------------------------------
     */
-    Route::post('seccion/asignar', [SeccionController::class, 'asignar'])->name('secciones.asignar');
+    Route::post('secciones/asignar', [SeccionController::class, 'asignar'])->name('secciones.asignar');
     Route::resource('seccion', SeccionController::class)->names([
         'index'   => 'secciones.index',
         'create'  => 'secciones.create',

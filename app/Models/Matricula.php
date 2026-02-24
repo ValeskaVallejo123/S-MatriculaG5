@@ -43,7 +43,7 @@ class Matricula extends Model
         return $this->belongsTo(Padre::class, 'padre_id');
     }
 
-    public function confirmar()
+    public function confirmar(): void
     {
         if ($this->estado === 'pendiente') {
             $this->estado = 'aprobada';
