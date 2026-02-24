@@ -28,6 +28,15 @@ use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\ProfesorMateriaController;
 use App\Http\Controllers\RegistrarCalificacionController;
 use App\Http\Controllers\AccionesImportantesController;
+<<<<<<< HEAD
+=======
+use App\Http\Controllers\Admin\SolicitudAdminController;
+use App\Http\Controllers\CalendarioController;
+use App\Http\Controllers\CicloController;
+use App\Http\Controllers\SeccionController;
+use App\Http\Controllers\CupoMaximoController;
+use App\Http\Controllers\PublicoPlanEstudiosController;
+>>>>>>> origin/josue_matriculag5
 
 /*
 |--------------------------------------------------------------------------
@@ -47,15 +56,32 @@ Route::get('/plantilla', function () {
     return view('plantilla');
 })->name('plantilla');
 
+// Plan de estudios público
+Route::get('/plan-estudios', [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
+
+// Calendario público
+Route::get('/calendario-publico', function () {
+    return view('calendario-publico');
+})->name('calendario.publico');
+Route::get('/calendario/eventos/public', [CalendarioController::class, 'eventosPublicos'])->name('calendario.eventos.public');
+
 /*
 |--------------------------------------------------------------------------
+<<<<<<< HEAD
 | RUTAS PÚBLICAS DE MATRÍCULA
+=======
+| RUTAS PÚBLICAS DE MATRÍCULA (SIN AUTH)
+>>>>>>> origin/josue_matriculag5
 |--------------------------------------------------------------------------
 */
 Route::get('/matricula-publica', [MatriculaController::class, 'create'])->name('matriculas.public.create');
 Route::post('/matricula-publica', [MatriculaController::class, 'store'])->name('matriculas.public.store');
 Route::get('/matricula-exitosa', [MatriculaController::class, 'success'])->name('matriculas.success');
 
+<<<<<<< HEAD
+=======
+// Consulta de solicitudes (PÚBLICA)
+>>>>>>> origin/josue_matriculag5
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('estado-solicitud');
 Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
 
@@ -64,6 +90,11 @@ Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']
 | AUTENTICACIÓN
 |--------------------------------------------------------------------------
 */
+<<<<<<< HEAD
+=======
+
+// Login
+>>>>>>> origin/josue_matriculag5
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -87,6 +118,20 @@ Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+
+    // Dashboard con redirección por rol
+    Route::get('/dashboard', function () {
+        $role = Auth::user()->role;
+        $roleRouteMap = [
+            'super_admin' => 'superadmin.dashboard',
+            'admin'       => 'admin.dashboard',
+            'profesor'    => 'profesor.dashboard',
+            'estudiante'  => 'estudiante.dashboard',
+            'padre'       => 'padre.dashboard',
+            'user'        => 'admin.dashboard',
+        ];
+        return redirect()->route($roleRouteMap[$role] ?? 'inicio');
+    })->name('dashboard');
 
     /*
     |----------------------------------------------------------------------
@@ -133,6 +178,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
 
+<<<<<<< HEAD
+=======
+        // Gestión de solicitudes (ADMIN)
+>>>>>>> origin/josue_matriculag5
         Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
             Route::get('/', [SolicitudController::class, 'index'])->name('index');
             Route::get('/{id}', [SolicitudController::class, 'show'])->name('show');
@@ -143,9 +192,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     /*
+<<<<<<< HEAD
     |----------------------------------------------------------------------
     | ACCIONES IMPORTANTES
     |----------------------------------------------------------------------
+=======
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE ACCIONES IMPORTANTES
+    |--------------------------------------------------------------------------
+>>>>>>> origin/josue_matriculag5
     */
     Route::resource('acciones-importantes', AccionesImportantesController::class)
         ->names('acciones_importantes');
@@ -173,9 +228,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     /*
+<<<<<<< HEAD
     |----------------------------------------------------------------------
     | PADRE
     |----------------------------------------------------------------------
+=======
+    |--------------------------------------------------------------------------
+    | RUTAS DE PADRE
+    |--------------------------------------------------------------------------
+>>>>>>> origin/josue_matriculag5
     */
     Route::prefix('padre')->name('padre.')->group(function () {
         Route::get('/dashboard', function () {
@@ -269,18 +330,39 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('periodos-academicos', PeriodoAcademicoController::class);
 
     /*
+<<<<<<< HEAD
     |----------------------------------------------------------------------
     | CUPOS MÁXIMOS
     |----------------------------------------------------------------------
+=======
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE CICLOS
+    |--------------------------------------------------------------------------
+>>>>>>> origin/josue_matriculag5
     */
-    Route::prefix('cupos_maximos')->name('cupos_maximos.')->group(function () {
-        Route::get('/', [CursoController::class, 'index'])->name('index');
-        Route::get('/create', [CursoController::class, 'create'])->name('create');
-        Route::post('/', [CursoController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [CursoController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [CursoController::class, 'update'])->name('update');
-        Route::delete('/{id}', [CursoController::class, 'destroy'])->name('destroy');
-    });
+    Route::resource('ciclos', CicloController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE SECCIONES
+    |--------------------------------------------------------------------------
+    */
+    Route::post('seccion/asignar', [SeccionController::class, 'asignar'])->name('secciones.asignar');
+    Route::resource('seccion', SeccionController::class)->names([
+        'index'   => 'secciones.index',
+        'create'  => 'secciones.create',
+        'store'   => 'secciones.store',
+        'edit'    => 'secciones.edit',
+        'update'  => 'secciones.update',
+        'destroy' => 'secciones.destroy',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE CUPOS MÁXIMOS
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('cupos_maximos', CupoMaximoController::class);
 
     /*
     |----------------------------------------------------------------------
@@ -313,14 +395,16 @@ Route::middleware(['auth'])->group(function () {
     | ASIGNACIÓN PROFESOR-MATERIA
     |----------------------------------------------------------------------
     */
-    Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
-        Route::get('/', [ProfesorMateriaController::class, 'index'])->name('index');
-        Route::get('/create', [ProfesorMateriaController::class, 'create'])->name('create');
-        Route::post('/', [ProfesorMateriaController::class, 'store'])->name('store');
-        Route::get('/{profesor}/edit', [ProfesorMateriaController::class, 'edit'])->name('edit');
-        Route::put('/{profesor}', [ProfesorMateriaController::class, 'update'])->name('update');
-        Route::delete('/{profesor}', [ProfesorMateriaController::class, 'destroy'])->name('destroy');
-    });
+    Route::resource('profesor_materia', ProfesorMateriaController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CALENDARIO (ADMIN)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/calendario', function () {
+        return view('calendario-admin');
+    })->name('calendario');
 
     /*
     |----------------------------------------------------------------------

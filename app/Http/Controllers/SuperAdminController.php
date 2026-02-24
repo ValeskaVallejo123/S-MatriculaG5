@@ -203,11 +203,41 @@ class SuperAdminController extends Controller
         return back()->with('success', 'Contraseña actualizada correctamente');
     }
 
+<<<<<<< HEAD
     /*
     |--------------------------------------------------------------------------
     | ROLES Y PERMISOS
     |--------------------------------------------------------------------------
     */
+=======
+    /**
+     * Mostrar vista de permisos y roles
+     */
+    public function permisosRoles()
+    {
+        $permisos = $this->getAvailablePermissions();
+
+        // Solo obtener usuarios del sistema (tabla users) que sean configurables
+        $usuarios = User::where(function($query) {
+                // Solo administradores regulares
+                $query->where('role', 'admin')
+                      ->orWhere('user_type', 'admin')
+                      // O super admins no protegidos
+                      ->orWhere(function($q) {
+                          $q->where(function($q2) {
+                              $q2->where('role', 'super_admin')
+                                 ->orWhere('user_type', 'super_admin');
+                          })
+                          ->where('is_protected', 0);
+                      });
+            })
+            ->orderBy('role')
+            ->orderBy('name')
+            ->get();
+
+        return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
+    }
+>>>>>>> origin/josue_matriculag5
 
     /**
      * Vista de gestión de roles y permisos.
@@ -249,10 +279,15 @@ class SuperAdminController extends Controller
 
         $usuario = User::findOrFail($userId);
 
+<<<<<<< HEAD
+=======
+        // Proteger al super admin principal
+>>>>>>> origin/josue_matriculag5
         if ($usuario->is_protected) {
             return back()->with('error', 'No se pueden modificar los permisos de este usuario');
         }
 
+<<<<<<< HEAD
         if ($usuario->id === Auth::id()) {
             return back()->with('error', 'No puedes modificar tu propio rol');
         }
@@ -264,6 +299,14 @@ class SuperAdminController extends Controller
         $usuario->save();
 
         return back()->with('success', "Rol y permisos actualizados correctamente para {$usuario->name}");
+=======
+        // Actualizar permisos
+        $usuario->permissions = $request->input('permisos', []);
+        $usuario->save();
+
+        return redirect()->route('superadmin.administradores.permisos')
+            ->with('success', "Permisos actualizados correctamente para {$usuario->name}");
+>>>>>>> origin/josue_matriculag5
     }
 
     /*

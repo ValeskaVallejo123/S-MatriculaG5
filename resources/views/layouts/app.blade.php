@@ -531,6 +531,7 @@
 
         <ul class="sidebar-menu">
 
+            <!-- PRINCIPAL -->
             <li class="menu-section-title">PRINCIPAL</li>
 
             @if($isSuperAdmin)
@@ -559,9 +560,38 @@
 
             <li class="menu-item">
                 <a href="{{ route('estudiantes.index') }}" class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-graduate"></i><span>Estudiantes</span>
+                <i class="fas fa-user-graduate"></i>
+                <span>Estudiantes</span>
                 </a>
             </li>
+
+    <li class="menu-item">
+        <a href="{{ route('calendario') }}"
+        class="menu-link {{ request()->routeIs('/calendario/eventos') ? 'active' : '' }}">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Calendario Académico</span>
+        </a>
+    </li>
+
+    <li class="menu-item">
+        <a href="{{ route('grados.index') }}" 
+        class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
+        <i class="fas fa-book-reader"></i>
+        <span>Plan de Estudios</span>
+        </a>
+    </li>
+
+
+<li class="menu-item">
+    <a href="{{ route('secciones.index') }}" 
+    class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
+        <i class="fas fa-layer-group"></i>
+        <span>Secciones</span>
+    </a>
+</li>
+
+
+
             <li class="menu-item">
                 <a href="{{ route('profesores.index') }}" class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
                     <i class="fas fa-chalkboard-teacher"></i><span>Profesores</span>
@@ -593,6 +623,14 @@
                     <i class="fas fa-clipboard-list"></i><span>Matrículas</span>
                 </a>
             </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link {{ request()->routeIs('admin.solicitudes.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Solicitudes</span>
+                </a>
+            </li>
+
             <li class="menu-item">
                 <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i><span>Grados</span>
@@ -681,13 +719,27 @@
 
         <!-- ── TOPBAR ── -->
         <div class="topbar">
-            <div class="topbar-row-top">
+            <div class="topbar-left">
+                @if($showSidebar)
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                @endif
+                <h5>@yield('page-title', 'Panel de Control')</h5>
+            </div>
+            <div class="topbar-right">
+                @yield('topbar-actions')
 
-                {{-- Izquierda: hamburger + título --}}
-                <div class="topbar-left">
-                    @if($showSidebar)
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
+                <div class="topbar-date">
+                    <i class="far fa-clock"></i>
+                    <span>{{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</span>
+                </div>
+
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
                     </button>
                     @endif
                     <h5>@yield('page-title', 'Panel de Control')</h5>
@@ -811,9 +863,17 @@
             });
 
             const activeLink = sidebar.querySelector('.menu-link.active');
-            if (activeLink && !saved) {
-                const pos = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
-                sidebar.scrollTo({ top: pos, behavior: 'smooth' });
+            if (activeLink && savedScrollPosition === null) {
+                const sidebarRect = sidebar.getBoundingClientRect();
+                const activeLinkRect = activeLink.getBoundingClientRect();
+
+                if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
+                    const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
+                    sidebar.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'smooth'
+                    });
+                }
             }
         }
 
@@ -845,7 +905,11 @@
         }
 
         function mostrarModalDeleteData(button) {
-            mostrarModalDelete(button.dataset.route, button.dataset.message, button.dataset.name);
+            const route = button.dataset.route;
+            const message = button.dataset.message;
+            const name = button.dataset.name;
+
+            mostrarModalDelete(route, message, name);
         }
 
         document.addEventListener('click', e => {

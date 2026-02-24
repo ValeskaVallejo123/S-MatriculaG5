@@ -411,75 +411,18 @@
         <button class="tab-btn" data-tab="resumen">Resumen de roles</button>
     </div>
 
-    {{-- ════════════ TAB: CONFIGURAR ════════════ --}}
-    <div class="tab-pane active" id="tab-config">
-
-        @if(auth()->user()->rol === 'super_admin')
-
-        {{-- Alertas --}}
-        @if(session('success'))
-        <div class="flash-ok">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            {{ session('success') }}
-        </div>
-        @endif
-        @if($errors->any())
-        <div class="flash-err">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            {{ $errors->first() }}
-        </div>
-        @endif
-
-        <form action="{{ route('admins.asignar-permisos') }}" method="POST" id="formPermisos">
-            @csrf
-            @method('PUT')
-            <input type="hidden" name="admin_id" id="inputAdminId" value="{{ old('admin_id') }}">
-
-            <div class="rp-layout">
-
-                {{-- ── Sidebar ── --}}
-                <aside class="sidebar">
-                    <div class="sidebar-title">Administradores</div>
-                    <div class="search-wrap">
-                        <input type="text" id="searchInput" placeholder="Buscar usuario..." autocomplete="off">
-                    </div>
-                    <div class="user-list" id="userList">
-                        @foreach($admins as $admin)
-                        @php
-                            $palette  = ['#6366f1','#14b8a6','#f59e0b','#ec4899','#8b5cf6','#0ea5e9','#84cc16','#ef4444'];
-                            $color    = $palette[$loop->index % count($palette)];
-                            $initial  = strtoupper(mb_substr($admin->name, 0, 1));
-                        @endphp
-                        <div class="user-item {{ old('admin_id') == $admin->id ? 'active' : '' }}"
-                             data-id="{{ $admin->id }}"
-                             data-name="{{ $admin->name }}"
-                             data-email="{{ $admin->email }}"
-                             data-rol="{{ $admin->rol }}"
-                             data-permisos="{{ json_encode($admin->permisos ?? []) }}"
-                             data-color="{{ $color }}"
-                             data-initial="{{ $initial }}">
-                            <div class="u-avatar" style="background:{{ $color }}">{{ $initial }}</div>
-                            <div class="u-info">
-                                <strong>{{ $admin->name }}</strong>
-                                <span>{{ $admin->email }}</span>
-                            </div>
-                            <span class="rbadge {{ $admin->rol === 'super_admin' ? 'sa' : 'ad' }}">
-                                {{ $admin->rol === 'super_admin' ? 'SA' : 'Admin' }}
-                            </span>
-                        </div>
-                        @endforeach
-                    </div>
-                    <div class="no-results" id="noResults">Sin resultados</div>
-                </aside>
-
-                {{-- ── Panel derecho ── --}}
-                <div class="main-panel">
-
-                    {{-- Estado vacío --}}
-                    <div class="state-empty" id="stateEmpty">
-                        <div class="icon-wrap">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+    <!-- Cards de Roles -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- SUPER ADMIN -->
+        <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl shadow-lg border-2 border-red-200 overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-red-500 to-orange-500 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
+                            <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                             </svg>
                         </div>
                         <h3>Selecciona un administrador</h3>
@@ -616,10 +559,28 @@
                     @endforeach
                 </div>
             </div>
-            <div class="role-card-sm">
-                <div class="rcs-head ad-head">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    Administrador · Permisos limitados
+
+            <!-- Body -->
+            <div class="p-6 space-y-4">
+                <div class="bg-white rounded-lg p-4 border border-blue-200">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <h4 class="font-semibold text-gray-900">Permisos Disponibles</h4>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-3">El Super Admin puede asignar los siguientes permisos:</p>
+                    
+                    <div class="grid grid-cols-1 gap-2">
+                        @foreach($permisos as $key => $nombre)
+                        <div class="flex items-center gap-2 p-2 bg-gray-50 rounded-lg hover:bg-blue-50 transition">
+                            <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-sm text-gray-700">{{ $nombre }}</span>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
                 <div class="rcs-body">
                     <div class="rcs-item"><svg class="ok" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Acceso según permisos asignados</div>
@@ -678,128 +639,16 @@
             </div>
         </div>
 
-    </div>{{-- /tab-resumen --}}
+    <!-- Botón para volver -->
+    <div class="flex justify-end">
+        <a href="{{ route('admins.index') }}" 
+           class="inline-flex items-center gap-2 px-6 py-3 bg-primary-400 text-white rounded-lg hover:bg-primary-500 transition shadow-lg hover:shadow-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            Gestionar Administradores
+        </a>
+    </div>
 
 </div>
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    /* ── Tabs ── */
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            document.getElementById('tab-' + this.dataset.tab).classList.add('active');
-        });
-    });
-
-    /* ── Refs ── */
-    const userItems   = document.querySelectorAll('.user-item');
-    const stateEmpty  = document.getElementById('stateEmpty');
-    const stateActive = document.getElementById('stateActive');
-    const pAvatar     = document.getElementById('pAvatar');
-    const pName       = document.getElementById('pName');
-    const pEmail      = document.getElementById('pEmail');
-    const pRolBadge   = document.getElementById('pRolBadge');
-    const inputId     = document.getElementById('inputAdminId');
-    const rolAdmin    = document.getElementById('rolAdmin');
-    const rolSA       = document.getElementById('rolSA');
-    const optAdmin    = document.getElementById('optAdmin');
-    const optSA       = document.getElementById('optSA');
-    const permsSection= document.getElementById('permsSection');
-    const saAlert     = document.getElementById('saAlert');
-    const checkboxes  = document.querySelectorAll('.perm-cb');
-    const permItems   = document.querySelectorAll('.perm-item');
-    const searchInput = document.getElementById('searchInput');
-    const noResults   = document.getElementById('noResults');
-
-    /* ── UI rol ── */
-    function updateRolUI() {
-        const isSA = rolSA && rolSA.checked;
-        optAdmin.classList.toggle('sel-admin', !isSA);
-        optAdmin.classList.toggle('sel-sa',    false);
-        optSA.classList.toggle('sel-sa',       isSA);
-        optSA.classList.toggle('sel-admin',    false);
-        permsSection.classList.toggle('hidden', isSA);
-        saAlert.classList.toggle('hidden', !isSA);
-        checkboxes.forEach(cb => cb.disabled = isSA);
-        pRolBadge.textContent = isSA ? 'Super Admin' : 'Admin';
-        pRolBadge.classList.toggle('sa', isSA);
-        pRolBadge.classList.toggle('ad', !isSA);
-    }
-
-    /* ── Sync checkboxes ── */
-    function syncPerms() {
-        permItems.forEach(item => {
-            const cb = item.querySelector('input');
-            item.classList.toggle('on', cb && cb.checked);
-        });
-    }
-
-    /* ── Seleccionar usuario ── */
-    function selectUser(item) {
-        userItems.forEach(u => u.classList.remove('active'));
-        item.classList.add('active');
-        const permisos = JSON.parse(item.dataset.permisos || '[]');
-        inputId.value     = item.dataset.id;
-        pAvatar.textContent        = item.dataset.initial;
-        pAvatar.style.background   = item.dataset.color;
-        pName.textContent  = item.dataset.name;
-        pEmail.textContent = item.dataset.email;
-        (item.dataset.rol === 'super_admin' ? rolSA : rolAdmin).checked = true;
-        checkboxes.forEach(cb => { cb.checked = permisos.includes(cb.value); });
-        updateRolUI(); syncPerms();
-        stateEmpty.classList.add('hidden');
-        stateActive.classList.remove('hidden');
-    }
-
-    userItems.forEach(item => item.addEventListener('click', () => selectUser(item)));
-
-    /* Pre-cargar old() */
-    const oldId = inputId && inputId.value;
-    if (oldId) {
-        const pre = document.querySelector(`.user-item[data-id="${oldId}"]`);
-        if (pre) selectUser(pre);
-    }
-
-    /* Rol change */
-    if (rolAdmin) rolAdmin.addEventListener('change', updateRolUI);
-    if (rolSA)    rolSA.addEventListener('change', updateRolUI);
-
-    /* Permisos */
-    checkboxes.forEach(cb => cb.addEventListener('change', syncPerms));
-    document.getElementById('btnAll')?.addEventListener('click', () => {
-        checkboxes.forEach(cb => { if (!cb.disabled) cb.checked = true; }); syncPerms();
-    });
-    document.getElementById('btnNone')?.addEventListener('click', () => {
-        checkboxes.forEach(cb => { cb.checked = false; }); syncPerms();
-    });
-
-    /* Cancelar */
-    document.getElementById('btnCancel')?.addEventListener('click', () => {
-        userItems.forEach(u => u.classList.remove('active'));
-        inputId.value = '';
-        stateEmpty.classList.remove('hidden');
-        stateActive.classList.add('hidden');
-    });
-
-    /* Buscador */
-    searchInput?.addEventListener('input', function () {
-        const q = this.value.toLowerCase();
-        let vis = 0;
-        userItems.forEach(item => {
-            const match = item.dataset.name.toLowerCase().includes(q) ||
-                          item.dataset.email.toLowerCase().includes(q);
-            item.style.display = match ? '' : 'none';
-            if (match) vis++;
-        });
-        noResults.style.display = vis === 0 ? 'block' : 'none';
-    });
-
-});
-</script>
-@endpush
