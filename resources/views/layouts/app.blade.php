@@ -659,21 +659,21 @@
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.grados.index') }}" class="menu-link {{ request()->routeIs('superadmin.grados.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i>
                     <span>Grados</span>
                 </a>
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('materias.index') }}" class="menu-link {{ request()->routeIs('materias.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.materias.index') }}" class="menu-link {{ request()->routeIs('superadmin.materias.*') ? 'active' : '' }}">
                     <i class="fas fa-book"></i>
                     <span>Materias</span>
                 </a>
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('profesor_materia.index') }}" class="menu-link {{ request()->routeIs('profesor_materia.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.profesor_materia.index') }}" class="menu-link {{ request()->routeIs('superadmin.profesor_materia.*') ? 'active' : '' }}">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <span>Asignar Profesor</span>
                 </a>
@@ -713,7 +713,7 @@
             <li class="menu-section-title">PERMISOS</li>
 
             <li class="menu-item">
-                <a href="{{ route('admins.permisos.index') }}" class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.permisos.index') }}" class="menu-link {{ request()->routeIs('admin.permisos.*') ? 'active' : '' }}">
                     <i class="fas fa-user-lock"></i>
                     <span>Permisos de Padres</span>
                 </a>
