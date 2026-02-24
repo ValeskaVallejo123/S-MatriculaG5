@@ -26,6 +26,7 @@ use App\Http\Controllers\SuperAdmin\UsuarioController;
 use App\Http\Controllers\RegistrarCalificacionController;
 use App\Http\Controllers\AccionesImportantesController;
 use App\Http\Controllers\H20CursoController;
+use App\Http\Controllers\ConsultaestudiantexcursoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -138,6 +139,11 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
     });
+
+
+    Route::get('/consultaestudiantesxcurso', [ConsultaestudiantexcursoController::class, 'index'])->name('consultaestudiantesxcurso.index');
+
+    Route::get('/consultaestudiantesxcurso/{id}', [ConsultaestudiantexcursoController::class, 'show'])->name('consultaestudiantesxcurso.show');
 
     /*
     |--------------------------------------------------------------------------

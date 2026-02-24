@@ -735,6 +735,14 @@
                 </a>
             </li>
 
+            <li class="menu-item">
+                <a href="{{ route('consultaestudiantesxcurso.index') }}"
+                   class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Consulta Estudiantes por Curso</span>
+                </a>
+            </li>
+
             <!-- DOCUMENTACIÓN -->
             <li class="menu-section-title">DOCUMENTACIÓN</li>
 
