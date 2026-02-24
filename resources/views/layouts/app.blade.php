@@ -43,12 +43,19 @@
             overflow-y: auto;
         }
 
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(78, 199, 210, 0.3);
-            border-radius: 10px;
-        }
-
+        .sidebar::-webkit-scrollbar { width: 8px; }
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(78, 199, 210, 0.6);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 59, 115, 0.3);
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(78, 199, 210, 0.9);
+}
         .sidebar-header {
             padding: 1.5rem 1.2rem;
             border-bottom: 1px solid rgba(78, 199, 210, 0.2);

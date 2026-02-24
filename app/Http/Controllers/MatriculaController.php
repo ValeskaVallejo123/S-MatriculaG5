@@ -50,7 +50,7 @@ class MatriculaController extends Controller
         }
 
         // Obtener matrículas paginadas
-        $matriculas = $query->latest()->paginate(15);
+        $matriculas = $query->latest()->paginate(5);
 
         // Estadísticas
         $aprobadas = Matricula::where('estado', 'aprobada')->count();
