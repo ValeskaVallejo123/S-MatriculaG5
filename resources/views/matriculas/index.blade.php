@@ -1,332 +1,396 @@
 @extends('layouts.app')
 
 @section('title', 'Matrículas')
-
 @section('page-title', 'Gestión de Matrículas')
 
 @section('topbar-actions')
-    <a href="{{ route('matriculas.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
-        <i class="fas fa-plus"></i>
-        Nueva Matrícula
+    <a href="{{ route('matriculas.create') }}" class="adm-btn-solid">
+        <i class="fas fa-plus"></i> Nueva Matrícula
     </a>
 @endsection
 
+@push('styles')
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.mat-wrap { font-family: 'Inter', sans-serif; }
+
+.adm-btn-solid {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: #fff; border: none; text-decoration: none; transition: opacity .15s;
+}
+.adm-btn-solid:hover { opacity: .88; color: #fff; }
+
+/* ── Stats ── */
+.mat-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.25rem; }
+@media(max-width:768px){ .mat-stats { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:480px){ .mat-stats { grid-template-columns: 1fr; } }
+
+.mat-stat {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 1rem 1.1rem; display: flex; align-items: center; gap: .85rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.mat-stat-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.mat-stat-icon i { font-size: 1.15rem; color: #fff; }
+.mat-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .1rem; }
+.mat-stat-num { font-size: 1.6rem; font-weight: 700; color: #0f172a; line-height: 1; }
+
+/* ── Filter card ── */
+.mat-filter {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.filter-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: .65rem; align-items: end; }
+@media(max-width:900px){ .filter-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:500px){ .filter-grid { grid-template-columns: 1fr; } }
+
+.filter-label { font-size: .73rem; font-weight: 700; color: #003b73; margin-bottom: .3rem; display: block; }
+.filter-input, .filter-select {
+    width: 100%; padding: .42rem .75rem;
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: .82rem; font-family: 'Inter', sans-serif;
+    color: #0f172a; outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    background: #f8fafc;
+}
+.filter-input:focus, .filter-select:focus {
+    border-color: #4ec7d2;
+    box-shadow: 0 0 0 3px rgba(78,199,210,.12);
+    background: #fff;
+}
+.filter-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .35rem;
+    padding: .42rem 1rem; border-radius: 8px;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: #fff; border: none; font-size: .82rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap; width: 100%;
+}
+.filter-clear {
+    font-size: .75rem; color: #94a3b8; text-decoration: none;
+    display: inline-flex; align-items: center; gap: .3rem;
+    margin-top: .5rem;
+}
+.filter-clear:hover { color: #ef4444; }
+
+/* ── Table card ── */
+.mat-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.mat-card-head {
+    background: #003b73; padding: .85rem 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+}
+.mat-card-head i { color: #4ec7d2; font-size: 1rem; }
+.mat-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+
+/* ── Table ── */
+.mat-tbl { width: 100%; border-collapse: collapse; }
+.mat-tbl thead th {
+    background: #f8fafc; padding: .65rem 1rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+}
+.mat-tbl thead th.tc { text-align: center; }
+.mat-tbl thead th.tr { text-align: right; }
+
+.mat-tbl tbody td {
+    padding: .7rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: .82rem; color: #334155;
+    vertical-align: middle;
+}
+.mat-tbl tbody td.tc { text-align: center; }
+.mat-tbl tbody td.tr { text-align: right; }
+.mat-tbl tbody tr:last-child td { border-bottom: none; }
+.mat-tbl tbody tr { transition: background .12s; }
+.mat-tbl tbody tr:hover { background: #f8fafc; }
+
+/* Avatar */
+.mat-av {
+    width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #fff; font-size: .85rem;
+}
+.mat-name  { font-weight: 600; color: #0f172a; font-size: .83rem; }
+.mat-sub   { font-size: .73rem; color: #94a3b8; margin-top: .1rem; }
+.mat-code  { font-family: monospace; font-size: .75rem; color: #64748b; }
+
+/* Badges */
+.bpill {
+    display: inline-flex; align-items: center; gap: .25rem;
+    padding: .22rem .65rem; border-radius: 999px;
+    font-size: .7rem; font-weight: 600; white-space: nowrap;
+}
+.b-cyan     { background: #e8f8f9; color: #00508f; border: 1px solid #b2e8ed; }
+.b-green    { background: #ecfdf5; color: #059669; }
+.b-yellow   { background: #fffbeb; color: #92400e; }
+.b-red      { background: #fef2f2; color: #dc2626; }
+.b-gray     { background: #f1f5f9; color: #64748b; }
+
+/* Action btns */
+.act-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .75rem; text-decoration: none;
+    transition: all .15s;
+}
+.act-btn:hover { transform: translateY(-1px); }
+.act-view { background: #f0f9ff; color: #0369a1; }
+.act-view:hover { background: #0369a1; color: #fff; }
+.act-edit { background: #e8f8f9; color: #00508f; }
+.act-edit:hover { background: #4ec7d2; color: #fff; }
+
+/* Empty */
+.mat-empty { padding: 3.5rem 1rem; text-align: center; }
+.mat-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
+.mat-empty p { color: #94a3b8; font-size: .85rem; margin: .25rem 0 1rem; }
+
+/* Footer */
+.mat-footer {
+    padding: .85rem 1.25rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafafa;
+}
+.mat-pages { font-size: .78rem; color: #94a3b8; }
+
+.pagination { margin: 0; gap: 3px; display: flex; }
+.pagination .page-link {
+    border-radius: 7px; padding: .3rem .65rem;
+    font-size: .78rem; font-weight: 500;
+    border: 1px solid #e2e8f0; color: #00508f;
+    transition: all .15s; line-height: 1.4;
+}
+.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-color: #4ec7d2; color: #fff;
+}
+.pagination .page-item.disabled .page-link { opacity: .45; }
+</style>
+@endpush
+
 @section('content')
-<div class="container" style="max-width: 1400px;">
+<div class="mat-wrap">
 
-    <!-- Mensajes -->
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-        <i class="fas fa-check-circle"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    <!-- Resumen de matrículas -->
-    <div class="row g-3 mb-3">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.05) 100%);">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-clipboard-check" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0 text-muted small">Total</p>
-                            <h4 class="mb-0 fw-bold" style="color: #003b73;">{{ $matriculas->total() }}</h4>
-                        </div>
-                    </div>
-                </div>
+    {{-- Stats --}}
+    <div class="mat-stats">
+        <div class="mat-stat">
+            <div class="mat-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div>
+                <div class="mat-stat-lbl">Total</div>
+                <div class="mat-stat-num">{{ $matriculas->total() }}</div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-check-circle" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0 text-muted small">Aprobadas</p>
-                            <h4 class="mb-0 fw-bold" style="color: #28a745;">{{ $aprobadas ?? 0 }}</h4>
-                        </div>
-                    </div>
-                </div>
+        <div class="mat-stat">
+            <div class="mat-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div>
+                <div class="mat-stat-lbl">Aprobadas</div>
+                <div class="mat-stat-num">{{ $aprobadas ?? 0 }}</div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-clock" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0 text-muted small">Pendientes</p>
-                            <h4 class="mb-0 fw-bold" style="color: #ffc107;">{{ $pendientes ?? 0 }}</h4>
-                        </div>
-                    </div>
-                </div>
+        <div class="mat-stat">
+            <div class="mat-stat-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div>
+                <div class="mat-stat-lbl">Pendientes</div>
+                <div class="mat-stat-num">{{ $pendientes ?? 0 }}</div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-times-circle" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <div>
-                            <p class="mb-0 text-muted small">Rechazadas</p>
-                            <h4 class="mb-0 fw-bold" style="color: #dc3545;">{{ $rechazadas ?? 0 }}</h4>
-                        </div>
-                    </div>
-                </div>
+        <div class="mat-stat">
+            <div class="mat-stat-icon" style="background:linear-gradient(135deg,#f87171,#dc2626);">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div>
+                <div class="mat-stat-lbl">Rechazadas</div>
+                <div class="mat-stat-num">{{ $rechazadas ?? 0 }}</div>
             </div>
         </div>
     </div>
 
-    <!-- Filtros de búsqueda -->
-    <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px;">
-        <div class="card-body p-3">
-            <form action="{{ route('matriculas.index') }}" method="GET">
-                <div class="row g-2 align-items-end">
-                    <div class="col-md-4">
-                        <label class="form-label small fw-semibold mb-1" style="color: #003b73;">
-                            <i class="fas fa-search"></i> Buscar
-                        </label>
-                        <input
-                            type="text"
-                            name="buscar"
-                            class="form-control form-control-sm"
-                            placeholder="Nombre, apellido o DNI..."
-                            value="{{ request('buscar') }}"
-                            style="border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.5rem 0.75rem;"
-                        >
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label small fw-semibold mb-1" style="color: #003b73;">
-                            <i class="fas fa-graduation-cap"></i> Grado
-                        </label>
-                        <select
-                            name="grado"
-                            class="form-select form-select-sm"
-                            style="border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.5rem 0.75rem;"
-                        >
-                            <option value="">Todos</option>
-                            <option value="1°" {{ request('grado') === '1°' ? 'selected' : '' }}>1°</option>
-                            <option value="2°" {{ request('grado') === '2°' ? 'selected' : '' }}>2°</option>
-                            <option value="3°" {{ request('grado') === '3°' ? 'selected' : '' }}>3°</option>
-                            <option value="4°" {{ request('grado') === '4°' ? 'selected' : '' }}>4°</option>
-                            <option value="5°" {{ request('grado') === '5°' ? 'selected' : '' }}>5°</option>
-                            <option value="6°" {{ request('grado') === '6°' ? 'selected' : '' }}>6°</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label small fw-semibold mb-1" style="color: #003b73;">
-                            <i class="fas fa-flag"></i> Estado
-                        </label>
-                        <select
-                            name="estado"
-                            class="form-select form-select-sm"
-                            style="border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.5rem 0.75rem;"
-                        >
-                            <option value="">Todos</option>
-                            <option value="aprobada" {{ request('estado') === 'aprobada' ? 'selected' : '' }}>Aprobada</option>
-                            <option value="pendiente" {{ request('estado') === 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                            <option value="rechazada" {{ request('estado') === 'rechazada' ? 'selected' : '' }}>Rechazada</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label small fw-semibold mb-1" style="color: #003b73;">
-                            <i class="fas fa-calendar"></i> Año Lectivo
-                        </label>
-                        <select
-                            name="anio"
-                            class="form-select form-select-sm"
-                            style="border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.5rem 0.75rem;"
-                        >
-                            <option value="">Todos</option>
-                            <option value="2025" {{ request('anio') === '2025' ? 'selected' : '' }}>2025</option>
-                            <option value="2024" {{ request('anio') === '2024' ? 'selected' : '' }}>2024</option>
-                            <option value="2023" {{ request('anio') === '2023' ? 'selected' : '' }}>2023</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; border-radius: 8px; padding: 0.5rem; font-weight: 600;">
-                            <i class="fas fa-filter"></i> Filtrar
-                        </button>
-                    </div>
-                </div>
-
-                @if(request()->has('buscar') || request()->has('grado') || request()->has('estado') || request()->has('anio'))
-                <div class="mt-2">
-                    <a href="{{ route('matriculas.index') }}" class="btn btn-sm btn-outline-secondary" style="border-radius: 8px;">
-                        <i class="fas fa-times"></i> Limpiar filtros
-                    </a>
-                </div>
-                @endif
-            </form>
-        </div>
-    </div>
-
-    <!-- Lista de matrículas -->
-    @forelse($matriculas as $matricula)
-    <div class="card border-0 shadow-sm mb-2 matricula-card" style="border-radius: 10px; transition: all 0.2s ease;">
-        <div class="card-body p-2">
-            <div class="row align-items-center g-2">
-
-                <!-- Avatar y Datos -->
-                <div class="col-lg-4">
-                    <div class="d-flex align-items-center gap-2">
-                        <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid #4ec7d2;">
-                            <span class="text-white fw-bold" style="font-size: 1rem;">
-                                {{ strtoupper(substr($matricula->estudiante->nombre ?? 'N', 0, 1) . substr($matricula->estudiante->apellido ?? 'A', 0, 1)) }}
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 overflow-hidden">
-                            <h6 class="mb-0 fw-semibold text-truncate" style="color: #003b73; font-size: 0.95rem;">
-                                {{ $matricula->estudiante->nombre ?? 'N/A' }} {{ $matricula->estudiante->apellido ?? '' }}
-                            </h6>
-                            <small class="text-muted d-flex align-items-center gap-2" style="font-size: 0.75rem;">
-                                <span><i class="fas fa-id-card me-1"></i>{{ $matricula->estudiante->dni ?? 'Sin DNI' }}</span>
-                                <span><i class="fas fa-barcode me-1"></i>{{ $matricula->codigo_matricula }}</span>
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Información Académica -->
-                <div class="col-lg-3">
-                    <div class="d-flex flex-wrap gap-1">
-                        <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; border: 1px solid #4ec7d2; padding: 0.35rem 0.7rem; font-weight: 600; font-size: 0.75rem;">
-                            <i class="fas fa-graduation-cap me-1"></i>{{ $matricula->estudiante->grado ?? 'N/A' }}
-                        </span>
-                        <span class="badge" style="background: rgba(0, 59, 115, 0.1); color: #003b73; border: 1px solid #00508f; padding: 0.35rem 0.7rem; font-weight: 600; font-size: 0.75rem;">
-                            <i class="fas fa-chalkboard me-1"></i>Sección {{ $matricula->estudiante->seccion ?? 'N/A' }}
-                        </span>
-                    </div>
-                    <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">
-                        <i class="fas fa-calendar-alt"></i> {{ $matricula->anio_lectivo ?? 'N/A' }}
-                    </small>
-                </div>
-
-                <!-- Información del Padre -->
-                <div class="col-lg-2">
-                    @if($matricula->padre)
-                    <small class="d-block text-truncate" style="color: #003b73; font-size: 0.8rem;">
-                        <i class="fas fa-user-friends text-muted"></i>
-                        {{ $matricula->padre->nombre }} {{ $matricula->padre->apellido }}
-                    </small>
-                    <small class="text-muted d-block" style="font-size: 0.7rem;">
-                        <i class="fas fa-phone"></i> {{ $matricula->padre->telefono ?? 'Sin teléfono' }}
-                    </small>
-                    @else
-                    <small class="text-muted" style="font-size: 0.8rem;">
-                        <i class="fas fa-user-times"></i> Sin padre asignado
-                    </small>
-                    @endif
-                </div>
-
-                <!-- Estado y Acciones -->
-                <div class="col-lg-3">
-                    <div class="d-flex align-items-center justify-content-end gap-2">
-                        @if($matricula->estado === 'aprobada')
-                            <span class="badge rounded-pill" style="background: rgba(40, 167, 69, 0.15); color: #28a745; padding: 0.35rem 0.8rem; font-weight: 600; border: 1px solid #28a745; font-size: 0.75rem;">
-                                <i class="fas fa-check-circle"></i> Aprobada
-                            </span>
-                        @elseif($matricula->estado === 'pendiente')
-                            <span class="badge rounded-pill" style="background: rgba(255, 193, 7, 0.15); color: #ffc107; padding: 0.35rem 0.8rem; font-weight: 600; border: 1px solid #ffc107; font-size: 0.75rem;">
-                                <i class="fas fa-clock"></i> Pendiente
-                            </span>
-                        @elseif($matricula->estado === 'rechazada')
-                            <span class="badge rounded-pill" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; padding: 0.35rem 0.8rem; font-weight: 600; border: 1px solid #dc3545; font-size: 0.75rem;">
-                                <i class="fas fa-times-circle"></i> Rechazada
-                            </span>
-                        @else
-                            <span class="badge rounded-pill" style="background: rgba(108, 117, 125, 0.15); color: #6c757d; padding: 0.35rem 0.8rem; font-weight: 600; border: 1px solid #6c757d; font-size: 0.75rem;">
-                                <i class="fas fa-circle"></i> {{ ucfirst($matricula->estado) }}
-                            </span>
-                        @endif
-
-                        <div class="btn-group" role="group">
-                            <a href="{{ route('matriculas.show', $matricula->id) }}"
-                               class="btn btn-sm"
-                               style="border-radius: 6px 0 0 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.35rem 0.7rem; font-size: 0.8rem;"
-                               title="Ver detalles">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('matriculas.edit', $matricula->id) }}"
-                               class="btn btn-sm"
-                               style="border-radius: 0 6px 6px 0; border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white; padding: 0.35rem 0.7rem; font-size: 0.8rem;"
-                               title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-    @empty
-        <div class="card border-0 shadow-sm" style="border-radius: 10px;">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-clipboard-list mb-3" style="font-size: 3rem; color: #00508f; opacity: 0.3;"></i>
-                <h5 style="color: #003b73;">No hay matrículas registradas</h5>
-                <p class="text-muted mb-3">
-                    @if(request()->has('buscar') || request()->has('grado') || request()->has('estado') || request()->has('anio'))
-                        No se encontraron resultados con los filtros aplicados
-                    @else
-                        Comienza registrando la primera matrícula
-                    @endif
-                </p>
-                <a href="{{ route('matriculas.create') }}" class="btn" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; border-radius: 8px; padding: 0.6rem 1.5rem; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3);">
-                    <i class="fas fa-plus me-1"></i>Nueva Matrícula
-                </a>
-            </div>
-        </div>
-    @endforelse
-
-    <!-- Paginación -->
-    @if($matriculas->hasPages())
-    <div class="card border-0 shadow-sm mt-3" style="border-radius: 10px;">
-        <div class="card-body py-2 px-3">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div class="text-muted small" style="font-size: 0.85rem;">
-                    <i class="fas fa-list-ol"></i> Mostrando {{ $matriculas->firstItem() }} - {{ $matriculas->lastItem() }} de {{ $matriculas->total() }} matrículas
+    {{-- Filtros --}}
+    <div class="mat-filter">
+        <form action="{{ route('matriculas.index') }}" method="GET">
+            <div class="filter-grid">
+                <div>
+                    <label class="filter-label"><i class="fas fa-search"></i> Buscar</label>
+                    <input type="text" name="buscar" class="filter-input"
+                           placeholder="Nombre, apellido o DNI..."
+                           value="{{ request('buscar') }}">
                 </div>
                 <div>
-                    {{ $matriculas->appends(request()->query())->links() }}
+                    <label class="filter-label"><i class="fas fa-graduation-cap"></i> Grado</label>
+                    <select name="grado" class="filter-select">
+                        <option value="">Todos</option>
+                        @foreach(['1°','2°','3°','4°','5°','6°'] as $g)
+                        <option value="{{ $g }}" {{ request('grado') === $g ? 'selected' : '' }}>{{ $g }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="filter-label"><i class="fas fa-flag"></i> Estado</label>
+                    <select name="estado" class="filter-select">
+                        <option value="">Todos</option>
+                        <option value="aprobada"  {{ request('estado') === 'aprobada'  ? 'selected' : '' }}>Aprobada</option>
+                        <option value="pendiente" {{ request('estado') === 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="rechazada" {{ request('estado') === 'rechazada' ? 'selected' : '' }}>Rechazada</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="filter-label"><i class="fas fa-calendar"></i> Año</label>
+                    <select name="anio" class="filter-select">
+                        <option value="">Todos</option>
+                        <option value="2025" {{ request('anio') === '2025' ? 'selected' : '' }}>2025</option>
+                        <option value="2024" {{ request('anio') === '2024' ? 'selected' : '' }}>2024</option>
+                        <option value="2023" {{ request('anio') === '2023' ? 'selected' : '' }}>2023</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="filter-label" style="opacity:0;">-</label>
+                    <button type="submit" class="filter-btn">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
                 </div>
             </div>
-        </div>
+            @if(request('buscar') || request('grado') || request('estado') || request('anio'))
+            <a href="{{ route('matriculas.index') }}" class="filter-clear">
+                <i class="fas fa-times"></i> Limpiar filtros
+            </a>
+            @endif
+        </form>
     </div>
-    @endif
+
+    {{-- Table card --}}
+    <div class="mat-card">
+        <div class="mat-card-head">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Lista de Matrículas</span>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="mat-tbl">
+                <thead>
+                    <tr>
+                        <th>Estudiante</th>
+                        <th class="tc">Grado / Sección</th>
+                        <th class="tc">Año</th>
+                        <th>Padre/Tutor</th>
+                        <th class="tc">Estado</th>
+                        <th class="tr">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($matriculas as $matricula)
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:.65rem;">
+                                <div class="mat-av">
+                                    {{ strtoupper(substr($matricula->estudiante->nombre1 ?? $matricula->estudiante->nombre ?? 'N', 0, 1) . substr($matricula->estudiante->apellido1 ?? $matricula->estudiante->apellido ?? 'A', 0, 1)) }}
+                                </div>
+                                <div>
+                                    <div class="mat-name">
+                                        {{ $matricula->estudiante->nombre1 ?? $matricula->estudiante->nombre ?? 'N/A' }}
+                                        {{ $matricula->estudiante->apellido1 ?? $matricula->estudiante->apellido ?? '' }}
+                                    </div>
+                                    <div class="mat-sub">
+                                        <i class="fas fa-id-card"></i> {{ $matricula->estudiante->dni ?? 'Sin DNI' }}
+                                        &nbsp;·&nbsp;
+                                        <span class="mat-code">{{ $matricula->codigo_matricula }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="tc">
+                            <span class="bpill b-cyan" style="margin-right:.4rem;">{{ $matricula->estudiante->grado ?? 'N/A' }}</span>
+                            <span class="bpill b-gray">Sec. {{ $matricula->estudiante->seccion ?? 'N/A' }}</span>
+                        </td>
+
+                        <td class="tc">
+                            <span style="font-size:.8rem;font-weight:600;color:#475569;">{{ $matricula->anio_lectivo ?? '—' }}</span>
+                        </td>
+
+                        <td>
+                            @if($matricula->padre)
+                            <div class="mat-name">{{ $matricula->padre->nombre }} {{ $matricula->padre->apellido }}</div>
+                            <div class="mat-sub"><i class="fas fa-phone"></i> {{ $matricula->padre->telefono ?? 'Sin teléfono' }}</div>
+                            @else
+                            <span style="font-size:.78rem;color:#cbd5e1;font-style:italic;">Sin padre asignado</span>
+                            @endif
+                        </td>
+
+                        <td class="tc">
+                            @if($matricula->estado === 'aprobada')
+                                <span class="bpill b-green"><i class="fas fa-check-circle"></i> Aprobada</span>
+                            @elseif($matricula->estado === 'pendiente')
+                                <span class="bpill b-yellow"><i class="fas fa-clock"></i> Pendiente</span>
+                            @elseif($matricula->estado === 'rechazada')
+                                <span class="bpill b-red"><i class="fas fa-times-circle"></i> Rechazada</span>
+                            @else
+                                <span class="bpill b-gray">{{ ucfirst($matricula->estado) }}</span>
+                            @endif
+                        </td>
+
+                        <td class="tr">
+                            <div style="display:inline-flex;gap:.35rem;">
+                                <a href="{{ route('matriculas.show', $matricula->id) }}"
+                                   class="act-btn act-view" title="Ver">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ route('matriculas.edit', $matricula->id) }}"
+                                   class="act-btn act-edit" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6">
+                            <div class="mat-empty">
+                                <i class="fas fa-clipboard-list"></i>
+                                <p>
+                                    @if(request('buscar') || request('grado') || request('estado') || request('anio'))
+                                        No se encontraron resultados con los filtros aplicados
+                                    @else
+                                        No hay matrículas registradas
+                                    @endif
+                                </p>
+                                <a href="{{ route('matriculas.create') }}" class="adm-btn-solid">
+                                    <i class="fas fa-plus"></i> Nueva Matrícula
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($matriculas->hasPages())
+        <div class="mat-footer">
+            <span class="mat-pages">
+                Mostrando {{ $matriculas->firstItem() }}–{{ $matriculas->lastItem() }} de {{ $matriculas->total() }}
+            </span>
+            {{ $matriculas->appends(request()->query())->links() }}
+        </div>
+        @endif
+    </div>
 
 </div>
-
-<style>
-    .matricula-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 59, 115, 0.15) !important;
-    }
-
-    .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #4ec7d2 !important;
-        box-shadow: 0 0 0 0.2rem rgba(78, 199, 210, 0.25) !important;
-    }
-</style>
 @endsection

@@ -43,10 +43,18 @@
             overflow-y: auto;
         }
 
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(78, 199, 210, 0.3);
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.15);
             border-radius: 10px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(78, 199, 210, 0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 59, 115, 0.3);
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(78, 199, 210, 0.9);
         }
 
         .sidebar-header {
@@ -206,16 +214,8 @@
             z-index: 100;
             min-height: 64px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        /* Fila superior: título + logout */
-        .topbar-row-top {
-            display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
         }
 
         .topbar-left {
@@ -231,7 +231,6 @@
             font-size: 1.15rem;
         }
 
-        /* Lado derecho: acciones + fecha + logout en una línea */
         .topbar-right {
             display: flex;
             align-items: center;
@@ -239,7 +238,6 @@
             flex-wrap: nowrap;
         }
 
-        /* Separador visual entre grupos */
         .topbar-divider {
             width: 1px;
             height: 24px;
@@ -285,7 +283,6 @@
             transform: translateY(-1px);
         }
 
-        /* Botones de acciones del topbar (yield) */
         .topbar-actions-group {
             display: flex;
             align-items: center;
@@ -293,7 +290,6 @@
             flex-wrap: nowrap;
         }
 
-        /* Estilos base para los botones de acción que vienen del yield */
         .topbar-actions-group a,
         .topbar-actions-group button {
             display: inline-flex;
@@ -524,6 +520,7 @@
 
         <ul class="sidebar-menu">
 
+            <!-- PRINCIPAL -->
             <li class="menu-section-title">PRINCIPAL</li>
 
             @if($isSuperAdmin)
@@ -552,9 +549,32 @@
 
             <li class="menu-item">
                 <a href="{{ route('estudiantes.index') }}" class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-graduate"></i><span>Estudiantes</span>
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Estudiantes</span>
                 </a>
             </li>
+
+            <li class="menu-item">
+                <a href="{{ route('calendario') }}" class="menu-link {{ request()->routeIs('calendario') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Calendario Académico</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
+                    <i class="fas fa-book-reader"></i>
+                    <span>Plan de Estudios</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('secciones.index') }}" class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Secciones</span>
+                </a>
+            </li>
+
             <li class="menu-item">
                 <a href="{{ route('profesores.index') }}" class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
                     <i class="fas fa-chalkboard-teacher"></i><span>Profesores</span>
@@ -586,6 +606,14 @@
                     <i class="fas fa-clipboard-list"></i><span>Matrículas</span>
                 </a>
             </li>
+
+            <li class="menu-item">
+                <a href="#" class="menu-link {{ request()->routeIs('admin.solicitudes.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Solicitudes</span>
+                </a>
+            </li>
+
             <li class="menu-item">
                 <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i><span>Grados</span>
@@ -672,47 +700,42 @@
     <!-- MAIN CONTENT -->
     <main class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
 
-        <!-- ── TOPBAR ── -->
+        {{-- ── TOPBAR ── --}}
         <div class="topbar">
-            <div class="topbar-row-top">
 
-                {{-- Izquierda: hamburger + título --}}
-                <div class="topbar-left">
-                    @if($showSidebar)
-                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
+            {{-- Izquierda: menú móvil + título --}}
+            <div class="topbar-left">
+                @if($showSidebar)
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                @endif
+                <h5>@yield('page-title', 'Panel de Control')</h5>
+            </div>
+
+            {{-- Derecha: botones de acción | fecha | logout --}}
+            <div class="topbar-right">
+
+                @hasSection('topbar-actions')
+                <div class="topbar-actions-group">
+                    @yield('topbar-actions')
+                </div>
+                <div class="topbar-divider"></div>
+                @endif
+
+                <div class="topbar-date">
+                    <i class="far fa-clock"></i>
+                    <span>{{ now()->locale('es')->isoFormat('ddd, D [de] MMM [de] YYYY') }}</span>
+                </div>
+
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
                     </button>
-                    @endif
-                    <h5>@yield('page-title', 'Panel de Control')</h5>
-                </div>
+                </form>
 
-                {{-- Derecha: botones de acción | fecha | logout --}}
-                <div class="topbar-right">
-
-                    {{-- Botones de la página (Permisos y Roles, Nuevo Admin, etc.) --}}
-                    @hasSection('topbar-actions')
-                    <div class="topbar-actions-group">
-                        @yield('topbar-actions')
-                    </div>
-                    <div class="topbar-divider"></div>
-                    @endif
-
-                    {{-- Fecha --}}
-                    <div class="topbar-date">
-                        <i class="far fa-clock"></i>
-                        <span>{{ now()->locale('es')->isoFormat('ddd, D [de] MMM [de] YYYY') }}</span>
-                    </div>
-
-                    {{-- Logout --}}
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn-logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Cerrar Sesión
-                        </button>
-                    </form>
-
-                </div>
             </div>
         </div>
         {{-- ── FIN TOPBAR ── --}}
@@ -804,9 +827,14 @@
             });
 
             const activeLink = sidebar.querySelector('.menu-link.active');
-            if (activeLink && !saved) {
-                const pos = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
-                sidebar.scrollTo({ top: pos, behavior: 'smooth' });
+            if (activeLink && saved === null) {
+                const sidebarRect = sidebar.getBoundingClientRect();
+                const activeLinkRect = activeLink.getBoundingClientRect();
+
+                if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
+                    const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
+                    sidebar.scrollTo({ top: scrollPosition, behavior: 'smooth' });
+                }
             }
         }
 
@@ -838,7 +866,10 @@
         }
 
         function mostrarModalDeleteData(button) {
-            mostrarModalDelete(button.dataset.route, button.dataset.message, button.dataset.name);
+            const route = button.dataset.route;
+            const message = button.dataset.message;
+            const name = button.dataset.name;
+            mostrarModalDelete(route, message, name);
         }
 
         document.addEventListener('click', e => {

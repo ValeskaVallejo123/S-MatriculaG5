@@ -13,7 +13,6 @@
 
 @section('content')
 <div class="container" style="max-width: 900px;">
-    
 
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-header" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.2rem;">
@@ -37,11 +36,15 @@
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar nivel...</option>
-                            <option value="primaria" {{ old('nivel') == 'primaria' ? 'selected' : '' }}>
-                                 Primaria (1° - 6° Grado)
+                            {{-- Los values deben coincidir EXACTAMENTE con la validación del controlador --}}
+                            <option value="Primaria" {{ old('nivel') == 'Primaria' ? 'selected' : '' }}>
+                                Primaria (1° - 6° Grado)
                             </option>
-                            <option value="secundaria" {{ old('nivel') == 'secundaria' ? 'selected' : '' }}>
-                                 Secundaria (7° - 9° Grado)
+                            <option value="Básica" {{ old('nivel') == 'Básica' ? 'selected' : '' }}>
+                                Básica (7° - 9° Grado)
+                            </option>
+                            <option value="Secundaria" {{ old('nivel') == 'Secundaria' ? 'selected' : '' }}>
+                                Secundaria (10° - 12° Grado)
                             </option>
                         </select>
                         @error('nivel')
@@ -133,12 +136,20 @@
                     </div>
                 </div>
 
-                <!-- Información adicional -->
-                <div class="alert alert-info mt-3 d-flex align-items-start" style="border-radius: 8px; border-left: 4px solid #4ec7d2; background: rgba(78, 199, 210, 0.1);">
+                <!-- Información adicional dinámica según nivel -->
+                <div id="info-primaria" class="alert alert-success mt-3 d-none d-flex align-items-start" style="border-radius: 8px; border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.08);">
+                    <i class="fas fa-magic me-2 mt-1" style="color: #10b981;"></i>
+                    <div>
+                        <strong style="color: #065f46;">Asignación automática:</strong>
+                        <p class="mb-0 small text-muted">Al guardar, se asignarán automáticamente las materias de Primaria: Español, Matemáticas, Ciencias Naturales, Ciencias Sociales, Educación Artística, Educación Física, Inglés y Educación Cívica/Valores.</p>
+                    </div>
+                </div>
+
+                <div id="info-otros" class="alert alert-info mt-3 d-flex align-items-start" style="border-radius: 8px; border-left: 4px solid #4ec7d2; background: rgba(78, 199, 210, 0.1);">
                     <i class="fas fa-info-circle me-2 mt-1" style="color: #00508f;"></i>
                     <div>
-                        <strong style="color: #003b73;">Nota importante:</strong>
-                        <p class="mb-0 small text-muted">Después de crear el grado, podrás asignar las materias correspondientes desde la sección de gestión de grados.</p>
+                        <strong style="color: #003b73;">Nota:</strong>
+                        <p class="mb-0 small text-muted">Selecciona el nivel educativo para ver las opciones de asignación de materias.</p>
                     </div>
                 </div>
 
@@ -164,12 +175,10 @@
         box-shadow: 0 0 0 0.2rem rgba(78, 199, 210, 0.15);
         outline: none;
     }
-
     .btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
-
     .btn-back:hover {
         background: #00508f !important;
         color: white !important;
@@ -180,35 +189,55 @@
 
 @push('scripts')
 <script>
-    // Filtrar números de grado según el nivel seleccionado
-    document.getElementById('nivel').addEventListener('change', function() {
-        const nivel = this.value;
-        const numeroSelect = document.getElementById('numero');
+document.addEventListener('DOMContentLoaded', function () {
+    const nivelSelect   = document.getElementById('nivel');
+    const numeroSelect  = document.getElementById('numero');
+    const infoPrimaria  = document.getElementById('info-primaria');
+    const infoOtros     = document.getElementById('info-otros');
+
+    const MENSAJES = {
+        'Básica':      'Después de guardar podrás asignar las materias de Básica desde la gestión de grados.',
+        'Secundaria':  'Después de guardar podrás asignar las materias de Secundaria desde la gestión de grados.',
+    };
+
+    function actualizarUI() {
+        const nivel = nivelSelect.value;
         const options = numeroSelect.querySelectorAll('option');
 
-        options.forEach(option => {
-            if (option.value === '') return;
-
-            const numero = parseInt(option.value);
-
-            if (nivel === 'primaria') {
-                option.style.display = (numero >= 1 && numero <= 6) ? '' : 'none';
-            } else if (nivel === 'secundaria') {
-                option.style.display = (numero >= 7 && numero <= 9) ? '' : 'none';
-            } else {
-                option.style.display = '';
-            }
+        // Filtrar opciones de número según nivel
+        options.forEach(opt => {
+            if (opt.value === '') return;
+            const n = parseInt(opt.value);
+            if (nivel === 'Primaria')   opt.style.display = (n >= 1 && n <= 6) ? '' : 'none';
+            else if (nivel === 'Básica') opt.style.display = (n >= 7 && n <= 9) ? '' : 'none';
+            else                        opt.style.display = '';
         });
 
-        // Reset selection if current value is not valid
-        const currentValue = parseInt(numeroSelect.value);
-        if (nivel === 'primaria' && (currentValue < 1 || currentValue > 6)) {
-            numeroSelect.value = '';
-        } else if (nivel === 'secundaria' && (currentValue < 7 || currentValue > 9)) {
-            numeroSelect.value = '';
+        // Reset número si no es válido para el nivel
+        const current = parseInt(numeroSelect.value);
+        if (nivel === 'Primaria' && (current < 1 || current > 6)) numeroSelect.value = '';
+        if (nivel === 'Básica'   && (current < 7 || current > 9)) numeroSelect.value = '';
+
+        // Mostrar info contextual
+        if (nivel === 'Primaria') {
+            infoPrimaria.classList.remove('d-none');
+            infoOtros.classList.add('d-none');
+        } else if (nivel === 'Básica' || nivel === 'Secundaria') {
+            infoPrimaria.classList.add('d-none');
+            infoOtros.querySelector('p').textContent = MENSAJES[nivel];
+            infoOtros.classList.remove('d-none');
+        } else {
+            infoPrimaria.classList.add('d-none');
+            infoOtros.querySelector('p').textContent = 'Selecciona el nivel educativo para ver las opciones de asignación de materias.';
+            infoOtros.classList.remove('d-none');
         }
-    });
+    }
+
+    nivelSelect.addEventListener('change', actualizarUI);
+
+    // Ejecutar al cargar si hay valor previo (old())
+    if (nivelSelect.value) actualizarUI();
+});
 </script>
 @endpush
 @endsection
-

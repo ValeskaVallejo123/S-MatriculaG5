@@ -214,24 +214,16 @@ class SuperAdminController extends Controller
      * Filtra por user_type ya que la columna 'role' siempre es 'user' en la BD.
      */
     public function permisosRoles()
-    
-{
-    $permisos = $this->getAvailablePermissions();
+    {
+        $permisos = $this->getAvailablePermissions();
 
-    $usuarios = User::whereIn('user_type', ['admin', 'super_admin'])
-        ->orderBy('is_super_admin', 'desc')
-        ->orderBy('name')
-        ->get();
+        $usuarios = User::whereIn('user_type', ['admin', 'super_admin'])
+            ->orderBy('is_super_admin', 'desc')
+            ->orderBy('name')
+            ->get();
 
-    $permisos = $this->getAvailablePermissions();
-
-    $usuarios = User::whereIn('user_type', ['admin', 'super_admin'])
-        ->orderBy('is_super_admin', 'desc')
-        ->orderBy('name')
-        ->get();
-
-    return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
-}
+        return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
+    }
 
     /**
      * Actualizar rol y permisos de un usuario.
