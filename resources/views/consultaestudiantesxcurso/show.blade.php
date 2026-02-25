@@ -10,11 +10,8 @@
             <div class="card-body">
                 <h4 class="fw-bold" style="color: #003b73;">
                     <i class="fas fa-book me-2" style="color: #4ec7d2;"></i>
-                    {{ $curso->nombre }}
+                    {{ $grado }} - Sección {{ $seccion }}
                 </h4>
-                <p class="text-muted mb-1">Jornada: {{ $curso->jornada ?? 'N/A' }}</p>
-                <p class="text-muted mb-1">Sección: {{ $curso->seccion ?? 'N/A' }}</p>
-                <p class="text-muted">Cupo máximo: {{ $curso->cupo_maximo }}</p>
             </div>
         </div>
 
@@ -23,10 +20,10 @@
             <div class="card-body">
                 <h5 class="fw-bold mb-3" style="color: #003b73;">
                     <i class="fas fa-users me-2" style="color: #4ec7d2;"></i>
-                    Estudiantes Matriculados ({{ $curso->estudiantes->count() }})
+                    Estudiantes Matriculados ({{ $estudiantes->count() }})
                 </h5>
 
-                @if($curso->estudiantes->isEmpty())
+                @if($estudiantes->isEmpty())
                     <p class="text-muted">No hay estudiantes matriculados en este curso.</p>
                 @else
                     <table class="table table-striped">
@@ -39,7 +36,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($curso->estudiantes as $estudiante)
+                        @foreach($estudiantes as $estudiante)
                             <tr>
                                 <td>{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}</td>
                                 <td>{{ $estudiante->dni ?? 'N/A' }}</td>

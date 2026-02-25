@@ -17,25 +17,37 @@
         <div class="row g-4">
             @forelse($cursos as $curso)
                 <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border-left: 4px solid #4ec7d2;">
+                    <div class="card border-0 shadow-sm h-100"
+                         style="border-radius: 12px; border-left: 4px solid #4ec7d2;">
+
                         <div class="card-body p-4">
+
+                            <!-- Nombre del curso (grado + sección) -->
                             <h5 class="fw-bold mb-2" style="color: #003b73;">
                                 <i class="fas fa-book me-2" style="color: #4ec7d2;"></i>
-                                {{ $curso->nombre }}
+                                {{ $curso->grado }} - Sección {{ $curso->seccion }}
                             </h5>
-                            <p class="text-muted mb-2">Jornada: {{ $curso->jornada ?? 'N/A' }}</p>
-                            <p class="text-muted mb-2">Sección: {{ $curso->seccion ?? 'N/A' }}</p>
 
+                            <!-- Cantidad de estudiantes -->
                             <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.4rem 0.75rem;">
-                                {{ $curso->estudiantes_count }} Estudiantes
+                            <span class="badge"
+                                  style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
+                                         color: white;
+                                         padding: 0.4rem 0.75rem;">
+                                {{ $curso->total_estudiantes }} Estudiantes
                             </span>
-                                <a href="{{ route('consultaestudiantesxcurso.show', $curso->id) }}"
+
+                                <!-- Botón ver -->
+                                <a href="{{ route('consultaestudiantesxcurso.show', ['grado' => $curso->grado, 'seccion' => $curso->seccion]) }}"
                                    class="btn btn-sm"
-                                   style="border: 2px solid #4ec7d2; color: #4ec7d2; border-radius: 8px; font-weight: 600;">
+                                   style="border: 2px solid #4ec7d2;
+                                      color: #4ec7d2;
+                                      border-radius: 8px;
+                                      font-weight: 600;">
                                     <i class="fas fa-eye"></i> Ver
                                 </a>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -53,5 +65,6 @@
         <div class="mt-4">
             {{ $cursos->links() }}
         </div>
+
     </div>
 @endsection

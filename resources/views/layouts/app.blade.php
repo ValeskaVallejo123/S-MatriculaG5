@@ -684,13 +684,29 @@
 
             <li class="menu-item">
                 <a href="{{ route('padres.buscar') }}" class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
-                    <i class="fas fa-user-search"></i>
+                    <i class="fas fa-search"></i>
                     <span>Buscar Padre/Tutor</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('consultaestudiantesxcurso.index') }}"
+                   class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
+                    <i class="fas fa-search"></i>
+                    <span>Consulta estudiantes por curso</span>
                 </a>
             </li>
 
             <!-- GESTIÓN ACADÉMICA -->
             <li class="menu-section-title">GESTIÓN ACADÉMICA</li>
+
+            <li class="menu-item">
+                <a href="{{ route('registrarcalificaciones.index') }}"
+                   class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Registrar calificaciones</span>
+                </a>
+            </li>
 
             <li class="menu-item">
                 <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
@@ -735,13 +751,6 @@
                 </a>
             </li>
 
-            <li class="menu-item">
-                <a href="{{ route('consultaestudiantesxcurso.index') }}"
-                   class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i>
-                    <span>Consulta Estudiantes por Curso</span>
-                </a>
-            </li>
 
             <!-- DOCUMENTACIÓN -->
             <li class="menu-section-title">DOCUMENTACIÓN</li>

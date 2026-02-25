@@ -10,10 +10,10 @@ class Estudiante extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre1',     
-        'nombre2',     
-        'apellido1',   
-        'apellido2',   
+        'nombre1',
+        'nombre2',
+        'apellido1',
+        'apellido2',
         'dni',
         'fecha_nacimiento',
         'sexo',
@@ -30,6 +30,15 @@ class Estudiante extends Model
         'foto',
         'dni_doc',
     ];
+
+    /**
+     * Relación: un estudiante pertenece a un curso
+     */
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'curso_id');
+    }
+
 
     protected $casts = [
         'fecha_nacimiento' => 'date',

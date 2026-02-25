@@ -4,24 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Curso;
+use App\Models\Estudiante;
 
 class ConsultaestudiantexcursoController extends Controller
 {
-    // Mostrar todos los cursos con cantidad de estudiantes
     public function index()
     {
-        // Traemos los cursos con conteo de estudiantes
-        $cursos = Curso::withCount('estudiantes')->paginate(15);
+        $cursos = Estudiante::select('grado', 'seccion')
+            ->selectRaw('COUNT(*) as total_estudiantes')
+            ->groupBy('grado', 'seccion')
+            ->paginate(15);
 
-        return view('cursos.index', compact('cursos'));
+        return view('consultaestudiantesxcurso.index', compact('cursos'));
     }
 
-    // Mostrar detalle de un curso con sus estudiantes
-    public function show($id)
+    public function show($grado, $seccion)
     {
-        $curso = Curso::with('estudiantes')->findOrFail($id);
+        $estudiantes = Estudiante::where('grado', $grado)
+            ->where('seccion', $seccion)
+            ->get();
 
-        return view('cursos.show', compact('curso'));
+        return view('consultaestudiantesxcurso.show', compact('estudiantes', 'grado', 'seccion'));
     }
+
 
 }

@@ -139,12 +139,12 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
     });
+// consultas de los estudiantes por cursos
+    Route::get('/consultaestudiantesxcurso', [ConsultaestudiantexcursoController::class, 'index'])
+        ->name('consultaestudiantesxcurso.index');
 
-
-    Route::get('/consultaestudiantesxcurso', [ConsultaestudiantexcursoController::class, 'index'])->name('consultaestudiantesxcurso.index');
-
-    Route::get('/consultaestudiantesxcurso/{id}', [ConsultaestudiantexcursoController::class, 'show'])->name('consultaestudiantesxcurso.show');
-
+    Route::get('/consultaestudiantesxcurso/{grado}/{seccion}', [ConsultaestudiantexcursoController::class, 'show'])
+        ->name('consultaestudiantesxcurso.show');
     /*
     |--------------------------------------------------------------------------
     | RUTAS DE PROFESOR

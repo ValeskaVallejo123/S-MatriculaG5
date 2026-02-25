@@ -2,24 +2,16 @@
 
 @section('content')
     <div class="container">
+        <h2>Mis Calificaciones Registradas</h2>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="m-0">Listado de Calificaciones</h1>
-
-            <!-- Botón para ir a registrar calificaciones -->
-            <a href="{{ route('registrarcalificaciones.create') }}" class="btn btn-primary">
-                Registrar calificaciones
-            </a>
-        </div>
-
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
+        <a href="{{ route('registrarcalificaciones.create') }}" class="btn btn-primary mb-3">
+            Registrar nuevas calificaciones
+        </a>
 
         @if($calificaciones->isEmpty())
-            <p>No hay calificaciones registradas.</p>
+            <div class="alert alert-info">
+                No has registrado calificaciones todavía.
+            </div>
         @else
             <table class="table table-bordered">
                 <thead>
@@ -27,20 +19,21 @@
                     <th>Estudiante</th>
                     <th>Curso</th>
                     <th>Materia</th>
-                    <th>Periodo</th>
+                    <th>Parcial</th>
                     <th>Nota</th>
-                    <th>Observación</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($calificaciones as $c)
                     <tr>
-                        <td>{{ $c->estudiante->nombre }}</td>
+                        <td>
+                            {{ $c->estudiante->nombre1 }}
+                            {{ $c->estudiante->apellido1 }}
+                        </td>
                         <td>{{ $c->curso->nombre }}</td>
                         <td>{{ $c->materia->nombre }}</td>
-                        <td>{{ $c->periodoAcademico->nombre }}</td>
+                        <td>{{ $c->parcial }}</td>
                         <td>{{ $c->nota }}</td>
-                        <td>{{ $c->observacion }}</td>
                     </tr>
                 @endforeach
                 </tbody>

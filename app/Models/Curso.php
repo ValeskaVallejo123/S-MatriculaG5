@@ -19,4 +19,13 @@ class Curso extends Model
         'jornada',
         'seccion',
     ];
+
+    /**
+     * Relación: un curso tiene muchos estudiantes
+     */
+    public function estudiantes()
+    {
+        return $this->hasMany(Estudiante::class, 'curso_id');
+    }
+
 }
