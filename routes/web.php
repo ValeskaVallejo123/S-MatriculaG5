@@ -41,7 +41,7 @@ use App\Http\Controllers\PublicoPlanEstudiosController;
 |--------------------------------------------------------------------------
 */
 // Plan de estudios público
-Route::get('/plan-estudios', [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
+Route::get('/plan-estudios', action: [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
 
 // AGREGAR ESTA LÍNEA:
 Route::get('/plan-estudios/{grado}', [PublicoPlanEstudiosController::class, 'show'])->name('plan-estudios.show');
@@ -115,6 +115,20 @@ Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+
+Route::get('/calendario/eventos', [CalendarioController::class, 'obtenerEventos']);
+
+// Obtener eventos
+//Route::get('/calendario/eventos', [CalendarioController::class, 'index']);
+
+// Guardar evento
+Route::post('/calendario/eventos', [CalendarioController::class, 'store']);
+
+// Actualizar evento
+Route::put('/calendario/eventos/{id}', [CalendarioController::class, 'actualizar']);
+
+// Eliminar evento
+Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar']);
 
     // Dashboard con redirección por rol
     Route::get('/dashboard', function () {

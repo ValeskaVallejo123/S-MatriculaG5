@@ -45,9 +45,12 @@
         <div class="calendar-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="mb-0">📅 Calendario Académico</h1>
-               <a href="{{ route('plantilla') }}" class="btn btn-outline-primary">
+               <a href="{{ auth()->user()->role === 'super_admin' 
+    ? route('superadmin.dashboard') 
+    : route('admin.dashboard') }}" 
+   class="btn btn-outline-primary">
     <i class="fas fa-arrow-left"></i>
-    Volver al Panel
+    Volver
 </a>
 
 
