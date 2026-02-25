@@ -28,15 +28,12 @@ use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\ProfesorMateriaController;
 use App\Http\Controllers\RegistrarCalificacionController;
 use App\Http\Controllers\AccionesImportantesController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\Admin\SolicitudAdminController;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\CicloController;
 use App\Http\Controllers\SeccionController;
 use App\Http\Controllers\CupoMaximoController;
 use App\Http\Controllers\PublicoPlanEstudiosController;
->>>>>>> origin/josue_matriculag5
 
 /*
 |--------------------------------------------------------------------------
@@ -67,21 +64,14 @@ Route::get('/calendario/eventos/public', [CalendarioController::class, 'eventosP
 
 /*
 |--------------------------------------------------------------------------
-<<<<<<< HEAD
 | RUTAS PÚBLICAS DE MATRÍCULA
-=======
-| RUTAS PÚBLICAS DE MATRÍCULA (SIN AUTH)
->>>>>>> origin/josue_matriculag5
 |--------------------------------------------------------------------------
 */
 Route::get('/matricula-publica', [MatriculaController::class, 'create'])->name('matriculas.public.create');
 Route::post('/matricula-publica', [MatriculaController::class, 'store'])->name('matriculas.public.store');
 Route::get('/matricula-exitosa', [MatriculaController::class, 'success'])->name('matriculas.success');
 
-<<<<<<< HEAD
-=======
 // Consulta de solicitudes (PÚBLICA)
->>>>>>> origin/josue_matriculag5
 Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])->name('estado-solicitud');
 Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
 
@@ -90,11 +80,6 @@ Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']
 | AUTENTICACIÓN
 |--------------------------------------------------------------------------
 */
-<<<<<<< HEAD
-=======
-
-// Login
->>>>>>> origin/josue_matriculag5
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -136,7 +121,7 @@ Route::middleware(['auth'])->group(function () {
     /*
     |----------------------------------------------------------------------
     | SUPER ADMINISTRADOR
-    | ⚠️ Las rutas estáticas SIEMPRE antes de las dinámicas {administrador}
+    |  Las rutas estáticas SIEMPRE antes de las dinámicas {administrador}
     |----------------------------------------------------------------------
     */
     Route::prefix('superadmin')->name('superadmin.')->group(function () {
@@ -178,10 +163,6 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
 
-<<<<<<< HEAD
-=======
-        // Gestión de solicitudes (ADMIN)
->>>>>>> origin/josue_matriculag5
         Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
             Route::get('/', [SolicitudController::class, 'index'])->name('index');
             Route::get('/{id}', [SolicitudController::class, 'show'])->name('show');
@@ -192,15 +173,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     /*
-<<<<<<< HEAD
-    |----------------------------------------------------------------------
-    | ACCIONES IMPORTANTES
-    |----------------------------------------------------------------------
-=======
     |--------------------------------------------------------------------------
     | GESTIÓN DE ACCIONES IMPORTANTES
     |--------------------------------------------------------------------------
->>>>>>> origin/josue_matriculag5
     */
     Route::resource('acciones-importantes', AccionesImportantesController::class)
         ->names('acciones_importantes');
@@ -228,15 +203,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     /*
-<<<<<<< HEAD
-    |----------------------------------------------------------------------
-    | PADRE
-    |----------------------------------------------------------------------
-=======
     |--------------------------------------------------------------------------
     | RUTAS DE PADRE
     |--------------------------------------------------------------------------
->>>>>>> origin/josue_matriculag5
     */
     Route::prefix('padre')->name('padre.')->group(function () {
         Route::get('/dashboard', function () {
@@ -247,7 +216,7 @@ Route::middleware(['auth'])->group(function () {
     /*
     |----------------------------------------------------------------------
     | PANEL ADMINS
-    | ⚠️ Rutas estáticas ANTES de las dinámicas {admin}
+    | Rutas estáticas ANTES de las dinámicas {admin}
     |----------------------------------------------------------------------
     */
     Route::prefix('admins')->name('admins.')->group(function () {
@@ -330,15 +299,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('periodos-academicos', PeriodoAcademicoController::class);
 
     /*
-<<<<<<< HEAD
-    |----------------------------------------------------------------------
-    | CUPOS MÁXIMOS
-    |----------------------------------------------------------------------
-=======
     |--------------------------------------------------------------------------
     | GESTIÓN DE CICLOS
     |--------------------------------------------------------------------------
->>>>>>> origin/josue_matriculag5
     */
     Route::resource('ciclos', CicloController::class);
 
