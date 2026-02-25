@@ -9,6 +9,8 @@ class Estudiante extends Model
 {
     use HasFactory;
 
+    protected $table = 'estudiantes';
+
     protected $fillable = [
         'nombre1',
         'nombre2',
@@ -22,20 +24,25 @@ class Estudiante extends Model
         'direccion',
         'grado',
         'seccion',
-        'estado',
+        'estado',          // 👈👉 IMPORTANTE: agregar esto
         'observaciones',
         'nombre_padre',
         'telefono_padre',
         'email_padre',
         'foto',
         'dni_doc',
+        'curso_id', // recomendado
     ];
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
     ];
 
-    // Accessor para nombre completo corregido
+    /*
+    |----------------------------------------------------------------------
+    | ACCESOR: nombre completo
+    |----------------------------------------------------------------------
+    */
     public function getNombreCompletoAttribute()
     {
         $nombre = trim("{$this->nombre1} {$this->nombre2}");
@@ -43,7 +50,55 @@ class Estudiante extends Model
         return trim("{$nombre} {$apellido}");
     }
 
-    // Opciones de grados
+    /*
+    |----------------------------------------------------------------------
+    | RELACIONES
+    |----------------------------------------------------------------------
+    */
+
+    public function permisosPadres()
+    {
+        return $this->hasMany(PadrePermiso::class, 'estudiante_id');
+    }
+
+    public function padresConPermisos()
+    {
+        return $this->belongsToMany(Padre::class, 'padre_permisos', 'estudiante_id', 'padre_id')
+                    ->withPivot([
+                        'ver_calificaciones',
+                        'ver_asistencias',
+                        'ver_comportamiento',
+                        'ver_tareas',
+                        'descargar_boletas',
+                        'recibir_notificaciones',
+                        'comunicarse_profesores',
+                        'autorizar_salidas',
+                        'subir_documentos_matricula',
+                        'notas_adicionales'
+                    ]);
+    }
+
+    public function documentos()
+    {
+        return $this->hasOne(Documento::class, 'estudiante_id');
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'curso_id');
+    }
+
+    public function calificaciones()
+    {
+        return $this->hasMany(Calificacion::class, 'estudiante_id');
+    }
+
+    /*
+    |----------------------------------------------------------------------
+    | LISTAS ESTÁTICAS
+    |----------------------------------------------------------------------
+    */
+
     public static function grados()
     {
         return [
@@ -58,37 +113,13 @@ class Estudiante extends Model
             '3ro Secundaria',
         ];
     }
+    public function user()
+    {
+    return $this->belongsTo(\App\Models\User::class);
+    }
 
     public static function secciones()
     {
         return ['A', 'B', 'C'];
-    }
-
-    /**
-     * Relación con permisos de padres
-     */
-    public function permisospadres()
-    {
-        return $this->hasMany(PadrePermiso::class);
-    }
-
-    /**
-     * Obtener padres con permisos configurados
-     */
-    public function padresConPermisos()
-    {
-        return $this->belongsToMany(Padre::class, 'padre_permisos')
-                    ->withPivot([
-                        'ver_calificaciones',
-                        'ver_asistencias',
-                        'comunicarse_profesores',
-                        'autorizar_salidas',
-                        'modificar_datos_contacto',
-                        'ver_comportamiento',
-                        'descargar_boletas',
-                        'ver_tareas',
-                        'recibir_notificaciones'
-                    ])
-                    ->withTimestamps();
     }
 }

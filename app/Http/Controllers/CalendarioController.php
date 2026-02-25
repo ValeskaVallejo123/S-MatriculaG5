@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EventoAcademico;
 use Illuminate\Http\Request;
+use App\Models\EventoAcademico;
 
 class CalendarioController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
         return view('calendario');
@@ -19,10 +24,10 @@ class CalendarioController extends Controller
                 'id' => $evento->id,
                 'title' => $evento->titulo,
                 'start' => $evento->fecha_inicio->format('Y-m-d'),
-                'end' => $evento->fecha_fin->addDay()->format('Y-m-d'),
+                'end' => $evento->fecha_fin->copy()->addDay()->format('Y-m-d'),
                 'backgroundColor' => $evento->color,
                 'borderColor' => $evento->color,
-                'allDay' => $evento->todo_el_dia,
+                'allDay' => (bool) $evento->todo_el_dia,
                 'extendedProps' => [
                     'description' => $evento->descripcion,
                     'type' => $evento->tipo
@@ -35,14 +40,7 @@ class CalendarioController extends Controller
 
     public function guardar(Request $request)
     {
-        $validado = $request->validate([
-            'titulo' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-            'tipo' => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
-            'color' => 'required|string'
-        ]);
+        $validado = $this->validarEvento($request);
 
         $evento = EventoAcademico::create($validado);
 
@@ -54,14 +52,7 @@ class CalendarioController extends Controller
 
     public function actualizar(Request $request, EventoAcademico $evento)
     {
-        $validado = $request->validate([
-            'titulo' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-            'tipo' => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
-            'color' => 'required|string'
-        ]);
+        $validado = $this->validarEvento($request);
 
         $evento->update($validado);
 
@@ -77,6 +68,18 @@ class CalendarioController extends Controller
 
         return response()->json([
             'exito' => true
+        ]);
+    }
+
+    private function validarEvento(Request $request)
+    {
+        return $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+            'tipo' => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
+            'color' => 'required|string'
         ]);
     }
 }

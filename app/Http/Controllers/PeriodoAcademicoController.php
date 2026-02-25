@@ -1,13 +1,21 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\PeriodoAcademico;
 
 class PeriodoAcademicoController extends Controller
 {
+    public function __construct()
+    {
+        // SOLO admin y super_admin pueden hacer CRUD
+        $this->middleware(['auth', 'rol:admin,super_admin'])
+            ->except(['index']); // index es visible para todos
+    }
+
     /**
-     * Display a listing of the resource.
+     * Mostrar la lista de períodos académicos (visible para todos los roles)
      */
     public function index()
     {
@@ -15,11 +23,17 @@ class PeriodoAcademicoController extends Controller
         return view('definirperiodosacademicos.index', compact('periodos'));
     }
 
+    /**
+     * Mostrar formulario de creación (solo admin y super_admin)
+     */
     public function create()
     {
         return view('definirperiodosacademicos.create');
     }
 
+    /**
+     * Guardar nuevo período académico (solo admin y super_admin)
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -29,22 +43,16 @@ class PeriodoAcademicoController extends Controller
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
         ]);
 
-        PeriodoAcademico::create($request->all());
+        PeriodoAcademico::create(
+            $request->only(['nombre_periodo', 'tipo', 'fecha_inicio', 'fecha_fin'])
+        );
 
         return redirect()->route('periodos-academicos.index')
             ->with('success', 'Período académico creado correctamente.');
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * Mostrar formulario de edición (solo admin y super_admin)
      */
     public function edit($id)
     {
@@ -52,6 +60,9 @@ class PeriodoAcademicoController extends Controller
         return view('definirperiodosacademicos.edit', compact('periodo'));
     }
 
+    /**
+     * Actualizar período académico (solo admin y super_admin)
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -62,14 +73,17 @@ class PeriodoAcademicoController extends Controller
         ]);
 
         $periodo = PeriodoAcademico::findOrFail($id);
-        $periodo->update($request->all());
+
+        $periodo->update(
+            $request->only(['nombre_periodo', 'tipo', 'fecha_inicio', 'fecha_fin'])
+        );
 
         return redirect()->route('periodos-academicos.index')
             ->with('success', 'Período académico actualizado correctamente.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar período académico (solo admin y super_admin)
      */
     public function destroy($id)
     {

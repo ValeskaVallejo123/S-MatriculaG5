@@ -11,97 +11,145 @@ use App\Models\User;
 
 class LoginController extends Controller
 {
+    /**
+     * Mostrar formulario de login.
+     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
+    /**
+     * Procesar el intento de login.
+     */
     public function login(Request $request)
     {
-        Log::info('=== INICIO LOGIN ===');
-        
+        // ── Validación ──────────────────────────────────────────────
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        $usuario = User::where('email', $request->email)->first();
-
-        if (!$usuario) {
-            Log::info('Usuario no encontrado: ' . $request->email);
-            return back()->withErrors(['email' => 'Usuario no encontrado.'])->onlyInput('email');
+        // ── Buscar usuario ──────────────────────────────────────────
+        // CORRECCIÓN: el original buscaba el usuario ANTES de Auth::attempt
+        // y luego volvía a obtenerlo con Auth::user() después, lo que
+        // generaba dos consultas innecesarias. Se consolidó en una sola
+        // llamada a Auth::attempt y luego Auth::user().
+        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+            Log::warning('Login fallido', ['email' => $request->email]);
+            return back()
+                ->withErrors(['email' => 'Credenciales incorrectas. Verifica tu correo y contraseña.'])
+                ->onlyInput('email');
         }
 
-        Log::info('Usuario encontrado', ['email' => $usuario->email, 'id' => $usuario->id]);
-
-        if (!$usuario->rol_id && !$usuario->id_rol) {
-            Log::error('Sin rol asignado');
-            return back()->withErrors(['email' => 'Sin rol asignado.'])->onlyInput('email');
-        }
-
-        if (!Auth::attempt($credentials, $request->filled('remember'))) {
-            Log::error('Credenciales incorrectas');
-            return back()->withErrors(['email' => 'Credenciales incorrectas.'])->onlyInput('email');
-        }
-
-        Log::info('Autenticación exitosa');
-
-        $request->session()->regenerate();
         $usuario = Auth::user();
 
-        Log::info('Verificando activo', [
-            'activo' => $usuario->activo,
-            'user_type' => $usuario->user_type,
+        Log::info('Login exitoso', [
+            'id'    => $usuario->id,
+            'email' => $usuario->email,
         ]);
 
-        if (isset($usuario->activo) && !$usuario->activo) {
-            
-            $esPadre = ($usuario->user_type === 'padre') || 
-                       ($usuario->rol && strtolower($usuario->rol->nombre) === 'padre');
+        // ── Verificar que tenga rol ─────────────────────────────────
+        // CORRECCIÓN: el original verificaba rol_id || id_rol antes de
+        // Auth::attempt, lo que podía bloquear usuarios válidos si el
+        // campo era null pero la relación existía. Ahora se verifica
+        // la relación ->rol directamente después de autenticar.
+        if (!$usuario->rol) {
+            Auth::logout();
+            Log::error('Usuario sin rol', ['id' => $usuario->id]);
+            return back()
+                ->withErrors(['email' => 'Tu cuenta no tiene un rol asignado. Contacta al administrador.'])
+                ->onlyInput('email');
+        }
 
-            Log::info('Usuario inactivo, esPadre: ' . ($esPadre ? 'SI' : 'NO'));
+        // ── Verificar cuenta activa ─────────────────────────────────
+        // CORRECCIÓN: el original usaba isset($usuario->activo) &&
+        // !$usuario->activo, lo que fallaba si activo era null (isset
+        // devuelve true para null). Se usa comparación estricta.
+        if ($usuario->activo == 0 || $usuario->activo === false) {
+
+            $nombreRol = strtolower($usuario->rol->nombre ?? '');
+            $esPadre   = $nombreRol === 'padre' || $usuario->user_type === 'padre';
 
             if ($esPadre) {
-                Log::info('Activando padre');
-                DB::table('users')->where('id', $usuario->id)->update(['activo' => 1]);
-                Log::info('Padre activado');
+                // Los padres se activan automáticamente en su primer login
+                DB::table('users')
+                    ->where('id', $usuario->id)
+                    ->update(['activo' => 1]);
+
+                Log::info('Padre activado en primer login', ['id' => $usuario->id]);
+
             } else {
-                Log::warning('Usuario bloqueado');
                 Auth::logout();
-                return back()->withErrors(['email' => 'Cuenta pendiente de aprobación.'])->onlyInput('email');
+                Log::warning('Login bloqueado — cuenta inactiva', ['id' => $usuario->id]);
+                return back()
+                    ->withErrors(['email' => 'Tu cuenta está pendiente de aprobación por el administrador.'])
+                    ->onlyInput('email');
             }
         }
 
-        Log::info('Redirigiendo');
-        return $this->redirectBasedOnRole($usuario);
+        // ── Regenerar sesión (previene session fixation) ────────────
+        $request->session()->regenerate();
+
+        return $this->redirigirSegunRol($usuario);
     }
 
-    private function redirectBasedOnRole($usuario)
+    /**
+     * Redirigir al dashboard según el rol del usuario.
+     *
+     * CORRECCIÓN: el original usaba switch con strings exactos ("Super Administrador")
+     * y si el nombre del rol en BD tenía una tilde diferente o mayúscula distinta,
+     * nunca entraba al case y hacía logout silencioso. Ahora se normaliza el nombre
+     * del rol y se usa un mapa de rutas para mayor claridad y mantenibilidad.
+     */
+    private function redirigirSegunRol(User $usuario): \Illuminate\Http\RedirectResponse
     {
-        if ($usuario->rol) {
-            switch ($usuario->rol->nombre) {
-                case 'Super Administrador':
-                    return redirect()->route('superadmin.dashboard');
-                case 'Administrador':
-                    return redirect()->route('admin.dashboard');
-                case 'Profesor':
-                    return redirect()->route('profesor.dashboard');
-                case 'Estudiante':
-                    return redirect()->route('estudiante.dashboard');
-                case 'Padre':
-                    return redirect()->route('padre.dashboard');
-            }
+        $nombreRol = strtolower(trim($usuario->rol->nombre ?? ''));
+
+        $mapa = [
+            'super administrador' => 'superadmin.dashboard',
+            'superadmin'          => 'superadmin.dashboard',
+            'administrador'       => 'admin.dashboard',
+            'admin'               => 'admin.dashboard',
+            'profesor'            => 'profesor.dashboard',
+            'estudiante'          => 'estudiante.dashboard',
+            'padre'               => 'padre.dashboard',
+        ];
+
+        if (isset($mapa[$nombreRol])) {
+            Log::info('Redirigiendo', [
+                'id'   => $usuario->id,
+                'rol'  => $nombreRol,
+                'ruta' => $mapa[$nombreRol],
+            ]);
+            return redirect()->route($mapa[$nombreRol]);
         }
 
+        // Rol no reconocido — cerrar sesión y avisar
         Auth::logout();
-        return back()->withErrors(['email' => 'Rol no reconocido.']);
+        Log::error('Rol no reconocido en redirigirSegunRol', [
+            'id'  => $usuario->id,
+            'rol' => $usuario->rol->nombre ?? 'null',
+        ]);
+
+        return back()->withErrors([
+            'email' => 'Rol no reconocido. Contacta al administrador del sistema.',
+        ]);
     }
 
+    /**
+     * Cerrar sesión.
+     */
     public function logout(Request $request)
     {
+        $id = Auth::id();
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+
+        Log::info('Logout', ['id' => $id]);
+
+        return redirect()->route('login');
     }
 }

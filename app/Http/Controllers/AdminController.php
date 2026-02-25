@@ -33,7 +33,7 @@ public function index(Request $request)
 
     if ($request->filled('busqueda')) {
         $busqueda = $request->input('busqueda');
-        
+
         $query->where(function($q) use ($busqueda) {
             $q->where('name', 'LIKE', "%{$busqueda}%")
               ->orWhere('email', 'LIKE', "%{$busqueda}%");
@@ -61,34 +61,16 @@ public function index(Request $request)
             'reportes' => 'Generar Reportes',
             'configuracion' => 'Configuración del Sistema'
         ];
-        
+
         return view('admins.create', compact('permisos'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre' => [
-                'required',
-                'string',
-                'min:3',
-                'max:50',
-                'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/'
-            ],
-            'apellido' => [
-                'required',
-                'string',
-                'min:3',
-                'max:50',
-                'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/'
-            ],
-            'password' => [
-                'required',
-                'confirmed',
-                'min:8',
-                'max:50',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/'
-            ],
+            'nombre' => 'required|string|min:3|max:50|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'apellido' => 'required|string|min:3|max:50|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+            'password' => 'required|confirmed|min:8|max:50|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).+$/',
             'permisos' => 'nullable|array',
             'role' => 'required|in:admin,super_admin',
         ], [
@@ -96,12 +78,12 @@ public function index(Request $request)
             'nombre.min' => 'El nombre debe tener al menos 3 caracteres',
             'nombre.max' => 'El nombre no puede exceder 50 caracteres',
             'nombre.regex' => 'El nombre solo puede contener letras y espacios',
-            
+
             'apellido.required' => 'El apellido es obligatorio',
             'apellido.min' => 'El apellido debe tener al menos 3 caracteres',
             'apellido.max' => 'El apellido no puede exceder 50 caracteres',
             'apellido.regex' => 'El apellido solo puede contener letras y espacios',
-            
+
             'password.required' => 'La contraseña es obligatoria',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres',
             'password.max' => 'La contraseña no puede exceder 50 caracteres',
@@ -112,7 +94,6 @@ public function index(Request $request)
         // Generar correo automáticamente
         $email = $this->generarCorreoUnico($validated['nombre'], $validated['apellido']);
 
-        // Guardar la contraseña en texto plano temporalmente para mostrarla
         $passwordPlain = $validated['password'];
 
         $admin = User::create([
@@ -179,17 +160,17 @@ public function index(Request $request)
     {
         // Convertir a minúsculas
         $texto = strtolower($texto);
-        
+
         // Quitar acentos
         $texto = str_replace(
             ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ñ'],
             ['a', 'e', 'i', 'o', 'u', 'n', 'a', 'e', 'i', 'o', 'u', 'n'],
             $texto
         );
-        
+
         // Quitar todo excepto letras y números
         $texto = preg_replace('/[^a-z0-9]/', '', $texto);
-        
+
         return $texto;
     }
 
@@ -198,7 +179,7 @@ public function index(Request $request)
         $admin = User::where('role', 'admin')
                     ->orWhere('role', 'super_admin')
                     ->findOrFail($id);
-        
+
         return view('admins.show', compact('admin'));
     }
 
@@ -207,7 +188,7 @@ public function index(Request $request)
         $admin = User::where('role', 'admin')
                     ->orWhere('role', 'super_admin')
                     ->findOrFail($id);
-        
+
         $permisos = [
             'usuarios' => 'Gestionar Usuarios',
             'estudiantes' => 'Gestionar Estudiantes',
@@ -220,7 +201,7 @@ public function index(Request $request)
             'editar' => 'Editar usuarios',
             'eliminar' => 'Eliminar usuarios',
         ];
-        
+
         return view('admins.edit', compact('admin', 'permisos'));
     }
 
@@ -259,12 +240,12 @@ public function index(Request $request)
             'name.min' => 'El nombre debe tener al menos 3 caracteres',
             'name.max' => 'El nombre no puede exceder 100 caracteres',
             'name.regex' => 'El nombre solo puede contener letras y espacios',
-            
+
             'email.required' => 'El email es obligatorio',
             'email.email' => 'Debe ser un email válido',
             'email.unique' => 'Este email ya está registrado',
             'email.max' => 'El email no puede exceder 100 caracteres',
-            
+
             'password.min' => 'La contraseña debe tener al menos 8 caracteres',
             'password.max' => 'La contraseña no puede exceder 50 caracteres',
             'password.confirmed' => 'Las contraseñas no coinciden',
@@ -280,13 +261,10 @@ public function index(Request $request)
         ]);
 
         if (!empty($validated['password'])) {
-            $admin->update([
-                'password' => Hash::make($validated['password'])
-            ]);
+            $admin->update(['password' => Hash::make($validated['password'])]);
         }
 
-        return redirect()->route('admins.index')
-            ->with('success', 'Administrador actualizado exitosamente');
+        return redirect()->route('admins.index')->with('success', 'Administrador actualizado exitosamente');
     }
 
     public function destroy($id)
@@ -294,17 +272,16 @@ public function index(Request $request)
         $admin = User::where('role', 'admin')
                     ->orWhere('role', 'super_admin')
                     ->findOrFail($id);
-        
+
         $admin->delete();
 
-        return redirect()->route('admins.index')
-            ->with('success', 'Administrador eliminado exitosamente');
+        return redirect()->route('admins.index')->with('success', 'Administrador eliminado exitosamente');
     }
 
    public function permisosRoles()
 {
     $permisos = $this->getAvailablePermissions();
-    
+
     // Obtener usuarios configurables: admin, profesor, padre, y super_admin no protegidos
     $usuarios = User::where(function($query) {
             // Usuarios con rol admin, profesor o padre
@@ -318,7 +295,7 @@ public function index(Request $request)
         ->orderBy('role')
         ->orderBy('name')
         ->get();
-    
+
     return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
 }
 }

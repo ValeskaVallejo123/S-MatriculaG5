@@ -15,6 +15,7 @@
 <div class="container" style="max-width: 900px;">
     
 
+
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-header" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.2rem;">
             <h5 class="mb-0 fw-bold">
@@ -210,5 +211,5 @@
     });
 </script>
 @endpush
-@endsection
 
+@endsection

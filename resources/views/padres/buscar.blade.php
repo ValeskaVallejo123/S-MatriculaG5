@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    
+
     <!-- Información del Estudiante -->
     @if(isset($estudiante) && $estudiante)
     <div class="row mb-4">
@@ -59,7 +59,7 @@
                         @if(isset($estudiante) && $estudiante)
                             <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
                         @endif
-                        
+
                         <div class="row g-4">
                             <div class="col-md-4">
                                 <div class="form-group-modern">
@@ -67,49 +67,49 @@
                                         <i class="fas fa-user"></i>
                                         Nombre o Apellido
                                     </label>
-                                    <input type="text" 
-                                           name="nombre" 
-                                           class="form-control-modern" 
+                                    <input type="text"
+                                           name="nombre"
+                                           class="form-control-modern"
                                            placeholder="Ej: Juan Pérez"
                                            value="{{ request('nombre') }}">
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <div class="form-group-modern">
                                     <label class="form-label-modern">
                                         <i class="fas fa-id-card"></i>
                                         DNI/Identidad
                                     </label>
-                                    <input type="text" 
-                                           name="identidad" 
-                                           class="form-control-modern" 
+                                    <input type="text"
+                                           name="identidad"
+                                           class="form-control-modern"
                                            placeholder="Ej: 0801-1990-12345"
                                            value="{{ request('identidad') }}">
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <div class="form-group-modern">
                                     <label class="form-label-modern">
                                         <i class="fas fa-phone"></i>
                                         Teléfono
                                     </label>
-                                    <input type="text" 
-                                           name="telefono" 
-                                           class="form-control-modern" 
+                                    <input type="text"
+                                           name="telefono"
+                                           class="form-control-modern"
                                            placeholder="Ej: 9999-9999"
                                            value="{{ request('telefono') }}">
                                 </div>
                             </div>
-                            
+
                             <div class="col-12">
                                 <div class="action-buttons">
                                     <button type="submit" class="btn-search">
                                         <i class="fas fa-search"></i>
                                         Buscar Padres
                                     </button>
-                                    <a href="{{ isset($estudiante) ? route('estudiantes.show', $estudiante->id) : route('padres.index') }}" 
+                                    <a href="{{ isset($estudiante) ? route('estudiantes.show', $estudiante->id) : route('padres.index') }}"
                                        class="btn-cancel">
                                         <i class="fas fa-times"></i>
                                         Cancelar
@@ -198,7 +198,7 @@
                                 <div class="col-lg-3">
                                     <div class="parent-actions">
                                         @if(isset($estudiante) && $estudiante)
-                                            <button type="button" 
+                                            <button type="button"
                                                     class="btn-link-parent"
                                                     onclick="mostrarModalVincular({{ $padre->id }}, '{{ $padre->nombre }} {{ $padre->apellido }}', {{ $estudiante->id }}, '{{ $estudiante->nombre }} {{ $estudiante->apellido }}')">
                                                 <i class="fas fa-link"></i>
@@ -269,14 +269,14 @@
         <button type="button" class="modal-close-btn" onclick="cerrarModalVincular()">
             <i class="fas fa-times"></i>
         </button>
-        
+
         <div class="modal-header-custom">
             <div class="modal-icon-custom">
                 <i class="fas fa-link"></i>
             </div>
             <h5 class="modal-title-custom">Confirmar Vinculación</h5>
         </div>
-        
+
         <div class="modal-body-custom">
             <div class="vinculacion-preview">
                 <div class="preview-item">
@@ -291,17 +291,17 @@
                     <span id="modalEstudianteNombre"></span>
                 </div>
             </div>
-            
+
             <p class="modal-message-custom">
                 ¿Deseas vincular este padre/tutor con el estudiante?
             </p>
         </div>
-        
+
         <form id="formVincular" method="POST" style="display: none;">
             @csrf
             <input type="hidden" name="estudiante_id" id="formEstudianteId">
         </form>
-        
+
         <div class="modal-footer-custom">
             <button type="button" class="btn-modal-cancel" onclick="cerrarModalVincular()">
                 <i class="fas fa-times"></i>
@@ -1134,17 +1134,17 @@ let padreIdActual = null;
 function mostrarModalVincular(padreId, padreNombre, estudianteId, estudianteNombre) {
     // Guardar datos
     padreIdActual = padreId;
-    
+
     // Actualizar contenido del modal
     document.getElementById('modalPadreNombre').textContent = padreNombre;
     document.getElementById('modalEstudianteNombre').textContent = estudianteNombre;
     document.getElementById('formEstudianteId').value = estudianteId;
     document.getElementById('formVincular').action = `/padres/${padreId}/vincular`;
-    
+
     // Mostrar modal
     const modal = document.getElementById('modalVincular');
     modal.classList.add('show');
-    
+
     // Prevenir scroll del body
     document.body.style.overflow = 'hidden';
 }
@@ -1152,10 +1152,10 @@ function mostrarModalVincular(padreId, padreNombre, estudianteId, estudianteNomb
 function cerrarModalVincular() {
     const modal = document.getElementById('modalVincular');
     modal.classList.remove('show');
-    
+
     // Restaurar scroll del body
     document.body.style.overflow = '';
-    
+
     // Limpiar datos
     padreIdActual = null;
 }

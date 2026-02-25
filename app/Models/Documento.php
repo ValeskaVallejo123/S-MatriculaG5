@@ -9,23 +9,46 @@ class Documento extends Model
 {
     use HasFactory;
 
+    protected $table = 'documentos';
+
     protected $fillable = [
-        'estudiante_id', // ¡Importante para la relación!
+        'estudiante_id',
         'foto',
         'acta_nacimiento',
-        'calificaciones'
+        'calificaciones',
+        'tarjeta_identidad_padre',
+        'constancia_medica',
     ];
 
-    // Relación con el estudiante (según la historia de usuario)
+    protected $casts = [
+        'foto'                     => 'string',
+        'acta_nacimiento'          => 'string',
+        'calificaciones'           => 'string',
+        'tarjeta_identidad_padre'  => 'string',
+        'constancia_medica'        => 'string',
+    ];
+
+    /* ============================
+       RELACIÓN
+       ============================ */
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class);
+        return $this->belongsTo(Estudiante::class, 'estudiante_id');
+    }
+
+    /* ============================
+       HELPERS
+       ============================ */
+
+    public function tiene($campo)
+    {
+        return !empty($this->{$campo});
+    }
+
+    public function urlDe($campo)
+    {
+        return $this->{$campo}
+            ? asset("storage/{$this->{$campo}}")
+            : null;
     }
 }
-
-
-
-
-
-
-

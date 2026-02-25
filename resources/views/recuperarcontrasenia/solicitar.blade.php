@@ -1,3 +1,5 @@
+@extends('layouts.app') {{-- Puedes quitar si NO usas layouts --}}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -199,6 +201,7 @@
 
     </style>
 </head>
+
 <body>
 
 <div class="recovery-container">

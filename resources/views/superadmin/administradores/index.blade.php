@@ -4,11 +4,23 @@
 @section('page-title', 'Gestión de Administradores')
 
 @section('topbar-actions')
+<<<<<<< HEAD
     <a href="{{ route('superadmin.administradores.permisos') }}" class="adm-btn-outline">
         <i class="fas fa-shield-alt"></i> Permisos y Roles
     </a>
     <a href="{{ route('superadmin.administradores.create') }}" class="adm-btn-solid">
         <i class="fas fa-plus"></i> Nuevo Administrador
+=======
+    <a href="{{ route('superadmin.administradores.permisos') }}"
+       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem; margin-right: 0.5rem;">
+        <i class="fas fa-shield-alt"></i>
+        Permisos y Roles
+    </a>
+    <a href="{{ route('superadmin.administradores.create') }}"
+       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; font-size: 0.9rem;">
+        <i class="fas fa-plus"></i>
+        Nuevo Administrador
+>>>>>>> cesia-dev
     </a>
 @endsection
 
@@ -132,6 +144,7 @@
 @endpush
 
 @section('content')
+<<<<<<< HEAD
 <div class="adm-wrap">
 
     {{-- Stats --}}
@@ -143,6 +156,25 @@
             <div>
                 <div class="adm-stat-lbl">Total</div>
                 <div class="adm-stat-num">{{ $administradores->count() }}</div>
+=======
+<div class="container-fluid">
+    <!-- Estadísticas en Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Total -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);">
+                            <i class="fas fa-users" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-1" style="color: #64748b; font-size: 0.875rem; font-weight: 600;">Total Administradores</p>
+                            <h3 class="mb-0" style="color: #003b73; font-weight: 700; font-size: 1.875rem;">{{ $administradores->count() }}</h3>
+                        </div>
+                    </div>
+                </div>
+>>>>>>> cesia-dev
             </div>
         </div>
         <div class="adm-stat">
@@ -197,6 +229,7 @@
                                         </span>
                                     @endif
                                 </div>
+<<<<<<< HEAD
                             </div>
                         </td>
 
@@ -232,6 +265,54 @@
                                     </a>
                                     <button type="button"
                                             class="act-btn act-del"
+=======
+                            </td>
+                            <td class="px-4 py-3" style="color: #64748b; font-size: 0.875rem;">
+                                <i class="fas fa-envelope me-2" style="color: #4ec7d2;"></i>{{ $admin->email }}
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @if($admin->is_super_admin)
+                                    <span class="badge" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);">
+                                        <i class="fas fa-crown me-1"></i>Super Admin
+                                    </span>
+                                @else
+                                    <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(78, 199, 210, 0.3);">
+                                        <i class="fas fa-user-shield me-1"></i>Administrador
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @php
+                                    $permisosActivos = is_array($admin->permissions) ? count($admin->permissions) : 0;
+                                @endphp
+                                @if($admin->is_super_admin)
+                                    <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">
+                                        <i class="fas fa-infinity me-1"></i>Todos
+                                    </span>
+                                @else
+                                    <span class="badge" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);">
+                                        <i class="fas fa-list-check me-1"></i>{{ $permisosActivos }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">
+                                    <i class="fas fa-check-circle me-1"></i>Activo
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @if(!$admin->is_protected)
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="{{ route('superadmin.administradores.edit', $admin->id) }}"
+                                       class="btn btn-sm"
+                                       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; padding: 0.5rem 0.875rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(78, 199, 210, 0.3);"
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="btn btn-sm"
+                                            style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 0.5rem 0.875rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);"
+>>>>>>> cesia-dev
                                             data-route="{{ route('superadmin.administradores.destroy', $admin->id) }}"
                                             data-message="¿Estás seguro de eliminar a este administrador?"
                                             data-name="{{ $admin->name }}"
@@ -263,4 +344,31 @@
     </div>
 
 </div>
+<<<<<<< HEAD
 @endsection
+=======
+
+@push('styles')
+<style>
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+        transform: scale(1.001);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    @media (max-width: 768px) {
+        .table {
+            font-size: 0.875rem;
+        }
+        .card-body {
+            padding: 1rem !important;
+        }
+    }
+</style>
+@endpush
+@endsection
+>>>>>>> cesia-dev

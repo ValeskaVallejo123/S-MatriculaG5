@@ -17,7 +17,33 @@
 @endsection
 
 @section('content')
+<<<<<<< HEAD
+<div class="container-fluid" style="max-width: 1200px;">
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1" style="color: #003b73; font-weight: 700;">
+                <i class="fas fa-id-card"></i> Detalles de Matrícula
+            </h2>
+            <p class="text-muted mb-0">Código: <strong>{{ $matricula->codigo_matricula }}</strong></p>
+        </div>
+        <div>
+            <a href="{{ route('matriculas.edit', $matricula->id) }}" class="btn btn-warning me-2">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+            <a href="{{ route('matriculas.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+=======
 <div class="container-fluid">
+>>>>>>> origin/dev/valeska
 
     <!-- Header con código y estado -->
     <div class="card mb-4 border-0 shadow-sm" style="border-radius: 12px;">
@@ -56,7 +82,11 @@
                     @endif
                 </div>
             </div>
-            
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
             @if($matricula->estado === 'rechazada' && $matricula->motivo_rechazo)
             <div class="alert mt-3 mb-0" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px;">
                 <div class="d-flex align-items-start gap-2">
@@ -320,6 +350,17 @@
     @endif
 
     <!-- Información del Sistema -->
+<<<<<<< HEAD
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row text-muted small">
+                <div class="col-md-6">
+                    <i class="fas fa-calendar-plus"></i>
+                    <strong>Creado:</strong> {{ $matricula->created_at ? $matricula->created_at->format('d/m/Y H:i') : 'N/A' }}
+                </div>
+                <div class="col-md-6 text-end">
+                    <i class="fas fa-calendar-check"></i>
+=======
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-body p-3">
             <div class="row text-center">
@@ -329,6 +370,7 @@
                 </div>
                 <div class="col-md-6" style="color: #64748b; font-size: 0.875rem;">
                     <i class="fas fa-calendar-check me-2" style="color: #4ec7d2;"></i>
+>>>>>>> origin/dev/valeska
                     <strong>Última actualización:</strong> {{ $matricula->updated_at ? $matricula->updated_at->format('d/m/Y H:i') : 'N/A' }}
                 </div>
             </div>
@@ -345,6 +387,13 @@
         border-bottom: 1px solid #e2e8f0;
     }
 
+<<<<<<< HEAD
+    .card-header {
+        border-bottom: 2px solid rgba(0, 59, 115, 0.1);
+    }
+
+    .border.rounded {
+=======
     .info-item:last-child {
         margin-bottom: 0;
         padding-bottom: 0;
@@ -379,6 +428,7 @@
         border-radius: 12px;
         padding: 1.5rem 1rem;
         text-align: center;
+>>>>>>> origin/dev/valeska
         transition: all 0.3s ease;
         height: 100%;
         display: flex;
@@ -386,6 +436,14 @@
         justify-content: space-between;
     }
 
+<<<<<<< HEAD
+    .border.rounded:hover {
+        box-shadow: 0 2px 8px rgba(0, 59, 115, 0.1);
+        border-color: #4ec7d2 !important;
+    }
+</style>
+@endsection
+=======
     .documento-card:hover {
         border-color: #4ec7d2;
         box-shadow: 0 4px 12px rgba(78, 199, 210, 0.2);
@@ -448,3 +506,4 @@
 </style>
 @endpush
 @endsection
+>>>>>>> origin/dev/valeska

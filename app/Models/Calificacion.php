@@ -11,31 +11,44 @@ class Calificacion extends Model
 
     protected $table = 'calificaciones';
 
-    // Unión de ambos fillable (sin duplicados)
     protected $fillable = [
         'estudiante_id',
         'materia_id',
         'periodo_id',
         'nota',
         'observacion',
+
         'nombre_alumno',
         'primer_parcial',
         'segundo_parcial',
         'tercer_parcial',
-        'cuarto_parcial',
+
         'recuperacion',
         'nota_final',
     ];
 
-    // Relaciones de la versión HEAD
+    protected $casts = [
+        'primer_parcial'    => 'float',
+        'segundo_parcial'   => 'float',
+        'tercer_parcial'    => 'float',
+        'recuperacion'      => 'float',
+        'nota_final'        => 'float',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relaciones
+    |--------------------------------------------------------------------------
+    */
+
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class);
+        return $this->belongsTo(Estudiante::class, 'estudiante_id');
     }
 
     public function materia()
     {
-        return $this->belongsTo(Materia::class);
+        return $this->belongsTo(Materia::class, 'materia_id');
     }
 
     public function periodo()
@@ -43,23 +56,31 @@ class Calificacion extends Model
         return $this->belongsTo(PeriodoAcademico::class, 'periodo_id');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cálculo de notas
+    |--------------------------------------------------------------------------
+    */
+
     /**
-     * Calcular automáticamente la nota final
+     * Calcula automáticamente la nota final.
      */
     public function calcularNotaFinal()
     {
-        $parciales = [
-            $this->primer_parcial ?? 0,
-            $this->segundo_parcial ?? 0,
-            $this->tercer_parcial ?? 0,
-            $this->cuarto_parcial ?? 0,
-        ];
+        // Filtrar solo parciales suministrados
+        $parciales = array_filter([
+            $this->primer_parcial,
+            $this->segundo_parcial,
+            $this->tercer_parcial,
+        ], fn ($p) => $p !== null);
 
-        // Promedio de los 4 parciales
-        $promedio = array_sum($parciales) / 4;
+        // Si hay parciales válidos, promediar
+        $promedio = count($parciales) > 0
+            ? array_sum($parciales) / count($parciales)
+            : null;
 
-        // Si tiene recuperación y el promedio es menor a 60, usar recuperación
-        if ($this->recuperacion !== null && $promedio < 60) {
+        // Aplicar recuperación si aplica
+        if ($promedio !== null && $promedio < 60 && $this->recuperacion !== null) {
             $this->nota_final = max($promedio, $this->recuperacion);
         } else {
             $this->nota_final = $promedio;
@@ -69,16 +90,19 @@ class Calificacion extends Model
     }
 
     /**
-     * Verificar si el alumno aprobó (nota >= 60)
+     * True si el alumno aprobó
      */
-    public function aprobo()
+    public function aprobo(): bool
     {
-        return $this->nota_final >= 60;
+        return $this->nota_final !== null && $this->nota_final >= 60;
     }
 
-    /**
-     * Obtener el estado del alumno
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Atributos personalizados
+    |--------------------------------------------------------------------------
+    */
+
     public function getEstadoAttribute()
     {
         if ($this->nota_final === null) {
@@ -87,14 +111,43 @@ class Calificacion extends Model
         return $this->nota_final >= 60 ? 'Aprobado' : 'Reprobado';
     }
 
-    /**
-     * Obtener clase CSS según el estado
-     */
     public function getEstadoColorAttribute()
     {
         if ($this->nota_final === null) {
             return 'bg-gray-100 text-gray-800';
         }
-        return $this->nota_final >= 60 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        return $this->nota_final >= 60
+            ? 'bg-green-100 text-green-800'
+            : 'bg-red-100 text-red-800';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mutadores opcionales (si quieres recalcular automáticamente)
+    |--------------------------------------------------------------------------
+    */
+
+    public function setPrimerParcialAttribute($value)
+    {
+        $this->attributes['primer_parcial'] = $value;
+        $this->calcularNotaFinal();
+    }
+
+    public function setSegundoParcialAttribute($value)
+    {
+        $this->attributes['segundo_parcial'] = $value;
+        $this->calcularNotaFinal();
+    }
+
+    public function setTercerParcialAttribute($value)
+    {
+        $this->attributes['tercer_parcial'] = $value;
+        $this->calcularNotaFinal();
+    }
+
+    public function setRecuperacionAttribute($value)
+    {
+        $this->attributes['recuperacion'] = $value;
+        $this->calcularNotaFinal();
     }
 }

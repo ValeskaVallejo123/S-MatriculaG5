@@ -12,30 +12,31 @@ class PerfilController extends Controller
      */
     public function mostrarPerfil()
     {
-        $usuario = Auth::user(); // Usuario autenticado
+        $usuario = Auth::user();
         return view('Perfil.perfil', compact('usuario'));
     }
 
     /**
-     * Actualizar los datos del perfil del usuario (opcional si lo implementarás).
+     * Actualizar datos del perfil del usuario autenticado.
      */
     public function actualizarPerfil(Request $request)
     {
         $usuario = Auth::user();
 
-        // Validar datos
+        // Validar datos del perfil
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
+            // el email debe ser único, excepto el propio usuario
+            'email' => 'required|email|unique:users,email,' . $usuario->id,
         ]);
 
-        // Actualizar datos en la base
+        // Actualizar datos
         $usuario->name = $request->name;
         $usuario->email = $request->email;
         $usuario->save();
 
-        // Redirigir con mensaje
-        return redirect()->route('perfil.mostrar')->with('success', 'Perfil actualizado correctamente.');
+        return redirect()
+            ->route('perfil.mostrar')
+            ->with('success', 'Perfil actualizado correctamente.');
     }
 }
-

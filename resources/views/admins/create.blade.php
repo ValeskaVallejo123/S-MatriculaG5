@@ -1,329 +1,231 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Administrador - Escuela Gabriela Mistral</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+@extends('layouts.app')
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+@section('title', 'Crear Administrador')
+@section('page-title', 'Nuevo Administrador')
 
-        .page-header p {
-            font-size: 0.75rem;
-            color: #7f8c8d;
-        }
+@section('content')
+<div class="container" style="max-width: 900px;">
 
-        .header-divider {
-            width: 50px;
-            height: 3px;
-            background: linear-gradient(135deg, #00BCD4, #00ACC1);
-            margin: 10px auto 0;
-            border-radius: 2px;
-        }
+    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-primary mb-3">
+        <i class="fas fa-arrow-left me-1"></i> Volver
+    </a>
 
-        /* FORM CARD */
-        .form-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
-            overflow: hidden;
-        }
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-header border-0 py-3 px-4"
+             style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0;">
+            <h5 class="text-white fw-bold mb-0">
+                <i class="fas fa-user-shield me-2"></i>Información del Administrador
+            </h5>
+            <small class="text-white" style="opacity: 0.85;">Campos marcados con * son obligatorios</small>
+        </div>
 
-        .form-card-header {
-            background: linear-gradient(135deg, #00BCD4, #00ACC1);
-            padding: 15px 20px;
-            color: white;
-        }
+        <div class="card-body p-4">
 
-        .form-card-header h2 {
-            font-size: 1rem;
-            font-weight: 700;
-        }
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" style="border-left: 4px solid #10b981; border-radius: 8px;">
+                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
 
-        .form-card-header p {
-            font-size: 0.7rem;
-        }
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" style="border-left: 4px solid #ef4444; border-radius: 8px;">
+                    <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
 
-        .form-card-body {
-            padding: 20px;
-        }
+            <form action="{{ route('superadmin.administradores.store') }}" method="POST">
+                @csrf
 
-        .form-section {
-            margin-bottom: 18px;
-        }
+                {{-- Datos Personales --}}
+                <h6 class="fw-bold mb-3 pb-2"
+                    style="color:#003b73; border-bottom: 2px solid rgba(78,199,210,0.3);">
+                    <i class="fas fa-user me-2" style="color:#4ec7d2;"></i>Datos Personales
+                </h6>
 
-        .section-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #2c3e50;
-            border-bottom: 2px solid #e0f7fa;
-            padding-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label fw-semibold" style="color:#003b73;">
+                            Nombre(s) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-user" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="text" name="nombre" id="nombre"
+                                   class="form-control @error('nombre') is-invalid @enderror"
+                                   placeholder="Ej: Juan Carlos"
+                                   value="{{ old('nombre') }}"
+                                   required minlength="3" maxlength="50"
+                                   style="border-radius: 0 8px 8px 0;">
+                            @error('nombre')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-        .section-title i {
-            color: #00BCD4;
-        }
+                    <div class="col-md-6">
+                        <label for="apellido" class="form-label fw-semibold" style="color:#003b73;">
+                            Apellido(s) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-user" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="text" name="apellido" id="apellido"
+                                   class="form-control @error('apellido') is-invalid @enderror"
+                                   placeholder="Ej: Pérez González"
+                                   value="{{ old('apellido') }}"
+                                   required minlength="3" maxlength="50"
+                                   style="border-radius: 0 8px 8px 0;">
+                            @error('apellido')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+                    <div class="col-md-6">
+                        <label for="email" class="form-label fw-semibold" style="color:#003b73;">
+                            Correo Electrónico <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-envelope" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="email" name="email" id="email"
+                                   class="form-control @error('email') is-invalid @enderror"
+                                   placeholder="correo@admin.edu"
+                                   value="{{ old('email') }}"
+                                   required maxlength="100"
+                                   style="border-radius: 0 8px 8px 0;">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
 
-        .form-group label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-            display: block;
-        }
+                {{-- Credenciales --}}
+                <h6 class="fw-bold mb-3 pb-2"
+                    style="color:#003b73; border-bottom: 2px solid rgba(78,199,210,0.3);">
+                    <i class="fas fa-lock me-2" style="color:#4ec7d2;"></i>Credenciales
+                </h6>
 
-        .form-control {
-            width: 100%;
-            padding: 8px 8px 8px 30px;
-            border: 2px solid #e0f7fa;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            background: #f1f8fb;
-            transition: all 0.3s;
-        }
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="password" class="form-label fw-semibold" style="color:#003b73;">
+                            Contraseña <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-lock" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="password" name="password" id="password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="Mínimo 8 caracteres"
+                                   required minlength="8" maxlength="50">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    onclick="togglePassword('password')"
+                                    style="border-radius: 0 8px 8px 0;">
+                                <i class="fas fa-eye" id="icon-password"></i>
+                            </button>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-        .form-control:focus {
-            border-color: #00BCD4;
-            background: white;
-        }
+                    <div class="col-md-6">
+                        <label for="password_confirmation" class="form-label fw-semibold" style="color:#003b73;">
+                            Confirmar Contraseña <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-check-circle" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="password" name="password_confirmation" id="password_confirmation"
+                                   class="form-control"
+                                   placeholder="Repita la contraseña"
+                                   required minlength="8" maxlength="50">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    onclick="togglePassword('password_confirmation')"
+                                    style="border-radius: 0 8px 8px 0;">
+                                <i class="fas fa-eye" id="icon-password_confirmation"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-        .input-icon {
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #00BCD4;
-            font-size: 0.8rem;
-        }
+                {{-- Permisos --}}
+                <h6 class="fw-bold mb-3 pb-2"
+                    style="color:#003b73; border-bottom: 2px solid rgba(78,199,210,0.3);">
+                    <i class="fas fa-key me-2" style="color:#4ec7d2;"></i>Permisos y Privilegios
+                </h6>
 
-        .input-wrapper {
-            position: relative;
-        }
+                <div class="card border-0 mb-4" style="background:#f8fafc; border-radius:10px;">
+                    <div class="card-body p-3">
+                        <div class="row g-2">
+                            @foreach($permisos as $key => $label)
+                                <div class="col-md-6">
+                                    <div class="form-check p-2 rounded"
+                                         style="background:white; border:1px solid #e2e8f0;">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="permisos[]"
+                                               value="{{ $key }}"
+                                               id="permiso_{{ $key }}"
+                                               {{ in_array($key, old('permisos', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="permiso_{{ $key }}"
+                                               style="font-size:0.875rem; color:#374151;">
+                                            {{ $label }}
+                                        </label>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
 
-        .toggle-password {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #95a5a6;
-            cursor: pointer;
-        }
+                {{-- Nota informativa --}}
+                <div class="alert alert-info border-0 mb-4"
+                     style="background:rgba(78,199,210,0.08); border-left:4px solid #4ec7d2 !important; border-radius:8px;">
+                    <i class="fas fa-info-circle me-2" style="color:#4ec7d2;"></i>
+                    <strong>Nota:</strong> El correo institucional puede generarse automáticamente como
+                    <em>nombre.apellido@admin.edu</em> según la configuración del sistema.
+                </div>
 
-        .form-hint {
-            font-size: 0.65rem;
-            color: #7f8c8d;
-            margin-top: 3px;
-        }
+                {{-- Botones --}}
+                <div class="d-flex gap-3 pt-3" style="border-top: 1px solid #e2e8f0;">
+                    <button type="submit" class="btn btn-primary fw-semibold flex-fill"
+                            style="border-radius:8px; padding:0.65rem;">
+                        <i class="fas fa-user-plus me-2"></i>Crear Administrador
+                    </button>
+                    <a href="{{ route('superadmin.administradores.index') }}"
+                       class="btn btn-outline-secondary fw-semibold flex-fill"
+                       style="border-radius:8px; padding:0.65rem;">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </a>
+                </div>
 
-        .info-box {
-            background: rgba(0, 188, 212, 0.08);
-            border: 1px solid #e0f7fa;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 0.75rem;
-        }
-
-        .permissions-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            background: #f1f8fb;
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        .permission-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: white;
-            border: 1px solid #e0f7fa;
-            border-radius: 6px;
-            padding: 6px;
-            font-size: 0.75rem;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #00BCD4, #00ACC1);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: white;
-            border: 2px solid #e0f7fa;
-            color: #5a6c7d;
-        }
-
-        .alert {
-            background: #e0f7fa;
-            border: 1px solid #80deea;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 15px;
-            font-size: 0.7rem;
-        }
-
-        @media (max-width: 768px) {
-            .form-grid, .permissions-grid {
-                grid-template-columns: 1fr;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-<aside class="sidebar">
-    <div class="sidebar-header">
-        <div class="sidebar-logo"><i class="fas fa-graduation-cap"></i></div>
-        <div class="sidebar-brand">
-            <h2>Gabriela Mistral</h2>
-            <p>Sistema Escolar</p>
+            </form>
         </div>
     </div>
-    <nav class="sidebar-nav">
-        <a href="#" class="nav-item active"><i class="fas fa-user-shield"></i>Admins</a>
-        <a href="#" class="nav-item"><i class="fas fa-users"></i>Usuarios</a>
-        <a href="#" class="nav-item"><i class="fas fa-cog"></i>Configuración</a>
-    </nav>
-</aside>
 
-<main class="main-content">
-    <div class="content-wrapper">
-        <div class="page-header">
-            <div class="page-icon"><i class="fas fa-user-shield"></i></div>
-            <h1>Nuevo Administrador</h1>
-            <p>Complete los datos para crear la cuenta</p>
-            <div class="header-divider"></div>
-        </div>
+</div>
+@endsection
 
-        <div class="form-card">
-            <div class="form-card-header">
-                <h2>Información del Administrador</h2>
-                <p>Campos marcados con * son obligatorios</p>
-            </div>
-
-            <div class="form-card-body">
-                <form>
-                    <div class="form-section">
-                        <h3 class="section-title"><i class="fas fa-user"></i>Datos Personales</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Nombre(s) *</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-user input-icon"></i>
-                                    <input type="text" class="form-control" placeholder="Ej: Juan Carlos">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Apellido(s) *</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-user input-icon"></i>
-                                    <input type="text" class="form-control" placeholder="Ej: Pérez González">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3 class="section-title"><i class="fas fa-lock"></i>Credenciales</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Contraseña *</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-lock input-icon"></i>
-                                    <input type="password" id="password" class="form-control" placeholder="Mínimo 8 caracteres">
-                                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
-                                        <i class="fas fa-eye" id="eye-password"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Confirmar *</label>
-                                <div class="input-wrapper">
-                                    <i class="fas fa-check-circle input-icon"></i>
-                                    <input type="password" id="password_confirmation" class="form-control" placeholder="Repita contraseña">
-                                    <button type="button" class="toggle-password" onclick="togglePassword('password_confirmation')">
-                                        <i class="fas fa-eye" id="eye-password_confirmation"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h3 class="section-title"><i class="fas fa-key"></i>Permisos</h3>
-                        <div class="permissions-grid">
-                            <div class="permission-item"><input type="checkbox"><label>Usuarios</label></div>
-                            <div class="permission-item"><input type="checkbox"><label>Estudiantes</label></div>
-                            <div class="permission-item"><input type="checkbox"><label>Profesores</label></div>
-                            <div class="permission-item"><input type="checkbox"><label>Reportes</label></div>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Crear</button>
-                        <button type="reset" class="btn btn-secondary">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="alert">
-            <strong>Nota:</strong> El correo institucional se generará automáticamente como
-            <em>nombre.apellido@admin.edu</em>.
-        </div>
-    </div>
-</main>
-
+@push('scripts')
 <script>
-    function togglePassword(id) {
-        const input = document.getElementById(id);
-        const icon = document.getElementById('eye-' + id);
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon  = document.getElementById('icon-' + inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
+}
 </script>
-</body>
-</html>
+@endpush

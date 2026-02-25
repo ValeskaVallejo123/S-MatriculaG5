@@ -1,6 +1,23 @@
 <?php return array (
+<<<<<<< HEAD
   'codezero/browser-locale' => 
   array (
+=======
+  'barryvdh/laravel-dompdf' => 
+  array (
+    'aliases' => 
+    array (
+      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+    ),
+    'providers' => 
+    array (
+      0 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    ),
+  ),
+  'codezero/browser-locale' => 
+  array (
+>>>>>>> cesia-dev
     'providers' => 
     array (
       0 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',

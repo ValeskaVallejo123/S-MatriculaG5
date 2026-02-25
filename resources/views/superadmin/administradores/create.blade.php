@@ -4,7 +4,7 @@
 @section('page-title', 'Crear Nuevo Administrador')
 
 @section('topbar-actions')
-    <a href="{{ route('superadmin.administradores.index') }}" 
+    <a href="{{ route('superadmin.administradores.index') }}"
        style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
         <i class="fas fa-arrow-left"></i>
         Volver
@@ -13,7 +13,6 @@
 
 @section('content')
 <div class="container" style="max-width: 800px;">
-    
     <!-- Formulario -->
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-header text-white" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
@@ -41,11 +40,11 @@
                             </label>
                             <div class="position-relative">
                                 <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                                <input type="text" 
-                                       class="form-control ps-5 @error('name') is-invalid @enderror" 
-                                       id="name" 
-                                       name="name" 
-                                       value="{{ old('name') }}" 
+                                <input type="text"
+                                       class="form-control ps-5 @error('name') is-invalid @enderror"
+                                       id="name"
+                                       name="name"
+                                       value="{{ old('name') }}"
                                        placeholder="Ej: Juan Pérez"
                                        required
                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -64,11 +63,11 @@
                             </label>
                             <div class="position-relative">
                                 <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                                <input type="email" 
-                                       class="form-control ps-5 @error('email') is-invalid @enderror" 
-                                       id="email" 
-                                       name="email" 
-                                       value="{{ old('email') }}" 
+                                <input type="email"
+                                       class="form-control ps-5 @error('email') is-invalid @enderror"
+                                       id="email"
+                                       name="email"
+                                       value="{{ old('email') }}"
                                        placeholder="admin@ejemplo.com"
                                        required
                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -96,10 +95,10 @@
                             </label>
                             <div class="position-relative">
                                 <i class="fas fa-key position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                                <input type="password" 
-                                       class="form-control ps-5 @error('password') is-invalid @enderror" 
-                                       id="password" 
-                                       name="password" 
+                                <input type="password"
+                                       class="form-control ps-5 @error('password') is-invalid @enderror"
+                                       id="password"
+                                       name="password"
                                        placeholder="Mínimo 8 caracteres"
                                        required
                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -121,10 +120,10 @@
                             </label>
                             <div class="position-relative">
                                 <i class="fas fa-key position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
-                                <input type="password" 
-                                       class="form-control ps-5" 
-                                       id="password_confirmation" 
-                                       name="password_confirmation" 
+                                <input type="password"
+                                       class="form-control ps-5"
+                                       id="password_confirmation"
+                                       name="password_confirmation"
                                        placeholder="Repite la contraseña"
                                        required
                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
@@ -144,15 +143,14 @@
                         <label class="form-label small fw-semibold" style="color: #003b73;">
                             Tipo de Administrador <span style="color: #ef4444;">*</span>
                         </label>
-                        
                         <div class="row g-3">
                             <!-- Super Admin -->
                             <div class="col-md-6">
                                 <div class="form-check p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px; cursor: pointer;" onclick="document.getElementById('role_super_admin').click()">
-                                    <input class="form-check-input" 
-                                           type="radio" 
-                                           name="role" 
-                                           id="role_super_admin" 
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="role"
+                                           id="role_super_admin"
                                            value="super_admin"
                                            {{ old('role') == 'super_admin' ? 'checked' : '' }}
                                            style="width: 20px; height: 20px; cursor: pointer;">
@@ -166,10 +164,10 @@
                             <!-- Admin Regular -->
                             <div class="col-md-6">
                                 <div class="form-check p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px; cursor: pointer;" onclick="document.getElementById('role_admin').click()">
-                                    <input class="form-check-input" 
-                                           type="radio" 
-                                           name="role" 
-                                           id="role_admin" 
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="role"
+                                           id="role_admin"
                                            value="admin"
                                            {{ old('role', 'admin') == 'admin' ? 'checked' : '' }}
                                            style="width: 20px; height: 20px; cursor: pointer;">
@@ -184,9 +182,9 @@
 
                     <!-- Usuario Protegido -->
                     <div class="form-check form-switch p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px;">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               name="is_protected" 
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="is_protected"
                                id="is_protected"
                                value="1"
                                {{ old('is_protected') ? 'checked' : '' }}
@@ -213,13 +211,13 @@
 
                 <!-- Botones de Acción -->
                 <div class="d-flex justify-content-end gap-2 pt-3 border-top">
-                    <a href="{{ route('superadmin.administradores.index') }}" 
-                       class="btn" 
+                    <a href="{{ route('superadmin.administradores.index') }}"
+                       class="btn"
                        style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
                         <i class="fas fa-times me-1"></i>Cancelar
                     </a>
-                    <button type="submit" 
-                            class="btn" 
+                    <button type="submit"
+                            class="btn"
                             style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); transition: all 0.3s ease;">
                         <i class="fas fa-save me-1"></i>Crear Administrador
                     </button>

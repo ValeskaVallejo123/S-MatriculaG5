@@ -1,37 +1,76 @@
 @extends('layouts.app')
 
-@section('title', 'Nueva Matrícula')
-
-@section('page-title', 'Registrar Nueva Matrícula')
-
-@section('topbar-actions')
-    <a href="{{ route('matriculas.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
-    </a>
-@endsection
+@section('title', 'Editar Matrícula')
 
 @section('content')
 <div class="container" style="max-width: 1000px;">
 
     <form action="{{ route('matriculas.store') }}" method="POST" id="formMatricula">
         @csrf
+        @method('PUT')
 
-        <!-- Información del Padre/Tutor -->
-        <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-user-friends" style="color: white; font-size: 0.9rem;"></i>
-                    </div>
-                    <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información del Padre/Tutor</h6>
-                </div>
-
+        <!-- Información de la Matrícula -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header" style="background: linear-gradient(135deg, #003b73 0%, #00508f 100%); color: white;">
+                <h5 class="mb-0">
+                    <i class="fas fa-clipboard-check"></i> Información de la Matrícula
+                </h5>
+            </div>
+            <div class="card-body">
                 <div class="row g-3">
-                    <!-- Nombre del Padre -->
+                    <div class="col-md-4">
+                        <label for="codigo_matricula" class="form-label fw-bold">
+                            <i class="fas fa-barcode"></i> Código de Matrícula
+                        </label>
+                        <input
+                            type="text"
+                            class="form-control @error('codigo_matricula') is-invalid @enderror"
+                            id="codigo_matricula"
+                            name="codigo_matricula"
+                            value="{{ old('codigo_matricula', $matricula->codigo_matricula) }}"
+                            readonly
+                        >
+                        @error('codigo_matricula')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="anio_lectivo" class="form-label fw-bold">
+                            <i class="fas fa-calendar-alt"></i> Año Lectivo <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            class="form-control @error('anio_lectivo') is-invalid @enderror"
+                            id="anio_lectivo"
+                            name="anio_lectivo"
+                            value="{{ old('anio_lectivo', $matricula->anio_lectivo) }}"
+                            placeholder="2025"
+                        >
+                        @error('anio_lectivo')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="fecha_matricula" class="form-label fw-bold">
+                            <i class="fas fa-calendar"></i> Fecha de Matrícula <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="date"
+                            class="form-control @error('fecha_matricula') is-invalid @enderror"
+                            id="fecha_matricula"
+                            name="fecha_matricula"
+                            value="{{ old('fecha_matricula', $matricula->fecha_matricula ? \Carbon\Carbon::parse($matricula->fecha_matricula)->format('Y-m-d') : '') }}"
+                        >
+                        @error('fecha_matricula')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <div class="col-md-6">
-                        <label for="padre_nombre" class="form-label small fw-semibold" style="color: #003b73;">
-                            Nombre <span style="color: #ef4444;">*</span>
+                        <label for="estado" class="form-label fw-bold">
+                            <i class="fas fa-flag"></i> Estado <span class="text-danger">*</span>
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
@@ -51,10 +90,9 @@
                         </div>
                     </div>
 
-                    <!-- Apellido del Padre -->
-                    <div class="col-md-6">
-                        <label for="padre_apellido" class="form-label small fw-semibold" style="color: #003b73;">
-                            Apellido <span style="color: #ef4444;">*</span>
+                    <div class="col-md-6" id="motivo-rechazo-container" @if(old('estado', $matricula->estado) !== 'rechazada') style="display: none;" @endif>
+                        <label for="motivo_rechazo" class="form-label fw-bold">
+                            <i class="fas fa-exclamation-triangle"></i> Motivo del Rechazo
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
@@ -199,8 +237,8 @@
 
                     <!-- Dirección -->
                     <div class="col-12">
-                        <label for="padre_direccion" class="form-label small fw-semibold" style="color: #003b73;">
-                            Dirección <span style="color: #ef4444;">*</span>
+                        <label for="observaciones" class="form-label fw-bold">
+                            <i class="fas fa-sticky-note"></i> Observaciones
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-map-marker-alt position-absolute" style="left: 12px; top: 18px; color: #00508f; font-size: 0.85rem;"></i>
@@ -222,21 +260,24 @@
             </div>
         </div>
 
-        <!-- Información del Estudiante -->
-        <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-user-graduate" style="color: white; font-size: 0.9rem;"></i>
-                    </div>
-                    <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información del Estudiante</h6>
+        <!-- Documentos Adjuntos -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header" style="background-color: #e8f4f8;">
+                <h5 class="mb-0" style="color: #003b73;">
+                    <i class="fas fa-paperclip"></i> Documentos Adjuntos
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Nota:</strong> Solo sube nuevos archivos si deseas reemplazar los existentes. Los archivos actuales se mantendrán si no subes ninguno nuevo.
                 </div>
 
                 <div class="row g-3">
-                    <!-- Nombre -->
+                    <!-- Foto del Estudiante -->
                     <div class="col-md-6">
-                        <label for="estudiante_nombre" class="form-label small fw-semibold" style="color: #003b73;">
-                            Nombre <span style="color: #ef4444;">*</span>
+                        <label for="foto_estudiante" class="form-label fw-bold">
+                            <i class="fas fa-camera"></i> Foto del Estudiante
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
@@ -254,12 +295,24 @@
                                 </div>
                             @enderror
                         </div>
+                        @endif
+                        <input
+                            type="file"
+                            class="form-control @error('foto_estudiante') is-invalid @enderror"
+                            id="foto_estudiante"
+                            name="foto_estudiante"
+                            accept="image/*"
+                        >
+                        <small class="text-muted">Formatos: JPG, PNG (Max: 2MB)</small>
+                        @error('foto_estudiante')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <!-- Apellido -->
+                    <!-- Acta de Nacimiento -->
                     <div class="col-md-6">
-                        <label for="estudiante_apellido" class="form-label small fw-semibold" style="color: #003b73;">
-                            Apellido <span style="color: #ef4444;">*</span>
+                        <label for="acta_nacimiento" class="form-label fw-bold">
+                            <i class="fas fa-file-alt"></i> Acta de Nacimiento
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
@@ -277,12 +330,24 @@
                                 </div>
                             @enderror
                         </div>
+                        @endif
+                        <input
+                            type="file"
+                            class="form-control @error('acta_nacimiento') is-invalid @enderror"
+                            id="acta_nacimiento"
+                            name="acta_nacimiento"
+                            accept=".pdf,image/*"
+                        >
+                        <small class="text-muted">Formatos: PDF, JPG, PNG (Max: 5MB)</small>
+                        @error('acta_nacimiento')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <!-- DNI -->
+                    <!-- Certificado de Estudios -->
                     <div class="col-md-6">
-                        <label for="estudiante_dni" class="form-label small fw-semibold" style="color: #003b73;">
-                            DNI <span style="color: #ef4444;">*</span>
+                        <label for="certificado_estudios" class="form-label fw-bold">
+                            <i class="fas fa-certificate"></i> Certificado de Estudios
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
@@ -302,15 +367,24 @@
                                 </div>
                             @enderror
                         </div>
-                        <small class="text-muted" style="font-size: 0.75rem;">
-                            <i class="fas fa-info-circle me-1"></i>13 dígitos
-                        </small>
+                        @endif
+                        <input
+                            type="file"
+                            class="form-control @error('certificado_estudios') is-invalid @enderror"
+                            id="certificado_estudios"
+                            name="certificado_estudios"
+                            accept=".pdf,image/*"
+                        >
+                        <small class="text-muted">Formatos: PDF, JPG, PNG (Max: 5MB)</small>
+                        @error('certificado_estudios')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <!-- Fecha de Nacimiento -->
+                    <!-- Constancia de Conducta -->
                     <div class="col-md-6">
-                        <label for="estudiante_fecha_nacimiento" class="form-label small fw-semibold" style="color: #003b73;">
-                            Fecha de Nacimiento <span style="color: #ef4444;">*</span>
+                        <label for="constancia_conducta" class="form-label fw-bold">
+                            <i class="fas fa-award"></i> Constancia de Conducta
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
@@ -327,12 +401,24 @@
                                 </div>
                             @enderror
                         </div>
+                        @endif
+                        <input
+                            type="file"
+                            class="form-control @error('constancia_conducta') is-invalid @enderror"
+                            id="constancia_conducta"
+                            name="constancia_conducta"
+                            accept=".pdf,image/*"
+                        >
+                        <small class="text-muted">Formatos: PDF, JPG, PNG (Max: 5MB)</small>
+                        @error('constancia_conducta')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <!-- Sexo -->
+                    <!-- DNI del Estudiante -->
                     <div class="col-md-6">
-                        <label for="estudiante_sexo" class="form-label small fw-semibold" style="color: #003b73;">
-                            Sexo <span style="color: #ef4444;">*</span>
+                        <label for="foto_dni_estudiante" class="form-label fw-bold">
+                            <i class="fas fa-id-card"></i> DNI del Estudiante
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-venus-mars position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
@@ -351,12 +437,24 @@
                                 </div>
                             @enderror
                         </div>
+                        @endif
+                        <input
+                            type="file"
+                            class="form-control @error('foto_dni_estudiante') is-invalid @enderror"
+                            id="foto_dni_estudiante"
+                            name="foto_dni_estudiante"
+                            accept="image/*"
+                        >
+                        <small class="text-muted">Formatos: JPG, PNG (Max: 2MB)</small>
+                        @error('foto_dni_estudiante')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <!-- Email -->
+                    <!-- DNI del Padre -->
                     <div class="col-md-6">
-                        <label for="estudiante_email" class="form-label small fw-semibold" style="color: #003b73;">
-                            Email
+                        <label for="foto_dni_padre" class="form-label fw-bold">
+                            <i class="fas fa-id-card-alt"></i> DNI del Padre/Tutor
                         </label>
                         <div class="position-relative">
                             <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
@@ -373,9 +471,27 @@
                                 </div>
                             @enderror
                         </div>
+                        @endif
+                        <input
+                            type="file"
+                            class="form-control @error('foto_dni_padre') is-invalid @enderror"
+                            id="foto_dni_padre"
+                            name="foto_dni_padre"
+                            accept="image/*"
+                        >
+                        <small class="text-muted">Formatos: JPG, PNG (Max: 2MB)</small>
+                        @error('foto_dni_padre')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Teléfono -->
+        <!-- Botones de Acción -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row">
                     <div class="col-md-6">
                         <label for="estudiante_telefono" class="form-label small fw-semibold" style="color: #003b73;">
                             Teléfono
@@ -643,9 +759,7 @@
         </div>
 
     </form>
-
 </div>
-@endsection
 
 @push('scripts')
 <script>
@@ -658,11 +772,35 @@ function toggleOtroParentesco() {
     } else {
         otroDiv.style.display = 'none';
     }
-}
 
-// Ejecutar al cargar la página
+    .form-control:focus, .form-select:focus {
+        border-color: #4ec7d2;
+        box-shadow: 0 0 0 0.25rem rgba(78, 199, 210, 0.25);
+    }
+
+    .card {
+        border: none;
+    }
+
+    .card-header {
+        border-bottom: 2px solid rgba(0, 59, 115, 0.1);
+    }
+</style>
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    toggleOtroParentesco();
+    const estadoSelect = document.getElementById('estado');
+    const motivoContainer = document.getElementById('motivo-rechazo-container');
+
+    // Mostrar/ocultar campo de motivo según el estado
+    estadoSelect.addEventListener('change', function() {
+        if (this.value === 'rechazada') {
+            motivoContainer.style.display = 'block';
+        } else {
+            motivoContainer.style.display = 'none';
+            document.getElementById('motivo_rechazo').value = '';
+        }
+    });
 });
 </script>
 @endpush

@@ -11,18 +11,18 @@ class PadrePermisoSeeder extends Seeder
 {
     /**
      * Ejecutar los seeders.
-     * 
+     *
      * Este seeder crea permisos de ejemplo para padres y estudiantes existentes
      */
     public function run(): void
     {
         // Obtener algunos padres y estudiantes de ejemplo
         $padres = Padre::take(5)->get();
-        
+
         foreach ($padres as $padre) {
             // Obtener los estudiantes asociados a este padre
             $estudiantes = $padre->estudiantes;
-            
+
             foreach ($estudiantes as $estudiante) {
                 // Crear configuración de permisos con valores variados
                 PadrePermiso::create([
@@ -41,7 +41,7 @@ class PadrePermisoSeeder extends Seeder
                 ]);
             }
         }
-        
+
         $this->command->info(' Permisos de padres creados exitosamente.');
         $this->command->info('   Total de configuraciones: ' . PadrePermiso::count());
     }
