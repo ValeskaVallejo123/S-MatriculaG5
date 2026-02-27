@@ -3,106 +3,92 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Admin;
-use App\Models\Estudiante;
-use App\Models\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PasswordResetController extends Controller
 {
-    /**
-     * Muestra el formulario para solicitar el enlace de recuperación.
-     */
-    public function showForgotForm()
-    {
+    public function showForgotForm() {
         return view('recuperarcontrasenia.solicitar');
     }
 
-    /**
-     * Envía el enlace de recuperación al correo del usuario.
-     */
-    public function sendResetLink(Request $request)
-    {
+    public function sendResetLink(Request $request) {
         $request->validate([
-            'email' => 'required|email',
-        ], [
-            'email.required' => 'El correo es obligatorio.',
-            'email.email' => 'El formato del correo no es válido.',
+            'email' => 'required|email'
         ]);
 
         $email = $request->email;
 
-        // Verificar si el correo existe en alguna de las tablas
-        $existsInUsers = User::where('email', $email)->exists();
-        $existsInAdmins = Admin::where('email', $email)->exists();
-        $existsInEstudiantes = Estudiante::where('email', $email)->exists();
-
-        if (!($existsInUsers || $existsInAdmins || $existsInEstudiantes)) {
-            return back()->withErrors(['email' => 'El correo ingresado no está registrado en el sistema.']);
+        // Verificar si existe
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return back()->withErrors(['email' => 'El correo no está registrado.']);
         }
 
-        // Generar token y guardarlo
-        $reset = PasswordReset::generateToken($email);
+        // Borrar tokens antiguos del mismo correo
+        DB::table('password_resets')->where('email', $email)->delete();
 
-        // Enlace de recuperación
-        $link = url('/password/restablecer/' . $reset->token);
+        // Crear token plano
+        $token = Str::random(64);
 
-        // Enviar correo usando tu plantilla personalizada
-        Mail::send('emails.recuperar_contrasenia', ['link' => $link], function ($message) use ($email) {
-            $message->to($email)
-                ->subject('Recuperar contraseña - Escuela Gabriela Mistral');
+        // Hashear para guardar, pero mantener el token real para el enlace
+        DB::table('password_resets')->insert([
+            'email' => $email,
+            'token' => Hash::make($token),  // Se guarda hasheado
+            'created_at' => Carbon::now()
+        ]);
+
+        // Crear link seguro basado en routes
+        $link = route('password.reset.form', ['token' => $token, 'email' => $email]);
+
+        // Enviar correo
+        Mail::send('emails.recuperar_contrasenia', ['link' => $link], function($message) use ($email){
+            $message->to($email)->subject('Recuperar contraseña');
         });
 
-        return back()->with('status', 'Se ha enviado un enlace de recuperación a tu correo.');
+        return back()->with('status', 'Se ha enviado un enlace de recuperación.');
     }
 
-    /**
-     * Muestra el formulario para establecer una nueva contraseña.
-     */
-    public function showResetForm($token)
-    {
-        return view('recuperarcontrasenia.restablecer', ['token' => $token]);
+    public function showResetForm($token) {
+        $email = request()->query('email');
+        return view('recuperarcontrasenia.restablecer', [
+            'token' => $token,
+            'email' => $email
+        ]);
     }
 
-    /**
-     * Guarda la nueva contraseña del usuario, administrador o estudiante.
-     */
-    public function resetPassword(Request $request)
-    {
+    public function resetPassword(Request $request) {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|confirmed|min:6'
         ]);
 
-        // Buscar registro en tabla password_resets
-        $reset = PasswordReset::where('email', $request->email)
-            ->where('token', $request->token)
-            ->first();
+        // Obtener registro del token
+        $record = DB::table('password_resets')->where('email', $request->email)->first();
 
-        if (!$reset) {
-            return back()->withErrors(['email' => 'El token es inválido o ha expirado.']);
+        // Validar token
+        if (!$record || !Hash::check($request->token, $record->token)) {
+            return back()->withErrors(['email' => 'Token inválido']);
         }
 
-        $email = $request->email;
-        $newPassword = Hash::make($request->password);
-
-        // Buscar en cada tabla y actualizar
-        if ($user = User::where('email', $email)->first()) {
-            $user->update(['password' => $newPassword]);
-        } elseif ($admin = Admin::where('email', $email)->first()) {
-            $admin->update(['password' => $newPassword]);
-        } elseif ($estudiante = Estudiante::where('email', $email)->first()) {
-            $estudiante->update(['password' => $newPassword]);
-        } else {
-            return back()->withErrors(['email' => 'No se encontró ninguna cuenta asociada a este correo.']);
+        // Verificar expiración (1 hora)
+        if (Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+            return back()->withErrors(['email' => 'Token expirado.']);
         }
 
-        // Eliminar token usado
-        $reset->delete();
+        // Actualizar contraseña del usuario
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
 
-        return redirect('/login')->with('status', 'Tu contraseña se ha restablecido correctamente.');
+        // Borrar token
+        DB::table('password_resets')->where('email', $request->email)->delete();
+
+        return redirect()->route('login.show')->with('success', 'Contraseña restablecida correctamente.');
     }
 }

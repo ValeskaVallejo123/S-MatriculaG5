@@ -9,31 +9,96 @@ class Estudiante extends Model
 {
     use HasFactory;
 
+    protected $table = 'estudiantes';
+
     protected $fillable = [
-        'nombre',
-        'apellido',
-        'email',
-        'telefono',
+        'nombre1',
+        'nombre2',
+        'apellido1',
+        'apellido2',
         'dni',
         'fecha_nacimiento',
+        'sexo',
+        'email',
+        'telefono',
         'direccion',
         'grado',
         'seccion',
-        'estado',
-        'observaciones'
+        'estado',          // 👈👉 IMPORTANTE: agregar esto
+        'observaciones',
+        'nombre_padre',
+        'telefono_padre',
+        'email_padre',
+        'foto',
+        'dni_doc',
+        'curso_id', // recomendado
     ];
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
     ];
 
-    // Accessor para nombre completo
+    /*
+    |----------------------------------------------------------------------
+    | ACCESOR: nombre completo
+    |----------------------------------------------------------------------
+    */
     public function getNombreCompletoAttribute()
     {
-        return "{$this->nombre} {$this->apellido}";
+        $nombre = trim("{$this->nombre1} {$this->nombre2}");
+        $apellido = trim("{$this->apellido1} {$this->apellido2}");
+        return trim("{$nombre} {$apellido}");
     }
 
-    // Opciones de grados
+    /*
+    |----------------------------------------------------------------------
+    | RELACIONES
+    |----------------------------------------------------------------------
+    */
+
+    public function permisosPadres()
+    {
+        return $this->hasMany(PadrePermiso::class, 'estudiante_id');
+    }
+
+    public function padresConPermisos()
+    {
+        return $this->belongsToMany(Padre::class, 'padre_permisos', 'estudiante_id', 'padre_id')
+                    ->withPivot([
+                        'ver_calificaciones',
+                        'ver_asistencias',
+                        'ver_comportamiento',
+                        'ver_tareas',
+                        'descargar_boletas',
+                        'recibir_notificaciones',
+                        'comunicarse_profesores',
+                        'autorizar_salidas',
+                        'subir_documentos_matricula',
+                        'notas_adicionales'
+                    ]);
+    }
+
+    public function documentos()
+    {
+        return $this->hasOne(Documento::class, 'estudiante_id');
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'curso_id');
+    }
+
+    public function calificaciones()
+    {
+        return $this->hasMany(Calificacion::class, 'estudiante_id');
+    }
+
+    /*
+    |----------------------------------------------------------------------
+    | LISTAS ESTÁTICAS
+    |----------------------------------------------------------------------
+    */
+
     public static function grados()
     {
         return [
@@ -46,19 +111,15 @@ class Estudiante extends Model
             '1ro Secundaria',
             '2do Secundaria',
             '3ro Secundaria',
-
         ];
     }
+    public function user()
+    {
+    return $this->belongsTo(\App\Models\User::class);
+    }
 
-    // Opciones de secciones
     public static function secciones()
     {
-        return ['A', 'B', 'C', 'D', 'E'];
+        return ['A', 'B', 'C'];
     }
-
-    public function documentos()
-    {
-        return $this->hasMany(Documento::class, 'estudiante_id');
-    }
-
 }
