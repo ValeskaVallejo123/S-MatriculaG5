@@ -5,7 +5,10 @@
 @section('page-title', 'Nuevo Estudiante')
 
 @section('topbar-actions')
-    <a href="{{ route('estudiantes.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
+    <a href="{{ route('estudiantes.index') }}" class="btn-back"
+       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px;
+              text-decoration: none; font-weight: 600; display: inline-flex; align-items: center;
+              gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
         <i class="fas fa-arrow-left"></i>
         Volver
     </a>
@@ -226,6 +229,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Información Académica -->
@@ -391,13 +395,56 @@
                 box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important;
             }
 
-            .border-bottom {
-                border-color: rgba(0, 80, 143, 0.15) !important;
-            }
+    button[type="submit"]:hover {
+        box-shadow: 0 4px 12px rgba(78,199,210,0.4) !important;
+    }
 
-            textarea {
-                min-height: 60px !important;
-            }
-        </style>
-    @endpush
+    .border-bottom {
+        border-color: rgba(0,80,143,0.15) !important;
+    }
+
+    textarea {
+        min-height: 60px !important;
+    }
+</style>
+@endpush
+
+{{-- ==========================  SCRIPTS PARA GENERAR CORREO  ========================== --}}
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nombre1Input  = document.getElementById('nombre1');
+    const apellido1Input = document.getElementById('apellido1');
+    const emailInput    = document.getElementById('email');
+
+    function normalizar(txt) {
+        return txt.normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')   // quita tildes
+            .replace(/[^a-zA-Z]/g, '')        // solo letras
+            .toLowerCase();
+    }
+
+    function generarCorreoVista() {
+        const nombre = normalizar(nombre1Input.value || "");
+        const apellido = normalizar(apellido1Input.value || "");
+
+        if (!nombre || !apellido) {
+            emailInput.value = "";
+            return;
+        }
+
+        const correo = `${nombre}.${apellido}@egm.edu.hn`;
+        emailInput.value = correo;
+    }
+
+    nombre1Input.addEventListener('input', generarCorreoVista);
+    apellido1Input.addEventListener('input', generarCorreoVista);
+});
+</script>
+@endpush
+
 @endsection
+
+
+
+

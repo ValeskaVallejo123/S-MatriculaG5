@@ -12,13 +12,22 @@ class Rol extends Model
     protected $table = 'roles';
     protected $primaryKey = 'id';
     public $incrementing = true;
-    protected $keyType = 'int';
+    public $timestamps = false;
 
     protected $fillable = ['nombre', 'descripcion'];
 
+    // =============================
+    // RELACIONES
+    // =============================
+
     public function permisos()
     {
-        return $this->belongsToMany(Permiso::class, 'permiso_rol', 'id_rol', 'id_permiso');
+        return $this->belongsToMany(
+            Permiso::class,
+            'permiso_rol',
+            'rol_id',       // ✔ CORRECTO según tu tabla pivote
+            'permiso_id'
+        );
     }
 
     public function usuarios()
@@ -26,12 +35,30 @@ class Rol extends Model
         return $this->hasMany(User::class, 'id_rol', 'id');
     }
 
-    public function tienePermiso($nombrePermiso)
+    // =============================
+    // PERMISOS DEL ROL
+    // =============================
+
+    public function tienePermiso($permiso)
     {
-        if (!$this->permisos) {
+        if (!$permiso) {
             return false;
         }
 
-        return $this->permisos->contains('nombre', $nombrePermiso);
+        $permiso = strtolower(trim($permiso));
+
+        return $this->permisos()
+            ->whereRaw('LOWER(nombre) = ?', [$permiso])
+            ->exists();
+    }
+
+    public function tienePermisos(array $permisos)
+    {
+        foreach ($permisos as $permiso) {
+            if ($this->tienePermiso($permiso)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

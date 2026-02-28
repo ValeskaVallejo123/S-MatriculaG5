@@ -3,48 +3,69 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\BuscarEstudiante;
+use App\Models\Estudiante;
 
 class BuscarEstudianteController extends Controller
 {
-    public function buscarregistro(Request $request)
+    public function __construct()
     {
+        $this->middleware('auth');
+    }
+
+    public function buscar(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'nullable|string|max:50',
+            'dni' => 'nullable|string|max:20',
+            'codigo' => 'nullable|string|max:20',
+            'grado' => 'nullable|string|max:20',
+        ]);
+
         $nombre = $request->input('nombre');
         $dni = $request->input('dni');
+        $codigo = $request->input('codigo');
+        $grado = $request->input('grado');
 
-        $resultados = collect();
+        $estudiantes = collect();
         $busquedaRealizada = false;
         $mensaje = null;
 
-        if ($nombre || $dni) {
+        if ($nombre || $dni || $codigo || $grado) {
             $busquedaRealizada = true;
 
-            $estudiantes = BuscarEstudiante::query();
+            $query = Estudiante::query();
 
-            // Buscar por nombre (nombre1 y apellido1 incluidos)
-            if ($nombre) {
-                $estudiantes->where(function ($q) use ($nombre) {
-                    $q->where('nombre1', 'like', "%$nombre%")
-                        ->orWhere('nombre2', 'like', "%$nombre%")
-                        ->orWhere('apellido1', 'like', "%$nombre%")
-                        ->orWhere('apellido2', 'like', "%$nombre%");
-                });
-            }
+            $query->where(function($q) use ($nombre, $dni, $codigo, $grado) {
+                if ($nombre) {
+                    $q->where(function($q2) use ($nombre) {
+                        $q2->where('nombre1', 'like', "%$nombre%")
+                           ->orWhere('nombre2', 'like', "%$nombre%")
+                           ->orWhere('apellido1', 'like', "%$nombre%")
+                           ->orWhere('apellido2', 'like', "%$nombre%");
+                    });
+                }
 
-            // Normalizar el DNI (eliminar guiones y espacios)
-            if ($dni) {
-                $dni = preg_replace('/[^0-9]/', '', $dni);
-                $estudiantes->orWhere('dni', 'like', "%$dni%");
-            }
+                if ($dni) {
+                    $dni = preg_replace('/[^0-9]/', '', $dni);
+                    $q->where('dni', 'like', "%$dni%");
+                }
 
-            $resultados = $estudiantes->get();
+                if ($codigo) {
+                    $q->where('codigo', 'like', "%$codigo%");
+                }
 
-            if ($resultados->isEmpty()) {
-                $mensaje = 'Estudiante no encontrado';
+                if ($grado) {
+                    $q->where('grado', 'like', "%$grado%");
+                }
+            });
+
+            $estudiantes = $query->get();
+
+            if ($estudiantes->isEmpty()) {
+                $mensaje = 'No se encontraron estudiantes con los criterios de búsqueda';
             }
         }
 
-
-        return view('buscar.busqueda', compact('resultados', 'busquedaRealizada', 'mensaje'));
+        return view('buscar.busqueda', compact('estudiantes', 'busquedaRealizada', 'mensaje'));
     }
 }

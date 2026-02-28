@@ -7,149 +7,100 @@ use App\Models\PadrePermiso;
 trait VerificaPermisosPadre
 {
     /**
-     * Verificar si un padre tiene permiso para un estudiante
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @param string $permiso
-     * @return bool
+     * Cache interno por request para evitar múltiples queries
+     */
+    protected $cachePermisosPadre = [];
+
+    /**
+     * Obtener configuración de permisos de un padre sobre un estudiante
+     */
+    protected function obtenerConfig($padreId, $estudianteId)
+    {
+        $key = "{$padreId}_{$estudianteId}";
+
+        if (!isset($this->cachePermisosPadre[$key])) {
+            $this->cachePermisosPadre[$key] = PadrePermiso::where('padre_id', $padreId)
+                ->where('estudiante_id', $estudianteId)
+                ->first();
+        }
+
+        return $this->cachePermisosPadre[$key];
+    }
+
+    /**
+     * Verificar un permiso específico
      */
     protected function tienePermiso($padreId, $estudianteId, $permiso)
     {
-        $permisoConfig = PadrePermiso::where('padre_id', $padreId)
-                                    ->where('estudiante_id', $estudianteId)
-                                    ->first();
-        
-        if (!$permisoConfig) {
+        $config = $this->obtenerConfig($padreId, $estudianteId);
+
+        if (!$config) {
             return false;
         }
-        
-        return $permisoConfig->{$permiso} ?? false;
+
+        // Validar si el permiso existe en el modelo
+        return $config->{$permiso} ?? false;
     }
-    
+
     /**
-     * Obtener todos los permisos de un padre para un estudiante
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return array|null
+     * Obtener todos los permisos
      */
     protected function obtenerPermisos($padreId, $estudianteId)
     {
-        $permisoConfig = PadrePermiso::where('padre_id', $padreId)
-                                    ->where('estudiante_id', $estudianteId)
-                                    ->first();
-        
-        if (!$permisoConfig) {
+        $config = $this->obtenerConfig($padreId, $estudianteId);
+
+        if (!$config) {
             return null;
         }
-        
-        return $permisoConfig->getPermisosArray();
+
+        return $config->getPermisosArray();
     }
-    
+
     /**
-     * Verificar si un padre puede ver calificaciones
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return bool
+     * Permisos individuales
      */
     protected function puedeVerCalificaciones($padreId, $estudianteId)
     {
         return $this->tienePermiso($padreId, $estudianteId, 'ver_calificaciones');
     }
-    
-    /**
-     * Verificar si un padre puede ver asistencias
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return bool
-     */
+
     protected function puedeVerAsistencias($padreId, $estudianteId)
     {
         return $this->tienePermiso($padreId, $estudianteId, 'ver_asistencias');
     }
-    
-    /**
-     * Verificar si un padre puede comunicarse con profesores
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return bool
-     */
+
     protected function puedeComunicarseConProfesores($padreId, $estudianteId)
     {
         return $this->tienePermiso($padreId, $estudianteId, 'comunicarse_profesores');
     }
-    
-    /**
-     * Verificar si un padre puede autorizar salidas
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return bool
-     */
+
     protected function puedeAutorizarSalidas($padreId, $estudianteId)
     {
         return $this->tienePermiso($padreId, $estudianteId, 'autorizar_salidas');
     }
-    
-    /**
-     * Verificar si un padre puede modificar datos de contacto
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return bool
-     */
+
     protected function puedeModificarDatosContacto($padreId, $estudianteId)
     {
         return $this->tienePermiso($padreId, $estudianteId, 'modificar_datos_contacto');
     }
-    
-    /**
-     * Verificar si un padre puede ver comportamiento
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return bool
-     */
+
     protected function puedeVerComportamiento($padreId, $estudianteId)
     {
         return $this->tienePermiso($padreId, $estudianteId, 'ver_comportamiento');
     }
-    
-    /**
-     * Verificar si un padre puede descargar boletas
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return bool
-     */
+
     protected function puedeDescargarBoletas($padreId, $estudianteId)
     {
         return $this->tienePermiso($padreId, $estudianteId, 'descargar_boletas');
     }
-    
-    /**
-     * Verificar si un padre puede ver tareas
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @return bool
-     */
+
     protected function puedeVerTareas($padreId, $estudianteId)
     {
         return $this->tienePermiso($padreId, $estudianteId, 'ver_tareas');
     }
-    
+
     /**
-     * Verificar múltiples permisos a la vez
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @param array $permisos
-     * @return bool
+     * Verificar múltiples permisos
      */
     protected function tieneMultiplesPermisos($padreId, $estudianteId, array $permisos)
     {
@@ -160,14 +111,9 @@ trait VerificaPermisosPadre
         }
         return true;
     }
-    
+
     /**
-     * Verificar al menos un permiso de una lista
-     *
-     * @param int $padreId
-     * @param int $estudianteId
-     * @param array $permisos
-     * @return bool
+     * Verificar si tiene al menos un permiso
      */
     protected function tieneAlgunoDeEstosPermisos($padreId, $estudianteId, array $permisos)
     {

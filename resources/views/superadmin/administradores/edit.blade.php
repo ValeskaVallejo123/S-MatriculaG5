@@ -1,309 +1,423 @@
 @extends('layouts.app')
 
 @section('title', 'Editar Administrador')
+@section('page-title', 'Editar Administrador')
+
+@section('topbar-actions')
+    <a href="{{ route('superadmin.administradores.index') }}" 
+       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
+@endsection
 
 @section('content')
-<div class="min-h-screen py-12">
-    <div class="max-w-4xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-lg mb-6">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
+<div class="container" style="max-width: 800px;">
+    
+    <!-- Formulario -->
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-header text-white" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-user-edit" style="font-size: 1.25rem;"></i>
+                <h5 class="mb-0 fw-bold">Actualizar Información</h5>
             </div>
-            <h1 class="text-4xl font-bold text-gray-900 mb-3">Editar Administrador</h1>
-            <p class="text-lg text-gray-600">Actualice la información del administrador</p>
-            <div class="w-24 h-1 bg-amber-500 mx-auto mt-4 rounded-full"></div>
         </div>
 
-        <!-- Form Card -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
-            <!-- Card Header -->
-            <div class="bg-gradient-to-r from-amber-500 to-orange-600 px-8 py-6">
-                <h2 class="text-xl font-semibold text-white">Información del Administrador</h2>
-                <p class="text-amber-100 text-sm mt-1">Modifique los campos que desea actualizar</p>
-            </div>
+        <div class="card-body p-4">
+            <form action="{{ route('superadmin.administradores.update', $administrador->id) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-            <!-- Form Body -->
-            <form action="{{ route('superadmin.administradores.update', ['administrador' => $admin->id]) }}" method="POST">
-    @csrf
-    @method('PUT')
-    ...
-</form>
+                <!-- Información Personal -->
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3" style="color: #003b73;">
+                        <i class="fas fa-user me-2" style="color: #4ec7d2;"></i>Información Personal
+                    </h6>
 
-
-                <div class="space-y-8">
-                    <!-- Sección: Datos Personales -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
-                            Datos Personales
-                        </h3>
-                        
-                        <div class="space-y-6">
-                            <!-- Nombre -->
-                            <div>
-                                <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Nombre Completo
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
+                    <div class="row g-3">
+                        <!-- Nombre -->
+                        <div class="col-md-6">
+                            <label for="name" class="form-label small fw-semibold" style="color: #003b73;">
+                                Nombre Completo <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="text" 
+                                       class="form-control ps-5 @error('name') is-invalid @enderror" 
+                                       id="name" 
+                                       name="name" 
+                                       value="{{ old('name', $administrador->name) }}" 
+                                       placeholder="Ej: Juan Pérez"
+                                       required
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('name')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
                                     </div>
-                                    <input 
-                                        type="text" 
-                                        id="nombre"
-                                        name="nombre" 
-                                        value="{{ old('nombre', $admin->nombre) }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all @error('nombre') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Ingrese el nombre completo"
-                                        required
-                                        minlength="3"
-                                        maxlength="50"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Entre 3 y 50 caracteres</p>
-                                @error('nombre')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
                                 @enderror
                             </div>
+                        </div>
 
-                            <!-- Email -->
-                            <div>
-                                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Correo Electrónico Institucional
-                                    <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="email" 
-                                        id="email"
-                                        name="email" 
-                                        value="{{ old('email', $admin->email) }}"
-                                        class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all @error('email') border-red-400 bg-red-50 @enderror"
-                                        placeholder="admin@institucion.edu"
-                                        required
-                                        maxlength="100"
-                                    >
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2 ml-1">Dirección de correo válida (máximo 100 caracteres)</p>
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label for="email" class="form-label small fw-semibold" style="color: #003b73;">
+                                Email <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="email" 
+                                       class="form-control ps-5 @error('email') is-invalid @enderror" 
+                                       id="email" 
+                                       name="email" 
+                                       value="{{ old('email', $administrador->email) }}" 
+                                       placeholder="admin@ejemplo.com"
+                                       required
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
                                 @error('email')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
                                 @enderror
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Sección: Cambiar Contraseña -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
-                            Cambiar Contraseña
-                        </h3>
-                        
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-                            <div class="flex items-start">
-                                <svg class="w-5 h-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                </svg>
-                                <div class="text-sm text-amber-800">
-                                    <p class="font-semibold mb-1">Opcional</p>
-                                    <p>Deje los campos en blanco si no desea cambiar la contraseña actual del administrador.</p>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Cambiar Contraseña (Opcional) -->
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3" style="color: #003b73;">
+                        <i class="fas fa-lock me-2" style="color: #4ec7d2;"></i>Cambiar Contraseña (Opcional)
+                    </h6>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Nueva Contraseña -->
-                            <div>
-                                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Nueva Contraseña
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="password" 
-                                        id="password" 
-                                        name="password"
-                                        class="w-full pl-12 pr-12 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all @error('password') border-red-400 bg-red-50 @enderror"
-                                        placeholder="Mínimo 8 caracteres"
-                                        minlength="8"
-                                        maxlength="50"
-                                    >
-                                    <button 
-                                        type="button" 
-                                        onclick="togglePassword('password')"
-                                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-amber-600 transition"
-                                    >
-                                        <svg id="eye-password" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
+                    <div class="alert mb-3" style="background: rgba(78, 199, 210, 0.1); border: 1px solid rgba(78, 199, 210, 0.2); border-radius: 10px;">
+                        <small style="color: #00508f;">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Deja estos campos vacíos si no deseas cambiar la contraseña
+                        </small>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Nueva Contraseña -->
+                        <div class="col-md-6">
+                            <label for="password" class="form-label small fw-semibold" style="color: #003b73;">
+                                Nueva Contraseña
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-key position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="password" 
+                                       class="form-control ps-5 @error('password') is-invalid @enderror" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Mínimo 8 caracteres"
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
                                 @error('password')
-                                    <p class="mt-2 text-sm text-red-600 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
                                 @enderror
                             </div>
+                            <small class="text-muted" style="font-size: 0.75rem;">
+                                <i class="fas fa-info-circle me-1"></i>Mínimo 8 caracteres
+                            </small>
+                        </div>
 
-                            <!-- Confirmar Contraseña -->
-                            <div>
-                                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Confirmar Nueva Contraseña
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <input 
-                                        type="password" 
-                                        id="password_confirmation" 
-                                        name="password_confirmation"
-                                        class="w-full pl-12 pr-12 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:bg-white outline-none transition-all"
-                                        placeholder="Repita la contraseña"
-                                    >
-                                    <button 
-                                        type="button" 
-                                        onclick="togglePassword('password_confirmation')"
-                                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-amber-600 transition"
-                                    >
-                                        <svg id="eye-password_confirmation" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                    </button>
+                        <!-- Confirmar Nueva Contraseña -->
+                        <div class="col-md-6">
+                            <label for="password_confirmation" class="form-label small fw-semibold" style="color: #003b73;">
+                                Confirmar Nueva Contraseña
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-key position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="password" 
+                                       class="form-control ps-5" 
+                                       id="password_confirmation" 
+                                       name="password_confirmation" 
+                                       placeholder="Repite la contraseña"
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rol y Permisos -->
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3" style="color: #003b73;">
+                        <i class="fas fa-shield-alt me-2" style="color: #4ec7d2;"></i>Rol y Permisos
+                    </h6>
+
+                    <!-- Tipo de Rol -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" style="color: #003b73;">
+                            Tipo de Administrador <span style="color: #ef4444;">*</span>
+                        </label>
+                        
+                        <div class="row g-3">
+                            <!-- Super Admin -->
+                            <div class="col-md-6">
+                                <div class="form-check p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px; cursor: pointer;" onclick="document.getElementById('role_super_admin').click()">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="role" 
+                                           id="role_super_admin" 
+                                           value="super_admin"
+                                           {{ old('role', $administrador->is_super_admin ? 'super_admin' : 'admin') == 'super_admin' ? 'checked' : '' }}
+                                           style="width: 20px; height: 20px; cursor: pointer;">
+                                    <label class="form-check-label ms-2" for="role_super_admin" style="cursor: pointer;">
+                                        <strong style="color: #ef4444;">Super Administrador</strong>
+                                        <small class="d-block text-muted">Acceso total al sistema</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Admin Regular -->
+                            <div class="col-md-6">
+                                <div class="form-check p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px; cursor: pointer;" onclick="document.getElementById('role_admin').click()">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="role" 
+                                           id="role_admin" 
+                                           value="admin"
+                                           {{ old('role', $administrador->is_super_admin ? 'super_admin' : 'admin') == 'admin' ? 'checked' : '' }}
+                                           style="width: 20px; height: 20px; cursor: pointer;">
+                                    <label class="form-check-label ms-2" for="role_admin" style="cursor: pointer;">
+                                        <strong style="color: #00508f;">Administrador</strong>
+                                        <small class="d-block text-muted">Permisos configurables</small>
+                                    </label>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Requisitos de contraseña -->
-                        <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-sm font-semibold text-amber-900 mb-2">Requisitos de seguridad:</p>
-                            <ul class="text-xs text-amber-700 space-y-1 ml-4">
-                                <li class="flex items-center">
-                                    <span class="w-1.5 h-1.5 bg-amber-400 rounded-full mr-2"></span>
-                                    Mínimo 8 caracteres, máximo 50
-                                </li>
-                                <li class="flex items-center">
-                                    <span class="w-1.5 h-1.5 bg-amber-400 rounded-full mr-2"></span>
-                                    Al menos una letra mayúscula y una minúscula
-                                </li>
-                                <li class="flex items-center">
-                                    <span class="w-1.5 h-1.5 bg-amber-400 rounded-full mr-2"></span>
-                                    Al menos un número
-                                </li>
-                                <li class="flex items-center">
-                                    <span class="w-1.5 h-1.5 bg-amber-400 rounded-full mr-2"></span>
-                                    Al menos un carácter especial
-                                </li>
-                            </ul>
-                        </div>
                     </div>
 
-                    <!-- Sección: Permisos -->
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-5 pb-2 border-b-2 border-amber-100">
-                            Permisos y Privilegios
-                        </h3>
-                        
-                        <div class="bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
-                            <p class="text-sm text-gray-600 mb-4">Seleccione los permisos que tendrá este administrador:</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                @foreach($permisos as $key => $label)
-                                    <label class="flex items-start p-4 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition-all group">
-                                        <input 
-                                            type="checkbox" 
-                                            name="permisos[]" 
-                                            value="{{ $key }}"
-                                            {{ in_array($key, old('permisos', $admin->permisos ?? [])) ? 'checked' : '' }}
-                                            class="w-5 h-5 mt-0.5 text-amber-600 border-gray-300 rounded focus:ring-2 focus:ring-amber-500 transition"
-                                        >
-                                        <div class="ml-3">
-                                            <span class="text-sm font-medium text-gray-800 group-hover:text-amber-700">{{ $label }}</span>
+                    <!-- Usuario Protegido -->
+                    <div class="form-check form-switch p-3 border rounded" style="border: 2px solid #bfd9ea; border-radius: 10px;">
+                        <input class="form-check-input" 
+                               type="checkbox" 
+                               name="is_protected" 
+                               id="is_protected"
+                               value="1"
+                               {{ old('is_protected', $administrador->is_protected) ? 'checked' : '' }}
+                               style="width: 40px; height: 20px; cursor: pointer;">
+                        <label class="form-check-label ms-2" for="is_protected" style="cursor: pointer;">
+                            <strong style="color: #1e293b;">Usuario Protegido</strong>
+                            <small class="d-block text-muted">No se puede editar ni eliminar (recomendado para cuentas críticas)</small>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Permisos Específicos (Solo para Admin Regular) -->
+                <div class="mb-4" id="permisosSection" style="{{ old('role', $administrador->is_super_admin ? 'super_admin' : 'admin') == 'admin' ? '' : 'display: none;' }}">
+                    <h6 class="fw-bold mb-3" style="color: #003b73;">
+                        <i class="fas fa-tasks me-2" style="color: #4ec7d2;"></i>Permisos Específicos
+                    </h6>
+
+                    <div class="alert mb-3" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 10px;">
+                        <small style="color: #1e3a8a;">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Selecciona los permisos que tendrá este administrador
+                        </small>
+                    </div>
+
+                    @php
+                        $permisosDisponibles = [
+                            'Estudiantes' => [
+                                'ver_estudiantes' => 'Ver Estudiantes',
+                                'crear_estudiantes' => 'Crear Estudiantes',
+                                'editar_estudiantes' => 'Editar Estudiantes',
+                                'eliminar_estudiantes' => 'Eliminar Estudiantes',
+                            ],
+                            'Profesores' => [
+                                'ver_profesores' => 'Ver Profesores',
+                                'crear_profesores' => 'Crear Profesores',
+                                'editar_profesores' => 'Editar Profesores',
+                                'eliminar_profesores' => 'Eliminar Profesores',
+                            ],
+                            'Matrículas' => [
+                                'ver_matriculas' => 'Ver Matrículas',
+                                'crear_matriculas' => 'Crear Matrículas',
+                                'aprobar_matriculas' => 'Aprobar Matrículas',
+                                'rechazar_matriculas' => 'Rechazar Matrículas',
+                            ],
+                            'Académico' => [
+                                'ver_grados' => 'Ver Grados',
+                                'gestionar_grados' => 'Gestionar Grados',
+                                'ver_secciones' => 'Ver Secciones',
+                                'gestionar_secciones' => 'Gestionar Secciones',
+                                'ver_materias' => 'Ver Materias',
+                                'gestionar_materias' => 'Gestionar Materias',
+                            ],
+                            'Reportes' => [
+                                'ver_reportes' => 'Ver Reportes',
+                                'generar_reportes' => 'Generar Reportes',
+                                'exportar_datos' => 'Exportar Datos',
+                            ],
+                        ];
+
+                        $permisosActuales = is_array($administrador->permissions) 
+                            ? $administrador->permissions 
+                            : (is_string($administrador->permissions) 
+                                ? json_decode($administrador->permissions, true) 
+                                : []);
+                        $permisosActuales = $permisosActuales ?? [];
+                    @endphp
+
+                    <div class="accordion" id="permisosAccordion">
+                        @foreach($permisosDisponibles as $categoria => $permisos)
+                        <div class="accordion-item border-0 mb-2" style="border-radius: 10px; overflow: hidden; border: 2px solid #bfd9ea;">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $loop->index }}" style="background: #f8fafc; color: #003b73; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-folder me-2" style="color: #4ec7d2;"></i>
+                                    {{ $categoria }}
+                                    <span class="badge ms-2" style="background: rgba(78, 199, 210, 0.2); color: #00508f; font-size: 0.7rem;">
+                                        {{ count($permisos) }} permisos
+                                    </span>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}" data-bs-parent="#permisosAccordion">
+                                <div class="accordion-body p-3">
+                                    <div class="row g-2">
+                                        @foreach($permisos as $key => $nombre)
+                                        <div class="col-md-6">
+                                            <div class="form-check p-2 border rounded" style="border: 1px solid #e2e8f0; border-radius: 6px;">
+                                                <input class="form-check-input permiso-checkbox" 
+                                                       type="checkbox" 
+                                                       name="permissions[]" 
+                                                       value="{{ $key }}" 
+                                                       id="perm_{{ $key }}"
+                                                       {{ in_array($key, old('permissions', $permisosActuales)) ? 'checked' : '' }}
+                                                       style="cursor: pointer;">
+                                                <label class="form-check-label small" for="perm_{{ $key }}" style="cursor: pointer; color: #334155;">
+                                                    {{ $nombre }}
+                                                </label>
+                                            </div>
                                         </div>
-                                    </label>
-                                @endforeach
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        @endforeach
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="button" class="btn btn-sm" onclick="seleccionarTodos(true)" style="background: rgba(78, 199, 210, 0.1); color: #00508f; border: 1px solid #4ec7d2; font-size: 0.8rem; padding: 0.4rem 0.85rem; border-radius: 6px;">
+                            <i class="fas fa-check-double me-1"></i>Seleccionar Todos
+                        </button>
+                        <button type="button" class="btn btn-sm" onclick="seleccionarTodos(false)" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; font-size: 0.8rem; padding: 0.4rem 0.85rem; border-radius: 6px;">
+                            <i class="fas fa-times me-1"></i>Deseleccionar Todos
+                        </button>
                     </div>
                 </div>
 
-                <!-- Botones de acción -->
-                <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t-2 border-gray-100">
-                    <button 
-                        type="submit"
-                        class="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white py-4 rounded-xl font-semibold hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
-                    >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Actualizar Información
-                    </button>
-                    <a 
-                        href="{{ route('superadmin.administradores.index') }}"
-                        class="flex-1 bg-white text-gray-700 py-4 rounded-xl font-semibold border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center"
-                    >
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        Cancelar
-                    </a>
+                <!-- Información de Registro -->
+                <div class="mb-4 p-3 border rounded" style="border: 2px solid #e2e8f0; border-radius: 10px; background: #f8fafc;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Registrado el</small>
+                            <strong style="color: #003b73; font-size: 0.85rem;">
+                                <i class="fas fa-calendar-alt me-1" style="color: #4ec7d2;"></i>
+                                {{ $administrador->created_at->format('d/m/Y H:i') }}
+                            </strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Última actualización</small>
+                            <strong style="color: #003b73; font-size: 0.85rem;">
+                                <i class="fas fa-clock me-1" style="color: #4ec7d2;"></i>
+                                {{ $administrador->updated_at->format('d/m/Y H:i') }}
+                            </strong>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a href="{{ route('superadmin.administradores.index') }}" 
+                       class="btn" 
+                       style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </a>
+                    <button type="submit" 
+                            class="btn" 
+                            style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); transition: all 0.3s ease;">
+                        <i class="fas fa-save me-1"></i>Guardar Cambios
+                    </button>
+                </div>
+
             </form>
         </div>
-
-        <!-- Nota informativa -->
-        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <div class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                </svg>
-                <div class="text-sm text-blue-800">
-                    <p class="font-semibold mb-1">Importante</p>
-                    <p>Los cambios realizados se aplicarán inmediatamente. Si cambia la contraseña, el administrador deberá usar la nueva contraseña en su próximo inicio de sesión.</p>
-                </div>
-            </div>
-        </div>
     </div>
+
 </div>
+
+@push('styles')
+<style>
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4ec7d2;
+        box-shadow: 0 0 0 0.2rem rgba(78, 199, 210, 0.15);
+        outline: none;
+    }
+
+    .form-control.is-invalid {
+        border-color: #ef4444;
+        background-image: none;
+    }
+
+    .form-control.is-invalid:focus {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.15);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-check-input:checked {
+        background-color: #4ec7d2;
+        border-color: #4ec7d2;
+    }
+
+    .form-check:has(input:checked) {
+        border-color: #4ec7d2 !important;
+        background: linear-gradient(135deg, rgba(78, 199, 210, 0.05) 0%, rgba(0, 80, 143, 0.05) 100%);
+    }
+
+    .accordion-button:not(.collapsed) {
+        background: #f8fafc;
+        color: #003b73;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script>
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    if (input.type === 'password') {
-        input.type = 'text';
-    } else {
-        input.type = 'password';
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSuperAdmin = document.getElementById('role_super_admin');
+    const roleAdmin = document.getElementById('role_admin');
+    const permisosSection = document.getElementById('permisosSection');
+
+    // Mostrar/ocultar permisos según rol
+    function togglePermisos() {
+        if (roleAdmin.checked) {
+            permisosSection.style.display = 'block';
+        } else {
+            permisosSection.style.display = 'none';
+        }
     }
+
+    roleSuperAdmin.addEventListener('change', togglePermisos);
+    roleAdmin.addEventListener('change', togglePermisos);
+});
+
+// Seleccionar/Deseleccionar todos los permisos
+function seleccionarTodos(seleccionar) {
+    document.querySelectorAll('.permiso-checkbox').forEach(checkbox => {
+        checkbox.checked = seleccionar;
+    });
 }
 </script>
 @endpush

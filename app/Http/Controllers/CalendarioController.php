@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EventoAcademico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +62,21 @@ public function eventosPublicos()
                     ]
                 ];
             });
+        $eventos = EventoAcademico::all()->map(function($evento) {
+            return [
+                'id' => $evento->id,
+                'title' => $evento->titulo,
+                'start' => $evento->fecha_inicio->format('Y-m-d'),
+                'end' => $evento->fecha_fin->copy()->addDay()->format('Y-m-d'),
+                'backgroundColor' => $evento->color,
+                'borderColor' => $evento->color,
+                'allDay' => (bool) $evento->todo_el_dia,
+                'extendedProps' => [
+                    'description' => $evento->descripcion,
+                    'type' => $evento->tipo
+                ]
+            ];
+        });
 
             return response()->json($eventos);
         } catch (\Exception $e) {
@@ -181,5 +195,17 @@ if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) { // Usar 'role' y 
                 'mensaje' => 'Error al eliminar: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function validarEvento(Request $request)
+    {
+        return $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+            'tipo' => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
+            'color' => 'required|string'
+        ]);
     }
 }

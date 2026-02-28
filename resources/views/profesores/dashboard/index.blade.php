@@ -119,7 +119,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <a href="#" class="text-decoration-none">
+                    <a href="{{route('horarios.index')}}" class="text-decoration-none">
                         <div class="card border-0 h-100" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 10px;">
                             <div class="card-body text-center p-3">
                                 <i class="fas fa-calendar-alt" style="font-size: 2rem; color: white; margin-bottom: 0.5rem;"></i>

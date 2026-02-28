@@ -9,6 +9,8 @@ class Documento extends Model
 {
     use HasFactory;
 
+    protected $table = 'documentos';
+
     protected $fillable = [
         'estudiante_id', // ¡Importante para la relación!
         'foto',
@@ -22,10 +24,3 @@ class Documento extends Model
         return $this->belongsTo(Estudiante::class);
     }
 }
-
-
-
-
-
-
-

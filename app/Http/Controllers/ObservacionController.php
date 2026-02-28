@@ -11,30 +11,39 @@ use Illuminate\Support\Facades\Auth;
 class ObservacionController extends Controller
 {
     /**
-     * Listado con filtros
+     * Listar observaciones según rol
      */
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $info = $user->infoParaObservaciones();
+
         $query = Observacion::with(['estudiante', 'profesor'])->latest();
 
-        // Filtro por nombre del estudiante (nombre1 o apellido1)
-        if ($request->filled('nombre')) {
-            $query->whereHas('estudiante', function ($q) use ($request) {
-                $q->where('nombre1', 'like', '%' . $request->nombre . '%')
-                    ->orWhere('apellido1', 'like', '%' . $request->nombre . '%');
-            });
+        if ($user->isSuperAdmin()) {
+            // Superadmin: ve todas
+        } elseif ($user->isDocente()) {
+            // Profesor: solo las que creó o le corresponden
+            $query->where('profesor_id', $info['profesor_id'])
+                  ->orWhereHas('estudiante', function ($q) use ($info) {
+                      $q->whereHas('profesor', function ($q2) use ($info) {
+                          $q2->where('id', $info['profesor_id']);
+                      });
+                  });
+        } elseif ($user->isEstudiante()) {
+            // Estudiante: solo las propias
+            $query->where('estudiante_id', $info['estudiante_id']);
+        } else {
+            abort(403, 'No autorizado');
         }
 
-        // Filtro por tipo
+        // Filtros opcionales
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
         }
-
-        // Filtro por rangos de fecha
         if ($request->filled('fecha_desde')) {
             $query->whereDate('created_at', '>=', $request->fecha_desde);
         }
-
         if ($request->filled('fecha_hasta')) {
             $query->whereDate('created_at', '<=', $request->fecha_hasta);
         }
@@ -42,24 +51,16 @@ class ObservacionController extends Controller
         $observaciones = $query->paginate(10)->withQueryString();
 
         return view('observaciones.indexObservacion', compact('observaciones'))
-            ->with([
-                'filtros' => [
-                    'nombre' => $request->nombre,
-                    'tipo' => $request->tipo,
-                    'fecha_desde' => $request->fecha_desde,
-                    'fecha_hasta' => $request->fecha_hasta,
-                ]
-            ]);
+            ->with('filtros', $request->only(['tipo','fecha_desde','fecha_hasta']));
     }
 
     /**
-     * Formulario de creación
+     * Crear observación
      */
     public function create()
     {
         $estudiantes = Estudiante::orderBy('nombre1')->get();
         $profesores = Profesor::orderBy('nombre')->get();
-
         return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
     }
 
@@ -100,12 +101,7 @@ class ObservacionController extends Controller
             'tipo' => 'nullable|string',
         ]);
 
-        $observacion->update($request->only([
-            'estudiante_id',
-            'profesor_id',
-            'descripcion',
-            'tipo'
-        ]));
+        $observacion->update($request->only(['estudiante_id','profesor_id','descripcion','tipo']));
 
         return redirect()->route('observaciones.index')
             ->with('success', 'Observación actualizada correctamente.');
@@ -127,6 +123,11 @@ class ObservacionController extends Controller
 
     public function destroy(Observacion $observacion)
     {
+        $user = auth()->user();
+        if (!$user->isSuperAdmin() && $user->id !== $observacion->profesor_id) {
+            abort(403, 'No autorizado');
+        }
+
         $observacion->delete();
 
         return redirect()->route('observaciones.index')

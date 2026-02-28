@@ -9,7 +9,7 @@ class ProfesorSeeder extends Seeder
 {
     public function run(): void
     {
-        Profesor::factory(5)->create(); 
+        Profesor::factory(5)->create();
     }
 }
 

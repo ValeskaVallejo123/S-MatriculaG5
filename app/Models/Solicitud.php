@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,8 @@ use App\Models\Padre;
 
 class Solicitud extends Model
 {
+    use HasFactory;
+
     protected $table = 'solicitudes';
 
     protected $fillable = [

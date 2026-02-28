@@ -11,8 +11,18 @@ use Illuminate\Validation\Rule;
 
 class SuperAdminController extends Controller
 {
+    public function __construct()
+    {
+        // Solo super admin puede manejar administradores
+        $this->middleware(['auth', 'role:super_admin']);
+    }
+
+    /**
+     * Dashboard principal
+     */
     public function dashboard()
     {
+        // Obtener las últimas 10 matrículas pendientes
         $matriculasPendientes = Matricula::with(['estudiante', 'padre'])
             ->where('estado', 'pendiente')
             ->latest()
@@ -49,8 +59,7 @@ class SuperAdminController extends Controller
 
     public function create()
     {
-        $permisos = $this->getAvailablePermissions();
-        return view('superadmin.administradores.create', compact('permisos'));
+        return view('superadmin.administradores.create');
     }
 
     public function store(Request $request)
@@ -59,7 +68,9 @@ class SuperAdminController extends Controller
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
             'password'    => 'required|min:8|confirmed',
+            'role'        => 'required|in:super_admin,admin',
             'permissions' => 'nullable|array',
+            'is_protected' => 'nullable|boolean',
         ], [
             'name.required'      => 'El nombre es obligatorio',
             'email.required'     => 'El email es obligatorio',
@@ -68,17 +79,20 @@ class SuperAdminController extends Controller
             'password.required'  => 'La contraseña es obligatoria',
             'password.min'       => 'La contraseña debe tener al menos 8 caracteres',
             'password.confirmed' => 'Las contraseñas no coinciden',
+            'role.required'      => 'Debes seleccionar un rol',
         ]);
+
+        $isSuperAdmin = $request->role === 'super_admin';
 
         User::create([
             'name'           => $request->name,
             'email'          => $request->email,
             'password'       => Hash::make($request->password),
             'role'           => 'user',
-            'user_type'      => 'admin',
-            'permissions'    => $request->permissions ?? [],
-            'is_super_admin' => false,
-            'is_protected'   => false,
+            'user_type'      => $isSuperAdmin ? 'super_admin' : 'admin',
+            'permissions'    => $isSuperAdmin ? [] : ($request->permissions ?? []),
+            'is_super_admin' => $isSuperAdmin,
+            'is_protected'   => $request->boolean('is_protected'),
         ]);
 
         return redirect()->route('superadmin.administradores.index')
@@ -94,36 +108,54 @@ class SuperAdminController extends Controller
     {
         if ($administrador->is_protected) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'Este usuario no puede ser editado');
+                ->with('error', 'Este usuario está protegido y no puede ser editado');
         }
 
-        $permisos = $this->getAvailablePermissions();
-        return view('superadmin.administradores.edit', compact('administrador', 'permisos'));
+        return view('superadmin.administradores.edit', compact('administrador'));
     }
 
     public function update(Request $request, User $administrador)
     {
         if ($administrador->is_protected) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'Este usuario no puede ser modificado');
+                ->with('error', 'Este usuario está protegido y no puede ser modificado');
         }
 
         $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => ['required', 'email', Rule::unique('users')->ignore($administrador->id)],
+            'role'        => 'required|in:super_admin,admin',
             'permissions' => 'nullable|array',
+            'password'    => 'nullable|min:8|confirmed',
+            'is_protected' => 'nullable|boolean',
+        ], [
+            'name.required'      => 'El nombre es obligatorio',
+            'email.required'     => 'El email es obligatorio',
+            'email.email'        => 'El email debe ser válido',
+            'email.unique'       => 'Este email ya está en uso',
+            'role.required'      => 'Debes seleccionar un rol',
+            'password.min'       => 'La contraseña debe tener al menos 8 caracteres',
+            'password.confirmed' => 'Las contraseñas no coinciden',
         ]);
 
-        $administrador->name        = $request->name;
-        $administrador->email       = $request->email;
-        $administrador->permissions = $request->permissions ?? [];
-        $administrador->save();
+        $isSuperAdmin = $request->role === 'super_admin';
 
+        // Actualizar datos básicos
+        $administrador->name           = $request->name;
+        $administrador->email          = $request->email;
+        $administrador->user_type      = $isSuperAdmin ? 'super_admin' : 'admin';
+        $administrador->is_super_admin = $isSuperAdmin;
+        $administrador->is_protected   = $request->boolean('is_protected');
+        
+        // Permisos (solo para admin regular)
+        $administrador->permissions = $isSuperAdmin ? [] : ($request->permissions ?? []);
+
+        // Actualizar contraseña si se proporciona
         if ($request->filled('password')) {
-            $request->validate(['password' => 'min:8|confirmed']);
             $administrador->password = Hash::make($request->password);
-            $administrador->save();
         }
+
+        $administrador->save();
 
         return redirect()->route('superadmin.administradores.index')
             ->with('success', 'Administrador actualizado exitosamente');
@@ -133,12 +165,17 @@ class SuperAdminController extends Controller
     {
         if ($administrador->is_protected) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'Este usuario no puede ser eliminado (está protegido)');
+                ->with('error', 'Este usuario está protegido y no puede ser eliminado');
         }
 
         if ($administrador->id === Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
                 ->with('error', 'No puedes eliminarte a ti mismo');
+        }
+
+        if ($administrador->is_super_admin) {
+            return redirect()->route('superadmin.administradores.index')
+                ->with('error', 'No se puede eliminar a un Super Administrador');
         }
 
         $administrador->delete();
@@ -209,53 +246,41 @@ class SuperAdminController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Vista de gestión de roles y permisos.
-     * Filtra por user_type ya que la columna 'role' siempre es 'user' en la BD.
-     */
     public function permisosRoles()
     {
-        $permisos = $this->getAvailablePermissions();
-
         $usuarios = User::whereIn('user_type', ['admin', 'super_admin'])
             ->orderBy('is_super_admin', 'desc')
             ->orderBy('name')
             ->get();
 
-        return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
+        return view('superadmin.administradores.permisos', compact('usuarios'));
     }
 
-    /**
-     * Actualizar rol y permisos de un usuario.
-     * Actualiza user_type e is_super_admin (no 'role', que siempre es 'user').
-     */
-    public function actualizarPermisos(Request $request, $userId)
+    public function actualizarPermisos(Request $request)
     {
         $request->validate([
-            'rol'      => 'required|in:admin,super_admin',
-            'permisos' => 'nullable|array',
-        ], [
-            'rol.required' => 'Debes seleccionar un rol',
-            'rol.in'       => 'El rol seleccionado no es válido',
+            'usuario_id'  => 'required|exists:users,id',
+            'permissions' => 'nullable|array',
         ]);
 
-        $usuario = User::findOrFail($userId);
+        $usuario = User::findOrFail($request->usuario_id);
 
         if ($usuario->is_protected) {
-            return back()->with('error', 'No se pueden modificar los permisos de este usuario');
+            return back()->with('error', 'Este usuario está protegido y no puede ser modificado');
+        }
+
+        if ($usuario->is_super_admin) {
+            return back()->with('error', 'No se pueden modificar los permisos de un Super Administrador');
         }
 
         if ($usuario->id === Auth::id()) {
-            return back()->with('error', 'No puedes modificar tu propio rol');
+            return back()->with('error', 'No puedes modificar tus propios permisos');
         }
 
-        $esSuperAdmin            = $request->rol === 'super_admin';
-        $usuario->is_super_admin = $esSuperAdmin;
-        $usuario->user_type      = $esSuperAdmin ? 'super_admin' : 'admin';
-        $usuario->permissions    = $esSuperAdmin ? [] : ($request->permisos ?? []);
+        $usuario->permissions = $request->permissions ?? [];
         $usuario->save();
 
-        return back()->with('success', "Rol y permisos actualizados correctamente para {$usuario->name}");
+        return back()->with('success', "Permisos actualizados correctamente para {$usuario->name}");
     }
 
     /*
@@ -267,20 +292,55 @@ class SuperAdminController extends Controller
     private function getAvailablePermissions(): array
     {
         return [
-            'gestionar_matriculas'     => 'Gestionar Matrículas',
-            'gestionar_estudiantes'    => 'Gestionar Estudiantes',
-            'gestionar_profesores'     => 'Gestionar Profesores',
-            'gestionar_secciones'      => 'Gestionar Secciones',
-            'gestionar_grados'         => 'Gestionar Grados',
-            'gestionar_materias'       => 'Gestionar Materias',
-            'ver_reportes'             => 'Ver Reportes',
-            'gestionar_pagos'          => 'Gestionar Pagos',
-            'gestionar_calificaciones' => 'Gestionar Calificaciones',
-            'gestionar_asistencias'    => 'Gestionar Asistencias',
-            'gestionar_observaciones'  => 'Gestionar Observaciones',
-            'gestionar_documentos'     => 'Gestionar Documentos',
-            'gestionar_mensajes'       => 'Gestionar Mensajes',
-            'gestionar_avisos'         => 'Gestionar Avisos y Comunicados',
+            // Estudiantes
+            'ver_estudiantes'       => 'Ver Estudiantes',
+            'crear_estudiantes'     => 'Crear Estudiantes',
+            'editar_estudiantes'    => 'Editar Estudiantes',
+            'eliminar_estudiantes'  => 'Eliminar Estudiantes',
+            
+            // Profesores
+            'ver_profesores'        => 'Ver Profesores',
+            'crear_profesores'      => 'Crear Profesores',
+            'editar_profesores'     => 'Editar Profesores',
+            'eliminar_profesores'   => 'Eliminar Profesores',
+            
+            // Matrículas
+            'ver_matriculas'        => 'Ver Matrículas',
+            'crear_matriculas'      => 'Crear Matrículas',
+            'aprobar_matriculas'    => 'Aprobar Matrículas',
+            'rechazar_matriculas'   => 'Rechazar Matrículas',
+            
+            // Académico
+            'ver_grados'            => 'Ver Grados',
+            'gestionar_grados'      => 'Gestionar Grados',
+            'ver_secciones'         => 'Ver Secciones',
+            'gestionar_secciones'   => 'Gestionar Secciones',
+            'ver_materias'          => 'Ver Materias',
+            'gestionar_materias'    => 'Gestionar Materias',
+            
+            // Períodos
+            'ver_periodos'          => 'Ver Períodos',
+            'crear_periodos'        => 'Crear Períodos',
+            'editar_periodos'       => 'Editar Períodos',
+            'cerrar_periodos'       => 'Cerrar Períodos',
+            
+            // Padres
+            'ver_padres'            => 'Ver Padres',
+            'crear_padres'          => 'Crear Padres',
+            'editar_padres'         => 'Editar Padres',
+            'gestionar_accesos_padres' => 'Gestionar Accesos de Padres',
+            
+            // Reportes
+            'ver_reportes'          => 'Ver Reportes',
+            'generar_reportes'      => 'Generar Reportes',
+            'exportar_datos'        => 'Exportar Datos',
+            'ver_estadisticas'      => 'Ver Estadísticas',
+            
+            // Sistema
+            'configurar_sistema'    => 'Configurar Sistema',
+            'gestionar_cupos'       => 'Gestionar Cupos',
+            'ver_logs'              => 'Ver Logs',
+            'realizar_backups'      => 'Realizar Backups',
         ];
     }
 }

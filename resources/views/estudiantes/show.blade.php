@@ -277,7 +277,6 @@
                 <div class="field-box">
                     <div class="field-value" style="line-height:1.6;">{{ $estudiante->observaciones }}</div>
                 </div>
-            </div>
             @endif
 
             {{-- Datos del Sistema --}}

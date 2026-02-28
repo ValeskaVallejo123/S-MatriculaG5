@@ -2,13 +2,27 @@
 
 namespace App\Http\Controllers;
 
-// app/Http/Controllers/CicloController.php
-
 use App\Models\Ciclo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CicloController extends Controller
 {
+    public function __construct()
+    {
+        // Solo usuarios autenticados
+        $this->middleware('auth');
+
+        // Opcional: control por roles
+        // $this->middleware(function ($request, $next) {
+        //     $user = Auth::user();
+        //     if (!in_array($user->id_rol, [1, 2])) { // 1: SuperAdmin, 2: Admin
+        //         abort(403, 'No tienes permisos para acceder a esta sección.');
+        //     }
+        //     return $next($request);
+        // });
+    }
+
     public function index()
     {
         $ciclos = Ciclo::orderBy('created_at', 'desc')->paginate(10);

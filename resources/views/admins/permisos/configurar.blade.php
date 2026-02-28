@@ -1,8 +1,30 @@
 @extends('layouts.app')
 
 @section('title', 'Configurar Permisos')
+@section('page-title', 'Configurar Permisos')
+
+@push('styles')
+<style>
+    .form-check-input:checked {
+        background-color: #003b73;
+        border-color: #003b73;
+    }
+    .form-check-input:focus {
+        border-color: #4ec7d2;
+        box-shadow: 0 0 0 0.25rem rgba(78,199,210,0.25);
+    }
+    .border.rounded {
+        transition: all 0.3s ease;
+    }
+    .border.rounded:hover {
+        box-shadow: 0 2px 8px rgba(0,59,115,0.1);
+        border-color: #4ec7d2 !important;
+    }
+</style>
+@endpush
 
 @section('content')
+<div class="container-fluid" style="max-width: 1200px;">
 
 <div class="container-fluid" style="max-width: 1200px;">
     

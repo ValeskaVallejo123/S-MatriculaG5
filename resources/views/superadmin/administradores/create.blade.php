@@ -205,7 +205,7 @@
                         <div>
                             <strong class="d-block mb-1" style="color: #003b73; font-size: 0.875rem;">Nota Importante</strong>
                             <small style="color: #64748b;">
-                                Los permisos específicos se pueden asignar después de crear el administrador en la sección "Permisos y Roles".
+                                Los permisos específicos se pueden asignar después de crear el administrador en la opción "Editar" o en la sección "Permisos y Roles".
                             </small>
                         </div>
                     </div>

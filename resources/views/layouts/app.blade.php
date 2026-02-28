@@ -120,7 +120,7 @@
         }
 
         .user-details h6 {
-            margin: 0 0 0.3rem 0;
+            margin: 0;
             color: white;
             font-size: 0.95rem;
             font-weight: 600;
@@ -498,7 +498,6 @@
 
     @if($showSidebar)
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="{{ $isSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}" class="sidebar-logo">
@@ -514,7 +513,6 @@
             <div class="user-avatar">{{ substr($user->name ?? 'A', 0, 1) }}</div>
             <div class="user-details">
                 <h6>{{ $user->name ?? 'Administrador' }}</h6>
-                <p>{{ $roleName }}</p>
             </div>
         </div>
 
@@ -538,7 +536,6 @@
             @endif
 
             <li class="menu-section-title">GESTIÓN DE USUARIOS</li>
-
             @if($isSuperAdmin)
             <li class="menu-item">
                 <a href="{{ route('superadmin.administradores.index') }}" class="menu-link {{ request()->routeIs('superadmin.administradores.*') ? 'active' : '' }}">
@@ -546,7 +543,6 @@
                 </a>
             </li>
             @endif
-
             <li class="menu-item">
                 <a href="{{ route('estudiantes.index') }}" class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
@@ -565,6 +561,9 @@
                 <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
                     <i class="fas fa-book-reader"></i>
                     <span>Plan de Estudios</span>
+                <a href="{{ route('superadmin.grados.index') }}" class="menu-link {{ request()->routeIs('superadmin.grados.*') ? 'active' : '' }}">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Grados</span>
                 </a>
             </li>
 
@@ -641,7 +640,6 @@
             </li>
 
             <li class="menu-section-title">DOCUMENTACIÓN</li>
-
             <li class="menu-item">
                 <a href="{{ route('observaciones.index') }}" class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
                     <i class="fas fa-sticky-note"></i><span>Observaciones</span>
@@ -662,7 +660,6 @@
             </li>
 
             <li class="menu-section-title">CONFIGURACIÓN</li>
-
             @if($isSuperAdmin)
             <li class="menu-item">
                 <a href="{{ route('superadmin.perfil') }}" class="menu-link {{ request()->routeIs('superadmin.perfil') ? 'active' : '' }}">
@@ -678,7 +675,6 @@
             </li>
 
             <li class="menu-section-title">AYUDA</li>
-
             <li class="menu-item">
                 <a href="{{ route('estado-solicitud') }}" class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
                     <i class="fas fa-question-circle"></i><span>Estado de Solicitud</span>
@@ -802,7 +798,6 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -830,7 +825,6 @@
             if (activeLink && saved === null) {
                 const sidebarRect = sidebar.getBoundingClientRect();
                 const activeLinkRect = activeLink.getBoundingClientRect();
-
                 if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
                     const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
                     sidebar.scrollTo({ top: scrollPosition, behavior: 'smooth' });
@@ -842,7 +836,13 @@
 
         function mostrarModalDelete(url, mensaje = null, itemName = null) {
             deleteFormAction = url;
-            document.getElementById('deleteMessage').textContent = mensaje || 'Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?';
+
+            if (mensaje) {
+                document.getElementById('deleteMessage').textContent = mensaje;
+            } else {
+                document.getElementById('deleteMessage').textContent = 'Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?';
+            }
+
             const itemInfo = document.getElementById('deleteItemInfo');
             if (itemName) {
                 document.getElementById('deleteItemName').textContent = itemName;
@@ -850,14 +850,21 @@
             } else {
                 itemInfo.style.display = 'none';
             }
+
             document.getElementById('formDelete').action = url;
-            document.getElementById('modalDelete').classList.add('show');
+
+            const modal = document.getElementById('modalDelete');
+            modal.classList.add('show');
+
             document.body.style.overflow = 'hidden';
         }
 
         function cerrarModalDelete() {
-            document.getElementById('modalDelete').classList.remove('show');
+            const modal = document.getElementById('modalDelete');
+            modal.classList.remove('show');
+
             document.body.style.overflow = '';
+
             deleteFormAction = null;
         }
 
@@ -872,12 +879,17 @@
             mostrarModalDelete(route, message, name);
         }
 
-        document.addEventListener('click', e => {
-            if (e.target === document.getElementById('modalDelete')) cerrarModalDelete();
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('modalDelete');
+            if (e.target === modal) {
+                cerrarModalDelete();
+            }
         });
 
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') cerrarModalDelete();
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarModalDelete();
+            }
         });
     </script>
 

@@ -4,8 +4,12 @@
 @section('page-title', 'Editar Estudiante')
 
 @section('topbar-actions')
-    <a href="{{ route('estudiantes.index') }}" class="adm-btn-outline">
-        <i class="fas fa-arrow-left"></i> Volver
+    <a href="{{ route('estudiantes.index') }}" class="btn-back"
+       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px;
+              text-decoration: none; font-weight: 600; display: inline-flex; align-items: center;
+              gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i>
+        Volver
     </a>
 @endsection
 
@@ -113,14 +117,29 @@
 @endpush
 
 @section('content')
-<div class="edit-wrap">
+<div class="container" style="max-width: 1200px;">
 
-    <div class="edit-header">
-        <div class="edit-header-left">
-            <div class="edit-header-icon"><i class="fas fa-user-edit"></i></div>
-            <div>
-                <p class="edit-header-title">Editar Estudiante</p>
-                <p class="edit-header-sub">Actualice la información necesaria</p>
+    <!-- Header -->
+    <div class="card border-0 shadow-sm mb-3"
+         style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px;">
+        <div class="card-body p-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box me-3"
+                         style="width: 45px; height: 45px; background: rgba(78,199,210,0.3);
+                                border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user-edit text-white" style="font-size: 1.3rem;"></i>
+                    </div>
+                    <div class="text-white">
+                        <h5 class="mb-0 fw-bold" style="font-size: 1.1rem;">Editar Estudiante</h5>
+                        <p class="mb-0 opacity-90" style="font-size: 0.8rem;">Actualice la información necesaria</p>
+                    </div>
+                </div>
+                <div style="background: rgba(78,199,210,0.2); padding: 0.4rem 0.8rem; border-radius: 6px;">
+                    <p class="text-white mb-0 small fw-semibold" style="font-size: 0.8rem;">
+                        ID: #{{ $estudiante->id }}
+                    </p>
+                </div>
             </div>
         </div>
         <span class="edit-header-id">ID: #{{ $estudiante->id }}</span>
@@ -239,7 +258,8 @@
                             <select name="grado" class="field-select {{ $errors->has('grado') ? 'is-invalid' : '' }}" required>
                                 <option value="">Seleccione</option>
                                 @foreach($grados as $grado)
-                                    <option value="{{ $grado }}" {{ old('grado', $estudiante->grado) == $grado ? 'selected' : '' }}>
+                                    <option value="{{ $grado }}"
+                                        {{ old('grado', $estudiante->grado) == $grado ? 'selected' : '' }}>
                                         {{ $grado }}
                                     </option>
                                 @endforeach
@@ -252,7 +272,8 @@
                             <select name="seccion" class="field-select {{ $errors->has('seccion') ? 'is-invalid' : '' }}" required>
                                 <option value="">Seleccione</option>
                                 @foreach($secciones as $seccion)
-                                    <option value="{{ $seccion }}" {{ old('seccion', $estudiante->seccion) == $seccion ? 'selected' : '' }}>
+                                    <option value="{{ $seccion }}"
+                                        {{ old('seccion', $estudiante->seccion) == $seccion ? 'selected' : '' }}>
                                         {{ $seccion }}
                                     </option>
                                 @endforeach
@@ -301,10 +322,73 @@
         </div>
     </div>
 
-    <div class="edit-note">
-        <i class="fas fa-info-circle"></i>
-        <span><strong>Importante:</strong> Los campos con <span style="color:#ef4444;">*</span> son obligatorios. Los cambios se aplican inmediatamente.</span>
+    <!-- Nota Final -->
+    <div class="alert border-0 mt-2 py-2 px-3"
+         style="border-radius: 8px; background: rgba(78,199,210,0.1);
+                border-left: 3px solid #4ec7d2 !important; font-size: 0.85rem;">
+        <div class="d-flex align-items-start">
+            <i class="fas fa-info-circle me-2 mt-1"
+               style="font-size: 0.9rem; color:#00508f;"></i>
+            <div>
+                <strong style="color:#00508f;">Importante:</strong>
+                <span class="text-muted">Los cambios se aplicarán inmediatamente al guardar.</span>
+            </div>
+        </div>
     </div>
 
-</div>
+</div> <!-- cierre container -->
+
+@push('styles')
+<style>
+    .form-control-sm, .form-select-sm {
+        border-radius: 6px;
+        border: 1.5px solid #e2e8f0;
+        padding: 0.5rem 0.75rem;
+        transition: all 0.3s ease;
+        font-size: 0.875rem;
+    }
+
+    .form-control-sm:focus, .form-select-sm:focus {
+        border-color: #4ec7d2;
+        box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.15);
+    }
+
+    .form-label {
+        color: #003b73;
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+
+    small.text-muted {
+        font-size: 0.7rem;
+        display: block;
+        margin-top: 0.15rem;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+        background: #00508f !important;
+        color: white !important;
+        transform: translateY(-2px);
+    }
+
+    button[type="submit"]:hover {
+        box-shadow: 0 4px 12px rgba(78,199,210,0.4) !important;
+    }
+
+    .border-bottom {
+        border-color: rgba(0,80,143,0.15) !important;
+    }
+
+    textarea {
+        min-height: 60px !important;
+    }
+</style>
+@endpush
+
 @endsection
+

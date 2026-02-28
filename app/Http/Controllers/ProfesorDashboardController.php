@@ -3,25 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
-use App\Models\Profesor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProfesorDashboardController extends Controller
 {
+    public function __construct()
+    {
+        // Solo PROFESORES pueden acceder al dashboard
+        $this->middleware(['auth', 'rol:profesor']);
+    }
+
     public function index()
     {
-        $profesor = Auth::user();
-        
-        // Aquí puedes agregar lógica para obtener las clases del profesor
-        // Por ahora, datos de ejemplo
-        
-        $totalClases = 5; // Total de clases que imparte
-        $totalEstudiantes = 120; // Total de estudiantes en todas sus clases
-        $clasesHoy = 3; // Clases programadas para hoy
-        $tareasPendientes = 8; // Tareas por revisar
-        
-        // Clases del profesor (datos de ejemplo)
+        $profesor = Auth::user(); // Datos del profesor logueado
+
+        // TODO: Reemplazar con datos reales cuando tengas la tabla de clases, horarios, tareas, etc.
+
+        $totalClases = 5;
+        $totalEstudiantes = 120;
+        $clasesHoy = 3;
+        $tareasPendientes = 8;
+
+        // Clases simuladas (temporal)
         $misClases = [
             [
                 'nombre' => 'Matemáticas',
@@ -45,13 +49,13 @@ class ProfesorDashboardController extends Controller
                 'horario' => '10:00 AM - 11:00 AM'
             ]
         ];
-        
-        // Estudiantes destacados (datos de ejemplo)
+
+        // Estudiantes destacados (esto sí es real)
         $estudiantesDestacados = Estudiante::where('estado', 'activo')
             ->limit(5)
             ->get();
-        
-        return view('profesores.dashboard.index', compact(
+
+        return view('profesor.dashboard.index', compact(
             'profesor',
             'totalClases',
             'totalEstudiantes',

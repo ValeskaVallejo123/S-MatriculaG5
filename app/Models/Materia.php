@@ -9,28 +9,54 @@ class Materia extends Model
 {
     use HasFactory;
 
+    protected $table = 'materias';
+
     protected $fillable = [
         'nombre',
         'codigo',
         'descripcion',
-        'nivel',
-        'area',
-        'activo'
+        'nivel',   // primaria | secundaria
+        'area',    // matemáticas, español, ciencias...
+        'activo',
     ];
 
     protected $casts = [
         'activo' => 'boolean',
     ];
 
-    // Relación con grados
-    public function grados()
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONES CORRECTAS
+    |--------------------------------------------------------------------------
+    */
+
+    // Una materia puede estar en muchos cursos
+    // Ej: Matemáticas → 1 A, 1 B, 2 A, etc.
+    public function cursos()
     {
-        return $this->belongsToMany(Grado::class, 'grado_materia')
+        return $this->belongsToMany(Curso::class, 'curso_materia')
                     ->withPivot('profesor_id', 'horas_semanales')
                     ->withTimestamps();
     }
 
-    // Scope para filtrar por nivel
+    // Professor asignado a esta materia en un curso específico
+    public function horarios()
+    {
+        return $this->hasMany(Horario::class);
+    }
+
+    // Calificaciones (materia -> muchas notas)
+    public function calificaciones()
+    {
+        return $this->hasMany(Calificacion::class, 'materia_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
+
     public function scopePrimaria($query)
     {
         return $query->where('nivel', 'primaria');
@@ -41,11 +67,18 @@ class Materia extends Model
         return $query->where('nivel', 'secundaria');
     }
 
-    // Accesor para mostrar el nivel
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESSORS
+    |--------------------------------------------------------------------------
+    */
+
     public function getNivelNombreAttribute()
     {
-        return $this->nivel === 'primaria' 
-            ? 'Primaria (1° - 6°)' 
-            : 'Secundaria (7° - 9°)';
+        return match ($this->nivel) {
+            'primaria' => 'Primaria (1° - 6°)',
+            'secundaria' => 'Secundaria (7° - 9°)',
+            default => 'Desconocido',
+        };
     }
 }

@@ -30,17 +30,21 @@ class Profesor extends Model
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
-        'fecha_ingreso' => 'date',
-        'salario' => 'decimal:2'
+        'fecha_ingreso'    => 'date',
+        'salario'          => 'decimal:2',
     ];
 
-    // Accessor para nombre completo
+    /**
+     * Nombre completo del profesor
+     */
     public function getNombreCompletoAttribute()
     {
-        return "{$this->nombre} {$this->apellido}";
+        return trim("{$this->nombre} {$this->apellido}");
     }
 
-    // Especialidades disponibles
+    /**
+     * Especialidades disponibles
+     */
     public static function especialidades()
     {
         return [
@@ -57,17 +61,51 @@ class Profesor extends Model
             'Física',
             'Biología',
             'Historia',
-            'Geografía'
+            'Geografía',
         ];
     }
 
-    // Tipos de contrato
+    /**
+     * Tipos de contrato
+     */
     public static function tiposContrato()
     {
         return [
             'tiempo_completo' => 'Tiempo Completo',
-            'medio_tiempo' => 'Medio Tiempo',
-            'por_horas' => 'Por Horas'
+            'medio_tiempo'    => 'Medio Tiempo',
+            'por_horas'       => 'Por Horas',
         ];
+    }
+
+    /**
+     * Relación con el usuario del sistema
+     */
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Relación: Grado del cual es guía
+     */
+    public function gradoGuia()
+    {
+        return $this->belongsTo(Grado::class, 'grado_guia_id');
+    }
+
+    /**
+     * Relación: Asignaciones a grados/secciones
+     */
+    public function gradosAsignados()
+    {
+        return $this->hasMany(ProfesorGradoSeccion::class, 'profesor_id');
+    }
+
+    /**
+     * Relación: Materias que imparte por grado y sección
+     */
+    public function materiasGrupos()
+    {
+        return $this->hasMany(ProfesorMateriaGrado::class, 'profesor_id');
     }
 }

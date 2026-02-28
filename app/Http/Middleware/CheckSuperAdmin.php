@@ -5,25 +5,21 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class CheckSuperAdmin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        // Verificar si el usuario está autenticado
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Debes iniciar sesión');
+        // Si no está autenticado, redirigir al login
+        if (! Auth::check()) {
+            return redirect()->route('login')->with('error', 'Debes iniciar sesión primero.');
         }
 
-        // Verificar si el usuario es super admin
-        if (Auth::user()->user_type !== 'super_admin') {
-            abort(403, 'No tienes permisos para acceder a esta sección');
+        $user = Auth::user();
+
+        // Verificar si es super admin según tu modelo User
+        if (! $user->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
         return $next($request);

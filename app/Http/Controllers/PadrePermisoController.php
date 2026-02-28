@@ -16,10 +16,11 @@ class PadrePermisoController extends Controller
     public function index(Request $request)
     {
         $query = Padre::with(['estudiantes']);
-        
+
         // Búsqueda
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
+
             $query->where(function($q) use ($buscar) {
                 $q->where('nombre', 'like', "%{$buscar}%")
                   ->orWhere('apellido', 'like', "%{$buscar}%")
@@ -27,9 +28,9 @@ class PadrePermisoController extends Controller
                   ->orWhere('email', 'like', "%{$buscar}%");
             });
         }
-        
+
         $padres = $query->paginate(15);
-        
+
         return view('admin.permisos.index', compact('padres'));
     }
 
@@ -39,16 +40,12 @@ class PadrePermisoController extends Controller
     public function configurar($padreId)
     {
         $padre = Padre::with(['estudiantes'])->findOrFail($padreId);
-        
-        // Obtener permisos existentes para cada estudiante
-        $permisosExistentes = [];
-        foreach ($padre->estudiantes as $estudiante) {
-            $permiso = PadrePermiso::where('padre_id', $padreId)
-                                   ->where('estudiante_id', $estudiante->id)
-                                   ->first();
-            $permisosExistentes[$estudiante->id] = $permiso;
-        }
-        
+
+        // Obtener permisos existentes de todos los hijos en UNA consulta
+        $permisosExistentes = PadrePermiso::where('padre_id', $padreId)
+            ->get()
+            ->keyBy('estudiante_id');
+
         return view('admin.permisos.configurar', compact('padre', 'permisosExistentes'));
     }
 
@@ -59,39 +56,40 @@ class PadrePermisoController extends Controller
     {
         $request->validate([
             'estudiante_id' => 'required|exists:estudiantes,id',
-            'ver_calificaciones' => 'boolean',
-            'ver_asistencias' => 'boolean',
-            'comunicarse_profesores' => 'boolean',
-            'autorizar_salidas' => 'boolean',
-            'modificar_datos_contacto' => 'boolean',
-            'ver_comportamiento' => 'boolean',
-            'descargar_boletas' => 'boolean',
-            'ver_tareas' => 'boolean',
-            'recibir_notificaciones' => 'boolean',
             'notas_adicionales' => 'nullable|string|max:500',
         ]);
+
+        // Lista de permisos disponibles
+        $permisos = [
+            'ver_calificaciones',
+            'ver_asistencias',
+            'comunicarse_profesores',
+            'autorizar_salidas',
+            'modificar_datos_contacto',
+            'ver_comportamiento',
+            'descargar_boletas',
+            'ver_tareas',
+            'recibir_notificaciones'
+        ];
 
         try {
             DB::beginTransaction();
 
-            // Actualizar o crear permisos
+            $data = [];
+
+            // Checkbox no enviado = false
+            foreach ($permisos as $permiso) {
+                $data[$permiso] = $request->has($permiso);
+            }
+
+            $data['notas_adicionales'] = $request->notas_adicionales;
+
             PadrePermiso::updateOrCreate(
                 [
                     'padre_id' => $padreId,
                     'estudiante_id' => $request->estudiante_id
                 ],
-                [
-                    'ver_calificaciones' => $request->has('ver_calificaciones'),
-                    'ver_asistencias' => $request->has('ver_asistencias'),
-                    'comunicarse_profesores' => $request->has('comunicarse_profesores'),
-                    'autorizar_salidas' => $request->has('autorizar_salidas'),
-                    'modificar_datos_contacto' => $request->has('modificar_datos_contacto'),
-                    'ver_comportamiento' => $request->has('ver_comportamiento'),
-                    'descargar_boletas' => $request->has('descargar_boletas'),
-                    'ver_tareas' => $request->has('ver_tareas'),
-                    'recibir_notificaciones' => $request->has('recibir_notificaciones'),
-                    'notas_adicionales' => $request->notas_adicionales,
-                ]
+                $data
             );
 
             DB::commit();
@@ -133,14 +131,10 @@ class PadrePermisoController extends Controller
                 ]
             );
 
-            return redirect()
-                ->back()
-                ->with('success', 'Permisos por defecto establecidos correctamente.');
+            return back()->with('success', 'Permisos por defecto establecidos correctamente.');
 
         } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Error al establecer permisos: ' . $e->getMessage());
+            return back()->with('error', 'Error al establecer permisos: ' . $e->getMessage());
         }
     }
 
@@ -151,17 +145,13 @@ class PadrePermisoController extends Controller
     {
         try {
             PadrePermiso::where('padre_id', $padreId)
-                       ->where('estudiante_id', $estudianteId)
-                       ->delete();
+                ->where('estudiante_id', $estudianteId)
+                ->delete();
 
-            return redirect()
-                ->back()
-                ->with('success', 'Configuración de permisos eliminada.');
+            return back()->with('success', 'Configuración de permisos eliminada.');
 
         } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Error al eliminar permisos: ' . $e->getMessage());
+            return back()->with('error', 'Error al eliminar permisos: ' . $e->getMessage());
         }
     }
 
@@ -171,36 +161,41 @@ class PadrePermisoController extends Controller
     public function toggleTodos(Request $request, $padreId, $estudianteId)
     {
         $activar = $request->input('activar', true);
-        
+
+        // Lista de permisos
+        $permisos = [
+            'ver_calificaciones',
+            'ver_asistencias',
+            'comunicarse_profesores',
+            'autorizar_salidas',
+            'modificar_datos_contacto',
+            'ver_comportamiento',
+            'descargar_boletas',
+            'ver_tareas',
+            'recibir_notificaciones'
+        ];
+
+        $data = [];
+        foreach ($permisos as $permiso) {
+            $data[$permiso] = $activar;
+        }
+
         try {
             PadrePermiso::updateOrCreate(
                 [
                     'padre_id' => $padreId,
                     'estudiante_id' => $estudianteId
                 ],
-                [
-                    'ver_calificaciones' => $activar,
-                    'ver_asistencias' => $activar,
-                    'comunicarse_profesores' => $activar,
-                    'autorizar_salidas' => $activar,
-                    'modificar_datos_contacto' => $activar,
-                    'ver_comportamiento' => $activar,
-                    'descargar_boletas' => $activar,
-                    'ver_tareas' => $activar,
-                    'recibir_notificaciones' => $activar,
-                ]
+                $data
             );
 
-            $mensaje = $activar ? 'Todos los permisos activados.' : 'Todos los permisos desactivados.';
-            
-            return redirect()
-                ->back()
-                ->with('success', $mensaje);
+            return back()->with('success', $activar
+                ? 'Todos los permisos activados.'
+                : 'Todos los permisos desactivados.'
+            );
 
         } catch (\Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', 'Error al modificar permisos: ' . $e->getMessage());
+            return back()->with('error', 'Error al modificar permisos: ' . $e->getMessage());
         }
     }
 }

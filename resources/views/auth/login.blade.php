@@ -582,14 +582,7 @@
         <h2>Iniciar Sesión</h2>
         <p>Ingresa tus credenciales para acceder</p>
       </div>
-
-      @if ($errors->any())
-        <div class="alert alert-danger">
-          <i class="fas fa-exclamation-circle"></i>
-          <span>{{ $errors->first() }}</span>
-        </div>
-      @endif
-
+       
       @if (session('status'))
         <div class="alert alert-success">
           <i class="fas fa-check-circle"></i>
@@ -666,10 +659,11 @@
       </div>
 
       <!-- Botón para ver página principal - CORREGIDO -->
-      <a href="{{ route('inicio') }}" class="btn-inicio">
-        <i class="fas fa-home"></i>
-        <span>Ver Página Principal</span>
+      <a href="{{ route('plantilla') }}" class="btn-inicio">
+         <i class="fas fa-home"></i>
+         <span>Ver Página Principal</span>
       </a>
+
 
       <div class="footer-info">
         <i class="fas fa-shield-alt"></i>
@@ -715,4 +709,3 @@
 
 </body>
 </html>
-

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DocumentoController extends Controller
 {
-    public function index()
+    public function create($estudiante_id)
     {
         $documentos = Documento::with('estudiante')->get();
         return view('Documentos.indexDocumento', compact('documentos'));
@@ -60,9 +60,11 @@ class DocumentoController extends Controller
         $documento = Documento::findOrFail($id);
 
         $request->validate([
-            'foto'              => 'nullable|image|mimes:jpg,png|max:5120',
-            'acta_nacimiento'   => 'nullable|file|mimes:jpg,png,pdf|max:5120',
-            'calificaciones'    => 'nullable|file|mimes:jpg,png,pdf|max:5120',
+            'foto'                    => 'nullable|image|max:5120',
+            'acta_nacimiento'         => 'nullable|file|mimes:jpg,png,pdf|max:5120',
+            'calificaciones'          => 'nullable|file|mimes:jpg,png,pdf|max:5120',
+            'tarjeta_identidad_padre' => 'nullable|file|mimes:jpg,png,pdf|max:5120',
+            'constancia_medica'       => 'nullable|file|mimes:jpg,png,pdf|max:5120',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -82,7 +84,9 @@ class DocumentoController extends Controller
 
         $documento->save();
 
-        return redirect()->route('documentos.index')->with('success', 'Documentos actualizados correctamente.');
+        return redirect()
+            ->route('estudiantes.show', $documento->estudiante_id)
+            ->with('success', 'Documentos actualizados correctamente.');
     }
 
     public function destroy($id)

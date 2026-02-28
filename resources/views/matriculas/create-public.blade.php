@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         * {
             margin: 0;
@@ -653,7 +653,7 @@
                         <i class="fas fa-paper-plane"></i>
                         <span>Enviar Solicitud de Matrícula</span>
                     </button>
-                    
+
                     <a href="{{ route('plantilla') }}" class="btn-cancel">
                         <i class="fas fa-times"></i>
                         <span>Cancelar</span>
@@ -701,10 +701,9 @@
     function toggleOtroParentesco() {
         const select = document.getElementById('padre_parentesco');
         const otroDiv = document.getElementById('otro_parentesco_div');
-        
         if (select && otroDiv) {
             otroDiv.style.display = select.value === 'otro' ? 'block' : 'none';
-            
+
             const otroInput = document.getElementById('padre_parentesco_otro');
             if (otroInput) {
                 if (select.value === 'otro') {
@@ -720,13 +719,13 @@
         const preview = document.getElementById(previewId);
         const box = document.getElementById(boxId);
         if (!preview) return;
-        
+
         preview.innerHTML = '';
-        
+
         if (input.files && input.files[0]) {
             const file = input.files[0];
             const maxSize = input.id === 'foto_perfil' ? 2 * 1024 * 1024 : 5 * 1024 * 1024;
-            
+
             if (file.size > maxSize) {
                 alert(`El archivo ${file.name} excede el tamaño máximo permitido`);
                 input.value = '';
@@ -739,11 +738,11 @@
 
             const filePreview = document.createElement('div');
             filePreview.className = 'file-preview';
-            
+
             let icono = 'fa-file';
             if (file.type.includes('pdf')) icono = 'fa-file-pdf';
             else if (file.type.includes('image')) icono = 'fa-file-image';
-            
+
             filePreview.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
                     <i class="fas ${icono}" style="color: #4ec7d2; font-size: 0.9rem;"></i>
@@ -762,8 +761,6 @@
     function limpiarArchivo(inputId, previewId, boxId) {
         const input = document.getElementById(inputId);
         const preview = document.getElementById(previewId);
-        const box = document.getElementById(boxId);
-        
         if (input) input.value = '';
         if (preview) preview.innerHTML = '';
         if (box) box.classList.remove('archivo-subido');

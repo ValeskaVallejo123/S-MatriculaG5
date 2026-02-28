@@ -359,6 +359,30 @@
 
 @section('content')
 
+@php
+    // Definir permisos disponibles directamente en la vista
+    $permisosDisponibles = [
+        'ver_estudiantes' => 'Ver Estudiantes',
+        'crear_estudiantes' => 'Crear Estudiantes',
+        'editar_estudiantes' => 'Editar Estudiantes',
+        'eliminar_estudiantes' => 'Eliminar Estudiantes',
+        'ver_profesores' => 'Ver Profesores',
+        'crear_profesores' => 'Crear Profesores',
+        'editar_profesores' => 'Editar Profesores',
+        'eliminar_profesores' => 'Eliminar Profesores',
+        'ver_matriculas' => 'Ver Matrículas',
+        'crear_matriculas' => 'Crear Matrículas',
+        'aprobar_matriculas' => 'Aprobar Matrículas',
+        'rechazar_matriculas' => 'Rechazar Matrículas',
+        'ver_grados' => 'Ver Grados',
+        'gestionar_grados' => 'Gestionar Grados',
+        'ver_secciones' => 'Ver Secciones',
+        'gestionar_secciones' => 'Gestionar Secciones',
+        'ver_reportes' => 'Ver Reportes',
+        'exportar_datos' => 'Exportar Datos',
+    ];
+@endphp
+
 {{-- ── Header ── --}}
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
@@ -384,7 +408,7 @@
 {{-- ══════════ TAB: CONFIGURAR ══════════ --}}
 <div class="rp-pane active" id="rp-tab-config">
 
-    @if(auth()->user()->is_super_admin || (auth()->user()->rol && strtolower(auth()->user()->rol->nombre) === 'super administrador'))
+    @if(auth()->user()->is_super_admin)
 
     {{-- Alertas flash --}}
     @if(session('success'))
@@ -398,10 +422,10 @@
     </div>
     @endif
 
-    <form action="" method="POST" id="rpForm">
+    <form action="{{ route('superadmin.administradores.permisos.update') }}" method="POST" id="rpForm">
         @csrf
         @method('PUT')
-        <input type="hidden" name="admin_id" id="rpAdminId" value="{{ old('admin_id') }}">
+        <input type="hidden" name="usuario_id" id="rpAdminId" value="{{ old('usuario_id') }}">
 
         <div class="rp-layout">
 
@@ -419,7 +443,7 @@
                         $initial = strtoupper(mb_substr($admin->name, 0, 1));
                         $esSA    = $admin->is_super_admin;
                     @endphp
-                    <div class="rp-user-item {{ old('admin_id') == $admin->id ? 'active' : '' }}"
+                    <div class="rp-user-item {{ old('usuario_id') == $admin->id ? 'active' : '' }}"
                          data-id="{{ $admin->id }}"
                          data-name="{{ $admin->name }}"
                          data-email="{{ $admin->email }}"
@@ -450,11 +474,11 @@
                         <i class="fas fa-user-shield"></i>
                     </div>
                     <h6>Selecciona un administrador</h6>
-                    <p>Elige un usuario de la lista para<br>configurar su rol y permisos de acceso.</p>
+                    <p>Elige un usuario de la lista para<br>configurar sus permisos de acceso.</p>
                 </div>
 
                 {{-- Panel activo --}}
-                <div id="rpActive" class="{{ old('admin_id') ? '' : 'd-none' }}">
+                <div id="rpActive" class="{{ old('usuario_id') ? '' : 'd-none' }}">
 
                     {{-- Head --}}
                     <div class="rp-panel-head">
@@ -471,36 +495,8 @@
                     {{-- Body --}}
                     <div class="rp-panel-body">
 
-                        {{-- Rol --}}
-                        <div>
-                            <div class="rp-sec-label">Rol</div>
-                            <div class="rp-rol-grid">
-
-                                <label class="rp-rol-opt" id="rpOptAdmin">
-                                    <input type="radio" name="rol" value="admin" id="rpRolAdmin">
-                                    <div class="rp-rol-icon ad"><i class="fas fa-user-tie"></i></div>
-                                    <div class="rp-rol-txt">
-                                        <h6>Administrador</h6>
-                                        <p>Permisos personalizables</p>
-                                    </div>
-                                    <div class="rp-check"><i class="fas fa-check"></i></div>
-                                </label>
-
-                                <label class="rp-rol-opt" id="rpOptSA">
-                                    <input type="radio" name="rol" value="super_admin" id="rpRolSA">
-                                    <div class="rp-rol-icon sa"><i class="fas fa-user-shield"></i></div>
-                                    <div class="rp-rol-txt">
-                                        <h6>Super Admin</h6>
-                                        <p>Acceso total al sistema</p>
-                                    </div>
-                                    <div class="rp-check"><i class="fas fa-check"></i></div>
-                                </label>
-
-                            </div>
-                        </div>
-
                         {{-- Permisos --}}
-                        <div id="rpPermsSection" class="d-none" style="animation:rpFadeUp .2s ease">
+                        <div id="rpPermsSection">
                             <div class="rp-perms-head">
                                 <div class="rp-sec-label" style="margin:0;flex:1">Permisos de acceso</div>
                                 <div class="d-flex gap-2 ms-3">
@@ -510,11 +506,11 @@
                                 </div>
                             </div>
                             <div class="rp-perms-grid mt-2">
-                                @foreach($permisos as $key => $nombre)
+                                @foreach($permisosDisponibles as $key => $nombre)
                                 <label class="rp-perm-item" id="rpw-{{ $key }}">
-                                    <input type="checkbox" name="permisos[]" value="{{ $key }}"
+                                    <input type="checkbox" name="permissions[]" value="{{ $key }}"
                                            class="rp-perm-cb"
-                                           {{ in_array($key, old('permisos', [])) ? 'checked' : '' }}>
+                                           {{ in_array($key, old('permissions', [])) ? 'checked' : '' }}>
                                     {{ $nombre }}
                                 </label>
                                 @endforeach
@@ -524,7 +520,7 @@
                         {{-- Aviso SA --}}
                         <div class="rp-sa-alert d-none" id="rpSAAlert">
                             <i class="fas fa-exclamation-triangle mt-1"></i>
-                            <span>Este usuario tendrá <strong>control total</strong> sobre el sistema. Asegúrate de que sea de máxima confianza antes de guardar.</span>
+                            <span>Este es un Super Administrador con <strong>control total</strong> del sistema.</span>
                         </div>
 
                     </div>
@@ -611,7 +607,7 @@
                         <td><i class="fas fa-check ico-ok"></i></td>
                         <td><i class="fas fa-times ico-no"></i></td>
                     </tr>
-                    @foreach($permisos as $key => $nombre)
+                    @foreach($permisosDisponibles as $key => $nombre)
                     <tr>
                         <td>{{ $nombre }}</td>
                         <td><i class="fas fa-check ico-ok"></i></td>
@@ -660,10 +656,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const rpEmail      = document.getElementById('rpPanelEmail');
     const rpBadge      = document.getElementById('rpPanelBadge');
     const rpAdminId    = document.getElementById('rpAdminId');
-    const rpRolAdmin   = document.getElementById('rpRolAdmin');
-    const rpRolSA      = document.getElementById('rpRolSA');
-    const rpOptAdmin   = document.getElementById('rpOptAdmin');
-    const rpOptSA      = document.getElementById('rpOptSA');
     const rpPerms      = document.getElementById('rpPermsSection');
     const rpSAAlert    = document.getElementById('rpSAAlert');
     const checkboxes   = document.querySelectorAll('.rp-perm-cb');
@@ -672,13 +664,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const rpNoResults  = document.getElementById('rpNoResults');
 
     /* ── Actualizar UI según rol ── */
-    function updateRolUI() {
-        const isSA = rpRolSA && rpRolSA.checked;
-        rpOptAdmin.classList.toggle('sel-ad', !isSA);
-        rpOptAdmin.classList.toggle('sel-sa', false);
-        rpOptSA.classList.toggle('sel-sa',    isSA);
-        rpOptSA.classList.toggle('sel-ad',    false);
-        rpPerms.classList.toggle('d-none',   isSA);
+    function updateRolUI(isSA) {
+        rpPerms.classList.toggle('d-none', isSA);
         rpSAAlert.classList.toggle('d-none', !isSA);
         checkboxes.forEach(cb => cb.disabled = isSA);
         rpBadge.textContent = isSA ? 'Super Admin' : 'Admin';
@@ -702,20 +689,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const permisos = JSON.parse(item.dataset.permisos || '[]');
         const isSA     = item.dataset.issa === '1';
 
-        // ← Actualizar action del form con el ID del usuario
-        document.getElementById('rpForm').action =
-            '/admins/roles-permisos/' + item.dataset.id + '/guardar';
-
         rpAdminId.value        = item.dataset.id;
         rpAvatar.textContent   = item.dataset.initial;
         rpAvatar.style.background = item.dataset.color;
         rpName.textContent     = item.dataset.name;
         rpEmail.textContent    = item.dataset.email;
 
-        (isSA ? rpRolSA : rpRolAdmin).checked = true;
         checkboxes.forEach(cb => { cb.checked = permisos.includes(cb.value); });
 
-        updateRolUI();
+        updateRolUI(isSA);
         syncPerms();
 
         rpEmpty.classList.add('d-none');
@@ -730,10 +712,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const pre = document.querySelector(`.rp-user-item[data-id="${oldId}"]`);
         if (pre) selectUser(pre);
     }
-
-    /* ── Radio rol ── */
-    if (rpRolAdmin) rpRolAdmin.addEventListener('change', updateRolUI);
-    if (rpRolSA)    rpRolSA.addEventListener('change', updateRolUI);
 
     /* ── Checkboxes ── */
     checkboxes.forEach(cb => cb.addEventListener('change', syncPerms));
