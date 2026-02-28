@@ -89,6 +89,14 @@
 .adm-tbl tbody tr:last-child td { border-bottom: none; }
 .adm-tbl tbody tr:hover { background: #fafbfc; }
 
+/* Número de lista */
+.adm-num {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: #f1f5f9; color: #64748b;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700;
+}
+
 /* Avatar */
 .adm-av {
     width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
@@ -128,6 +136,30 @@
 .adm-empty { padding: 3.5rem 1rem; text-align: center; }
 .adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
 .adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
+
+/* ── Paginación ── */
+.adm-pagination {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap; gap: .5rem;
+}
+.adm-pagination-info {
+    font-size: .78rem; color: #64748b;
+}
+.adm-pagination-links {
+    display: flex; align-items: center; gap: .3rem;
+}
+.adm-pagination-links a,
+.adm-pagination-links span {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 7px;
+    font-size: .78rem; font-weight: 600; text-decoration: none;
+    border: 1px solid #e2e8f0; color: #64748b; background: #fff;
+    transition: all .15s;
+}
+.adm-pagination-links a:hover { background: #e8f8f9; color: #00508f; border-color: #4ec7d2; }
+.adm-pagination-links span.active { background: linear-gradient(135deg,#4ec7d2,#00508f); color: #fff; border-color: transparent; }
+.adm-pagination-links span.disabled { opacity: .4; cursor: not-allowed; }
 </style>
 @endpush
 
@@ -142,7 +174,7 @@
             </div>
             <div>
                 <div class="adm-stat-lbl">Total</div>
-                <div class="adm-stat-num">{{ $administradores->count() }}</div>
+                <div class="adm-stat-num">{{ $administradores->total() }}</div>
             </div>
         </div>
         <div class="adm-stat">
@@ -151,7 +183,7 @@
             </div>
             <div>
                 <div class="adm-stat-lbl">Super Admins</div>
-                <div class="adm-stat-num">{{ $administradores->where('is_super_admin', true)->count() }}</div>
+                <div class="adm-stat-num">{{ $administradores->getCollection()->where('is_super_admin', true)->count() }}</div>
             </div>
         </div>
         <div class="adm-stat">
@@ -160,7 +192,7 @@
             </div>
             <div>
                 <div class="adm-stat-lbl">Administradores</div>
-                <div class="adm-stat-num">{{ $administradores->where('is_super_admin', false)->count() }}</div>
+                <div class="adm-stat-num">{{ $administradores->getCollection()->where('is_super_admin', false)->count() }}</div>
             </div>
         </div>
     </div>
@@ -175,6 +207,7 @@
             <table class="adm-tbl">
                 <thead>
                     <tr>
+                        <th class="tc">#</th>
                         <th>Administrador</th>
                         <th>Email</th>
                         <th class="tc">Rol</th>
@@ -184,8 +217,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($administradores as $admin)
+                    @forelse($administradores as $index => $admin)
                     <tr>
+                        {{-- Número de lista (no viene de BD) --}}
+                        <td class="tc">
+                            <span class="adm-num">{{ $administradores->firstItem() + $index }}</span>
+                        </td>
+
                         <td>
                             <div style="display:flex;align-items:center;gap:.65rem;">
                                 <div class="adm-av">{{ substr($admin->name,0,1) }}</div>
@@ -249,7 +287,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="adm-empty">
                                 <i class="fas fa-users"></i>
                                 <p>No hay administradores registrados</p>
@@ -260,6 +298,41 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Paginación --}}
+        @if($administradores->hasPages())
+        <div class="adm-pagination">
+            <div class="adm-pagination-info">
+                Mostrando {{ $administradores->firstItem() }}–{{ $administradores->lastItem() }}
+                de {{ $administradores->total() }} registros
+            </div>
+            <div class="adm-pagination-links">
+                {{-- Anterior --}}
+                @if($administradores->onFirstPage())
+                    <span class="disabled"><i class="fas fa-chevron-left"></i></span>
+                @else
+                    <a href="{{ $administradores->previousPageUrl() }}"><i class="fas fa-chevron-left"></i></a>
+                @endif
+
+                {{-- Páginas --}}
+                @foreach($administradores->getUrlRange(1, $administradores->lastPage()) as $page => $url)
+                    @if($page == $administradores->currentPage())
+                        <span class="active">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}">{{ $page }}</a>
+                    @endif
+                @endforeach
+
+                {{-- Siguiente --}}
+                @if($administradores->hasMorePages())
+                    <a href="{{ $administradores->nextPageUrl() }}"><i class="fas fa-chevron-right"></i></a>
+                @else
+                    <span class="disabled"><i class="fas fa-chevron-right"></i></span>
+                @endif
+            </div>
+        </div>
+        @endif
+
     </div>
 
 </div>

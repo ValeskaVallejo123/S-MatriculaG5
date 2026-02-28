@@ -46,16 +46,17 @@ class SuperAdminController extends Controller
     | GESTIÓN DE ADMINISTRADORES
     |--------------------------------------------------------------------------
     */
+public function index()
+{
+    $perPage = in_array(request('per_page'), [10, 25, 50]) ? request('per_page') : 10;
 
-    public function index()
-    {
-        $administradores = User::whereIn('user_type', ['admin', 'super_admin'])
-            ->orderBy('is_super_admin', 'desc')
-            ->orderBy('name')
-            ->get();
+    $administradores = User::whereIn('user_type', ['admin', 'super_admin'])
+        ->orderBy('is_super_admin', 'desc')
+        ->orderBy('name')
+        ->paginate($perPage);
 
-        return view('superadmin.administradores.index', compact('administradores'));
-    }
+    return view('superadmin.administradores.index', compact('administradores'));
+}
 
     public function create()
     {

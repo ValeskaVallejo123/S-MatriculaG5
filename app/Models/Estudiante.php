@@ -122,4 +122,8 @@ class Estudiante extends Model
     {
         return ['A', 'B', 'C'];
     }
+public function padres()
+{
+    return $this->belongsToMany(Padre::class, 'matriculas', 'estudiante_id', 'padre_id');
+}
 }

@@ -49,8 +49,9 @@
     padding: .3rem .8rem; border-radius: 999px;
     font-size: .75rem; font-weight: 700; white-space: nowrap;
 }
-.b-active { background: #fff; color: #00508f; border: 2px solid #4ec7d2; }
+.b-active   { background: #fff; color: #00508f; border: 2px solid #4ec7d2; }
 .b-inactive { background: #fff; color: #dc2626; border: 2px solid #ef4444; }
+.b-cyan     { background: #e8f8f9; color: #00508f; border: 1px solid #b2e8ed; font-size: .72rem; font-weight: 600; padding: .2rem .6rem; border-radius: 999px; }
 
 /* ── Card body ── */
 .show-card {
@@ -84,11 +85,37 @@
     font-size: .67rem; font-weight: 700; letter-spacing: .07em;
     text-transform: uppercase; color: #94a3b8; margin-bottom: .2rem;
 }
-.field-value {
-    font-size: .88rem; font-weight: 600; color: #0f172a;
-}
+.field-value { font-size: .88rem; font-weight: 600; color: #0f172a; }
 .field-value.mono { font-family: monospace; color: #00508f; }
 .field-value.empty { color: #cbd5e1; font-weight: 400; font-style: italic; }
+
+/* ── Padres vinculados ── */
+.padre-card {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 1rem; display: flex; align-items: center; gap: .85rem;
+    justify-content: space-between;
+}
+.padre-avatar {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #fff; font-size: 1rem;
+}
+.padre-name { font-weight: 600; color: #0f172a; font-size: .85rem; }
+.padre-sub  { font-size: .75rem; color: #64748b; margin-top: .1rem; }
+.padre-empty {
+    text-align: center; padding: 1.5rem; color: #94a3b8;
+    background: #f8fafc; border-radius: 10px; border: 1.5px dashed #e2e8f0;
+}
+.padre-empty i { display: block; font-size: 1.5rem; margin-bottom: .5rem; color: #cbd5e1; }
+
+.btn-desvincular {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .3rem .7rem; border-radius: 6px; font-size: .75rem; font-weight: 600;
+    background: #fef2f2; color: #ef4444; border: 1px solid #fecaca;
+    cursor: pointer; transition: all .15s; text-decoration: none;
+}
+.btn-desvincular:hover { background: #ef4444; color: #fff; }
 
 /* ── Footer actions ── */
 .show-footer {
@@ -188,12 +215,6 @@
                             {{ $estudiante->sexo ? ucfirst($estudiante->sexo) : 'No registrado' }}
                         </div>
                     </div>
-                    <div class="field-box">
-                        <div class="field-label">Género</div>
-                        <div class="field-value {{ !$estudiante->genero ? 'empty' : '' }}">
-                            {{ $estudiante->genero ?: 'No registrado' }}
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -241,31 +262,60 @@
                 </div>
             </div>
 
-            {{-- Información del Padre --}}
+            {{-- ✅ PADRES VINCULADOS --}}
             <div>
-                <div class="show-section-title">
-                    <i class="fas fa-user-friends"></i> Información del Padre/Tutor
+                <div class="show-section-title" style="justify-content: space-between;">
+                    <span style="display:flex;align-items:center;gap:.5rem;">
+                        <i class="fas fa-user-friends"></i> Padres / Tutores Vinculados
+                    </span>
+                    <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}"
+                       style="font-size:.75rem;font-weight:600;color:#4ec7d2;text-decoration:none;">
+                        <i class="fas fa-plus"></i> Vincular
+                    </a>
                 </div>
-                <div class="fields-grid">
-                    <div class="field-box">
-                        <div class="field-label">Nombre del Padre</div>
-                        <div class="field-value {{ !$estudiante->nombre_padre ? 'empty' : '' }}">
-                            {{ $estudiante->nombre_padre ?: 'No registrado' }}
+
+                @if($estudiante->padres && $estudiante->padres->count() > 0)
+                    <div style="display:flex;flex-direction:column;gap:.65rem;">
+                        @foreach($estudiante->padres as $padre)
+                        <div class="padre-card">
+                            <div style="display:flex;align-items:center;gap:.85rem;">
+                                <div class="padre-avatar">{{ strtoupper(substr($padre->nombre, 0, 1)) }}</div>
+                                <div>
+                                    <div class="padre-name">{{ $padre->nombre }} {{ $padre->apellido }}</div>
+                                    <div class="padre-sub">
+                                        <span class="b-cyan">{{ ucfirst($padre->parentesco) }}</span>
+                                        @if($padre->telefono)
+                                            &nbsp;· <i class="fas fa-phone" style="font-size:.65rem;"></i> {{ $padre->telefono }}
+                                        @endif
+                                        @if($padre->correo)
+                                            &nbsp;· <i class="fas fa-envelope" style="font-size:.65rem;"></i> {{ $padre->correo }}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- Botón desvincular --}}
+                            <form action="{{ route('padres.desvincular') }}" method="POST" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="padre_id" value="{{ $padre->id }}">
+                                <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
+                                <button type="submit" class="btn-desvincular"
+                                        onclick="return confirm('¿Desvincular a {{ $padre->nombre }} {{ $padre->apellido }}?')">
+                                    <i class="fas fa-unlink"></i> Desvincular
+                                </button>
+                            </form>
                         </div>
+                        @endforeach
                     </div>
-                    <div class="field-box">
-                        <div class="field-label">Teléfono del Padre</div>
-                        <div class="field-value {{ !$estudiante->telefono_padre ? 'empty' : '' }}">
-                            {{ $estudiante->telefono_padre ?: 'No registrado' }}
-                        </div>
+                @else
+                    <div class="padre-empty">
+                        <i class="fas fa-user-slash"></i>
+                        <p style="margin:0;font-size:.85rem;">No hay padres/tutores vinculados</p>
+                        <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}"
+                           class="adm-btn-solid" style="margin-top:.75rem;display:inline-flex;">
+                            <i class="fas fa-link"></i> Vincular ahora
+                        </a>
                     </div>
-                    <div class="field-box">
-                        <div class="field-label">Email del Padre</div>
-                        <div class="field-value {{ !$estudiante->email_padre ? 'empty' : '' }}">
-                            {{ $estudiante->email_padre ?: 'No registrado' }}
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
 
             {{-- Observaciones --}}
@@ -277,6 +327,7 @@
                 <div class="field-box">
                     <div class="field-value" style="line-height:1.6;">{{ $estudiante->observaciones }}</div>
                 </div>
+            </div>
             @endif
 
             {{-- Datos del Sistema --}}

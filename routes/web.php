@@ -123,16 +123,18 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard con redirección por rol
     Route::get('/dashboard', function () {
-        $role = Auth::user()->role;
+        $user = Auth::user();
+
+        // ✅ Usar id_rol directamente (más seguro y evita cargar relación)
         $roleRouteMap = [
-            'super_admin' => 'superadmin.dashboard',
-            'admin'       => 'admin.dashboard',
-            'profesor'    => 'profesor.dashboard',
-            'estudiante'  => 'estudiante.dashboard',
-            'padre'       => 'padre.dashboard',
-            'user'        => 'admin.dashboard',
+            1 => 'superadmin.dashboard',
+            2 => 'admin.dashboard',
+            3 => 'profesor.dashboard',
+            4 => 'estudiante.dashboard',
+            5 => 'padre.dashboard',
         ];
-        return redirect()->route($roleRouteMap[$role] ?? 'inicio');
+
+        return redirect()->route($roleRouteMap[$user->id_rol] ?? 'inicio');
     })->name('dashboard');
 
     // Acciones importantes
@@ -311,7 +313,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Padres / Tutores
         Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar');
-        Route::post('/padres/{padre}/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
+       Route::post('/padres/{padre}/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
         Route::post('/padres/desvincular', [PadreController::class, 'desvincular'])->name('padres.desvincular');
         Route::resource('padres', PadreController::class);
 

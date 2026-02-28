@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Rol;
 
 class User extends Authenticatable
 {
@@ -38,7 +39,6 @@ class User extends Authenticatable
             'fecha_registro'    => 'datetime',
             'is_super_admin'    => 'boolean',
             'is_protected'      => 'boolean',
-            'permissions' => 'array',
         ];
     }
 
@@ -237,37 +237,21 @@ class User extends Authenticatable
     // NOTIFICACIONES (CAMPANA 🔔)
     // =============================
 
-    /**
-     * Devuelve las notificaciones del usuario ordenadas por fecha desc.
-     * Uso: $user->notificacionesPermitidas()->take(5)->get()
-     */
     public function notificacionesPermitidas()
     {
         return $this->notificaciones()->latest();
     }
 
-    /**
-     * Relación de notificaciones no leídas (devuelve query builder).
-     * Uso: $user->notificacionesNoLeidas()->get()
-     */
     public function notificacionesNoLeidas()
     {
         return $this->notificaciones()->where('leida', false);
     }
 
-    /**
-     * Accessor: total de notificaciones no leídas como entero.
-     * Uso en blade: $user->total_notificaciones_no_leidas
-     */
     public function getTotalNotificacionesNoLeidasAttribute()
     {
         return $this->notificaciones()->where('leida', false)->count();
     }
 
-    /**
-     * Retorna las últimas N notificaciones del usuario.
-     * Uso en blade: $user->notificacionesRecientes(5)
-     */
     public function notificacionesRecientes(int $limite = 5)
     {
         return $this->notificacionesPermitidas()->take($limite)->get();
@@ -323,10 +307,4 @@ class User extends Authenticatable
     {
         return $this->tienePermiso($permission);
     }
-    // Dentro de la clase User en app/Models/User.php
-
-public function role()
-{
-    return $this->belongsTo(Role::class, 'id_rol');
-}
 }

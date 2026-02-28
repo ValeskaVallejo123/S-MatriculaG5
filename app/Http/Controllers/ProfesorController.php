@@ -10,7 +10,7 @@ class ProfesorController extends Controller
     public function __construct()
     {
         // Solo admin y super_admin pueden manejar profesores
-        $this->middleware(['auth', 'rol:admin,super_admin']);
+        $this->middleware(['auth', 'role:admin,super_admin']);
     }
 
     public function index(Request $request)

@@ -40,11 +40,13 @@ class EstudianteController extends Controller
     /* ============================================================
        LISTAR ESTUDIANTES
        ============================================================ */
-    public function index()
-    {
-        $estudiantes = Estudiante::latest()->paginate(5);
-        return view('estudiantes.index', compact('estudiantes'));
-    }
+   public function index()
+{
+    $perPage = in_array(request('per_page'), [10, 25, 50]) ? request('per_page') : 10;
+    $estudiantes = Estudiante::paginate($perPage);
+
+    return view('estudiantes.index', compact('estudiantes'));
+}
 
     /* ============================================================
        FORMULARIO DE CREACIÓN
@@ -153,11 +155,11 @@ class EstudianteController extends Controller
         /* ============================================================
        VER DETALLE DE ESTUDIANTE
        ============================================================ */
-    public function show(Estudiante $estudiante)
-    {
-        return view('estudiantes.show', compact('estudiante'));
-    }
-
+  public function show(Estudiante $estudiante)
+{
+    $estudiante->load('padres');
+    return view('estudiantes.show', compact('estudiante'));
+}
 
     /* ============================================================
        FORMULARIO DE EDICIÓN

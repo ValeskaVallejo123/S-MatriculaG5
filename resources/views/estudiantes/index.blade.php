@@ -28,6 +28,7 @@
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
     padding: 1rem 1.25rem; margin-bottom: 1.25rem;
     display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap;
     box-shadow: 0 1px 3px rgba(0,0,0,.05);
 }
 .est-search-wrap { position: relative; flex: 1; max-width: 380px; }
@@ -43,6 +44,24 @@
     background: #f8fafc;
 }
 .est-search:focus { border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.12); background: #fff; }
+
+.est-toolbar-right {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+}
+
+/* Selector de registros por página */
+.est-perpage {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .8rem; color: #64748b;
+}
+.est-perpage label { white-space: nowrap; font-weight: 500; }
+.est-perpage select {
+    padding: .3rem .6rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: .8rem; font-family: 'Inter', sans-serif; color: #0f172a;
+    background: #f8fafc; outline: none; cursor: pointer;
+    transition: border-color .2s;
+}
+.est-perpage select:focus { border-color: #4ec7d2; }
 
 .est-total {
     display: flex; align-items: center; gap: .4rem;
@@ -86,6 +105,14 @@
 .est-tbl tbody tr:last-child td { border-bottom: none; }
 .est-tbl tbody tr { transition: background .12s; }
 .est-tbl tbody tr:hover { background: #f8fafc; }
+
+/* Número de lista */
+.est-num {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: #f1f5f9; color: #64748b;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700;
+}
 
 /* Photo */
 .est-photo {
@@ -136,7 +163,7 @@
     padding: .85rem 1.25rem;
     border-top: 1px solid #f1f5f9;
     display: flex; align-items: center; justify-content: space-between;
-    background: #fafafa;
+    background: #fafafa; flex-wrap: wrap; gap: .5rem;
 }
 .est-pages { font-size: .78rem; color: #94a3b8; }
 
@@ -168,9 +195,22 @@
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" class="est-search" placeholder="Buscar por nombre, DNI, grado...">
         </div>
-        <div class="est-total">
-            <i class="fas fa-users" style="color:#4ec7d2;"></i>
-            <span><strong>{{ $estudiantes->total() }}</strong> estudiantes</span>
+        <div class="est-toolbar-right">
+            {{-- Selector de registros por página --}}
+            <div class="est-perpage">
+                <label for="perPageSelect"><i class="fas fa-list-ol" style="color:#4ec7d2;"></i> Mostrar:</label>
+                <select id="perPageSelect" onchange="cambiarPerPage(this.value)">
+                    @foreach([10, 25, 50] as $op)
+                        <option value="{{ $op }}" {{ request('per_page', 10) == $op ? 'selected' : '' }}>
+                            {{ $op }} por página
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="est-total">
+                <i class="fas fa-users" style="color:#4ec7d2;"></i>
+                <span><strong>{{ $estudiantes->total() }}</strong> estudiantes</span>
+            </div>
         </div>
     </div>
 
@@ -185,6 +225,7 @@
             <table class="est-tbl" id="studentsTable">
                 <thead>
                     <tr>
+                        <th class="tc">#</th>
                         <th>Foto</th>
                         <th>Nombre</th>
                         <th>DNI</th>
@@ -195,8 +236,11 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    @forelse($estudiantes as $estudiante)
+                    @forelse($estudiantes as $index => $estudiante)
                     <tr class="student-row">
+                        <td class="tc">
+                            <span class="est-num">{{ $estudiantes->firstItem() + $index }}</span>
+                        </td>
                         <td>
                             <img src="{{ asset('storage/' . $estudiante->foto) }}"
                                  class="est-photo" alt="Foto">
@@ -237,19 +281,21 @@
                                    class="act-btn act-edit" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button type="button"
-                                        class="act-btn act-del btn-delete-estudiante"
-                                        data-url="{{ route('estudiantes.destroy', $estudiante->id) }}"
-                                        data-nombre="{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}"
-                                        title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                               <button type="button"
+        class="act-btn act-del btn-delete-estudiante"
+        data-route="{{ route('estudiantes.destroy', $estudiante->id) }}"
+        data-message="¿Estás seguro de eliminar este estudiante?"
+        data-name="{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}"
+        onclick="mostrarModalDeleteData(this)"
+        title="Eliminar">
+    <i class="fas fa-trash"></i>
+</button>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="est-empty">
                                 <i class="fas fa-user-graduate"></i>
                                 <p>No hay estudiantes registrados</p>
@@ -270,7 +316,7 @@
             <span class="est-pages">
                 Mostrando {{ $estudiantes->firstItem() }}–{{ $estudiantes->lastItem() }} de {{ $estudiantes->total() }}
             </span>
-            {{ $estudiantes->links() }}
+            {{ $estudiantes->appends(['per_page' => request('per_page', 10)])->links() }}
         </div>
         @endif
     </div>
@@ -280,6 +326,13 @@
 
 @push('scripts')
 <script>
+function cambiarPerPage(valor) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', valor);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const tbody       = document.getElementById('tableBody');
@@ -295,14 +348,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (match) visible++;
         });
 
-        // Quitar fila "sin resultados" previa
         const prev = tbody.querySelector('.no-results-row');
         if (prev) prev.remove();
 
         if (visible === 0 && q !== '') {
             const tr = document.createElement('tr');
             tr.className = 'no-results-row';
-            tr.innerHTML = `<td colspan="7">
+            tr.innerHTML = `<td colspan="8">
                 <i class="fas fa-search" style="color:#cbd5e1;font-size:1.5rem;display:block;margin-bottom:.5rem;"></i>
                 Sin resultados para "<strong>${q}</strong>"
             </td>`;
