@@ -14,6 +14,7 @@ class Matricula extends Model
     protected $fillable = [
         'codigo_matricula',
         'estudiante_id',
+        'seccion_id',
         'padre_id',
         'anio_lectivo',
         'fecha_matricula',

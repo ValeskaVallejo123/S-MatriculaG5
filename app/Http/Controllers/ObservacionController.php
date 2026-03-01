@@ -104,7 +104,11 @@ class ObservacionController extends Controller
             'profesor_id'   => 'nullable|exists:profesores,id',
         ]);
 
-        $user = auth()->user();
+        // Solo tomamos los datos que nos interesan
+        $data = $request->only(['estudiante_id', 'descripcion', 'tipo']);
+
+        // Si quieres que el profesor_id sea totalmente ignorado o nulo:
+        $data['profesor_id'] = null;
 
         // CORRECCIÓN: el original forzaba profesor_id = null siempre.
         // Si el usuario es docente, se asigna automáticamente su profesor_id.
@@ -117,37 +121,7 @@ class ObservacionController extends Controller
         Observacion::create($validated);
 
         return redirect()->route('observaciones.index')
-            ->with('success', 'Observación guardada correctamente.');
-    }
-
-    // ────────────────────────────────────────────────────────────────────────
-    // SHOW
-    // ────────────────────────────────────────────────────────────────────────
-
-    public function show(Observacion $observacion)
-    {
-        // CORRECCIÓN: el original no tenía método show(), lo que causaba
-        // error 500 si la ruta resource intentaba usarlo.
-        $observacion->load(['estudiante', 'profesor']);
-
-        return view('observaciones.showObservacion', compact('observacion'));
-    }
-
-    // ────────────────────────────────────────────────────────────────────────
-    // EDIT
-    // ────────────────────────────────────────────────────────────────────────
-
-    public function edit(Observacion $observacion)
-    {
-        // CORRECCIÓN: el original no verificaba si el usuario tiene permiso
-        // para editar esta observación específica. Un profesor podía editar
-        // observaciones de otros profesores.
-        $this->autorizarModificacion($observacion);
-
-        $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $profesores  = Profesor::orderBy('nombre')->get();
-
-        return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores'));
+            ->with('success', 'Observación guardada sin necesidad de profesor.');
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -156,16 +130,12 @@ class ObservacionController extends Controller
 
     public function update(Request $request, Observacion $observacion)
     {
-        // CORRECCIÓN: el original permitía actualizar con todos los campos
-        // en null (todo nullable sin required), lo que podía dejar una
-        // observación completamente vacía.
-        $this->autorizarModificacion($observacion);
-
-        $validated = $request->validate([
-            'estudiante_id' => 'required|exists:estudiantes,id',
-            'profesor_id'   => 'nullable|exists:profesores,id',
-            'descripcion'   => 'required|string|min:5|max:1000',
-            'tipo'          => 'required|string|in:academica,conductual,salud,otro',
+        // Mismo cambio aquí para permitir editar sin llenar todo obligatoriamente
+        $request->validate([
+            'estudiante_id' => 'nullable|exists:estudiantes,id',
+            'profesor_id' => 'nullable|exists:profesores,id',
+            'descripcion' => 'nullable|string|max:1000',
+            'tipo' => 'nullable|string',
         ]);
 
         $observacion->update($validated);

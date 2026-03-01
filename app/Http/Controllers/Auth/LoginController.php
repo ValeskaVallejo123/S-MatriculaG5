@@ -88,10 +88,29 @@ class LoginController extends Controller
             }
         }
 
-        // ── Regenerar sesión (previene session fixation) ────────────
-        $request->session()->regenerate();
+        Log::info('Redirigiendo');
+        return $this->redirectBasedOnRole($usuario);
+    }
 
-        return $this->redirigirSegunRol($usuario);
+    private function redirectBasedOnRole($usuario)
+    {
+        if ($usuario->rol) {
+            switch ($usuario->rol->nombre) {
+                case 'Super Administrador':
+                    return redirect()->route('superadmin.dashboard');
+                case 'Administrador':
+                    return redirect()->route('admin.dashboard');
+                case 'Profesor':
+                    return redirect()->route('profesor.dashboard');
+                case 'Estudiante':
+                    return redirect()->route('estudiante.dashboard');
+                case 'Padre':
+                    return redirect()->route('padre.dashboard');
+            }
+        }
+
+        Auth::logout();
+        return back()->withErrors(['email' => 'Rol no reconocido.']);
     }
 
     /**

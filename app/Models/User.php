@@ -5,25 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Rol;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'id_rol',
-        'rol_id',           // CORRECCIÓN: LoginController usaba rol_id además de id_rol
-        'activo',
-        'user_type',
-        'fecha_registro',
-        'permissions',
-        'is_super_admin',
-        'is_protected',
-        'email_verified_at',
-    ];
+   protected $fillable = [
+    'name',
+    'email',
+    'password',
+    'id_rol',
+    'activo', 
+    'user_type',
+    'is_super_admin',
+    'is_protected',
+    'permissions',
+    'email_verified_at',
+];
 
     protected $hidden = [
         'password',
@@ -317,6 +316,34 @@ class User extends Authenticatable
         return Observacion::whereRaw('0 = 1');
     }
 
+    // =============================
+    // NOTIFICACIONES (CAMPANA )
+    // =============================
+
+    public function notificacionesPermitidas()
+    {
+        return $this->notificaciones()->latest();
+    }
+
+    public function notificacionesNoLeidas()
+    {
+        return $this->notificaciones()->where('leida', false);
+    }
+
+    public function getTotalNotificacionesNoLeidasAttribute()
+    {
+        return $this->notificaciones()->where('leida', false)->count();
+    }
+
+    public function notificacionesRecientes(int $limite = 5)
+    {
+        return $this->notificacionesPermitidas()->take($limite)->get();
+    }
+
+    // =============================
+    // PADRES
+    // =============================
+
     public function padresPermitidos()
     {
         if ($this->isSuperAdmin() || $this->isAdmin() || $this->isDocente()) {
@@ -334,29 +361,7 @@ class User extends Authenticatable
     // NOTIFICACIONES
     // =========================================================================
 
-    public function notificacionesPermitidas()
-    {
-        return $this->notificaciones()->latest();
-    }
-
-    public function notificacionesNoLeidas()
-    {
-        return $this->notificaciones()->where('leida', false);
-    }
-
-    /**
-     * Accessor: $user->total_notificaciones_no_leidas
-     */
-    public function getTotalNotificacionesNoLeidasAttribute(): int
-    {
-        return $this->notificaciones()->where('leida', false)->count();
-    }
-
-    public function notificacionesRecientes(int $limite = 5)
-    {
-        return $this->notificacionesPermitidas()->take($limite)->get();
-    }
-
+  
     // =========================================================================
     // OBTENER TODOS LOS PERMISOS
     // =========================================================================

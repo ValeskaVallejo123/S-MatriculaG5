@@ -45,10 +45,12 @@
         <div class="calendar-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="mb-0">📅 Calendario Académico</h1>
-                <a href="{{ route('plantilla') }}"
-                   class="btn btn-secondary">
-                    Volver
-                </a>
+               <a href="{{ route('plantilla') }}" class="btn btn-outline-primary">
+    <i class="fas fa-arrow-left"></i>
+    Volver al Panel
+</a>
+
+
             </div>
             
             <div class="legend mb-3">
@@ -187,7 +189,7 @@
                 select: function(info) {
                     abrirModal(null, info.startStr, info.endStr);
                 },
-                
+               // Eventos para editar, arrastrar y redimensionar 
                 eventClick: function(info) {
                     const evento = info.event;
                     abrirModal(evento);
@@ -240,42 +242,58 @@
             modalEvento.show();
         }
 
-        async function guardarEvento() {
-            const eventoId = document.getElementById('eventId').value;
-            const tipo = document.getElementById('type').value;
+       async function guardarEvento() {
+    const eventoId = document.getElementById('eventId').value;
+    const tipo = document.getElementById('type').value;
+    
+    const datos = {
+        titulo: document.getElementById('title').value,
+        descripcion: document.getElementById('description').value,
+        fecha_inicio: document.getElementById('start_date').value,
+        fecha_fin: document.getElementById('end_date').value,
+        tipo: tipo,
+        color: coloresPorTipo[tipo],
+        todo_el_dia: 1
+    };
+
+    // Asegúrate de que estas URLs coincidan con tus rutas en web.php
+    const url = eventoId ? `/calendario/eventos/${eventoId}` : '/calendario/eventos';
+    const metodo = eventoId ? 'PUT' : 'POST';
+
+    try {
+        const respuesta = await fetch(url, {
+            method: metodo,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json', // <--- FUNDAMENTAL: Evita el error <!DOCTYPE
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify(datos)
+        });
+
+        // Intentamos parsear la respuesta como JSON
+        const resultado = await respuesta.json();
+
+        if (respuesta.ok) {
+            modalEvento.hide();
+            calendario.refetchEvents();
+            alert('Evento guardado correctamente');
+        } else {
+            // Aquí capturamos los errores de validación de Laravel
+            console.error('Errores de validación:', resultado.errores);
+            let mensajeError = resultado.mensaje || 'Error de validación';
             
-            const datos = {
-                titulo: document.getElementById('title').value,
-                descripcion: document.getElementById('description').value,
-                fecha_inicio: document.getElementById('start_date').value,
-                fecha_fin: document.getElementById('end_date').value,
-                tipo: tipo,
-                color: coloresPorTipo[tipo],
-                todo_el_dia: true
-            };
-
-            const url = eventoId ? `/calendario/eventos/${eventoId}` : '/calendario/eventos';
-            const metodo = eventoId ? 'PUT' : 'POST';
-
-            try {
-                const respuesta = await fetch(url, {
-                    method: metodo,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(datos)
-                });
-
-                if (respuesta.ok) {
-                    modalEvento.hide();
-                    calendario.refetchEvents();
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error al guardar el evento');
+            if (resultado.errores) {
+                mensajeError = Object.values(resultado.errores).flat().join('\n');
             }
+            alert('Atención:\n' + mensajeError);
         }
+    } catch (error) {
+        // Este catch ahora solo se activará si hay un error de red o el JSON está mal formado
+        console.error('Error en la petición:', error);
+        alert('Ocurrió un error crítico. Revisa la consola (F12).');
+    }
+}
 
         async function eliminarEvento() {
             const eventoId = document.getElementById('eventId').value;
@@ -301,29 +319,31 @@
         }
 
         async function actualizarFechasEvento(evento) {
-            const datos = {
-                titulo: evento.title,
-                descripcion: evento.extendedProps.description,
-                fecha_inicio: evento.startStr,
-                fecha_fin: evento.endStr || evento.startStr,
-                tipo: evento.extendedProps.type,
-                color: evento.backgroundColor
-            };
+    const datos = {
+        titulo: evento.title,
+        descripcion: evento.extendedProps.description,
+        fecha_inicio: evento.startStr,
+        fecha_fin: evento.endStr || evento.startStr,
+        tipo: evento.extendedProps.type,
+        color: evento.backgroundColor,
+        todo_el_dia: evento.allDay ? 1 : 0
+    };
 
-            try {
-                await fetch(`/calendario/eventos/${evento.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(datos)
-                });
-            } catch (error) {
-                console.error('Error:', error);
-                calendario.refetchEvents();
-            }
-        }
+    try {
+        await fetch(`/calendario/eventos/${evento.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json', // <--- IMPORTANTE AQUÍ TAMBIÉN
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify(datos)
+        });
+    } catch (error) {
+        console.error('Error al mover evento:', error);
+        calendario.refetchEvents();
+    }
+}
     </script>
 </body>
 </html>

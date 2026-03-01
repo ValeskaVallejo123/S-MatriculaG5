@@ -80,20 +80,17 @@
     {{-- Tabs --}}
     <ul class="nav nav-tabs mb-4" id="nivelTabs" style="border: none;">
         <li class="nav-item">
-            <button class="nav-link active" id="todos-tab" data-bs-toggle="tab" data-bs-target="#todos" type="button"
-                    style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
+            <button class="nav-link active" id="todos-tab" data-nivel="" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-th-large me-2"></i>Todos
             </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" id="primaria-tab" data-bs-toggle="tab" data-bs-target="#primaria" type="button"
-                    style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
+            <button class="nav-link" id="primaria-tab" data-nivel="primaria" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-child me-2"></i>Primaria
             </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" id="secundaria-tab" data-bs-toggle="tab" data-bs-target="#secundaria" type="button"
-                    style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
+            <button class="nav-link" id="secundaria-tab" data-nivel="secundaria" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-user-graduate me-2"></i>Secundaria
             </button>
         </li>
@@ -428,8 +425,26 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Sincronizar Select → Tabs
+    filterNivel.addEventListener('change', function () {
+        const val = this.value;
+        const targetTab = document.querySelector(`#nivelTabs button[data-nivel="${val}"]`);
+        if (targetTab) {
+            new bootstrap.Tab(targetTab).show();
+        }
+        filterCards();
+    });
+
+    // Sincronizar Tabs → Select
+    tabButtons.forEach(function (button) {
+        button.addEventListener('shown.bs.tab', function (event) {
+            filterNivel.value = event.target.getAttribute('data-nivel');
+            filterCards();
+        });
+    });
+
+    // Buscador
     searchInput.addEventListener('keyup', filterCards);
-    filterNivel.addEventListener('change', filterCards);
 });
 
 function changePerPage(value) {

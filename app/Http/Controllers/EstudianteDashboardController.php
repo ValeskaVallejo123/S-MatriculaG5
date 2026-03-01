@@ -10,14 +10,14 @@ class EstudianteDashboardController extends Controller
 {
     public function index()
     {
-        // ✅ Usuario autenticado
+        //  Usuario autenticado
         $user = Auth::user();
 
         if (!$user) {
             abort(403, 'Usuario no autenticado');
         }
 
-        // ✅ Perfil estudiante (NO usuario)
+        // Perfil estudiante (NO usuario)
         $estudiante = $user->estudiante;
 
         if (!$estudiante) {
