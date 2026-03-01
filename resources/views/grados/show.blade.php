@@ -6,14 +6,7 @@
 
 @section('topbar-actions')
     <div class="d-flex gap-2">
-        <a href="{{ route('grados.asignar-materias', $grado) }}" class="btn-back" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); font-size: 0.9rem;">
-            <i class="fas fa-tasks"></i>
-            Gestionar Materias
-        </a>
-        <a href="{{ route('grados.edit', $grado) }}" class="btn-back" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); font-size: 0.9rem;">
-            <i class="fas fa-edit"></i>
-            Editar
-        </a>
+        
         <a href="{{ route('grados.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; box-shadow: 0 2px 8px rgba(0, 80, 143, 0.2); font-size: 0.9rem;">
             <i class="fas fa-arrow-left"></i>
             Volver

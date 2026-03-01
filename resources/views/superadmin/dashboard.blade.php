@@ -355,12 +355,13 @@
                     </div>
                 </div>
                 <div class="action-card-body">
-                    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-outline-primary w-100 mb-2">
-                        <i class="fas fa-users-cog me-2"></i> Administradores
-                    </a>
-                    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-primary w-100">
-                        <i class="fas fa-user-tie me-2"></i> Gestión de Admins
-                    </a>
+                    <a href="{{ route('admins.index') }}" class="btn btn-outline-primary w-100 mb-2">
+                    <i class="fas fa-users-cog me-2"></i> Administradores
+                </a>
+
+                    <a href="{{ route('admins.index') }}" class="btn btn-primary w-100">
+    <i class="fas fa-user-tie me-2"></i> Gestión de Admins
+</a>
                 </div>
             </div>
         </div>

@@ -648,10 +648,9 @@
 
             @if($isSuperAdmin)
             <li class="menu-item">
-                <a href="{{ route('superadmin.administradores.index') }}" class="menu-link {{ request()->routeIs('superadmin.administradores.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-shield"></i>
+                <a href="{{ route('admins.index') }}" class="menu-link {{ request()->routeIs('admins.*') ? 'active' : '' }}">
+                    <i class="fas fa-users-cog"></i>
                     <span>Administradores</span>
-                </a>
             </li>
             @endif
 
@@ -663,7 +662,7 @@
             </li>
 
     <li class="menu-item">
-        <a href="{{ route('calendario') }}"
+        <a href="{{ route('calendario.publico') }}"
         class="menu-link {{ request()->routeIs('/calendario/eventos') ? 'active' : '' }}">
         <i class="fas fa-calendar-alt"></i>
         <span>Calendario Académico</span>
@@ -776,7 +775,7 @@
             <li class="menu-section-title">DOCUMENTACIÓN</li>
 
             <li class="menu-item">
-                <a href="{{ route('observaciones.index') }}" class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
+                <a href="" class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
                     <i class="fas fa-sticky-note"></i>
                     <span>Observaciones</span>
                 </a>
@@ -804,10 +803,11 @@
 
             @if($isSuperAdmin)
             <li class="menu-item">
-                <a href="{{ route('superadmin.perfil') }}" class="menu-link {{ request()->routeIs('superadmin.perfil') ? 'active' : '' }}">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Mi Perfil</span>
-                </a>
+                <a href="{{ route('superadmin.cambiarcontrasenia.edit') }}" 
+       class="menu-link {{ request()->routeIs('superadmin.cambiarcontrasenia.*') ? 'active' : '' }}">
+        <i class="fas fa-user-circle"></i>
+        <span>Mi Perfil</span>
+    </a>
             </li>
             @endif
 

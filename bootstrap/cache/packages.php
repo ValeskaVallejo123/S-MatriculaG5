@@ -1,8 +1,4 @@
 <?php return array (
-<<<<<<< HEAD
-  'codezero/browser-locale' => 
-  array (
-=======
   'barryvdh/laravel-dompdf' => 
   array (
     'aliases' => 
@@ -17,7 +13,6 @@
   ),
   'codezero/browser-locale' => 
   array (
->>>>>>> cesia-dev
     'providers' => 
     array (
       0 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',

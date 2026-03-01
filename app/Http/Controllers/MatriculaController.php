@@ -84,29 +84,27 @@ class MatriculaController extends Controller
     // CREATE
     // ────────────────────────────────────────────────────────────────────────
 
-    public function create(Request $request)
-    {
-        // CORRECCIÓN: el original cargaba Estudiante::all() y Padre::all()
-        // que en producción puede ser miles de registros. Solo se necesitan
-        // si la vista tiene selects de esos modelos; se mantiene pero se
-        // advierte que deberían cargarse con búsqueda AJAX en producción.
-        $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $padres      = Padre::orderBy('nombre')->get();
-        $grados      = self::GRADOS;
-        $parentescos = self::PARENTESCOS;
+    public function create()
+{
+    $grados = [
+        'Primero', 'Segundo', 'Tercero',
+        'Cuarto', 'Quinto', 'Sexto'
+    ];
 
-        // Ruta pública → vista sin sidebar
-        if ($request->routeIs('matriculas.public.create')) {
-            return view('matriculas.create-public', compact(
-                'estudiantes', 'padres', 'parentescos', 'grados'
-            ));
-        }
+    $secciones = ['A', 'B', 'C', 'D'];
 
-        return view('matriculas.create', compact(
-            'estudiantes', 'padres', 'parentescos', 'grados'
-        ));
-    }
+    $parentescos = [
+        'padre'   => 'Padre',
+        'madre'   => 'Madre',
+        'abuelo'  => 'Abuelo/a',
+        'hermano' => 'Hermano/a',
+        'tio'     => 'Tío/a',
+        'tutor'   => 'Tutor/a',
+        'otro'    => 'Otro',
+    ];
 
+    return view('matriculas.create', compact('grados', 'secciones', 'parentescos'));
+}
     // ────────────────────────────────────────────────────────────────────────
     // STORE
     // ────────────────────────────────────────────────────────────────────────

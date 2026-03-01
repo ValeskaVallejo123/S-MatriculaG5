@@ -35,7 +35,7 @@ class CalendarioController extends Controller
 
 public function eventosPublicos()
 {
-    return $this->index();
+    return $this->obtenerEventos();
 }
 
     /**
