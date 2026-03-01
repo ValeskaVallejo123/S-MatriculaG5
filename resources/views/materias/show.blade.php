@@ -1,257 +1,418 @@
 @extends('layouts.app')
 
 @section('title', 'Detalle de Materia')
-
 @section('page-title', 'Detalle de Materia')
 
 @section('topbar-actions')
-    <div class="d-flex gap-2">
-        <a href="{{ route('materias.edit', $materia) }}" class="btn-back" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); font-size: 0.9rem;">
-            <i class="fas fa-edit"></i>
-            Editar
+    <div style="display:flex;gap:.5rem;">
+        <a href="{{ route('materias.edit', $materia) }}"
+           style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:7px;font-size:.82rem;font-weight:600;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;text-decoration:none;transition:opacity .15s;">
+            <i class="fas fa-edit"></i> Editar
         </a>
-        <a href="{{ route('materias.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; box-shadow: 0 2px 8px rgba(0, 80, 143, 0.2); font-size: 0.9rem;">
-            <i class="fas fa-arrow-left"></i>
-            Volver
+        <a href="{{ route('materias.index') }}"
+           style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:7px;font-size:.82rem;font-weight:600;background:#fff;color:#00508f;text-decoration:none;border:1.5px solid #00508f;transition:opacity .15s;">
+            <i class="fas fa-arrow-left"></i> Volver
         </a>
     </div>
 @endsection
 
+@push('styles')
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.show-wrap { font-family: 'Inter', sans-serif; }
+
+/* ── Layout ── */
+.show-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.25rem;
+    align-items: start;
+}
+@media(max-width:900px){ .show-grid { grid-template-columns: 1fr; } }
+
+/* ── Card base ── */
+.s-card {
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    margin-bottom: 1.25rem;
+}
+.s-card:last-child { margin-bottom: 0; }
+
+.s-card-head {
+    padding: .85rem 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+.s-card-head i   { font-size: 1rem; }
+.s-card-head span { font-weight: 700; font-size: .92rem; color: #fff; }
+.s-card-head.blue { background: #003b73; }
+.s-card-head.blue i { color: #4ec7d2; }
+.s-card-head.white { background: #fff; }
+.s-card-head.white i { color: #4ec7d2; }
+.s-card-head.white span { color: #003b73; }
+
+.s-card-body { padding: 1.25rem; }
+
+/* ── Nombre badge ── */
+.mat-hero-name {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    background: linear-gradient(135deg, #f8fafc, #edf2f7);
+}
+.mat-hero-icon {
+    width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    display: flex; align-items: center; justify-content: center;
+}
+.mat-hero-icon i { color: #fff; font-size: 1.3rem; }
+.mat-hero-title { font-size: 1.2rem; font-weight: 700; color: #0f172a; margin: 0; line-height: 1.2; }
+.mat-hero-code  { font-size: .78rem; color: #64748b; margin-top: .2rem; }
+.mat-hero-code span {
+    font-family: 'Courier New', monospace;
+    background: rgba(78,199,210,.12); color: #00508f;
+    border: 1px solid rgba(78,199,210,.3);
+    padding: .1rem .45rem; border-radius: 4px; font-weight: 700;
+}
+
+/* ── Info grid ── */
+.info-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1rem; padding: 1.25rem;
+}
+@media(max-width:540px){ .info-grid { grid-template-columns: 1fr; } }
+
+.info-item {
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 10px; padding: .85rem 1rem;
+    border-left: 3px solid #4ec7d2;
+}
+.info-item.alt { border-left-color: #00508f; }
+.info-lbl {
+    font-size: .68rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #94a3b8; margin-bottom: .4rem;
+}
+.info-val { font-size: .88rem; font-weight: 600; color: #0f172a; }
+
+/* Desc item full width */
+.info-item.full { grid-column: 1 / -1; }
+
+/* ── Badges ── */
+.bpill {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .22rem .65rem; border-radius: 999px;
+    font-size: .75rem; font-weight: 600;
+}
+.b-pri  { background: #e0f7fa; color: #006064; }
+.b-sec  { background: #e8eaf6; color: #283593; }
+.b-on   { background: #ecfdf5; color: #059669; }
+.b-off  { background: #fef2f2; color: #dc2626; }
+
+/* ── Tabla grados ── */
+.s-tbl { width: 100%; border-collapse: collapse; }
+.s-tbl thead th {
+    background: #f8fafc; padding: .55rem 1rem;
+    font-size: .68rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0;
+}
+.s-tbl tbody td {
+    padding: .65rem 1rem; border-bottom: 1px solid #f1f5f9;
+    font-size: .82rem; color: #334155; vertical-align: middle;
+}
+.s-tbl tbody tr:last-child td { border-bottom: none; }
+.s-tbl tbody tr:hover { background: #fafbfc; }
+
+.grado-badge {
+    display: inline-flex; align-items: center;
+    background: rgba(78,199,210,.12); color: #00508f;
+    border: 1px solid rgba(78,199,210,.3);
+    padding: .2rem .6rem; border-radius: 6px;
+    font-size: .78rem; font-weight: 700;
+}
+.hrs-badge {
+    display: inline-flex; align-items: center;
+    background: linear-gradient(135deg,#4ec7d2,#00508f);
+    color: #fff; padding: .2rem .6rem; border-radius: 99px;
+    font-size: .72rem; font-weight: 700;
+}
+
+/* ── Stat items (sidebar) ── */
+.stat-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .75rem 1rem; border-bottom: 1px solid #f1f5f9;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-row-left { display: flex; align-items: center; gap: .6rem; font-size: .82rem; color: #334155; }
+.stat-row-left i { color: #4ec7d2; font-size: .95rem; width: 18px; text-align: center; }
+.stat-num {
+    font-size: .82rem; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg,#4ec7d2,#00508f);
+    padding: .18rem .6rem; border-radius: 99px;
+}
+
+/* ── Accion btns ── */
+.act-full {
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+    width: 100%; padding: .55rem; border-radius: 8px;
+    font-size: .82rem; font-weight: 600; text-decoration: none;
+    border: none; cursor: pointer; transition: opacity .15s; margin-bottom: .5rem;
+}
+.act-full:last-child { margin-bottom: 0; }
+.act-full:hover { opacity: .88; }
+.af-edit   { background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; }
+.af-grados { background: #fff; color: #00508f; border: 1.5px solid #00508f; }
+.af-del    { background: #fff; color: #ef4444; border: 1.5px solid #ef4444; }
+
+/* ── Info sistema ── */
+.sys-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .55rem 1rem; border-bottom: 1px solid #f1f5f9;
+    font-size: .8rem;
+}
+.sys-row:last-child { border-bottom: none; }
+.sys-lbl { color: #94a3b8; }
+.sys-val { font-weight: 600; color: #0f172a; }
+
+/* ── Empty state ── */
+.s-empty { padding: 2.5rem 1rem; text-align: center; }
+.s-empty i { font-size: 1.8rem; color: #cbd5e1; display: block; margin-bottom: .6rem; }
+.s-empty p { color: #94a3b8; font-size: .82rem; margin: 0; }
+</style>
+@endpush
+
 @section('content')
-<div class="container" style="max-width: 1200px;">
+<div class="show-wrap">
+<div class="show-grid">
 
-    <div class="row g-4">
-        <!-- Información Principal -->
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
-                <div class="card-header" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.2rem;">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="fas fa-book"></i> Información de la Materia
-                    </h5>
+    {{-- ── Columna Principal ── --}}
+    <div>
+
+        {{-- Info de la materia --}}
+        <div class="s-card">
+            <div class="s-card-head blue">
+                <i class="fas fa-book"></i>
+                <span>Información de la Materia</span>
+            </div>
+
+            {{-- Nombre destacado --}}
+            <div class="mat-hero-name">
+                <div class="mat-hero-icon">
+                    <i class="fas fa-book-open"></i>
                 </div>
-                <div class="card-body p-4">
-                    <div class="row g-3">
-                        <!-- Nombre -->
-                        <div class="col-12">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-book-open me-3" style="color: #4ec7d2; font-size: 1.2rem;"></i>
-                                <div>
-                                    <small class="text-muted d-block" style="font-size: 0.75rem;">NOMBRE DE LA MATERIA</small>
-                                    <h4 class="mb-0 fw-bold" style="color: #003b73;">{{ $materia->nombre }}</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Código -->
-                        <div class="col-md-6">
-                            <div class="p-3" style="background: rgba(78, 199, 210, 0.05); border-radius: 8px; border-left: 3px solid #4ec7d2;">
-                                <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">CÓDIGO</small>
-                                <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; border: 1px solid #4ec7d2; padding: 0.4rem 0.8rem; font-weight: 600; font-size: 0.9rem; font-family: monospace;">
-                                    {{ $materia->codigo }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Área -->
-                        <div class="col-md-6">
-                            <div class="p-3" style="background: rgba(0, 80, 143, 0.05); border-radius: 8px; border-left: 3px solid #00508f;">
-                                <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">ÁREA</small>
-                                <span class="badge" style="background: rgba(0, 80, 143, 0.1); color: #00508f; padding: 0.4rem 0.8rem; font-weight: 600; font-size: 0.9rem;">
-                                    <i class="fas fa-shapes"></i> {{ $materia->area }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Nivel -->
-                        <div class="col-md-6">
-                            <div class="p-3" style="background: rgba(78, 199, 210, 0.05); border-radius: 8px; border-left: 3px solid #4ec7d2;">
-                                <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">NIVEL EDUCATIVO</small>
-                                @if($materia->nivel === 'primaria')
-                                    <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: #00508f; border: 1px solid #4ec7d2; padding: 0.4rem 0.8rem; font-weight: 600; font-size: 0.9rem;">
-                                        <i class="fas fa-child"></i> Primaria (1° - 6°)
-                                    </span>
-                                @else
-                                    <span class="badge" style="background: rgba(0, 80, 143, 0.2); color: #003b73; border: 1px solid #00508f; padding: 0.4rem 0.8rem; font-weight: 600; font-size: 0.9rem;">
-                                        <i class="fas fa-user-graduate"></i> Secundaria (7° - 9°)
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Estado -->
-                        <div class="col-md-6">
-                            <div class="p-3" style="background: rgba(0, 80, 143, 0.05); border-radius: 8px; border-left: 3px solid #00508f;">
-                                <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">ESTADO</small>
-                                @if($materia->activo)
-                                    <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: #00508f; padding: 0.4rem 0.8rem; font-weight: 600; border: 1px solid #4ec7d2; font-size: 0.9rem;">
-                                        <i class="fas fa-check-circle"></i> Activa
-                                    </span>
-                                @else
-                                    <span class="badge" style="background: #fee2e2; color: #991b1b; padding: 0.4rem 0.8rem; font-weight: 600; border: 1px solid #ef4444; font-size: 0.9rem;">
-                                        <i class="fas fa-times-circle"></i> Inactiva
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Descripción -->
-                        @if($materia->descripcion)
-                        <div class="col-12">
-                            <div class="p-3" style="background: rgba(78, 199, 210, 0.05); border-radius: 8px;">
-                                <small class="text-muted d-block mb-2" style="font-size: 0.75rem;">DESCRIPCIÓN</small>
-                                <p class="mb-0" style="color: #003b73;">{{ $materia->descripcion }}</p>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
+                <div>
+                    <div class="mat-hero-title">{{ $materia->nombre }}</div>
+                    <div class="mat-hero-code">Código: <span>{{ $materia->codigo }}</span></div>
                 </div>
             </div>
 
-            <!-- Grados Asignados -->
-            @if($materia->grados->count() > 0)
-            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 12px 12px 0 0; padding: 1rem;">
-                    <h6 class="mb-0 fw-bold">
-                        <i class="fas fa-school"></i> Grados donde se imparte esta materia ({{ $materia->grados->count() }})
-                    </h6>
+            {{-- Grid de datos --}}
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-lbl">Área</div>
+                    <div class="info-val">{{ $materia->area }}</div>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead style="background: rgba(16, 185, 129, 0.1);">
-                                <tr>
-                                    <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem;">Grado</th>
-                                    <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem;">Profesor</th>
-                                    <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem;">Horas/Semana</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($materia->grados as $grado)
-                                <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td class="px-3 py-2">
-                                        <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; border: 1px solid #4ec7d2; padding: 0.4rem 0.7rem; font-weight: 600;">
-                                            {{ $grado->numero }}° {{ $grado->seccion ? 'Sección ' . $grado->seccion : '' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        @if($grado->pivot->profesor_id)
-                                            <i class="fas fa-user-tie" style="color: #4ec7d2;"></i>
-                                            {{ \App\Models\User::find($grado->pivot->profesor_id)->name ?? 'No asignado' }}
-                                        @else
-                                            <span class="text-muted small">Sin asignar</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.3rem 0.6rem;">
-                                            {{ $grado->pivot->horas_semanales }} hrs
-                                        </span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                <div class="info-item alt">
+                    <div class="info-lbl">Nivel Educativo</div>
+                    <div class="info-val">
+                        @if($materia->nivel === 'primaria')
+                            <span class="bpill b-pri"><i class="fas fa-child"></i> Primaria (1° - 6°)</span>
+                        @else
+                            <span class="bpill b-sec"><i class="fas fa-user-graduate"></i> Secundaria (7° - 9°)</span>
+                        @endif
                     </div>
                 </div>
+                <div class="info-item">
+                    <div class="info-lbl">Estado</div>
+                    <div class="info-val">
+                        @if($materia->activo)
+                            <span class="bpill b-on"><i class="fas fa-circle" style="font-size:.4rem;vertical-align:middle;"></i> Activa</span>
+                        @else
+                            <span class="bpill b-off"><i class="fas fa-circle" style="font-size:.4rem;vertical-align:middle;"></i> Inactiva</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="info-item alt">
+                    <div class="info-lbl">Grados Asignados</div>
+                    <div class="info-val">{{ $materia->grados->count() }} grado(s)</div>
+                </div>
+                @if($materia->descripcion)
+                <div class="info-item full">
+                    <div class="info-lbl">Descripcion</div>
+                    <div class="info-val" style="font-weight:400;color:#334155;line-height:1.5;">{{ $materia->descripcion }}</div>
+                </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- Grados donde se imparte --}}
+        <div class="s-card">
+            <div class="s-card-head blue">
+                <i class="fas fa-school"></i>
+                <span>Grados donde se Imparte ({{ $materia->grados->count() }})</span>
+            </div>
+            @if($materia->grados->count() > 0)
+            <div style="overflow-x:auto;">
+                <table class="s-tbl">
+                    <thead>
+                        <tr>
+                            <th>Grado</th>
+                            <th>Nivel</th>
+                            <th>Seccion</th>
+                            <th>Año Lectivo</th>
+                            <th>Profesor</th>
+                            <th>Horas/Sem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($materia->grados as $grado)
+                        <tr>
+                            <td>
+                                <span class="grado-badge">{{ $grado->numero }}° Grado</span>
+                            </td>
+                            <td>
+                                @if(strtolower($grado->nivel) === 'primaria')
+                                    <span class="bpill b-pri">Primaria</span>
+                                @else
+                                    <span class="bpill b-sec">Secundaria</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span style="font-weight:600;color:#0f172a;">
+                                    {{ $grado->seccion ?? '—' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span style="color:#64748b;">{{ $grado->anio_lectivo }}</span>
+                            </td>
+                            <td>
+                                @if($grado->pivot->profesor_id)
+                                    @php $prof = \App\Models\Profesor::find($grado->pivot->profesor_id); @endphp
+                                    @if($prof)
+                                        <span style="font-weight:600;color:#0f172a;">
+                                            {{ $prof->nombre }} {{ $prof->apellido }}
+                                        </span>
+                                    @else
+                                        <span style="color:#94a3b8;font-size:.78rem;">Sin asignar</span>
+                                    @endif
+                                @else
+                                    <span style="color:#94a3b8;font-size:.78rem;">Sin asignar</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="hrs-badge">{{ $grado->pivot->horas_semanales }} hrs</span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <div class="s-empty">
+                <i class="fas fa-school"></i>
+                <p>Esta materia aun no esta asignada a ningun grado</p>
             </div>
             @endif
         </div>
 
-        <!-- Panel Lateral -->
-        <div class="col-lg-4">
-            <!-- Estadísticas -->
-            <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
-                <div class="card-header" style="background: white; border-bottom: 2px solid #bfd9ea; border-radius: 12px 12px 0 0; padding: 1rem;">
-                    <h6 class="mb-0 fw-bold" style="color: #003b73;">
-                        <i class="fas fa-chart-bar text-primary"></i> Estadísticas
-                    </h6>
-                </div>
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3 p-2" style="background: rgba(78, 199, 210, 0.05); border-radius: 8px;">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-school me-2" style="color: #4ec7d2; font-size: 1.2rem;"></i>
-                            <span class="small text-muted">Grados asignados</span>
-                        </div>
-                        <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.4rem 0.7rem; font-size: 0.9rem;">
-                            {{ $materia->grados->count() }}
-                        </span>
-                    </div>
+    </div>
 
-                    <div class="d-flex justify-content-between align-items-center p-2" style="background: rgba(0, 80, 143, 0.05); border-radius: 8px;">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-clock me-2" style="color: #00508f; font-size: 1.2rem;"></i>
-                            <span class="small text-muted">Total horas semanales</span>
-                        </div>
-                        <span class="badge" style="background: rgba(0, 80, 143, 0.2); color: #003b73; padding: 0.4rem 0.7rem; font-size: 0.9rem;">
-                            {{ $materia->grados->sum('pivot.horas_semanales') }} hrs
-                        </span>
-                    </div>
-                </div>
+    {{-- ── Sidebar ── --}}
+    <div>
+
+        {{-- Estadisticas --}}
+        <div class="s-card">
+            <div class="s-card-head white">
+                <i class="fas fa-chart-bar"></i>
+                <span>Estadisticas</span>
             </div>
-
-            <!-- Acciones Rápidas -->
-            <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
-                <div class="card-header" style="background: white; border-bottom: 2px solid #bfd9ea; border-radius: 12px 12px 0 0; padding: 1rem;">
-                    <h6 class="mb-0 fw-bold" style="color: #003b73;">
-                        <i class="fas fa-bolt text-warning"></i> Acciones Rápidas
-                    </h6>
+            <div class="stat-row">
+                <div class="stat-row-left">
+                    <i class="fas fa-school"></i>
+                    <span>Grados asignados</span>
                 </div>
-                <div class="card-body p-3">
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('materias.edit', $materia) }}" class="btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
-                            <i class="fas fa-edit"></i> Editar Materia
-                        </a>
-                        <a href="{{ route('grados.index') }}" class="btn" style="background: white; color: #4ec7d2; border: 2px solid #4ec7d2; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
-                            <i class="fas fa-tasks"></i> Ver Grados
-                        </a>
-                        <form action="{{ route('materias.destroy', $materia) }}" 
-                              method="POST" 
-                              onsubmit="return confirm('¿Está seguro de eliminar esta materia?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn w-100" style="background: white; color: #ef4444; border: 2px solid #ef4444; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
-                                <i class="fas fa-trash"></i> Eliminar Materia
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <span class="stat-num">{{ $materia->grados->count() }}</span>
             </div>
-
-            <!-- Información del Sistema -->
-            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-header" style="background: white; border-bottom: 2px solid #bfd9ea; border-radius: 12px 12px 0 0; padding: 1rem;">
-                    <h6 class="mb-0 fw-bold" style="color: #003b73;">
-                        <i class="fas fa-info-circle text-info"></i> Información del Sistema
-                    </h6>
+            <div class="stat-row">
+                <div class="stat-row-left">
+                    <i class="fas fa-clock"></i>
+                    <span>Total horas semanales</span>
                 </div>
-                <div class="card-body p-3">
-                    <div class="small">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Creado:</span>
-                            <strong style="color: #003b73;">{{ $materia->created_at->format('d/m/Y') }}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted">Última actualización:</span>
-                            <strong style="color: #003b73;">{{ $materia->updated_at->format('d/m/Y') }}</strong>
-                        </div>
-                    </div>
+                <span class="stat-num">{{ $materia->grados->sum('pivot.horas_semanales') }} hrs</span>
+            </div>
+            <div class="stat-row">
+                <div class="stat-row-left">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Nivel</span>
                 </div>
+                <span style="font-size:.78rem;font-weight:600;color:#003b73;">
+                    {{ $materia->nivel === 'primaria' ? 'Primaria' : 'Secundaria' }}
+                </span>
+            </div>
+            <div class="stat-row">
+                <div class="stat-row-left">
+                    <i class="fas fa-toggle-on"></i>
+                    <span>Estado</span>
+                </div>
+                @if($materia->activo)
+                    <span class="bpill b-on" style="font-size:.72rem;">Activa</span>
+                @else
+                    <span class="bpill b-off" style="font-size:.72rem;">Inactiva</span>
+                @endif
             </div>
         </div>
+
+        {{-- Acciones --}}
+        <div class="s-card">
+            <div class="s-card-head white">
+                <i class="fas fa-bolt" style="color:#f59e0b;"></i>
+                <span>Acciones Rapidas</span>
+            </div>
+            <div style="padding:1rem;">
+                <a href="{{ route('materias.edit', $materia) }}" class="act-full af-edit">
+                    <i class="fas fa-edit"></i> Editar Materia
+                </a>
+                <a href="{{ route('grados.index') }}" class="act-full af-grados">
+                    <i class="fas fa-layer-group"></i> Ver Grados
+                </a>
+                <button type="button" class="act-full af-del"
+                        data-route="{{ route('materias.destroy', $materia) }}"
+                        data-name="{{ $materia->nombre }}"
+                        data-message="Esta accion eliminara la materia {{ $materia->nombre }} y todas sus asignaciones."
+                        onclick="mostrarModalDeleteData(this)">
+                    <i class="fas fa-trash"></i> Eliminar Materia
+                </button>
+            </div>
+        </div>
+
+        {{-- Info sistema --}}
+        <div class="s-card">
+            <div class="s-card-head white">
+                <i class="fas fa-info-circle"></i>
+                <span>Informacion del Sistema</span>
+            </div>
+            <div class="sys-row">
+                <span class="sys-lbl">ID</span>
+                <span class="sys-val">#{{ $materia->id }}</span>
+            </div>
+            <div class="sys-row">
+                <span class="sys-lbl">Creado</span>
+                <span class="sys-val">{{ $materia->created_at->format('d/m/Y') }}</span>
+            </div>
+            <div class="sys-row">
+                <span class="sys-lbl">Actualizado</span>
+                <span class="sys-val">{{ $materia->updated_at->format('d/m/Y') }}</span>
+            </div>
+            <div class="sys-row">
+                <span class="sys-lbl">Codigo</span>
+                <span style="font-family:'Courier New',monospace;font-size:.8rem;font-weight:700;color:#00508f;">{{ $materia->codigo }}</span>
+            </div>
+        </div>
+
     </div>
 
 </div>
-
-@push('styles')
-<style>
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-back:hover {
-        transform: translateY(-2px);
-    }
-</style>
-@endpush
-
+</div>
 @endsection

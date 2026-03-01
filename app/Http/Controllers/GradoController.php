@@ -152,9 +152,7 @@ class GradoController extends Controller
         $materias = Materia::where('nivel', $grado->nivel)
             ->where('activo', true)
             ->get();
-
-        $profesores = User::where('role', 'profesor')->get();
-
+$profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')->get();
         $materiasAsignadas = $grado->materias->pluck('id')->toArray();
 
         return view(

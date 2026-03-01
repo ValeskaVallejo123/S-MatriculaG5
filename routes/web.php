@@ -34,6 +34,7 @@ use App\Http\Controllers\SeccionController;
 use App\Http\Controllers\CupoMaximoController;
 use App\Http\Controllers\PublicoPlanEstudiosController;
 use App\Http\Controllers\SuperAdmin\UsuarioController;
+use App\Http\Controllers\CargaDocenteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -146,7 +147,7 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('superadmin')->name('superadmin.')->middleware('role:superadmin')->group(function () {
-
+    
         Route::get('/dashboard', fn () => view('superadmin.dashboard'))->name('dashboard');
 
         // Perfil
@@ -303,6 +304,8 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::middleware('role:admin,superadmin')->group(function () {
+        Route::get('/carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
+
 
         // Estudiantes
         Route::resource('estudiantes', EstudianteController::class);
@@ -315,7 +318,7 @@ Route::middleware(['auth'])->group(function () {
        Route::post('/padres/{padre}/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
         Route::post('/padres/desvincular', [PadreController::class, 'desvincular'])->name('padres.desvincular');
         Route::resource('padres', PadreController::class);
-
+        
         // Matrículas
         Route::prefix('matriculas')->name('matriculas.')->group(function () {
             Route::get('/', [MatriculaController::class, 'index'])->name('index');
