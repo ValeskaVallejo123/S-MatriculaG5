@@ -344,6 +344,9 @@ Route::post('grados/generar-masivo', [GradoController::class, 'generarMasivo'])-
     // AJAX: obtener estudiantes por curso
     Route::get('registrar-calificaciones/estudiantes/{curso}', [RegistrarCalificacionController::class, 'obtenerEstudiantes'])
         ->name('registrarcalificaciones.estudiantes');
+    Route::get('registrar-calificaciones/ver', [RegistrarCalificacionController::class, 'ver'])
+        ->name('registrarcalificaciones.ver');
+
 
 });
 Route::resource('observaciones', ObservacionController::class)->except(['show']);

@@ -13,7 +13,7 @@ class RegistrarCalificacion extends Model
 
     protected $fillable = [
         'profesor_id',
-        'curso_id',
+        'grado_id',
         'materia_id',
         'estudiante_id',
         'periodo_academico_id',
@@ -31,9 +31,9 @@ class RegistrarCalificacion extends Model
         return $this->belongsTo(Profesor::class);
     }
 
-    public function curso()
+    public function grado()
     {
-        return $this->belongsTo(Curso::class);
+        return $this->belongsTo(Grado::class);
     }
 
     public function materia()
