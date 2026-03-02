@@ -10,6 +10,10 @@
             $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
             $displayRole = $isSuperAdmin ? 'Super Administrador' : ucfirst($user->role ?? 'Usuario');
         @endphp
+<<<<<<< HEAD
+=======
+
+>>>>>>> josue_matriculag5
         <span class="badge bg-primary" style="padding: 0.5rem 1rem; font-weight: 500;">
             <i class="fas fa-user-shield me-1"></i> {{ $displayRole }}
         </span>
@@ -304,6 +308,8 @@
                 <div class="action-card-body">
                     <a href="{{ route('superadmin.horarios_grado.index') }}" class="btn btn-outline-primary w-100 mb-2">
                         <i class="fas fa-list me-2"></i> Ver Horarios
+                    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-user-tie me-2"></i> Gestión de Admins
                     </a>
                 </div>
             </div>

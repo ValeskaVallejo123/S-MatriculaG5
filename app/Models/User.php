@@ -11,17 +11,17 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'id_rol',
-        'activo',
-        'user_type',
-        'fecha_registro',
-        'permissions',
-        'is_super_admin',
-        'is_protected',
-    ];
+    'name',
+    'email',
+    'password',
+    'id_rol',
+    'activo',
+    'user_type',
+    'is_super_admin',
+    'is_protected',
+    'permissions',
+    'email_verified_at',
+];
 
     protected $hidden = [
         'password',
@@ -322,4 +322,13 @@ class User extends Authenticatable
     {
         return $this->tienePermiso($permission);
     }
+    // Dentro de la clase User en app/Models/User.php
+
+    public function infoParaObservaciones()
+{
+    return [
+        'profesor_id'   => $this->docente->id ?? null,
+        'estudiante_id' => $this->estudiante->id ?? null,
+    ];
+}
 }

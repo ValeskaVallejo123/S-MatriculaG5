@@ -6,34 +6,39 @@ use App\Models\Observacion;
 use App\Models\Estudiante;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ObservacionController extends Controller
 {
     /**
-     * Listar observaciones según rol
+     * Listar observaciones según rol del usuario autenticado
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $info = $user->infoParaObservaciones();
+        $user  = auth()->user();
+        $info  = $user->infoParaObservaciones();
 
         $query = Observacion::with(['estudiante', 'profesor'])->latest();
 
         if ($user->isSuperAdmin()) {
-            // Superadmin: ve todas
+            // Superadmin: ve todas las observaciones
+
         } elseif ($user->isDocente()) {
-            // Profesor: solo las que creó o le corresponden
+            // Profesor: solo las que creó o corresponden a sus estudiantes
             $query->where('profesor_id', $info['profesor_id'])
                   ->orWhereHas('estudiante', function ($q) use ($info) {
                       $q->whereHas('profesor', function ($q2) use ($info) {
                           $q2->where('id', $info['profesor_id']);
                       });
                   });
+
         } elseif ($user->isEstudiante()) {
             // Estudiante: solo las propias
             $query->where('estudiante_id', $info['estudiante_id']);
+
         } else {
-            abort(403, 'No autorizado');
+            abort(403, 'No autorizado.');
         }
 
         // Filtros opcionales
@@ -50,71 +55,80 @@ class ObservacionController extends Controller
         $observaciones = $query->paginate(10)->withQueryString();
 
         return view('observaciones.indexObservacion', compact('observaciones'))
-            ->with('filtros', $request->only(['tipo','fecha_desde','fecha_hasta']));
+            ->with('filtros', $request->only(['tipo', 'fecha_desde', 'fecha_hasta']));
     }
 
     /**
-     * Crear observación
+     * Mostrar formulario de creación
      */
     public function create()
     {
         $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $profesores = Profesor::orderBy('nombre')->get();
+        $profesores  = Profesor::orderBy('nombre')->get();
+
         return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
     }
 
     /**
-     * Guardar observación
+     * Guardar nueva observación
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'estudiante_id' => 'required|exists:estudiantes,id',
-            'profesor_id' => 'required|exists:profesores,id',
-            'descripcion' => 'required|string|max:1000',
-            'tipo' => 'required|in:positivo,negativo',
+            'profesor_id'   => 'nullable|exists:profesores,id',
+            'descripcion'   => 'required|string|min:5|max:1000',
+            'tipo'          => 'required|string|max:50',
         ]);
 
-        Observacion::create($request->only(['estudiante_id','profesor_id','descripcion','tipo']));
+        // Si no se envía profesor_id, asignar el profesor del usuario autenticado
+        if (empty($validated['profesor_id']) && auth()->user()->isDocente()) {
+            $info = auth()->user()->infoParaObservaciones();
+            $validated['profesor_id'] = $info['profesor_id'] ?? null;
+        }
+
+        Observacion::create($validated);
 
         return redirect()->route('observaciones.index')
             ->with('success', 'Observación registrada correctamente.');
     }
 
     /**
-     * Editar observación
+     * Mostrar formulario de edición
      */
     public function edit(Observacion $observacion)
     {
         $user = auth()->user();
+
         if (!$user->isSuperAdmin() && $user->id !== $observacion->profesor_id) {
-            abort(403, 'No autorizado');
+            abort(403, 'No autorizado.');
         }
 
         $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $profesores = Profesor::orderBy('nombre')->get();
+        $profesores  = Profesor::orderBy('nombre')->get();
 
-        return view('observaciones.editObservacion', compact('observacion','estudiantes','profesores'));
+        return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores'));
     }
 
     /**
-     * Actualizar observación
+     * Actualizar observación existente
      */
-    public function update(Request $request, Observacion $observacion)
+    public function update(Request $request, Observacion $observacion): RedirectResponse
     {
         $user = auth()->user();
+
         if (!$user->isSuperAdmin() && $user->id !== $observacion->profesor_id) {
-            abort(403, 'No autorizado');
+            abort(403, 'No autorizado.');
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'estudiante_id' => 'required|exists:estudiantes,id',
-            'profesor_id' => 'required|exists:profesores,id',
-            'descripcion' => 'required|string|max:1000',
-            'tipo' => 'required|in:positivo,negativo',
+            'profesor_id'   => 'nullable|exists:profesores,id',
+            'descripcion'   => 'required|string|min:5|max:1000',
+            'tipo'          => 'required|string|max:50',
         ]);
 
-        $observacion->update($request->only(['estudiante_id','profesor_id','descripcion','tipo']));
+        $observacion->update($validated);
 
         return redirect()->route('observaciones.index')
             ->with('success', 'Observación actualizada correctamente.');
@@ -123,11 +137,12 @@ class ObservacionController extends Controller
     /**
      * Eliminar observación
      */
-    public function destroy(Observacion $observacion)
+    public function destroy(Observacion $observacion): RedirectResponse
     {
         $user = auth()->user();
-        if (!$user->isSuperAdmin() && $user->id !== $observacion->profesor_id) {
-            abort(403, 'No autorizado');
+
+        if (!$user->isSuperAdmin() && $user->docente?->id !== $observacion->profesor_id) {
+            abort(403, 'No autorizado.');
         }
 
         $observacion->delete();

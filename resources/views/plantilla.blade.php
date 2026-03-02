@@ -100,12 +100,29 @@
 .btn-login i {
   font-size: 0.95rem;
 }
+      background: rgba(78, 199, 210, 0.2);
+      color: white !important;
+      padding: 10px 28px;
+      border-radius: 25px;
+      border: 2px solid #4ec7d2;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
 
     .btn-login:hover {
       background: #4ec7d2;
       color: #003b73 !important;
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(78, 199, 210, 0.4);
+    }
+
+    .btn-login i {
+      font-size: 0.95rem;
     }
 
     /* ========== HERO SECTION ========== */
@@ -831,6 +848,68 @@
       box-shadow: 0 10px 30px rgba(78, 199, 210, 0.5);
       color: white;
       background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
+    /* ========== ESTILOS INTEGRADOS PARA FEATURE-CARD ========== */
+    .feature-card {
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Sombra suave */
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      max-width: 300px;
+      border: 1px solid #f0f0f0;
+      margin: 0 auto;
+    }
+
+    /* Efecto al pasar el mouse */
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #007bff; /* Color principal */
+      margin-bottom: 1.2rem;
+      background: #e7f1ff;
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feature-card h3 {
+      color: #333;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .feature-card p {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-feature {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background-color: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+
+    .btn-feature:hover {
+      background-color: #0056b3;
+      color: #fff;
     }
 
     /* ========== STATS SECTION ========== */
@@ -1048,6 +1127,10 @@
       .matricula-cards {
         grid-template-columns: 1fr;
       }
+
+      .feature-card {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -1101,7 +1184,91 @@
       <div class="shape shape-circle-2"></div>
       <div class="shape shape-square"></div>
       <div class="shape shape-triangle"></div>
+<!-- ========== NAVBAR ========== -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url('/') }}">
+      <i class="fas fa-graduation-cap"></i>
+      Escuela Gabriela Mistral
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            style="background-color: rgba(78, 199, 210, 0.3); border: none;">
+      <span class="navbar-toggler-icon" style="filter: brightness(0) invert(1);"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item">
+          <a class="nav-link" href="#inicio">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#matricula">Matrícula</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#nosotros">Nosotros</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#modulos">Módulos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#contacto">Contacto</a>
+        </li>
+        <li class="nav-item ms-3">
+          <a class="btn-login" href="{{ route('login') }}">
+            <i class="fas fa-sign-in-alt me-2"></i>Acceso Sistema
+          </a>
+        </li>
+      </ul>
     </div>
+  </div>
+</nav>
+
+<!-- ========== HERO SECTION ========== -->
+<section class="hero-section" id="inicio">
+  <!-- Formas geométricas decorativas -->
+  <div class="hero-shapes">
+    <div class="shape shape-circle"></div>
+    <div class="shape shape-circle-2"></div>
+    <div class="shape shape-square"></div>
+    <div class="shape shape-triangle"></div>
+  </div>
+
+  <!-- Partículas flotantes -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- Elementos decorativos flotantes -->
+  <i class="fas fa-pencil-alt floating-element pencil"></i>
+  <i class="fas fa-ruler floating-element ruler"></i>
+  <i class="fas fa-book floating-element book"></i>
+  <i class="fas fa-atom floating-element atom"></i>
+  <i class="fas fa-calculator floating-element calculator"></i>
+  <i class="fas fa-microscope floating-element microscope"></i>
+
+  <div class="container hero-content">
+    <h1><span>Centro de Educación Básico</span><br>Gabriela Mistral</h1>
+    <p>
+      Sistema integral de gestión escolar para una educación moderna y eficiente.
+      Administra matrículas, calificaciones, asistencias y mucho más en un solo lugar.
+    </p>
+
+    <div class="categories">
+      <h3>Servicios Disponibles</h3>
+      <div class="category-tags">
+        <a href="#matricula" class="category-tag">Matrícula en Línea</a>
+        <a href="{{ route('matriculas.index') }}" class="category-tag">Consultar Solicitud</a>
+        <a href="#nosotros" class="category-tag">Sobre Nosotros</a>
+        <a href="#contacto" class="category-tag">Contacto</a>
+      </div>
+    </div>
+  </div>
 
     <!-- Partículas flotantes -->
     <div class="particles">
@@ -1233,7 +1400,236 @@
           <h3>Consulta de Solicitudes</h3>
           <p>Verifica el estado de tu solicitud de matrícula en tiempo real con tu número de identidad.</p>
           <a href="{{ route('matriculas.index') }}" class="btn-feature">Consultar Ahora</a>
+  <i class="fas fa-rocket hero-rocket"></i>
+</section>
+
+<!-- ========== MATRICULA SECTION ========== -->
+<section class="matricula-section" id="matricula">
+  <div class="container matricula-content">
+
+    <div class="matricula-header">
+      <h2>Proceso de Matrícula 2025</h2>
+      <p>
+        Inscribe a tu hijo(a) en la Escuela Gabriela Mistral y forma parte de nuestra familia educativa.
+        Proceso sencillo, rápido y 100% en línea.
+      </p>
+    </div>
+
+    <div class="matricula-cards">
+
+      <div class="matricula-card">
+        <div class="matricula-card-icon">
+          <i class="fas fa-clipboard-list"></i>
         </div>
+        <h3>Requisitos</h3>
+        <ul>
+          <li>Partida de nacimiento original</li>
+          <li>Certificado de estudios previo</li>
+          <li>Documento de identidad del padre/madre</li>
+          <li>Constancia de domicilio</li>
+          <li>2 fotografías tamaño carnet</li>
+        </ul>
+      </div>
+
+      <div class="matricula-card">
+        <div class="matricula-card-icon">
+          <i class="fas fa-file-signature"></i>
+        </div>
+        <h3>Proceso en Línea</h3>
+        <ul>
+          <li>Completa el formulario digital</li>
+          <li>Sube documentos requeridos</li>
+          <li>Recibe confirmación inmediata</li>
+          <li>Programa tu cita presencial</li>
+          <li>Finaliza el proceso en la escuela</li>
+        </ul>
+      </div>
+
+      <div class="matricula-card">
+        <div class="matricula-card-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3>Fechas Importantes</h3>
+        <ul>
+          <li>Apertura: 2 de enero, 2025</li>
+          <li>Cierre: 28 de febrero, 2025</li>
+          <li>Inicio de clases: 10 de marzo</li>
+          <li>Matrícula abierta todo el año</li>
+          <li>Cupos limitados disponibles</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="matricula-cta">
+      <div class="matricula-cta-content">
+        <h3>¿Listo para Inscribir a tu Hijo(a)?</h3>
+        <p>
+          Completa el formulario de matrícula en línea y un miembro de nuestro equipo
+          se pondrá en contacto contigo para continuar con el proceso.
+        </p>
+        <a href="{{ route('matriculas.public.create') }}" class="btn-matricula-principal">
+          <i class="fas fa-pen-alt me-2"></i> Iniciar Matrícula en Línea
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== FEATURES SECTION ========== -->
+<section class="features-section" id="modulos">
+  <div class="container">
+    <div class="section-title">
+      <h2>Nuestro Sistema</h2>
+      <p>Plataforma completa para la gestión educativa moderna</p>
+    </div>
+
+    <div class="features-grid">
+
+      <!-- Fila 1: 3 tarjetas -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h3>Consulta de Solicitudes</h3>
+        <p>Verifica el estado de tu solicitud de matrícula en tiempo real con tu número de identidad.</p>
+        <a href="{{ route('matriculas.index') }}" class="btn-feature">Consultar Ahora</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h3>Proceso de Matrícula</h3>
+        <p>Información sobre requisitos y proceso de inscripción para nuevos estudiantes.</p>
+        <a href="#matricula" class="btn-feature">Información</a>
+      </div>
+
+      <div class="feature-card">
+  <div class="feature-icon">
+    <i class="fas fa-book-reader"></i>
+  </div>
+  <h3>Plan de Estudios</h3>
+  <p>Consulta las materias, objetivos pedagógicos y competencias por grado escolar.</p>
+  <a href="{{ route('plan-estudios.index') }}" class="btn-feature">Ver Plan</a>
+  </div>
+
+      <div class="feature-card">
+    <div class="feature-icon">
+        <i class="fas fa-calendar-alt"></i>
+    </div>
+    <h3>Calendario Académico</h3>
+    <p>Consulta fechas importantes, eventos y periodos académicos del año escolar 2025.</p>
+    <a href="{{ route('calendario.publico') }}" class="btn-feature">Ver Calendario</a>
+</div>
+
+      <!-- Fila 2: 3 tarjetas -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3>Comunidad Educativa</h3>
+        <p>Espacio dedicado para estudiantes, padres y profesores con acceso personalizado.</p>
+        <a href="{{ route('login') }}" class="btn-feature">Acceder</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h3>Excelencia Académica</h3>
+        <p>Formación integral con docentes calificados y programas educativos de calidad.</p>
+        <a href="#nosotros" class="btn-feature">Conocer Más</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-phone-alt"></i>
+        </div>
+        <h3>Contáctanos</h3>
+        <p>¿Tienes dudas? Nuestro equipo está disponible para atenderte y resolver tus consultas.</p>
+        <a href="#contacto" class="btn-feature">Contactar</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ========== STATS SECTION ========== -->
+<section class="stats-section" id="nosotros">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>850+</h3>
+        <p>Estudiantes Activos</p>
+      </div>
+      <div class="stat-item">
+        <h3>45</h3>
+        <p>Profesores</p>
+      </div>
+      <div class="stat-item">
+        <h3>12</h3>
+        <p>Grados Escolares</p>
+      </div>
+      <div class="stat-item">
+        <h3>98%</h3>
+        <p>Satisfacción</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA SECTION ========== -->
+<section class="cta-section" id="contacto">
+  <div class="container cta-content">
+    <h2>¿Listo para Formar Parte de Nuestra Familia?</h2>
+    <p>
+      Únete a la comunidad educativa Gabriela Mistral. Para más información sobre el proceso
+      de matrícula o consultas generales, contáctanos.
+    </p>
+    <a href="{{ route('login') }}" class="btn-cta">
+      <i class="fas fa-sign-in-alt me-2"></i> Acceder al Sistema
+    </a>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="container">
+    <div class="footer-content">
+
+      <div class="footer-section">
+        <h4><i class="fas fa-graduation-cap"></i> Gabriela Mistral</h4>
+        <p>Centro de Educación Básico comprometido con la formación integral de nuestros estudiantes.</p>
+        <div class="social-icons">
+          <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h4>Enlaces Rápidos</h4>
+        <a href="#inicio">Inicio</a>
+        <a href="#matricula">Matrícula</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="{{ route('matriculas.index') }}">Consultar Solicitud</a>
+      </div>
+
+      <div class="footer-section">
+        <h4>Para la Comunidad</h4>
+        <a href="{{ route('login') }}">Portal Estudiantes</a>
+        <a href="{{ route('login') }}">Portal Profesores</a>
+        <a href="{{ route('login') }}">Portal Padres</a>
+      </div>
+
+      <div class="footer-section">
+        <h4>Contacto</h4>
+        <p><i class="fas fa-map-marker-alt"></i> Danlí, El Paraíso, Honduras</p>
+        <p><i class="fas fa-phone"></i> +504 2763-4567</p>
+        <p><i class="fas fa-envelope"></i> info@gabrielamistral.edu.hn</p>
+      </div>
 
         <div class="feature-card">
           <div class="feature-icon">
@@ -1283,6 +1679,13 @@
       </div>
     </div>
   </section>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2025 Centro de Educación Básico Gabriela Mistral. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</footer>
 
   <!-- ========== STATS SECTION ========== -->
   <section class="stats-section" id="nosotros">
@@ -1383,7 +1786,21 @@
           });
         }
       });
+<script>
+  // Scroll suave
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        const offsetTop = target.offsetTop - 80;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        });
+      }
     });
+  });
 
     // Animación de aparición
     const observer = new IntersectionObserver((entries) => {
@@ -1399,12 +1816,30 @@
           }, 100);
         }
       });
+  // Animación de aparición
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '0';
+        entry.target.style.transform = 'translateY(30px)';
+        entry.target.style.transition = 'all 0.6s ease';
+
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }, 100);
+      }
     });
+  });
 
     document.querySelectorAll('.feature-card, .stat-item, .matricula-card').forEach(el => {
       observer.observe(el);
     });
   </script>
+  document.querySelectorAll('.feature-card, .stat-item, .matricula-card').forEach(el => {
+    observer.observe(el);
+  });
+</script>
 
 </body>
 </html>

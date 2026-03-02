@@ -18,6 +18,7 @@
 
 @section('content')
 <div class="container-fluid">
+
     <!-- Estadísticas en Cards -->
     <div class="row g-4 mb-4">
         <!-- Total -->
@@ -221,6 +222,10 @@
         .table {
             font-size: 0.875rem;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> josue_matriculag5
         .card-body {
             padding: 1rem !important;
         }

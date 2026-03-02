@@ -4,6 +4,7 @@
 @section('page-title', 'Panel de Administración')
 
 @section('content')
+<<<<<<< HEAD
 <div class="container" style="max-width: 1200px;">
 
     {{-- Bienvenida --}}
@@ -29,6 +30,13 @@
     {{-- Módulos según permisos --}}
     <div class="row g-3 mb-4">
 
+=======
+<div class="container">
+    <h1>Dashboard</h1>
+
+    <div class="row">
+        {{-- Verificar si tiene permiso para ver estudiantes --}}
+>>>>>>> josue_matriculag5
         @if(auth()->user()->tienePermiso('ver_estudiantes'))
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius:10px;border-left:4px solid #4ec7d2 !important;">
@@ -55,6 +63,23 @@
         </div>
         @endif
 
+<<<<<<< HEAD
+=======
+        {{-- Verificar si tiene permiso para crear estudiantes --}}
+        @if(auth()->user()->tienePermiso('crear_estudiantes'))
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Nuevo Estudiante</h5>
+                    <p class="card-text">Registrar un nuevo estudiante</p>
+                    <a href="{{ route('admin.estudiantes.create') }}" class="btn btn-success">Crear Estudiante</a>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Verificar si tiene permiso para ver profesores --}}
+>>>>>>> josue_matriculag5
         @if(auth()->user()->tienePermiso('ver_profesores'))
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius:10px;border-left:4px solid #00508f !important;">
@@ -74,6 +99,10 @@
         </div>
         @endif
 
+<<<<<<< HEAD
+=======
+        {{-- Verificar si tiene alguno de varios permisos --}}
+>>>>>>> josue_matriculag5
         @if(auth()->user()->tieneAlgunPermiso(['ver_reportes', 'generar_reportes']))
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius:10px;border-left:4px solid #4ec7d2 !important;">
@@ -93,6 +122,10 @@
         </div>
         @endif
 
+<<<<<<< HEAD
+=======
+        {{-- Verificar si tiene un rol específico --}}
+>>>>>>> josue_matriculag5
         @if(auth()->user()->tieneRol('Super Administrador'))
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius:10px;border-left:4px solid #dc3545 !important;">
@@ -114,7 +147,11 @@
 
     </div>
 
+<<<<<<< HEAD
     {{-- Panel de depuración (solo en modo debug) --}}
+=======
+    {{-- Mostrar permisos del usuario actual (para depuración) --}}
+>>>>>>> josue_matriculag5
     @if(config('app.debug'))
     <div class="card border-0 shadow-sm" style="border-radius:12px;border:1px dashed #fbbf24 !important;">
         <div class="card-header border-0 py-3 px-4" style="background:rgba(251,191,36,0.1);border-radius:12px 12px 0 0;">
@@ -154,3 +191,46 @@
 
 </div>
 @endsection
+<<<<<<< HEAD
+=======
+
+{{--
+EJEMPLOS DE USO EN OTROS CONTEXTOS:
+
+1. En botones de acción:
+@if(auth()->user()->tienePermiso('editar_estudiantes'))
+    <a href="{{ route('estudiantes.edit', $estudiante->id) }}" class="btn btn-sm btn-warning">Editar</a>
+@endif
+
+@if(auth()->user()->tienePermiso('eliminar_estudiantes'))
+    <form action="{{ route('estudiantes.destroy', $estudiante->id) }}" method="POST" style="display:inline;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+    </form>
+@endif
+
+2. En menús de navegación:
+<ul class="nav">
+    @if(auth()->user()->tienePermiso('ver_estudiantes'))
+    <li><a href="{{ route('admin.estudiantes.index') }}">Estudiantes</a></li>
+    @endif
+
+    @if(auth()->user()->tienePermiso('ver_profesores'))
+    <li><a href="{{ route('admin.profesores.index') }}">Profesores</a></li>
+    @endif
+
+    @if(auth()->user()->tieneRol('Super Administrador'))
+    <li><a href="{{ route('superadmin.dashboard') }}">Panel de Super Admin</a></li>
+    @endif
+</ul>
+
+3. En secciones completas:
+@if(auth()->user()->tienePermiso('ver_reportes'))
+<section class="reportes">
+    <h2>Reportes Disponibles</h2>
+    <!-- Contenido de reportes -->
+</section>
+@endif
+--}}
+>>>>>>> josue_matriculag5

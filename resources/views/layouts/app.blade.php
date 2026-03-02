@@ -546,6 +546,7 @@
 </head>
 <body>
 
+    @auth
     @php
         // Sistema de roles corregido
         $user = auth()->user();
@@ -553,10 +554,30 @@
         $isAdmin = in_array($user->role, ['admin', 'super_admin']) || $user->is_super_admin == 1;
         $showSidebar = $isSuperAdmin || $isAdmin;
     @endphp
+            $user = auth()->user();
+            // Simplificación de la lógica de roles
+            $isSuperAdmin = $user->is_super_admin == 1 || ($user->rol && strtolower($user->rol->nombre) === 'super administrador');
+            $isAdmin = $isSuperAdmin || ($user->rol && in_array(strtolower($user->rol->nombre), ['admin', 'administrador']));
+            $showSidebar = true;
+
+            if ($isSuperAdmin) {
+                $roleName = 'Super Administrador';
+            } elseif ($isAdmin) {
+                $roleName = 'Administrador';
+            } else {
+                $roleName = ucfirst($user->rol->nombre ?? 'Usuario');
+            }
+        @endphp
+
 
     <!-- SIDEBAR (solo para admins) -->
+        {{-- DEBUG --}}
+
+
+
     @if($showSidebar)
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <aside class="sidebar" id="sidebar">
         <!-- Header -->
         <div class="sidebar-header">
@@ -572,10 +593,12 @@
         <!-- User Info -->
         <div class="user-info">
             <div class="user-avatar">
-                {{ substr($user->name ?? 'A', 0, 1) }}
+                {{ substr($user->name, 0, 1) }}
             </div>
             <div class="user-details">
                 <h6>{{ $user->name ?? 'Administrador' }}</h6>
+                <h6>{{ $user->name }}</h6>
+                <p>{{ $roleName }}</p>
             </div>
         </div>
 
@@ -603,6 +626,7 @@
 
             <!-- GESTIÓN DE USUARIOS -->
             <li class="menu-section-title">GESTIÓN DE USUARIOS</li>
+
             @if($isSuperAdmin)
             <li class="menu-item">
                 <a href="{{ route('superadmin.administradores.index') }}" class="menu-link {{ request()->routeIs('superadmin.administradores.*') ? 'active' : '' }}">
@@ -611,12 +635,40 @@
                 </a>
             </li>
             @endif
+
             <li class="menu-item">
                 <a href="{{ route('estudiantes.index') }}" class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-graduate"></i>
-                    <span>Estudiantes</span>
+                <i class="fas fa-user-graduate"></i>
+                <span>Estudiantes</span>
                 </a>
             </li>
+
+    <li class="menu-item">
+        <a href="{{ route('calendario') }}"
+        class="menu-link {{ request()->routeIs('/calendario/eventos') ? 'active' : '' }}">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Calendario Académico</span>
+        </a>
+    </li>
+
+    <li class="menu-item">
+        <a href="{{ route('grados.index') }}"
+        class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
+        <i class="fas fa-book-reader"></i>
+        <span>Plan de Estudios</span>
+        </a>
+    </li>
+
+
+<li class="menu-item">
+    <a href="{{ route('secciones.index') }}"
+    class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
+        <i class="fas fa-layer-group"></i>
+        <span>Secciones</span>
+    </a>
+</li>
+
+
 
             <li class="menu-item">
                 <a href="{{ route('profesores.index') }}" class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
@@ -651,6 +703,7 @@
 
             <!-- GESTIÓN ACADÉMICA -->
             <li class="menu-section-title">GESTIÓN ACADÉMICA</li>
+
             <li class="menu-item">
                 <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i>
@@ -660,6 +713,14 @@
 
             <li class="menu-item">
                 <a href="{{ route('superadmin.grados.index') }}" class="menu-link {{ request()->routeIs('superadmin.grados.*') ? 'active' : '' }}">
+                <a href="#" class="menu-link {{ request()->routeIs('admin.solicitudes.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Solicitudes</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i>
                     <span>Grados</span>
                 </a>
@@ -695,6 +756,7 @@
 
             <!-- DOCUMENTACIÓN -->
             <li class="menu-section-title">DOCUMENTACIÓN</li>
+
             <li class="menu-item">
                 <a href="{{ route('observaciones.index') }}" class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
                     <i class="fas fa-sticky-note"></i>
@@ -721,9 +783,8 @@
 
             <!-- CONFIGURACIÓN -->
             <li class="menu-section-title">CONFIGURACIÓN</li>
-            @if($isSuperAdmin)
+
             <li class="menu-item">
-                <a href="{{ route('superadmin.perfil') }}" class="menu-link {{ request()->routeIs('superadmin.perfil') ? 'active' : '' }}">
                     <i class="fas fa-user-circle"></i>
                     <span>Mi Perfil</span>
                 </a>
@@ -739,6 +800,7 @@
 
             <!-- AYUDA -->
             <li class="menu-section-title">AYUDA</li>
+
             <li class="menu-item">
                 <a href="{{ route('estado-solicitud') }}" class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
                     <i class="fas fa-question-circle"></i>
@@ -774,6 +836,12 @@
             </div>
             <div class="topbar-right">
                 @yield('topbar-actions')
+
+                <div class="topbar-date">
+                    <i class="far fa-clock"></i>
+                    <span>{{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</span>
+                </div>
+
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn-logout">
@@ -806,6 +874,14 @@
             @yield('content')
         </div>
     </main>
+    @else
+    <!-- VISTA PARA USUARIOS NO AUTENTICADOS -->
+    <main class="main-content no-sidebar">
+        <div class="content-wrapper">
+            @yield('content')
+        </div>
+    </main>
+    @endauth
 
     <!-- Modal de Confirmación de Eliminación -->
     <div class="modal-delete-overlay" id="modalDelete">
@@ -824,6 +900,7 @@
                 <p class="modal-delete-message" id="deleteMessage">
                     Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?
                 </p>
+
                 <div class="modal-delete-item" id="deleteItemInfo" style="display: none;">
                     <div class="delete-item-icon">
                         <i class="fas fa-file-alt"></i>
@@ -834,10 +911,12 @@
                     </div>
                 </div>
             </div>
+
             <form id="formDelete" method="POST" style="display: none;">
                 @csrf
                 @method('DELETE')
             </form>
+
             <div class="modal-delete-actions">
                 <button type="button" class="btn-delete-cancel" onclick="cerrarModalDelete()">
                     <i class="fas fa-times"></i>
@@ -853,12 +932,15 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
         }
 
         // Auto-hide alerts after 5 seconds
@@ -872,6 +954,7 @@
 
         // ========== MANTENER POSICIÓN DEL SIDEBAR ==========
         const sidebar = document.getElementById('sidebar');
+
         if (sidebar) {
             const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
             if (savedScrollPosition) {
@@ -893,6 +976,7 @@
             if (activeLink && savedScrollPosition === null) {
                 const sidebarRect = sidebar.getBoundingClientRect();
                 const activeLinkRect = activeLink.getBoundingClientRect();
+
                 if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
                     const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
                     sidebar.scrollTo({
@@ -948,6 +1032,7 @@
             const route = button.dataset.route;
             const message = button.dataset.message;
             const name = button.dataset.name;
+
             mostrarModalDelete(route, message, name);
         }
 

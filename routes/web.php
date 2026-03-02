@@ -30,6 +30,12 @@ use App\Http\Controllers\AccionesImportantesController;
 use App\Http\Controllers\SuperAdmin\UsuarioController;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\CicloController;
+use App\Http\Controllers\Admin\SolicitudAdminController;
+use App\Http\Controllers\CalendarioController;
+use App\Http\Controllers\CicloController;
+use App\Http\Controllers\SeccionController;
+use App\Http\Controllers\CupoMaximoController;
+use App\Http\Controllers\PublicoPlanEstudiosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +67,14 @@ Route::prefix('portal')->name('portal.')->group(function () {
     Route::view('/contacto',  'portal.contacto')->name('contacto');
     Route::get('/horarios-publicos',  [HorarioController::class,  'horarioPublico'])->name('horarios');
     Route::get('/profesores-publicos',[ProfesorController::class, 'listarPublico'])->name('profesores');
+// Plan de estudios público
+Route::get('/plan-estudios', action: [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
+
+// AGREGAR ESTA LÍNEA:
+Route::get('/plan-estudios/{grado}', [PublicoPlanEstudiosController::class, 'show'])->name('plan-estudios.show');
+// Ruta raíz - Redirige al login
+Route::get('/', function () {
+    return redirect()->route('login');
 });
 
 /*
@@ -71,6 +85,15 @@ Route::prefix('portal')->name('portal.')->group(function () {
 Route::get('/matricula-publica',  [MatriculaController::class, 'create'])->name('matriculas.public.create');
 Route::post('/matricula-publica', [MatriculaController::class, 'store'])->name('matriculas.public.store');
 Route::get('/matricula-exitosa',  [MatriculaController::class, 'success'])->name('matriculas.success');
+
+// Plan de estudios público
+Route::get('/plan-estudios', [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
+
+// Calendario público
+Route::get('/calendario-publico', function () {
+    return view('calendario-publico');
+})->name('calendario.publico');
+Route::get('/calendario/eventos/public', [CalendarioController::class, 'eventosPublicos'])->name('calendario.eventos.public');
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +133,20 @@ Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')
 */
 Route::middleware(['auth'])->group(function () {
 
+Route::get('/calendario/eventos', [CalendarioController::class, 'obtenerEventos']);
+
+// Obtener eventos
+//Route::get('/calendario/eventos', [CalendarioController::class, 'index']);
+
+// Guardar evento
+Route::post('/calendario/eventos', [CalendarioController::class, 'store']);
+
+// Actualizar evento
+Route::put('/calendario/eventos/{id}', [CalendarioController::class, 'actualizar']);
+
+// Eliminar evento
+Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar']);
+
     // Dashboard con redirección por rol
     Route::get('/dashboard', function () {
         $role = Auth::user()->role;
@@ -135,6 +172,12 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::prefix('superadmin')->name('superadmin.')->middleware('role:super_admin')->group(function () {
+    /*
+    |----------------------------------------------------------------------
+    | RUTAS DE SUPER ADMINISTRADOR
+    |----------------------------------------------------------------------
+    */
+    Route::prefix('superadmin')->name('superadmin.')->group(function () {
 
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/perfil',    [SuperAdminController::class, 'perfil'])->name('perfil');
@@ -238,6 +281,34 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/permisos/{padre}/{estudiante}/defecto', [PadrePermisoController::class, 'establecerDefecto'])->name('permisos.defecto');
         Route::delete('/permisos/{padre}/{estudiante}',      [PadrePermisoController::class, 'eliminar'])->name('permisos.eliminar');
         Route::post('/permisos/{padre}/{estudiante}/toggle', [PadrePermisoController::class, 'toggleTodos'])->name('permisos.toggle');
+
+        // Gestión de solicitudes (ADMIN)
+        Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
+            Route::get('/', [SolicitudAdminController::class, 'index'])->name('index');
+            Route::get('/{id}', [SolicitudAdminController::class, 'show'])->name('show');
+            Route::post('/{id}/aprobar', [SolicitudAdminController::class, 'aprobar'])->name('aprobar');
+            Route::post('/{id}/rechazar', [SolicitudAdminController::class, 'rechazar'])->name('rechazar');
+            Route::post('/{id}/pendiente', [SolicitudAdminController::class, 'pendiente'])->name('pendiente');
+        });
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE ACCIONES IMPORTANTES
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('acciones-importantes', AccionesImportantesController::class)
+        ->names('acciones_importantes');
+
+    /*
+    |--------------------------------------------------------------------------
+    | RUTAS DE PROFESOR
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('profesor')->name('profesor.')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('profesor.dashboard.index');
+        })->name('dashboard');
     });
 
     /*
@@ -256,6 +327,15 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/',      [AdminController::class, 'store'])->name('store');
 
         // Listado
+        // Permisos de padres
+        Route::get('/permisos', [PadrePermisoController::class, 'index'])->name('permisos.index');
+        Route::get('/permisos/{padre}/configurar', [PadrePermisoController::class, 'configurar'])->name('permisos.configurar');
+        Route::post('/permisos/{padre}/guardar', [PadrePermisoController::class, 'guardar'])->name('permisos.guardar');
+        Route::get('/permisos/{padre}/{estudiante}/defecto', [PadrePermisoController::class, 'establecerDefecto'])->name('permisos.defecto');
+        Route::delete('/permisos/{padre}/{estudiante}', [PadrePermisoController::class, 'eliminar'])->name('permisos.eliminar');
+        Route::post('/permisos/{padre}/{estudiante}/toggle', [PadrePermisoController::class, 'toggleTodos'])->name('permisos.toggle');
+
+        // CRUD de administradores
         Route::get('/', [AdminController::class, 'index'])->name('index');
 
         // Dinámicas {admin} (SIEMPRE al final)
@@ -332,6 +412,32 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::resource('ciclos', CicloController::class);
+    /*| GESTIÓN DE CICLOS
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('ciclos', CicloController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE SECCIONES
+    |--------------------------------------------------------------------------
+    */
+    Route::post('secciones/asignar', [SeccionController::class, 'asignar'])->name('secciones.asignar');
+    Route::resource('seccion', SeccionController::class)->names([
+        'index'   => 'secciones.index',
+        'create'  => 'secciones.create',
+        'store'   => 'secciones.store',
+        'edit'    => 'secciones.edit',
+        'update'  => 'secciones.update',
+        'destroy' => 'secciones.destroy',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE CUPOS MÁXIMOS
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('cupos_maximos', CupoMaximoController::class);
 
     /*
     |--------------------------------------------------------------------------
@@ -405,6 +511,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/preferencias',         [NotificacionPreferenciaController::class,'edit'])->name('preferencias');
         Route::put('/preferencias',         [NotificacionPreferenciaController::class,'update'])->name('preferencias.update');
     });
+    /*| CALENDARIO (ADMIN)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/calendario', function () {
+        return view('calendario-admin');
+    })->name('calendario');
 
     /*
     |--------------------------------------------------------------------------
@@ -439,3 +551,4 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', fn () => view('padre.dashboard.index'))->name('dashboard');
     });
 });
+
