@@ -12,7 +12,6 @@ class Documento extends Model
     protected $table = 'documentos';
 
     protected $fillable = [
-<<<<<<< HEAD
         'estudiante_id',
         'foto',
         'acta_nacimiento',
@@ -51,17 +50,5 @@ class Documento extends Model
         return $this->{$campo}
             ? asset("storage/{$this->{$campo}}")
             : null;
-=======
-        'estudiante_id', // ¡Importante para la relación!
-        'foto',
-        'acta_nacimiento',
-        'calificaciones'
-    ];
-
-    // Relación con el estudiante (según la historia de usuario)
-    public function estudiante()
-    {
-        return $this->belongsTo(Estudiante::class);
->>>>>>> josue_matriculag5
     }
 }

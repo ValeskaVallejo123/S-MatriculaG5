@@ -57,7 +57,7 @@ class User extends Authenticatable
 
     public function estudiante()
     {
-        return $this->hasOne(\App\Models\Estudiante::class);
+        return $this->hasOne(Estudiante::class, 'user_id');
     }
 
     public function docente()
@@ -87,12 +87,18 @@ class User extends Authenticatable
 
     public function isSuperAdmin()
     {
-        return $this->id_rol == 1 || $this->is_super_admin === true;
+        return $this->is_super_admin === true || $this->id_rol ==1;
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return $this->id_rol == 2 || $this->tieneRol('Administrador');
+        // CORRECCIÓN: el ObservacionController llamaba $user->isAdmin() pero
+        // el modelo original no lo tenía correctamente enlazado con isSuperAdmin.
+        // Un superadmin también es admin a efectos de permisos.
+        return $this->isSuperAdmin()
+            || $this->id_rol == 2
+            || $this->tieneRol('Administrador')
+            || $this->tieneRol('Admin');
     }
 
     public function isDocente()
@@ -135,27 +141,62 @@ class User extends Authenticatable
         $this->update(['activo' => false]);
     }
 
+    public function infoParaObservaciones(): array
+    {
+        return [
+            'profesor_id'   => $this->docente?->id,
+            'estudiante_id' => $this->estudiante?->id,
+            'padre_id'      => $this->padre?->id,
+        ];
+    }
+
+    // =============================
+    // INFO SISTEMA
+    // =============================
+
+    public function infoParaSistema(): array
+    {
+        return [
+            'id'            => $this->id,
+            'nombre'        => $this->name,
+            'email'         => $this->email,
+            'rol'           => $this->rol->nombre ?? null,
+            'es_superadmin' => $this->isSuperAdmin(),
+            'es_docente'    => $this->isDocente(),
+            'es_estudiante' => $this->isEstudiante(),
+            'es_padre'      => $this->isPadre(),
+            'profesor_id'   => $this->docente->id ?? null,
+            'estudiante_id' => $this->estudiante->id ?? null,
+            'padre_id'      => $this->padre->id ?? null,
+        ];
+    }
+
     // =============================
     // PERMISOS (JSON + por Rol)
     // =============================
 
-    public function tienePermiso($permiso)
+    public function tienePermiso(string $permiso): bool
     {
         $permiso = strtolower(trim($permiso));
 
+        // Verificar en permisos JSON del usuario (array asociativo key => bool)
         $jsonPerms = $this->permissions ?? [];
-        if (is_array($jsonPerms) && in_array($permiso, array_map('strtolower', $jsonPerms))) {
-            return true;
+        if (is_array($jsonPerms)) {
+            $keys = array_map('strtolower', array_keys($jsonPerms));
+            if (in_array($permiso, $keys) && $jsonPerms[array_search($permiso, $keys)] === true) {
+                return true;
+            }
         }
 
-        if ($this->rol && $this->rol->tienePermiso($permiso)) {
-            return true;
+        // Verificar en permisos del rol
+        if ($this->rol && method_exists($this->rol, 'tienePermiso')) {
+            return $this->rol->tienePermiso($permiso);
         }
 
         return false;
     }
 
-    public function tieneAlgunPermiso(array $permisos)
+    public function tieneAlgunPermiso(array $permisos): bool
     {
         foreach ($permisos as $permiso) {
             if ($this->tienePermiso($permiso)) {
@@ -175,38 +216,37 @@ class User extends Authenticatable
         return true;
     }
 
+    /** Alias para compatibilidad con código que usa hasPermission() */
+    public function hasPermission(string $permission): bool
+    {
+        return $this->tienePermiso($permission);
+    }
+
     // =============================
     // SEGURIDAD
     // =============================
 
-    public function canBeDeleted()
+    public function canBeDeleted(): bool
     {
-        if ($this->isSuperAdmin() || $this->is_protected) {
+        // No se puede eliminar si es superadmin protegido
+        if ($this->is_protected) {
             return false;
         }
+
+        // No se puede eliminar si es el único superadmin activo
+        if ($this->isSuperAdmin()) {
+            $totalSuperAdmins = User::where('is_super_admin', true)
+                ->where('activo', true)
+                ->count();
+            if ($totalSuperAdmins <= 1) {
+                return false;
+            }
+        }
+
         return true;
     }
 
-    // =============================
-    // INFO SISTEMA
-    // =============================
 
-    public function infoParaSistema()
-    {
-        return [
-            'id'            => $this->id,
-            'nombre'        => $this->name,
-            'email'         => $this->email,
-            'rol'           => $this->rol->nombre ?? null,
-            'es_superadmin' => $this->isSuperAdmin(),
-            'es_docente'    => $this->isDocente(),
-            'es_estudiante' => $this->isEstudiante(),
-            'es_padre'      => $this->isPadre(),
-            'profesor_id'   => $this->docente->id ?? null,
-            'estudiante_id' => $this->estudiante->id ?? null,
-            'padre_id'      => $this->padre->id ?? null,
-        ];
-    }
 
     // =============================
     // OBSERVACIONES
@@ -214,22 +254,26 @@ class User extends Authenticatable
 
     public function observacionesPermitidas()
     {
-        if ($this->isSuperAdmin()) {
+        if ($this->isSuperAdmin() || $this->isAdmin()) {
             return Observacion::query();
         }
 
         if ($this->isDocente() && $this->docente) {
-            return Observacion::where('profesor_id', $this->docente->id)
-                ->orWhereHas('estudiante.user', function ($q) {
-                    $q->where('id', $this->id);
-                });
+            $profesorId = $this->docente->id;
+            return Observacion::where(function ($q) use ($profesorId) {
+                $q->where('profesor_id', $profesorId)
+                  ->orWhereHas('estudiante.user', function ($q2) {
+                      $q2->where('id', $this->id);
+                  });
+            });
         }
 
         if ($this->isEstudiante() && $this->estudiante) {
             return Observacion::where('estudiante_id', $this->estudiante->id);
         }
 
-        return Observacion::whereRaw('0=1');
+        // Sin acceso: query que no devuelve nada
+        return Observacion::whereRaw('0 = 1');
     }
 
     // =============================
@@ -278,7 +322,7 @@ class User extends Authenticatable
 
     public function padresPermitidos()
     {
-        if ($this->isSuperAdmin() || $this->isDocente()) {
+        if ($this->isSuperAdmin() || $this->isAdmin() || $this->isDocente()) {
             return Padre::query();
         }
 
@@ -286,49 +330,32 @@ class User extends Authenticatable
             return Padre::where('id', $this->padre->id);
         }
 
-        return Padre::whereRaw('0=1');
+        return Padre::whereRaw('0 = 1');
     }
 
     // =============================
     // OBTENER TODOS LOS PERMISOS
     // =============================
 
-    public function obtenerPermisos()
+    public function obtenerPermisos(): array
     {
         $lista = [];
 
+        // Permisos JSON del usuario (solo los que tienen valor true)
         if (is_array($this->permissions)) {
-            $lista = array_merge($lista, $this->permissions);
-        }
-
-        if ($this->relationLoaded('rol') || $this->rol) {
-            if ($this->rol->permisos instanceof \Illuminate\Support\Collection) {
-                $lista = array_merge($lista, $this->rol->permisos->pluck('nombre')->toArray());
+            foreach ($this->permissions as $key => $value) {
+                if ($value === true) {
+                    $lista[] = strtolower($key);
+                }
             }
         }
 
-        $lista = array_filter($lista);
-        $lista = array_unique($lista);
-        sort($lista);
+        // Permisos del rol
+        if ($this->rol && $this->rol->permisos instanceof \Illuminate\Support\Collection) {
+            $lista = array_merge($lista, $this->rol->permisos->pluck('nombre')->map(fn($n) => strtolower($n))->toArray());
+        }
 
-        return $lista;
+        return array_values(array_unique(array_filter($lista)));
     }
 
-    // =============================
-    // HELPERS DE PERMISOS
-    // =============================
-
-    public function hasPermission($permission)
-    {
-        return $this->tienePermiso($permission);
-    }
-    // Dentro de la clase User en app/Models/User.php
-
-    public function infoParaObservaciones()
-{
-    return [
-        'profesor_id'   => $this->docente->id ?? null,
-        'estudiante_id' => $this->estudiante->id ?? null,
-    ];
-}
 }

@@ -51,7 +51,6 @@ class Matricula extends Model
         return $this->belongsTo(Padre::class, 'padre_id');
     }
 
-<<<<<<< HEAD
     /*
     |--------------------------------------------------------------------------
     | MÉTODOS DE ESTADO
@@ -59,9 +58,6 @@ class Matricula extends Model
     */
 
     public function confirmar()
-=======
-    public function confirmar(): void
->>>>>>> josue_matriculag5
     {
         if ($this->estado !== 'pendiente') {
             return false;
