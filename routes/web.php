@@ -28,15 +28,37 @@ use App\Http\Controllers\PublicoPlanEstudiosController;
 use App\Http\Controllers\SeccionController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\SuperAdmin\UsuarioController;
+use App\Http\Controllers\RegistrarCalificacionController;
+use App\Http\Controllers\AccionesImportantesController;
+use App\Http\Controllers\H20CursoController;
+use App\Http\Controllers\ConsultaestudiantexcursoController;
+
+/*
+|--------------------------------------------------------------------------
+| RUTAS PÚBLICAS
+|--------------------------------------------------------------------------
+*/
+
+// Ruta raíz - Redirige al login
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 use App\Http\Controllers\SuperAdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-// ... todos tus use imports ...
+// PLANTILLA PRINCIPAL (PÚBLICA) - Para el botón del login
+Route::get('/inicio', function () {
+    return view('plantilla');
+})->name('inicio');
+
+Route::get('/plantilla', function () {
+    return view('plantilla');
+})->name('plantilla');
 
 /*
 |--------------------------------------------------------------------------
-| PÁGINAS PÚBLICAS
+| RUTAS PÚBLICAS DE MATRÍCULA (SIN AUTH)
 |--------------------------------------------------------------------------
 */
 Route::get('/', fn () => redirect()->route('login'));
@@ -57,6 +79,11 @@ Route::get('/matricula-publica',  [MatriculaController::class, 'create'])->name(
 Route::post('/matricula-publica', [MatriculaController::class, 'store'])->name('matriculas.public.store');
 Route::get('/matricula-exitosa',  [MatriculaController::class, 'success'])->name('matriculas.success');
 
+// Consulta de solicitudes (PÚBLICA)
+// estado de solicitud manuel padilla
+Route::get('/estado-solicitud', [SolicitudController::class, 'verEstado'])
+    ->name('estado-solicitud');
+Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI']);
 // Consultas públicas
 Route::get('/estado-solicitud',  [SolicitudController::class, 'verEstado'])->name('estado-solicitud');
 Route::post('/estado-solicitud', [SolicitudController::class, 'consultarPorDNI'])->name('estado-solicitud.consultar');
@@ -161,7 +188,22 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+    });
+// consultas de los estudiantes por cursos
+    Route::get('/consultaestudiantesxcurso', [ConsultaestudiantexcursoController::class, 'index'])
+        ->name('consultaestudiantesxcurso.index');
 
+    Route::get('/consultaestudiantesxcurso/{grado}/{seccion}', [ConsultaestudiantexcursoController::class, 'show'])
+        ->name('consultaestudiantesxcurso.show');
+    /*
+    |--------------------------------------------------------------------------
+    | RUTAS DE PROFESOR
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('profesor')->name('profesor.')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('profesor.dashboard.index');
+        })->name('dashboard');
         Route::get('/cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
         Route::put('/cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
 
@@ -209,6 +251,16 @@ Route::middleware(['auth'])->group(function () {
 
         // Estudiantes
         Route::resource('estudiantes', EstudianteController::class);
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE ESTUDIANTES
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/buscarregistro', [BuscarEstudianteController::class, 'buscarregistro'])
+        ->name('buscarregistro');
+    Route::get('/estudiantes/buscar', [BuscarEstudianteController::class, 'buscar'])->name('estudiantes.buscar');
+    Route::resource('estudiantes', EstudianteController::class);
 
         // Profesores
         Route::resource('profesores', ProfesorController::class)
@@ -258,6 +310,34 @@ Route::middleware(['auth'])->group(function () {
         // Documentos
         Route::resource('documentos', DocumentoController::class);
 
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE ACCIONES IMPORTANTES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/acciones_importantes', [AccionesImportantesController::class, 'index'])
+        ->name('acciones_importantes.index');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CAMBIAR CONTRASEÑA
+    |--------------------------------------------------------------------------
+    */
+    Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
+    Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN DE MATERIAS Y GRADOS
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('materias', MateriaController::class);
+    Route::resource('grados', GradoController::class);
+    Route::get('grados/{grado}/asignar-materias', [GradoController::class, 'asignarMaterias'])->name('grados.asignar-materias');
+    Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])->name('grados.guardar-materias');
+    Route::get('grados/crear-masivo', [GradoController::class, 'crearMasivo'])->name('grados.crear-masivo');
+Route::post('grados/generar-masivo', [GradoController::class, 'generarMasivo'])->name('grados.generar-masivo');
         // Materias
         Route::resource('materias', MateriaController::class);
 
@@ -293,6 +373,24 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/notificaciones', [NotificacionPreferenciaController::class,'indexProfesor'])->name('notificaciones.index');
     });
 
+    // Mostrar formulario / filtros
+    Route::get('registrar-calificaciones', [RegistrarCalificacionController::class, 'create'])
+        ->name('registrarcalificaciones.create');
+    // Guardar notas
+    Route::post('registrar-calificaciones', [RegistrarCalificacionController::class, 'store'])
+        ->name('registrarcalificaciones.store');
+    // Listado (index) de calificaciones del profesor
+    Route::get('calificaciones', [RegistrarCalificacionController::class, 'index'])
+        ->name('registrarcalificaciones.index');
+    // AJAX: obtener estudiantes por curso
+    Route::get('registrar-calificaciones/estudiantes/{curso}', [RegistrarCalificacionController::class, 'obtenerEstudiantes'])
+        ->name('registrarcalificaciones.estudiantes');
+    Route::get('registrar-calificaciones/ver', [RegistrarCalificacionController::class, 'ver'])
+        ->name('registrarcalificaciones.ver');
+
+
+});
+Route::resource('observaciones', ObservacionController::class)->except(['show']);
     /*
     |----------------------------------------------------------------------
     | PADRE
@@ -310,6 +408,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('estudiante')->name('estudiante.')->middleware('role:estudiante')->group(function () {
         Route::get('/dashboard', fn () => view('estudiante.dashboard.index'))->name('dashboard');
     });
-    
+
+
+
+// cursos para secundaria
+Route::resource('h20cursos', H20CursoController::class);
 
 }); // fin middleware auth

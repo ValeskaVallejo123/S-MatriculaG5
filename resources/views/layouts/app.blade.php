@@ -670,7 +670,7 @@
     </li>
 
     <li class="menu-item">
-        <a href="{{ route('grados.index') }}" 
+        <a href="{{ route('grados.index') }}"
         class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
         <i class="fas fa-book-reader"></i>
         <span>Plan de Estudios</span>
@@ -679,7 +679,7 @@
 
 
 <li class="menu-item">
-    <a href="{{ route('secciones.index') }}" 
+    <a href="{{ route('secciones.index') }}"
     class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
         <i class="fas fa-layer-group"></i>
         <span>Secciones</span>
@@ -713,14 +713,38 @@
             </li>
 
             <li class="menu-item">
+                <a href="{{ route('buscarregistro') }}" class="menu-link {{ request()->routeIs('buscarregistro') ? 'active' : '' }}">
+                    <i class="fas fa-search"></i>
+                    <span>Registro de estudiante</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
                 <a href="{{ route('padres.buscar') }}" class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
-                    <i class="fas fa-user-search"></i>
+                    <i class="fas fa-search"></i>
                     <span>Buscar Padre/Tutor</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('consultaestudiantesxcurso.index') }}"
+                   class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
+                    <i class="fas fa-search"></i>
+                    <span>Consulta estudiantes por curso</span>
                 </a>
             </li>
 
             <!-- GESTIÓN ACADÉMICA -->
             <li class="menu-section-title">GESTIÓN ACADÉMICA</li>
+
+
+            <li class="menu-item">
+                <a href="{{ route('registrarcalificaciones.index') }}"
+                   class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Registrar calificaciones</span>
+                </a>
+            </li>
 
             <li class="menu-item">
                 <a href="{{ route('matriculas.index') }}" class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
@@ -739,7 +763,15 @@
             <li class="menu-item">
                 <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i>
-                    <span>Grados</span>
+                    <span>Grados/Cursos</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ route('h20cursos.index') }}"
+                   class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Cursos</span>
                 </a>
             </li>
 
@@ -771,6 +803,7 @@
                 </a>
             </li>
 
+
             <!-- DOCUMENTACIÓN -->
             <li class="menu-section-title">DOCUMENTACIÓN</li>
 
@@ -788,6 +821,13 @@
                 </a>
             </li>
 
+            <!-- PERMISOS Y ROLES -->
+            @if($isSuperAdmin)
+            <li class="menu-section-title">PERMISOS Y ROLES</li>
+
+       c
+            @endif
+
             <!-- PERMISOS -->
             <li class="menu-section-title">PERMISOS</li>
 
@@ -803,7 +843,7 @@
 
             @if($isSuperAdmin)
             <li class="menu-item">
-                <a href="{{ route('superadmin.cambiarcontrasenia.edit') }}" 
+                <a href="{{ route('superadmin.cambiarcontrasenia.edit') }}"
        class="menu-link {{ request()->routeIs('superadmin.cambiarcontrasenia.*') ? 'active' : '' }}">
         <i class="fas fa-user-circle"></i>
         <span>Mi Perfil</span>
@@ -829,11 +869,9 @@
             </li>
 
             <!-- ACCIONES IMPORTANTES -->
-            <li class="menu-section-title">MÁS</li>
-
             <li class="menu-item">
                 <a href="{{ route('acciones_importantes.index') }}" class="menu-link {{ request()->routeIs('acciones_importantes.index') ? 'active' : '' }}">
-                    <i class="fas fa-history"></i>
+                    <i class="fas fa-question-circle"></i>
                     <span>Ver acciones recientes</span>
                 </a>
             </li>
