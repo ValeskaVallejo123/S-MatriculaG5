@@ -153,8 +153,12 @@
             <div class="profile-avatar-placeholder">
                 {{ strtoupper(substr($estudiante->nombre1, 0, 1) . substr($estudiante->apellido1, 0, 1)) }}
             </div>
+        @endif
+
+        <div>
+            <p class="profile-name">{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}</p>
+            <p class="profile-sub">DNI: {{ $estudiante->dni ?: '—' }}</p>
         </div>
-        {{-- FIN header --}}
 
         @if($estudiante->estado === 'activo')
             <span class="bpill b-active"><i class="fas fa-circle" style="font-size:.4rem;"></i> Activo</span>
@@ -162,6 +166,7 @@
             <span class="bpill b-inactive"><i class="fas fa-circle" style="font-size:.4rem;"></i> Inactivo</span>
         @endif
     </div>
+    {{-- FIN header --}}
 
     {{-- Card body --}}
     <div class="show-card">
@@ -258,7 +263,7 @@
                 </div>
             </div>
 
-            {{-- ✅ PADRES VINCULADOS --}}
+            {{-- PADRES VINCULADOS --}}
             <div>
                 <div class="show-section-title" style="justify-content: space-between;">
                     <span style="display:flex;align-items:center;gap:.5rem;">
@@ -372,15 +377,7 @@
 
 </div>
 
-</div>{{-- /container --}}
-
-
-{{-- ============================================================
-     MODAL CONFIRMAR ELIMINACIÓN
-     CORRECCIÓN: el modal original tenía el párrafo del mensaje
-     duplicado y el @section('content') cerrado dos veces (@endsection
-     al final era el segundo cierre). Se limpió todo.
-============================================================ --}}
+{{-- Modal confirmar eliminación --}}
 <div id="deleteModal" class="modal fade" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius:12px; border:none; overflow:hidden;">
@@ -400,16 +397,19 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
+
             <div class="modal-body" style="padding:1.25rem 1.5rem;">
                 <p class="mb-1" style="color:#003b73;font-size:.88rem;">
                     ¿Estás seguro de eliminar a <strong>{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}</strong>?
                 </p>
             </div>
+
             <div class="modal-footer border-0" style="background:#f8fafc;padding:.85rem 1.5rem;">
                 <button type="button" class="footer-btn btn-back-f" data-bs-dismiss="modal" style="flex:0;padding:.45rem 1.1rem;">
                     Cancelar
                 </button>
-                <button type="button" onclick="submitDelete()" class="footer-btn btn-edit-f" style="flex:0;padding:.45rem 1.1rem;background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 2px 8px rgba(239,68,68,.3);">
+                <button type="button" onclick="submitDelete()" class="footer-btn btn-edit-f"
+                        style="flex:0;padding:.45rem 1.1rem;background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 2px 8px rgba(239,68,68,.3);">
                     Sí, Eliminar
                 </button>
             </div>
