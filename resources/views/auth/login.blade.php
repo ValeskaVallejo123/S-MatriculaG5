@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>Login - Escuela Gabriela Mistral</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Lado izquierdo - Decorativo con hexágonos */
+    .left-section {
+      flex: 1;
+      background: linear-gradient(135deg, #1e5a8e 0%, #0d3d66 50%, #003153 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Patrón de hexágonos */
+    .hexagon-pattern {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0.15;
+    }
+
+    .hex {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: #4ec7d2;
+      clip-path: polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%);
+      opacity: 0.8;
+    }
+
+    .hex-1 { top: 5%; left: 10%; width: 150px; height: 150px; opacity: 0.6; animation: float 8s ease-in-out infinite; }
+    .hex-2 { top: 15%; right: 15%; width: 100px; height: 100px; opacity: 0.4; animation: float 10s ease-in-out infinite 1s; }
+    .hex-3 { bottom: 20%; left: 5%; width: 180px; height: 180px; opacity: 0.5; animation: float 12s ease-in-out infinite 2s; }
+    .hex-4 { bottom: 10%; right: 10%; width: 130px; height: 130px; opacity: 0.7; animation: float 9s ease-in-out infinite 1.5s; }
+    .hex-5 { top: 40%; left: 20%; width: 90px; height: 90px; opacity: 0.3; animation: float 11s ease-in-out infinite 0.5s; }
+    .hex-6 { top: 60%; right: 25%; width: 110px; height: 110px; opacity: 0.5; animation: float 10s ease-in-out infinite 3s; }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+      }
+      25% {
+        transform: translateY(-20px) translateX(10px) rotate(5deg);
+      }
+      50% {
+        transform: translateY(-15px) translateX(-10px) rotate(-3deg);
+      }
+      75% {
+        transform: translateY(-25px) translateX(5px) rotate(2deg);
+      }
+    }
+
+    /* Logo y texto central izquierda */
+    .left-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      color: white;
+      padding: 40px;
+    }
+
+    .school-logo {
+      width: 140px;
+      height: 140px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid rgba(78, 199, 210, 0.4);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .school-logo i {
+      font-size: 4rem;
+      color: #4ec7d2;
+      filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+    }
+
+    .left-content h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      line-height: 1.2;
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .left-content p {
+      font-size: 1rem;
+      opacity: 0.95;
+      font-weight: 400;
+      color: #bfd9ea;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .left-content .subtitle {
+      font-size: 0.85rem;
+      margin-top: 8px;
+      opacity: 0.8;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    /* Lado derecho - Formulario de login */
+    .right-section {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background: #ffffff;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    /* Scroll personalizado para el lado derecho */
+    .right-section::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .right-section::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .right-section::-webkit-scrollbar-thumb {
+      background: #4ec7d2;
+      border-radius: 10px;
+    }
+
+    .right-section::-webkit-scrollbar-thumb:hover {
+      background: #3ab0bc;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      animation: slideIn 0.8s ease-out;
+      padding: 10px 0;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .login-header h2 {
+      font-size: 1.75rem;
+      color: #003b73;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .login-header p {
+      color: #00508f;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #003b73;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #00508f;
+      font-size: 0.95rem;
+      z-index: 2;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 12px 14px 12px 44px;
+      border: 2px solid #e1e8ed;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      outline: none;
+      color: #003b73;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      background: #f8f9fa;
+    }
+
+    .input-wrapper input:focus {
+      border-color: #4ec7d2;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(78, 199, 210, 0.1);
+    }
+
+    .input-wrapper input::placeholder {
+      color: #a0aec0;
+      font-weight: 400;
+    }
+
+    .input-wrapper input.is-invalid {
+      border-color: #e74c3c;
+      background: #fff5f5;
+    }
+
+    .invalid-feedback {
+      color: #e74c3c;
+      font-size: 0.78rem;
+      margin-top: 5px;
+      display: block;
+      font-weight: 500;
+    }
+
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      font-size: 0.82rem;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #00508f;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #4ec7d2;
+      cursor: pointer;
+    }
+
+    .forgot-password {
+      color: #4ec7d2;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .forgot-password:hover {
+      color: #00508f;
+      text-decoration: underline;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #1e5a8e 0%, #0d3d66 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 25px rgba(30, 90, 142, 0.3);
+      position: relative;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .login-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(30, 90, 142, 0.4);
+      background: linear-gradient(135deg, #0d3d66 0%, #003153 100%);
+    }
+
+    .login-button:active {
+      transform: translateY(0);
+    }
+
+    .login-button i {
+      margin-right: 6px;
+    }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.82rem;
+      animation: slideDown 0.5s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert i {
+      font-size: 1rem;
+    }
+
+    .alert-danger {
+      background: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+    }
+
+    .alert-success {
+      background: rgba(78, 199, 210, 0.1);
+      color: #00508f;
+      border: 1px solid rgba(78, 199, 210, 0.3);
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #e1e8ed, transparent);
+    }
+
+    .divider span {
+      background: white;
+      padding: 0 15px;
+      color: #00508f;
+      font-size: 0.8rem;
+      position: relative;
+      font-weight: 600;
+    }
+
+    /* Botón para ir a la plantilla - CORREGIDO */
+    .btn-inicio {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 11px 20px;
+      background: white;
+      color: #00508f;
+      border: 2px solid #4ec7d2;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 15px rgba(78, 199, 210, 0.2);
+      text-align: center;
+      text-decoration: none;
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-inicio:hover {
+      background: linear-gradient(135deg, #4ec7d2 0%, #3ab0bc 100%);
+      color: white;
+      border-color: #3ab0bc;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(78, 199, 210, 0.35);
+    }
+
+    .btn-inicio:active {
+      transform: translateY(0);
+    }
+
+    .btn-inicio i {
+      font-size: 1rem;
+    }
+
+    .footer-info {
+      text-align: center;
+      padding-top: 15px;
+      margin-top: 15px;
+      border-top: 1px solid #e1e8ed;
+      color: #00508f;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .left-section {
+        display: none;
+      }
+
+      .right-section {
+        flex: 1;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .right-section {
+        padding: 25px 18px;
+      }
+
+      .login-container {
+        max-width: 100%;
+      }
+
+      .login-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .login-header p {
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .right-section {
+        padding: 18px 14px;
+      }
+
+      .login-header {
+        margin-bottom: 20px;
+      }
+
+      .login-header h2 {
+        font-size: 1.35rem;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .input-wrapper input {
+        padding: 11px 14px 11px 42px;
+        font-size: 0.88rem;
+      }
+
+      .login-button {
+        padding: 11px;
+        font-size: 0.9rem;
+      }
+
+      .btn-inicio {
+        padding: 10px 18px;
+        font-size: 0.85rem;
+      }
+
+      .footer-info {
+        font-size: 0.7rem;
+      }
+    }
+
+    /* Animación de carga */
+    .login-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .login-button.loading::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spinner 0.6s linear infinite;
+    }
+
+    @keyframes spinner {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Mejora visual para dispositivos móviles */
+    @media (hover: none) {
+      .input-wrapper input:focus {
+        transform: none;
+      }
+
+      .login-button:hover {
+        transform: none;
+      }
+
+      .login-button:active {
+        transform: scale(0.98);
+      }
+
+      .btn-inicio:hover {
+        transform: none;
+      }
+
+      .btn-inicio:active {
+        transform: scale(0.98);
+      }
+    }
+
+    /* Scroll suave */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Lado izquierdo decorativo -->
+  <div class="left-section">
+    <div class="hexagon-pattern">
+      <div class="hex hex-1"></div>
+      <div class="hex hex-2"></div>
+      <div class="hex hex-3"></div>
+      <div class="hex hex-4"></div>
+      <div class="hex hex-5"></div>
+      <div class="hex hex-6"></div>
+    </div>
+
+    <div class="left-content">
+      <div class="school-logo">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <h1>Bienvenido</h1>
+      <p>Sistema de Gestión Escolar</p>
+      <p class="subtitle">ESCUELA GABRIELA MISTRAL</p>
+    </div>
+  </div>
+
+  <!-- Lado derecho con formulario -->
+  <div class="right-section">
+    <div class="login-container">
+
+      <div class="login-header">
+        <h2>Iniciar Sesión</h2>
+        <p>Ingresa tus credenciales para acceder</p>
+      </div>
+       
+      @if (session('status'))
+        <div class="alert alert-success">
+          <i class="fas fa-check-circle"></i>
+          <span>{{ session('status') }}</span>
+        </div>
+      @endif
+
+      <form method="POST" action="{{ route('login') }}" id="loginForm">
+        @csrf
+
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value="{{ old('email') }}"
+              placeholder="tu-correo@ejemplo.com"
+              required
+              autofocus
+              autocomplete="email"
+              class="@error('email') is-invalid @enderror"
+            >
+            @error('email')
+              <span class="invalid-feedback">{{ $message }}</span>
+            @enderror
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Ingresa tu contraseña"
+              required
+              autocomplete="current-password"
+              class="@error('password') is-invalid @enderror"
+            >
+            @error('password')
+              <span class="invalid-feedback">{{ $message }}</span>
+            @enderror
+          </div>
+        </div>
+
+        <div class="remember-forgot">
+          <label class="remember-me">
+            <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
+            <span>Recordarme</span>
+          </label>
+          @if (Route::has('password.request'))
+            <a href="{{ route('password.request') }}" class="forgot-password">
+              ¿Olvidaste tu contraseña?
+            </a>
+          @else
+            <a href="{{ url('/recuperar-contrasena') }}" class="forgot-password">
+              ¿Olvidaste tu contraseña?
+            </a>
+          @endif
+        </div>
+
+        <button type="submit" class="login-button">
+          <i class="fas fa-sign-in-alt"></i> Acceder
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>O</span>
+      </div>
+
+      <!-- Botón para ver página principal - CORREGIDO -->
+      <a href="{{ route('plantilla') }}" class="btn-inicio">
+         <i class="fas fa-home"></i>
+         <span>Ver Página Principal</span>
+      </a>
+
+
+      <div class="footer-info">
+        <i class="fas fa-shield-alt"></i>
+        <span>© 2025 Escuela Gabriela Mistral - Danlí, El Paraíso</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Animación de carga al enviar formulario
+    const loginForm = document.getElementById('loginForm');
+    const loginButton = loginForm.querySelector('.login-button');
+
+    loginForm.addEventListener('submit', function() {
+      loginButton.classList.add('loading');
+      loginButton.disabled = true;
+    });
+
+    // Limpiar mensajes de error al escribir
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+      input.addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+        const feedback = this.parentElement.querySelector('.invalid-feedback');
+        if (feedback) {
+          feedback.style.display = 'none';
+        }
+      });
+    });
+
+    // Scroll automático hacia arriba cuando aparece un mensaje de error
+    window.addEventListener('DOMContentLoaded', function() {
+      const alertDanger = document.querySelector('.alert-danger');
+      if (alertDanger) {
+        const rightSection = document.querySelector('.right-section');
+        if (rightSection) {
+          rightSection.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

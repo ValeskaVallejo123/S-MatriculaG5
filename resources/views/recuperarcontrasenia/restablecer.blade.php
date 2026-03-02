@@ -4,107 +4,308 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Restablecer Contraseña - Escuela Gabriela Mistral</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f7ff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Fondo con degradado suave similar al login */
+            background: linear-gradient(135deg, #f0f4f7 0%, #ffffff 100%);
         }
 
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-            url('{{ asset('imagenes/centroEd.jpg') }}') center/cover no-repeat;
-            color: white;
-            padding: 80px 0;
+        .reset-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 40px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 59, 115, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reset-header {
             text-align: center;
+            margin-bottom: 30px;
         }
 
-        .hero h1 {
-            font-size: 2.5rem;
+        .reset-header h2 {
+            font-size: 1.8rem;
+            color: #003b73;
             font-weight: 700;
             margin-bottom: 10px;
         }
 
-        .hero span {
-            color: #ffd700;
-            font-family: 'Pacifico', cursive;
+        .reset-header p {
+            color: #00508f;
+            font-size: 0.95rem;
+            font-weight: 400;
+            line-height: 1.4;
         }
 
-        .form-container {
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 40px;
-            max-width: 500px;
-            margin: 40px auto;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .form-group {
+            margin-bottom: 24px;
         }
 
-        .btn-green {
-            background-color: #4caf50;
-            border: none;
-            color: white;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #003b73;
+            font-size: 0.9rem;
             font-weight: 600;
         }
 
-        .btn-green:hover {
-            background-color: #43a047;
+        .input-wrapper {
+            position: relative;
         }
 
-        .text-small {
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00508f;
+            font-size: 1rem;
+            z-index: 2;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            outline: none;
+            color: #003b73;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            background: #f8f9fa;
+        }
+
+        /* Estilo para inputs con error (Laravel lo maneja añadiendo la clase is-invalid) */
+        .input-wrapper input.is-invalid {
+            border-color: #e74c3c !important;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #4ec7d2;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(78, 199, 210, 0.1);
+        }
+
+        /* Botón con degradado del login */
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1e5a8e 0%, #0d3d66 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(30, 90, 142, 0.3);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(30, 90, 142, 0.4);
+            background: linear-gradient(135deg, #0d3d66 0%, #003153 100%);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        .submit-button i {
+            margin-right: 8px;
+        }
+
+        /* Estilo de alertas (éxito y error) */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+            animation: slideDown 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .alert i {
+            font-size: 1.1rem;
+        }
+
+        .alert-danger {
+            background: #fff5f5;
+            color: #e74c3c;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background: rgba(78, 199, 210, 0.1);
+            color: #00508f;
+            border: 1px solid rgba(78, 199, 210, 0.3);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .back-link a {
+            color: #4ec7d2;
+            text-decoration: none;
+            font-weight: 600;
             font-size: 0.9rem;
-            color: #555;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #00508f;
+            text-decoration: underline;
+        }
+
+        .invalid-feedback {
+            color: #e74c3c;
+            font-size: 0.82rem;
+            margin-top: 6px;
+            display: block;
+            font-weight: 500;
         }
     </style>
 </head>
+
 <body>
 
-<section class="hero">
-    <div class="container">
-        <h1>Restablecer Contraseña</h1>
-        <p>Escuela <span>Gabriela Mistral</span></p>
+<div class="reset-container">
+
+    <div class="reset-header">
+        <i class="fas fa-lock-open" style="font-size: 2.5rem; color: #4ec7d2; margin-bottom: 10px;"></i>
+        <h2>Establece una nueva contraseña</h2>
+        <p>Asegúrate de que tu nueva contraseña tenga al menos ocho caracteres y sea segura.</p>
     </div>
-</section>
 
-<div class="container">
-    <div class="form-container">
-        <h4 class="text-center mb-4">Crea tu nueva contraseña</h4>
-
-        <form method="POST" action="{{ route('password.actualizar') }}">
-
-        @csrf
-            <input type="hidden" name="token" value="{{ $token }}">
-
-            <div class="mb-3">
-                <label for="email" class="form-label">Correo electrónico</label>
-                <input type="email" name="email" id="email" class="form-control" placeholder="ejemplo@correo.com" required>
-                @error('email')
-                <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Nueva contraseña</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="********" required>
-                @error('password')
-                <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="password_confirmation" class="form-label">Confirmar nueva contraseña</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="********" required>
-            </div>
-
-            <button type="submit" class="btn btn-green w-100">Restablecer contraseña</button>
-        </form>
-
-        <div class="text-center mt-3">
-            <a href="{{ url('/login') }}" class="text-small">← Volver al inicio de sesión</a>
+    {{-- 1. Mensaje de éxito (ej: Contraseña restablecida) --}}
+    @if (session('status'))
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span>¡Contraseña restablecida con éxito! Ya puedes iniciar sesión con tu nueva contraseña.</span>
         </div>
+    @endif
+
+    {{-- 2. Mensaje de error general (cuando hay errores de validación o el token es inválido) --}}
+    @if ($errors->any() && !session('status'))
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>¡Atención! Hubo un problema al intentar restablecer tu contraseña. Por favor, verifica el correo y las contraseñas ingresadas.</span>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('password.actualizar') }}">
+        @csrf
+        {{-- Campo oculto OBLIGATORIO para enviar el token de restablecimiento --}}
+        <input type="hidden" name="token" value="{{ $token }}">
+
+        <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <div class="input-wrapper">
+                <i class="fas fa-envelope input-icon"></i>
+                <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="tu-correo@ejemplo.com"
+                    value="{{ old('email', $email ?? '') }}"
+                    required
+                    autofocus
+                    class="@error('email') is-invalid @enderror"
+                >
+            </div>
+            {{-- Mensaje de error de validación de Laravel (en español si usas el archivo de traducción) --}}
+            @error('email')
+            <span class="invalid-feedback">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="password">Nueva contraseña</label>
+            <div class="input-wrapper">
+                <i class="fas fa-key input-icon"></i>
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder=""
+                    required
+                    class="@error('password') is-invalid @enderror"
+                >
+            </div>
+            @error('password')
+            @php
+                $msg = $message;
+                // Parche manual: Detectamos el error de confirmación en inglés y lo traducimos
+                if (str_contains($msg, 'confirmation does not match')) {
+                    $msg = 'La confirmación de la contraseña no coincide.';
+                }
+            @endphp
+            <span class="invalid-feedback">{{ $msg }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="password_confirmation">Confirmar nueva contraseña</label>
+            <div class="input-wrapper">
+                <i class="fas fa-check-circle input-icon"></i>
+                <input
+                    type="password"
+                    name="password_confirmation"
+                    id="password_confirmation"
+                    placeholder="Repite la contraseña"
+                    required
+                >
+            </div>
+            {{-- Laravel maneja el error de 'confirmed' en el @error('password') si falla la confirmación --}}
+        </div>
+
+        <button type="submit" class="submit-button">
+            <i class="fas fa-sync-alt"></i> Cambiar Contraseña
+        </button>
+    </form>
+
+    <div class="back-link">
+        <a href="{{ url('/login') }}">← Volver al inicio de sesión</a>
     </div>
+
 </div>
 
 </body>
 </html>
-

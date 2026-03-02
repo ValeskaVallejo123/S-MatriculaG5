@@ -1,149 +1,115 @@
 @extends('layouts.app')
 
-@section('title', 'Subir Documentos')
-
 @section('content')
-    <div class="max-w-4xl mx-auto my-10">
-        <div class="bg-white rounded-lg shadow p-8">
-            <h1 class="text-3xl font-bold mb-6 text-gray-800"><i class="bi bi-file-earmark-arrow-up"></i> Subir Documentos del Estudiante</h1>
+    <div class="container py-5" style="max-width: 900px;">
 
-            <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                @csrf
-
-                <!-- Información del Estudiante -->
-                <div class="border-b pb-4">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Información del Estudiante</h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold mb-2">Nombre del Estudiante *</label>
-                            <input
-                                type="text"
-                                name="nombre_estudiante"
-                                value="{{ old('nombre_estudiante') }}"
-                                class="w-full px-4 py-2 border rounded @error('nombre_estudiante') border-red-500 @enderror"
-                                required
-                            >
-                            @error('nombre_estudiante')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                        <i class="fas fa-folder-open text-primary fs-4"></i>
                     </div>
+                    <h5 class="fw-bold mb-0" style="color: #003b73;">Subir Expediente Digital</h5>
                 </div>
 
-                <!-- Archivos -->
-                <div class="border-b pb-4">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Documentos</h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold mb-2">Acta de Nacimiento *</label>
-                            <input
-                                type="file"
-                                name="acta_nacimiento"
-                                id="acta_nacimiento"
-                                accept=".jpg,.png,.pdf"
-                                class="w-full px-4 py-2 border rounded @error('acta_nacimiento') border-red-500 @enderror"
-                                required
-                            >
-                            <p class="text-gray-500 text-sm mt-1">JPG, PNG o PDF (máx. 5 MB)</p>
-                            @error('acta_nacimiento')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label class="block font-semibold mb-2">Calificaciones *</label>
-                            <input
-                                type="file"
-                                name="calificaciones"
-                                id="calificaciones"
-                                accept=".jpg,.png,.pdf"
-                                class="w-full px-4 py-2 border rounded @error('calificaciones') border-red-500 @enderror"
-                                required
-                            >
-                            <p class="text-gray-500 text-sm mt-1">JPG, PNG o PDF (máx. 5 MB)</p>
-                            @error('calificaciones')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
+                <div class="alert border-0 p-4 mb-4" style="background-color: #f0f9fa; border-radius: 10px;">
+                    <h6 class="fw-bold small mb-3" style="color: #00508f;">
+                        <i class="fas fa-clipboard-check me-2"></i>Documentos que deberá presentar:
+                    </h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2 small"><i class="fas fa-check-circle text-info me-2"></i>Foto del estudiante (formato JPG/PNG)</li>
+                        <li class="mb-2 small"><i class="fas fa-check-circle text-info me-2"></i>Acta de nacimiento (PDF/JPG/PNG)</li>
+                        <li class="small"><i class="fas fa-check-circle text-info me-2"></i>Calificaciones del año anterior (PDF/JPG/PNG)</li>
+                    </ul>
                 </div>
 
-                <!-- Botones -->
-                <div class="flex gap-4 pt-4">
-                    <button type="submit" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">
-                        Subir Documentos
+                <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold" style="color: #003b73;">Seleccionar Estudiante</label>
+                        <select name="estudiante_id" required class="form-select @error('estudiante_id') is-invalid @enderror" style="border: 2px solid #bfd9ea; border-radius: 8px; height: 45px;">
+                            <option value="">Seleccione al alumno...</option>
+                            @foreach($estudiantes as $estudiante)
+                                <option value="{{ $estudiante->id }}" {{ old('estudiante_id') == $estudiante->id ? 'selected' : '' }}>
+                                    {{ $estudiante->nombre }} {{ $estudiante->apellido }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('estudiante_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Foto Estudiante</label>
+                            <div class="mb-2 text-center" style="min-height: 90px;">
+                                <img id="preview-foto" src="#" alt="Previsualización" class="rounded shadow-sm d-none" style="width: 85px; height: 85px; object-fit: cover; border: 2px solid #4ec7d2;">
+                                <div id="placeholder-foto" class="rounded bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 85px; height: 85px; border: 2px dashed #bfd9ea;">
+                                    <i class="fas fa-user text-muted"></i>
+                                </div>
+                            </div>
+                            <input type="file" name="foto" id="input-foto" class="form-control @error('foto') is-invalid @enderror" accept=".jpg,.png" required style="border: 2px solid #bfd9ea;">
+                            @error('foto') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Acta Nacimiento</label>
+                            <div class="mb-2 text-center" style="min-height: 90px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-file-pdf fa-3x text-danger opacity-25"></i>
+                            </div>
+                            <input type="file" name="acta_nacimiento" class="form-control @error('acta_nacimiento') is-invalid @enderror" accept=".pdf,.jpg,.png" required style="border: 2px solid #bfd9ea;">
+                            @error('acta_nacimiento') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Calificaciones</label>
+                            <div class="mb-2 text-center" style="min-height: 90px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-file-invoice fa-3x text-success opacity-25"></i>
+                            </div>
+                            <input type="file" name="calificaciones" class="form-control @error('calificaciones') is-invalid @enderror" accept=".pdf,.jpg,.png" required style="border: 2px solid #bfd9ea;">
+                            @error('calificaciones') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" style="background: linear-gradient(to right, #4ec7d2, #00508f); border: none; border-radius: 8px; letter-spacing: 1px;">
+                        <i class="fas fa-cloud-upload-alt me-2"></i>GUARDAR EXPEDIENTE
                     </button>
-                    <a href="{{ route('documentos.index') }}" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center leading-[3rem]">
-                        Cancelar
-                    </a>
+                </form>
+
+                <div class="alert border-0 mt-4 p-3" style="background-color: #f8fafc; border-left: 4px solid #4ec7d2;">
+                    <p class="mb-0 small text-muted">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        Recuerde: Los archivos no deben exceder los **5MB** para asegurar una subida correcta.
+                    </p>
                 </div>
-            </form>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3">
+            <a href="{{ route('matriculas.index') }}" class="btn btn-outline-secondary flex-fill fw-bold py-2" style="border-radius: 8px;">
+                <i class="fas fa-arrow-left me-2"></i>Volver a Matrícula
+            </a>
+            <a href="{{ route('documentos.index') }}" class="btn btn-light border flex-fill fw-bold py-2" style="border-radius: 8px; color: #64748b;">
+                <i class="fas fa-times me-2"></i>Cancelar
+            </a>
         </div>
     </div>
 
-    {{-- Validación frontend de archivos --}}
+    {{-- Script para Previsualización en Tiempo Real --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                const maxSize = 5 * 1024 * 1024;
-                const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-
-                const acta = document.getElementById('acta_nacimiento').files[0];
-                const calif = document.getElementById('calificaciones').files[0];
-
-                let errorMessage = '';
-
-                if (acta && (!allowedTypes.includes(acta.type) || acta.size > maxSize)) {
-                    errorMessage = 'El Acta de Nacimiento debe ser JPG, PNG o PDF y no superar 5 MB.';
-                } else if (calif && (!allowedTypes.includes(calif.type) || calif.size > maxSize)) {
-                    errorMessage = 'Las Calificaciones deben ser JPG, PNG o PDF y no superar 5 MB.';
-                }
-
-                if (errorMessage) {
-                    e.preventDefault();
-                    alert(errorMessage); // Puedes reemplazar por modal si quieres
-                }
-            });
-        });
+        document.getElementById('input-foto').onchange = evt => {
+            const [file] = document.getElementById('input-foto').files
+            if (file) {
+                const preview = document.getElementById('preview-foto');
+                const placeholder = document.getElementById('placeholder-foto');
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('d-none');
+                placeholder.classList.add('d-none');
+            }
+        }
     </script>
-
-    <style>
-        body {
-            background-color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        input[type="file"] {
-            padding: 0.5rem 0.5rem;
-        }
-    </style>
+<<<<<<< HEAD
 @endsection
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+=======
+@endsection
+>>>>>>> dev/valeska

@@ -1,195 +1,231 @@
 @extends('layouts.app')
 
 @section('title', 'Crear Administrador')
+@section('page-title', 'Nuevo Administrador')
 
 @section('content')
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-2xl shadow-xl p-8">
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                </svg>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Registro de Administrador</h1>
-            <p class="text-gray-600">Sistema de Gestión Escolar</p>
+<div class="container" style="max-width: 900px;">
+
+    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-primary mb-3">
+        <i class="fas fa-arrow-left me-1"></i> Volver
+    </a>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-header border-0 py-3 px-4"
+             style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0;">
+            <h5 class="text-white fw-bold mb-0">
+                <i class="fas fa-user-shield me-2"></i>Información del Administrador
+            </h5>
+            <small class="text-white" style="opacity: 0.85;">Campos marcados con * son obligatorios</small>
         </div>
 
-        <form action="{{ route('admins.store') }}" method="POST" class="space-y-6">
-            @csrf
+        <div class="card-body p-4">
 
-            <!-- Nombre -->
-            <div>
-                <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Nombre Completo
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                    </div>
-                    <input 
-                        type="text" 
-                        id="nombre" 
-                        name="nombre" 
-                        value="{{ old('nombre') }}"
-                        class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition @error('nombre') border-red-500 @enderror"
-                        placeholder="Ej: Juan Pérez García"
-                        required
-                    >
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" style="border-left: 4px solid #10b981; border-radius: 8px;">
+                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-                @error('nombre')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+            @endif
 
-            <!-- Email -->
-            <div>
-                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Correo Electrónico
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        value="{{ old('email') }}"
-                        class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition @error('email') border-red-500 @enderror"
-                        placeholder="admin@colegio.edu"
-                        required
-                    >
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" style="border-left: 4px solid #ef4444; border-radius: 8px;">
+                    <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-                @error('email')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+            @endif
 
-            <!-- Contraseña -->
-            <div>
-                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Contraseña
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                    </div>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password"
-                        class="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition @error('password') border-red-500 @enderror"
-                        placeholder="Mínimo 8 caracteres"
-                        required
-                        minlength="8"
-                    >
-                    <button 
-                        type="button" 
-                        onclick="togglePassword('password')"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                        <svg id="eye-password" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                    </button>
-                </div>
-                @error('password')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+            <form action="{{ route('superadmin.administradores.store') }}" method="POST">
+                @csrf
 
-            <!-- Confirmar Contraseña -->
-            <div>
-                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Confirmar Contraseña
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                    </div>
-                    <input 
-                        type="password" 
-                        id="password_confirmation" 
-                        name="password_confirmation"
-                        class="w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                        placeholder="Repite la contraseña"
-                        required
-                    >
-                    <button 
-                        type="button" 
-                        onclick="togglePassword('password_confirmation')"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                        <svg id="eye-password_confirmation" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
+                {{-- Datos Personales --}}
+                <h6 class="fw-bold mb-3 pb-2"
+                    style="color:#003b73; border-bottom: 2px solid rgba(78,199,210,0.3);">
+                    <i class="fas fa-user me-2" style="color:#4ec7d2;"></i>Datos Personales
+                </h6>
 
-            <!-- Permisos -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-3">
-                    Permisos de Administrador
-                </label>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    @foreach($permisos as $key => $label)
-                        <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 transition">
-                            <input 
-                                type="checkbox" 
-                                name="permisos[]" 
-                                value="{{ $key }}"
-                                {{ in_array($key, old('permisos', [])) ? 'checked' : '' }}
-                                class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
-                            >
-                            <span class="ml-3 text-sm text-gray-700">{{ $label }}</span>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label fw-semibold" style="color:#003b73;">
+                            Nombre(s) <span class="text-danger">*</span>
                         </label>
-                    @endforeach
-                </div>
-            </div>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-user" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="text" name="nombre" id="nombre"
+                                   class="form-control @error('nombre') is-invalid @enderror"
+                                   placeholder="Ej: Juan Carlos"
+                                   value="{{ old('nombre') }}"
+                                   required minlength="3" maxlength="50"
+                                   style="border-radius: 0 8px 8px 0;">
+                            @error('nombre')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            <!-- Botones -->
-            <div class="flex gap-4">
-                <button 
-                    type="submit"
-                    class="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg"
-                >
-                    Crear Administrador
-                </button>
-                <a 
-                    href="{{ route('admins.index') }}"
-                    class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition text-center"
-                >
-                    Cancelar
-                </a>
-            </div>
-        </form>
+                    <div class="col-md-6">
+                        <label for="apellido" class="form-label fw-semibold" style="color:#003b73;">
+                            Apellido(s) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-user" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="text" name="apellido" id="apellido"
+                                   class="form-control @error('apellido') is-invalid @enderror"
+                                   placeholder="Ej: Pérez González"
+                                   value="{{ old('apellido') }}"
+                                   required minlength="3" maxlength="50"
+                                   style="border-radius: 0 8px 8px 0;">
+                            @error('apellido')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="email" class="form-label fw-semibold" style="color:#003b73;">
+                            Correo Electrónico <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-envelope" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="email" name="email" id="email"
+                                   class="form-control @error('email') is-invalid @enderror"
+                                   placeholder="correo@admin.edu"
+                                   value="{{ old('email') }}"
+                                   required maxlength="100"
+                                   style="border-radius: 0 8px 8px 0;">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Credenciales --}}
+                <h6 class="fw-bold mb-3 pb-2"
+                    style="color:#003b73; border-bottom: 2px solid rgba(78,199,210,0.3);">
+                    <i class="fas fa-lock me-2" style="color:#4ec7d2;"></i>Credenciales
+                </h6>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="password" class="form-label fw-semibold" style="color:#003b73;">
+                            Contraseña <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-lock" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="password" name="password" id="password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="Mínimo 8 caracteres"
+                                   required minlength="8" maxlength="50">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    onclick="togglePassword('password')"
+                                    style="border-radius: 0 8px 8px 0;">
+                                <i class="fas fa-eye" id="icon-password"></i>
+                            </button>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="password_confirmation" class="form-label fw-semibold" style="color:#003b73;">
+                            Confirmar Contraseña <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text" style="background:rgba(78,199,210,0.1);border-color:#4ec7d2;">
+                                <i class="fas fa-check-circle" style="color:#4ec7d2;"></i>
+                            </span>
+                            <input type="password" name="password_confirmation" id="password_confirmation"
+                                   class="form-control"
+                                   placeholder="Repita la contraseña"
+                                   required minlength="8" maxlength="50">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    onclick="togglePassword('password_confirmation')"
+                                    style="border-radius: 0 8px 8px 0;">
+                                <i class="fas fa-eye" id="icon-password_confirmation"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Permisos --}}
+                <h6 class="fw-bold mb-3 pb-2"
+                    style="color:#003b73; border-bottom: 2px solid rgba(78,199,210,0.3);">
+                    <i class="fas fa-key me-2" style="color:#4ec7d2;"></i>Permisos y Privilegios
+                </h6>
+
+                <div class="card border-0 mb-4" style="background:#f8fafc; border-radius:10px;">
+                    <div class="card-body p-3">
+                        <div class="row g-2">
+                            @foreach($permisos as $key => $label)
+                                <div class="col-md-6">
+                                    <div class="form-check p-2 rounded"
+                                         style="background:white; border:1px solid #e2e8f0;">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="permisos[]"
+                                               value="{{ $key }}"
+                                               id="permiso_{{ $key }}"
+                                               {{ in_array($key, old('permisos', [])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="permiso_{{ $key }}"
+                                               style="font-size:0.875rem; color:#374151;">
+                                            {{ $label }}
+                                        </label>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Nota informativa --}}
+                <div class="alert alert-info border-0 mb-4"
+                     style="background:rgba(78,199,210,0.08); border-left:4px solid #4ec7d2 !important; border-radius:8px;">
+                    <i class="fas fa-info-circle me-2" style="color:#4ec7d2;"></i>
+                    <strong>Nota:</strong> El correo institucional puede generarse automáticamente como
+                    <em>nombre.apellido@admin.edu</em> según la configuración del sistema.
+                </div>
+
+                {{-- Botones --}}
+                <div class="d-flex gap-3 pt-3" style="border-top: 1px solid #e2e8f0;">
+                    <button type="submit" class="btn btn-primary fw-semibold flex-fill"
+                            style="border-radius:8px; padding:0.65rem;">
+                        <i class="fas fa-user-plus me-2"></i>Crear Administrador
+                    </button>
+                    <a href="{{ route('superadmin.administradores.index') }}"
+                       class="btn btn-outline-secondary fw-semibold flex-fill"
+                       style="border-radius:8px; padding:0.65rem;">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </a>
+                </div>
+
+            </form>
+        </div>
     </div>
+
 </div>
+@endsection
 
 @push('scripts')
 <script>
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
-    const eye = document.getElementById('eye-' + inputId);
-    
+    const icon  = document.getElementById('icon-' + inputId);
     if (input.type === 'password') {
         input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
     } else {
         input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
 }
 </script>
 @endpush
-@endsection

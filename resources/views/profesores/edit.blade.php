@@ -2,237 +2,601 @@
 
 @section('title', 'Editar Profesor')
 
-@section('content')
-<div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-lg shadow p-8">
-        <h1 class="text-3xl font-bold mb-6 text-gray-800"> Editar Profesor</h1>
-        
-        <form action="{{ route('profesores.update', $profesor) }}" method="POST" class="space-y-6">
-            @csrf
-            @method('PUT')
+@section('page-title', 'Editar Profesor')
 
-            <!-- Información Personal -->
-            <div class="border-b pb-4">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Información Personal</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-2">Nombre *</label>
-                        <input 
-                            type="text" 
-                            name="nombre" 
-                            value="{{ old('nombre', $profesor->nombre) }}"
-                            class="w-full px-4 py-2 border rounded @error('nombre') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('nombre')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Apellido *</label>
-                        <input 
-                            type="text" 
-                            name="apellido" 
-                            value="{{ old('apellido', $profesor->apellido) }}"
-                            class="w-full px-4 py-2 border rounded @error('apellido') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('apellido')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">DNI *</label>
-                        <input 
-                            type="text" 
-                            name="dni" 
-                            value="{{ old('dni', $profesor->dni) }}"
-                            class="w-full px-4 py-2 border rounded @error('dni') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('dni')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Fecha de Nacimiento *</label>
-                        <input 
-                            type="date" 
-                            name="fecha_nacimiento" 
-                            value="{{ old('fecha_nacimiento', optional($profesor->fecha_nacimiento)->format('Y-m-d')) }}"
-                            class="w-full px-4 py-2 border rounded @error('fecha_nacimiento') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('fecha_nacimiento')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            <!-- Información de Contacto -->
-            <div class="border-b pb-4">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Información de Contacto</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-2">Email</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            value="{{ old('email', $profesor->email) }}"
-                            class="w-full px-4 py-2 border rounded @error('email') border-red-500 @enderror"
-                        >
-                        @error('email')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Teléfono</label>
-                        <input 
-                            type="text" 
-                            name="telefono" 
-                            value="{{ old('telefono', $profesor->telefono) }}"
-                            class="w-full px-4 py-2 border rounded @error('telefono') border-red-500 @enderror"
-                        >
-                        @error('telefono')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="block font-semibold mb-2">Dirección</label>
-                        <textarea 
-                            name="direccion" 
-                            rows="2"
-                            class="w-full px-4 py-2 border rounded @error('direccion') border-red-500 @enderror"
-                        >{{ old('direccion', $profesor->direccion) }}</textarea>
-                        @error('direccion')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            <!-- Información Profesional -->
-            <div class="border-b pb-4">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Información Profesional</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-semibold mb-2">Especialidad *</label>
-                        <select 
-                            name="especialidad" 
-                            class="w-full px-4 py-2 border rounded @error('especialidad') border-red-500 @enderror" 
-                            required
-                        >
-                            <option value="">Seleccione...</option>
-                            @foreach($especialidades as $especialidad)
-                                <option value="{{ $especialidad }}" {{ old('especialidad', $profesor->especialidad) == $especialidad ? 'selected' : '' }}>
-                                    {{ $especialidad }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('especialidad')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Tipo de Contrato *</label>
-                        <select 
-                            name="tipo_contrato" 
-                            class="w-full px-4 py-2 border rounded @error('tipo_contrato') border-red-500 @enderror" 
-                            required
-                        >
-                            <option value="">Seleccione...</option>
-                            @foreach($tiposContrato as $key => $label)
-                                <option value="{{ $key }}" {{ old('tipo_contrato', $profesor->tipo_contrato) == $key ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('tipo_contrato')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Salario (Lps)</label>
-                        <input 
-                            type="number" 
-                            name="salario" 
-                            value="{{ old('salario', $profesor->salario) }}"
-                            step="0.01"
-                            min="0"
-                            class="w-full px-4 py-2 border rounded @error('salario') border-red-500 @enderror"
-                        >
-                        @error('salario')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Fecha de Ingreso *</label>
-                        <input 
-                            type="date" 
-                            name="fecha_ingreso" 
-                            value="{{ old('fecha_ingreso', optional($profesor->fecha_ingreso)->format('Y-m-d')) }}"
-                            class="w-full px-4 py-2 border rounded @error('fecha_ingreso') border-red-500 @enderror" 
-                            required
-                        >
-                        @error('fecha_ingreso')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold mb-2">Estado *</label>
-                        <select 
-                            name="estado" 
-                            class="w-full px-4 py-2 border rounded @error('estado') border-red-500 @enderror" 
-                            required
-                        >
-                            <option value="activo" {{ old('estado', $profesor->estado) == 'activo' ? 'selected' : '' }}>Activo</option>
-                            <option value="inactivo" {{ old('estado', $profesor->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
-                            <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>Licencia</option>
-                        </select>
-                        @error('estado')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            <!-- Observaciones -->
-            <div>
-                <label class="block font-semibold mb-2">Observaciones</label>
-                <textarea 
-                    name="observaciones" 
-                    rows="3"
-                    class="w-full px-4 py-2 border rounded @error('observaciones') border-red-500 @enderror"
-                    placeholder="Información adicional sobre el profesor..."
-                >{{ old('observaciones', $profesor->observaciones) }}</textarea>
-                @error('observaciones')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Botones -->
-            <div class="flex gap-4 pt-4">
-                <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700">
-                    Actualizar Profesor
-                </button>
-                <a href="{{ route('profesores.index') }}" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center leading-[3rem]">
-                    Cancelar
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
+@section('topbar-actions')
+    <a href="{{ route('profesores.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+    </a>
 @endsection
+
+@section('content')
+    <div class="container" style="max-width: 900px;">
+
+        <!-- Información del Profesor -->
+        <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px; background: linear-gradient(135deg, rgba(78, 199, 210, 0.1) 0%, rgba(0, 80, 143, 0.05) 100%);">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 3px solid #4ec7d2;">
+                    <span class="text-white fw-bold" style="font-size: 1.2rem;">
+                        {{ strtoupper(substr($profesor->nombre, 0, 1) . substr($profesor->apellido ?? '', 0, 1)) }}
+                    </span>
+                    </div>
+                    <div>
+                        <h5 class="mb-1 fw-bold" style="color: #003b73;">{{ $profesor->nombre_completo }}</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            @if($profesor->email)
+                                <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: #00508f; border: 1px solid #4ec7d2; font-size: 0.75rem; font-weight: 600;">
+                            <i class="fas fa-envelope me-1"></i>{{ $profesor->email }}
+                        </span>
+                            @endif
+                            @if($profesor->especialidad)
+                                <span class="badge" style="background: rgba(0, 80, 143, 0.15); color: #003b73; border: 1px solid #00508f; font-size: 0.75rem; font-weight: 600;">
+                            <i class="fas fa-book me-1"></i>{{ $profesor->especialidad }}
+                        </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Edición -->
+        <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+            <div class="card-body p-4">
+
+                <form action="{{ route('profesores.update', $profesor) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+
+                    <!-- Información Personal -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="color: white; font-size: 0.9rem;"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información Personal</h6>
+                        </div>
+
+                        <!-- Apellido -->
+                        <div class="col-md-6">
+                            <label for="apellido" class="form-label small fw-semibold" style="color: #003b73;">
+                                Apellido <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="text"
+                                       class="form-control ps-5 @error('apellido') is-invalid @enderror"
+                                       id="apellido"
+                                       name="apellido"
+                                       value="{{ old('apellido', $profesor->apellido) }}"
+                                       placeholder="Ej: Pérez García"
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('apellido')
+                        <div class="row g-3">
+                            <!-- Nombre -->
+                            <div class="col-md-6">
+                                <label for="nombre" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Nombre <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                    <input type="text"
+                                           class="form-control ps-5 @error('nombre') is-invalid @enderror"
+                                           id="nombre"
+                                           name="nombre"
+                                           value="{{ old('nombre', $profesor->nombre) }}"
+                                           placeholder="Ej: Juan Carlos"
+                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    @error('nombre')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        <!-- DNI -->
+                        <div class="col-md-6">
+                            <label for="dni" class="form-label small fw-semibold" style="color: #003b73;">
+                                DNI <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="text"
+                                       class="form-control ps-5 @error('dni') is-invalid @enderror"
+                                       id="dni"
+                                       name="dni"
+                                       value="{{ old('dni', $profesor->dni) }}"
+                                       placeholder="Ej: 0801199512345"
+                                       maxlength="13"
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('dni')
+                            <!-- Apellido -->
+                            <div class="col-md-6">
+                                <label for="apellido" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Apellido <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-user position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                    <input type="text"
+                                           class="form-control ps-5 @error('apellido') is-invalid @enderror"
+                                           id="apellido"
+                                           name="apellido"
+                                           value="{{ old('apellido', $profesor->apellido) }}"
+                                           placeholder="Ej: Pérez García"
+                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    @error('apellido')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        <!-- Fecha de Nacimiento -->
+                        <div class="col-md-6">
+                            <label for="fecha_nacimiento" class="form-label small fw-semibold" style="color: #003b73;">
+                                Fecha de Nacimiento
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-calendar position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="date"
+                                       class="form-control ps-5 @error('fecha_nacimiento') is-invalid @enderror"
+                                       id="fecha_nacimiento"
+                                       name="fecha_nacimiento"
+                                       value="{{ old('fecha_nacimiento', $profesor->fecha_nacimiento) }}"
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('fecha_nacimiento')
+                            <!-- DNI -->
+                            <div class="col-md-6">
+                                <label for="dni" class="form-label small fw-semibold" style="color: #003b73;">
+                                    DNI <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-id-card position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                    <input type="text"
+                                           class="form-control ps-5 @error('dni') is-invalid @enderror"
+                                           id="dni"
+                                           name="dni"
+                                           value="{{ old('dni', $profesor->dni) }}"
+                                           placeholder="Ej: 0801199512345"
+                                           maxlength="13"
+                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    @error('dni')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    <i class="fas fa-info-circle me-1"></i>Formato: 13 dígitos
+                                </small>
+                            </div>
+
+                        <!-- Género -->
+                        <div class="col-md-6">
+                            <label for="genero" class="form-label small fw-semibold" style="color: #003b73;">
+                                Género
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-venus-mars position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                <select class="form-select ps-5 @error('genero') is-invalid @enderror"
+                                        id="genero"
+                                        name="genero"
+                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="masculino" {{ old('genero', $profesor->genero) == 'masculino' ? 'selected' : '' }}>Masculino</option>
+                                    <option value="femenino" {{ old('genero', $profesor->genero) == 'femenino' ? 'selected' : '' }}>Femenino</option>
+                                    <option value="otro" {{ old('genero', $profesor->genero) == 'otro' ? 'selected' : '' }}>Otro</option>
+                                </select>
+                                @error('genero')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        <!-- Teléfono -->
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label small fw-semibold" style="color: #003b73;">
+                                Teléfono
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-phone position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="text"
+                                       class="form-control ps-5 @error('telefono') is-invalid @enderror"
+                                       id="telefono"
+                                       name="telefono"
+                                       value="{{ old('telefono', $profesor->telefono) }}"
+                                       placeholder="Ej: 9876-5432"
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('telefono')
+                            <!-- Género -->
+                            <div class="col-md-6">
+                                <label for="genero" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Género
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-venus-mars position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                    <select class="form-select ps-5 @error('genero') is-invalid @enderror"
+                                            id="genero"
+                                            name="genero"
+                                            style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="masculino" {{ old('genero', $profesor->genero) == 'masculino' ? 'selected' : '' }}>Masculino</option>
+                                        <option value="femenino" {{ old('genero', $profesor->genero) == 'femenino' ? 'selected' : '' }}>Femenino</option>
+                                        <option value="otro" {{ old('genero', $profesor->genero) == 'otro' ? 'selected' : '' }}>Otro</option>
+                                    </select>
+                                    @error('genero')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="col-md-6">
+                                <label for="telefono" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Teléfono
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-phone position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                    <input type="text"
+                                           class="form-control ps-5 @error('telefono') is-invalid @enderror"
+                                           id="telefono"
+                                           name="telefono"
+                                           value="{{ old('telefono', $profesor->telefono) }}"
+                                           placeholder="Ej: 9876-5432"
+                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    @error('telefono')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de Contacto -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-envelope" style="color: white; font-size: 0.9rem;"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información de Contacto</h6>
+                        </div>
+
+                        <!-- Dirección -->
+                        <div class="col-md-6">
+                            <label for="direccion" class="form-label small fw-semibold" style="color: #003b73;">
+                                Dirección
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-map-marker-alt position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="text"
+                                       class="form-control ps-5 @error('direccion') is-invalid @enderror"
+                                       id="direccion"
+                                       name="direccion"
+                                       value="{{ old('direccion', $profesor->direccion) }}"
+                                       placeholder="Ej: Barrio El Centro, Calle Principal"
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('direccion')
+                        <div class="row g-3">
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label for="email" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Email <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-envelope position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                    <input type="email"
+                                           class="form-control ps-5 @error('email') is-invalid @enderror"
+                                           id="email"
+                                           name="email"
+                                           value="{{ old('email', $profesor->email) }}"
+                                           placeholder="profesor@ejemplo.com"
+                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    @error('email')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Dirección -->
+                            <div class="col-md-6">
+                                <label for="direccion" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Dirección
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-map-marker-alt position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                    <input type="text"
+                                           class="form-control ps-5 @error('direccion') is-invalid @enderror"
+                                           id="direccion"
+                                           name="direccion"
+                                           value="{{ old('direccion', $profesor->direccion) }}"
+                                           placeholder="Ej: Barrio El Centro, Calle Principal"
+                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    @error('direccion')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Académica -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-graduation-cap" style="color: white; font-size: 0.9rem;"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información Académica</h6>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Especialidad -->
+                            <div class="col-md-6">
+                                <label for="especialidad" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Especialidad <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-book position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                    <input type="text"
+                                           class="form-control ps-5 @error('especialidad') is-invalid @enderror"
+                                           id="especialidad"
+                                           name="especialidad"
+                                           value="{{ old('especialidad', $profesor->especialidad) }}"
+                                           placeholder="Ej: Matemáticas, Español, Ciencias"
+                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    @error('especialidad')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Nivel Académico -->
+                            <div class="col-md-6">
+                                <label for="nivel_academico" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Nivel Académico
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-certificate position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                    <select class="form-select ps-5 @error('nivel_academico') is-invalid @enderror"
+                                            id="nivel_academico"
+                                            name="nivel_academico"
+                                            style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="bachillerato" {{ old('nivel_academico', $profesor->nivel_academico) == 'bachillerato' ? 'selected' : '' }}>Bachillerato</option>
+                                        <option value="licenciatura" {{ old('nivel_academico', $profesor->nivel_academico) == 'licenciatura' ? 'selected' : '' }}>Licenciatura</option>
+                                        <option value="maestria" {{ old('nivel_academico', $profesor->nivel_academico) == 'maestria' ? 'selected' : '' }}>Maestría</option>
+                                        <option value="doctorado" {{ old('nivel_academico', $profesor->nivel_academico) == 'doctorado' ? 'selected' : '' }}>Doctorado</option>
+                                    </select>
+                                    @error('nivel_academico')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+<<<<<<< HEAD
+                <!-- Información Laboral -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-briefcase" style="color: white; font-size: 0.9rem;"></i>
+                        </div>
+                        <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información Laboral</h6>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Fecha de Contratación -->
+                        <div class="col-md-6">
+                            <label for="fecha_contratacion" class="form-label small fw-semibold" style="color: #003b73;">
+                                Fecha de Contratación
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-calendar-check position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                <input type="date"
+                                       class="form-control ps-5 @error('fecha_contratacion') is-invalid @enderror"
+                                       id="fecha_contratacion"
+                                       name="fecha_contratacion"
+                                       value="{{ old('fecha_contratacion', $profesor->fecha_contratacion) }}"
+                                       style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                @error('fecha_contratacion')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+=======
+                    <!-- Información Laboral -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-briefcase" style="color: white; font-size: 0.9rem;"></i>
+>>>>>>> origin/main
+                            </div>
+                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información Laboral</h6>
+                        </div>
+
+<<<<<<< HEAD
+                        <!-- Tipo de Contrato -->
+                        <div class="col-md-6">
+                            <label for="tipo_contrato" class="form-label small fw-semibold" style="color: #003b73;">
+                                Tipo de Contrato
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-file-contract position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                <select class="form-select ps-5 @error('tipo_contrato') is-invalid @enderror"
+                                        id="tipo_contrato"
+                                        name="tipo_contrato"
+                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="tiempo_completo" {{ old('tipo_contrato', $profesor->tipo_contrato) == 'tiempo_completo' ? 'selected' : '' }}>Tiempo Completo</option>
+                                    <option value="medio_tiempo" {{ old('tipo_contrato', $profesor->tipo_contrato) == 'medio_tiempo' ? 'selected' : '' }}>Medio Tiempo</option>
+                                    <option value="por_horas" {{ old('tipo_contrato', $profesor->tipo_contrato) == 'por_horas' ? 'selected' : '' }}>Por Horas</option>
+                                </select>
+                                @error('tipo_contrato')
+=======
+                        <div class="row g-3">
+                            <!-- Fecha de Contratación -->
+                            <div class="col-md-6">
+                                <label for="fecha_contratacion" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Fecha de Contratación
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-calendar-check position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem;"></i>
+                                    <input type="date"
+                                           class="form-control ps-5 @error('fecha_contratacion') is-invalid @enderror"
+                                           id="fecha_contratacion"
+                                           name="fecha_contratacion"
+                                           value="{{ old('fecha_contratacion', $profesor->fecha_contratacion) }}"
+                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    @error('fecha_contratacion')
+>>>>>>> origin/main
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+<<<<<<< HEAD
+                        <!-- Estado -->
+                        <div class="col-md-6">
+                            <label for="estado" class="form-label small fw-semibold" style="color: #003b73;">
+                                Estado <span style="color: #ef4444;">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-toggle-on position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                <select class="form-select ps-5 @error('estado') is-invalid @enderror"
+                                        id="estado"
+                                        name="estado"
+                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                    <option value="activo" {{ old('estado', $profesor->estado) == 'activo' ? 'selected' : '' }}>Activo</option>
+                                    <option value="inactivo" {{ old('estado', $profesor->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+                                    <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>En Licencia</option>
+                                </select>
+                                @error('estado')
+=======
+                            <!-- Tipo de Contrato -->
+                            <div class="col-md-6">
+                                <label for="tipo_contrato" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Tipo de Contrato
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-file-contract position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                    <select class="form-select ps-5 @error('tipo_contrato') is-invalid @enderror"
+                                            id="tipo_contrato"
+                                            name="tipo_contrato"
+                                            style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="tiempo_completo" {{ old('tipo_contrato', $profesor->tipo_contrato) == 'tiempo_completo' ? 'selected' : '' }}>Tiempo Completo</option>
+                                        <option value="medio_tiempo" {{ old('tipo_contrato', $profesor->tipo_contrato) == 'medio_tiempo' ? 'selected' : '' }}>Medio Tiempo</option>
+                                        <option value="por_horas" {{ old('tipo_contrato', $profesor->tipo_contrato) == 'por_horas' ? 'selected' : '' }}>Por Horas</option>
+                                    </select>
+                                    @error('tipo_contrato')
+>>>>>>> origin/main
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="col-md-6">
+                                <label for="estado" class="form-label small fw-semibold" style="color: #003b73;">
+                                    Estado <span style="color: #ef4444;">*</span>
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-toggle-on position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
+                                    <select class="form-select ps-5 @error('estado') is-invalid @enderror"
+                                            id="estado"
+                                            name="estado"
+                                            style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
+                                        <option value="activo" {{ old('estado', $profesor->estado) == 'activo' ? 'selected' : '' }}>Activo</option>
+                                        <option value="inactivo" {{ old('estado', $profesor->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+                                        <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>En Licencia</option>
+                                    </select>
+                                    @error('estado')
+                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="{{ route('profesores.index') }}" class="btn" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); transition: all 0.3s ease;">
+                            <i class="fas fa-save me-1"></i>Actualizar Profesor
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+@endsection
+
+@push('styles')
+    <style>
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #4ec7d2;
+            box-shadow: 0 0 0 0.2rem rgba(78, 199, 210, 0.15);
+            outline: none;
+        }
+
+        .form-control.is-invalid,
+        .form-select.is-invalid {
+            border-color: #ef4444;
+            background-image: none;
+        }
+
+        .form-control.is-invalid:focus,
+        .form-select.is-invalid:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.15);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+<<<<<<< HEAD
+    .invalid-feedback {
+        display: block;
+        margin-top: 0.35rem;
+    }
+</style>
+=======
+        .invalid-feedback {
+            display: block;
+            margin-top: 0.35rem;
+        }
+    </style>
+>>>>>>> origin/main
+@endpush
