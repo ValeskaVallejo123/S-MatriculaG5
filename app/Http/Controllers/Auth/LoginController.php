@@ -30,11 +30,7 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        // ── Buscar usuario ──────────────────────────────────────────
-        // CORRECCIÓN: el original buscaba el usuario ANTES de Auth::attempt
-        // y luego volvía a obtenerlo con Auth::user() después, lo que
-        // generaba dos consultas innecesarias. Se consolidó en una sola
-        // llamada a Auth::attempt y luego Auth::user().
+        // ── Intento de autenticación ────────────────────────────────
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             Log::warning('Login fallido', ['email' => $request->email]);
             return back()
@@ -50,10 +46,6 @@ class LoginController extends Controller
         ]);
 
         // ── Verificar que tenga rol ─────────────────────────────────
-        // CORRECCIÓN: el original verificaba rol_id || id_rol antes de
-        // Auth::attempt, lo que podía bloquear usuarios válidos si el
-        // campo era null pero la relación existía. Ahora se verifica
-        // la relación ->rol directamente después de autenticar.
         if (!$usuario->rol) {
             Auth::logout();
             Log::error('Usuario sin rol', ['id' => $usuario->id]);
@@ -63,19 +55,20 @@ class LoginController extends Controller
         }
 
         // ── Verificar cuenta activa ─────────────────────────────────
-        // CORRECCIÓN: el original usaba isset($usuario->activo) &&
-        // !$usuario->activo, lo que fallaba si activo era null (isset
-        // devuelve true para null). Se usa comparación estricta.
         if ($usuario->activo == 0 || $usuario->activo === false) {
 
-            $nombreRol = strtolower($usuario->rol->nombre ?? '');
-            $esPadre   = $nombreRol === 'padre' || $usuario->user_type === 'padre';
+            // Detectar si es padre por rol O por user_type
+            $esPadre = $usuario->isPadre();
 
             if ($esPadre) {
-                // Los padres se activan automáticamente en su primer login
+                // Activar al padre en su primer login si su matrícula fue aprobada
                 DB::table('users')
                     ->where('id', $usuario->id)
                     ->update(['activo' => 1]);
+
+                // Refrescar el modelo para que estaActivo() funcione correctamente
+                $usuario = User::find($usuario->id);
+                Auth::setUser($usuario);
 
                 Log::info('Padre activado en primer login', ['id' => $usuario->id]);
 
@@ -88,55 +81,39 @@ class LoginController extends Controller
             }
         }
 
-        Log::info('Redirigiendo');
-        return $this->redirectBasedOnRole($usuario);
-    }
+        Log::info('Redirigiendo', ['id' => $usuario->id, 'rol' => $usuario->rol->nombre]);
 
-    private function redirectBasedOnRole($usuario)
-    {
-        if ($usuario->rol) {
-            switch ($usuario->rol->nombre) {
-                case 'Super Administrador':
-                    return redirect()->route('superadmin.dashboard');
-                case 'Administrador':
-                    return redirect()->route('admin.dashboard');
-                case 'Profesor':
-                    return redirect()->route('profesor.dashboard');
-                case 'Estudiante':
-                    return redirect()->route('estudiante.dashboard');
-                case 'Padre':
-                    return redirect()->route('padre.dashboard');
-            }
-        }
-
-        Auth::logout();
-        return back()->withErrors(['email' => 'Rol no reconocido.']);
+        return $this->redirigirSegunRol($usuario);
     }
 
     /**
      * Redirigir al dashboard según el rol del usuario.
-     *
-     * CORRECCIÓN: el original usaba switch con strings exactos ("Super Administrador")
-     * y si el nombre del rol en BD tenía una tilde diferente o mayúscula distinta,
-     * nunca entraba al case y hacía logout silencioso. Ahora se normaliza el nombre
-     * del rol y se usa un mapa de rutas para mayor claridad y mantenibilidad.
+     * Usa normalización de strings para evitar fallos por mayúsculas/tildes.
      */
     private function redirigirSegunRol(User $usuario): \Illuminate\Http\RedirectResponse
     {
         $nombreRol = strtolower(trim($usuario->rol->nombre ?? ''));
 
+        // También verificar por user_type como fallback
+        $userType  = strtolower(trim($usuario->user_type ?? ''));
+
         $mapa = [
             'super administrador' => 'superadmin.dashboard',
+            'superadministrador'  => 'superadmin.dashboard',
             'superadmin'          => 'superadmin.dashboard',
             'administrador'       => 'admin.dashboard',
             'admin'               => 'admin.dashboard',
             'profesor'            => 'profesor.dashboard',
+            'docente'             => 'profesor.dashboard',
             'estudiante'          => 'estudiante.dashboard',
+            'alumno'              => 'estudiante.dashboard',
             'padre'               => 'padre.dashboard',
+            'tutor'               => 'padre.dashboard',
         ];
 
+        // Buscar por nombre de rol primero
         if (isset($mapa[$nombreRol])) {
-            Log::info('Redirigiendo', [
+            Log::info('Redirigiendo por rol', [
                 'id'   => $usuario->id,
                 'rol'  => $nombreRol,
                 'ruta' => $mapa[$nombreRol],
@@ -144,11 +121,29 @@ class LoginController extends Controller
             return redirect()->route($mapa[$nombreRol]);
         }
 
-        // Rol no reconocido — cerrar sesión y avisar
+        // Fallback: buscar por user_type
+        if (isset($mapa[$userType])) {
+            Log::info('Redirigiendo por user_type', [
+                'id'        => $usuario->id,
+                'user_type' => $userType,
+                'ruta'      => $mapa[$userType],
+            ]);
+            return redirect()->route($mapa[$userType]);
+        }
+
+        // Fallback final: usar helpers del modelo User
+        if ($usuario->isSuperAdmin()) return redirect()->route('superadmin.dashboard');
+        if ($usuario->isAdmin())      return redirect()->route('admin.dashboard');
+        if ($usuario->isDocente())    return redirect()->route('profesor.dashboard');
+        if ($usuario->isEstudiante()) return redirect()->route('estudiante.dashboard');
+        if ($usuario->isPadre())      return redirect()->route('padre.dashboard');
+
+        // Rol completamente desconocido
         Auth::logout();
-        Log::error('Rol no reconocido en redirigirSegunRol', [
-            'id'  => $usuario->id,
-            'rol' => $usuario->rol->nombre ?? 'null',
+        Log::error('Rol no reconocido', [
+            'id'       => $usuario->id,
+            'rol'      => $usuario->rol->nombre ?? 'null',
+            'userType' => $usuario->user_type ?? 'null',
         ]);
 
         return back()->withErrors([
