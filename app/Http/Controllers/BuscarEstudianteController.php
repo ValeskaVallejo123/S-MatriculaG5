@@ -16,53 +16,48 @@ class BuscarEstudianteController extends Controller
     {
         $request->validate([
             'nombre' => 'nullable|string|max:50',
-            'dni' => 'nullable|string|max:20',
+            'dni'    => 'nullable|string|max:20',
             'codigo' => 'nullable|string|max:20',
-            'grado' => 'nullable|string|max:20',
+            'grado'  => 'nullable|string|max:20',
         ]);
 
         $nombre = $request->input('nombre');
-        $dni = $request->input('dni');
+        // ✅ Limpiar DNI aquí, antes de pasarlo al closure
+        $dni    = preg_replace('/[^0-9]/', '', $request->input('dni') ?? '');
         $codigo = $request->input('codigo');
-        $grado = $request->input('grado');
+        $grado  = $request->input('grado');
 
-        $estudiantes = collect();
+        $estudiantes     = collect();
         $busquedaRealizada = false;
-        $mensaje = null;
+        $mensaje         = null;
 
+        // ✅ Usar $dni ya limpio para la condición
         if ($nombre || $dni || $codigo || $grado) {
             $busquedaRealizada = true;
 
-            $query = Estudiante::query();
-
-            $query->where(function($q) use ($nombre, $dni, $codigo, $grado) {
-                if ($nombre) {
-                    $q->where(function($q2) use ($nombre) {
-                        $q2->where('nombre1', 'like', "%$nombre%")
-                           ->orWhere('nombre2', 'like', "%$nombre%")
-                           ->orWhere('apellido1', 'like', "%$nombre%")
-                           ->orWhere('apellido2', 'like', "%$nombre%");
+            $estudiantes = Estudiante::query()
+                ->when($nombre, function ($q) use ($nombre) {
+                    // ✅ Agrupar con where() para no romper otros filtros AND
+                    $q->where(function ($q2) use ($nombre) {
+                        $q2->where('nombre1',   'like', "%$nombre%")
+                           ->orWhere('nombre2',  'like', "%$nombre%")
+                           ->orWhere('apellido1','like', "%$nombre%")
+                           ->orWhere('apellido2','like', "%$nombre%");
                     });
-                }
-
-                if ($dni) {
-                    $dni = preg_replace('/[^0-9]/', '', $dni);
+                })
+                ->when($dni, function ($q) use ($dni) {
                     $q->where('dni', 'like', "%$dni%");
-                }
-
-                if ($codigo) {
+                })
+                ->when($codigo, function ($q) use ($codigo) {
                     $q->where('codigo', 'like', "%$codigo%");
-                }
-
-                if ($grado) {
+                })
+                ->when($grado, function ($q) use ($grado) {
                     $q->where('grado', 'like', "%$grado%");
-                }
-            });
-
-            $estudiantes = $query->get();
+                })
+                ->get();
 
             if ($estudiantes->isEmpty()) {
-                $mensaje = 'No se encontraron estudiantes con los criterios de búsqueda';
+                $mensaje = 'No se encontraron estudiantes con los criterios de búsqueda.';
             }
         }
 

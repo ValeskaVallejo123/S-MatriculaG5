@@ -62,8 +62,8 @@ class PadreController extends Controller
 
         Padre::create($validated);
 
-        return redirect()->route('padre.index')
-            ->with('success', 'Padre/tutor registrado exitosamente.');
+        return redirect()->route('padres.index')
+    ->with('success', 'Padre/tutor registrado exitosamente.');
     }
 
     /**
@@ -114,8 +114,8 @@ class PadreController extends Controller
 
         $padre->delete();
 
-        return redirect()->route('padre.index')
-            ->with('success', 'Padre/tutor eliminado correctamente.');
+       return redirect()->route('padres.index')
+    ->with('success', 'Padre/tutor eliminado correctamente.');
     }
 
     /**
