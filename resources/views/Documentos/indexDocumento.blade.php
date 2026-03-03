@@ -14,7 +14,6 @@
 @section('content')
     <div class="container" style="max-width: 1200px;">
 
-<<<<<<< HEAD
         <!-- Header compacto -->
         <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px;">
             <div class="card-body p-3">
@@ -26,19 +25,15 @@
                         <h5 class="mb-0 fw-bold" style="font-size: 1.1rem;">Editar Documentos</h5>
                         <p class="mb-0 opacity-90" style="font-size: 0.8rem;">Actualice los datos y documentos del estudiante</p>
                     </div>
-=======
         {{-- Mensajes de Notificación --}}
         @if(session('success'))
             <div class="alert border-0 mb-3" style="background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4caf50 !important; border-radius: 8px;">
                 <div class="d-flex align-items-start">
                     <i class="fas fa-check-circle me-2 mt-1" style="font-size: 0.9rem; color: #4caf50;"></i>
                     <strong style="color: #2e7d32;">{{ session('success') }}</strong>
->>>>>>> josue_matriculag5
                 </div>
             </div>
         </div>
-
-<<<<<<< HEAD
         <!-- Formulario compacto -->
         <div class="card border-0 shadow-sm" style="border-radius: 10px;">
             <div class="card-body p-3">
@@ -165,7 +160,7 @@
                 <div>
                     <strong style="color: #00508f;">Información importante:</strong>
                     <span class="text-muted"> Los cambios se aplicarán inmediatamente.</span>
-=======
+
         <div class="card border-0 shadow-sm" style="border-radius: 10px;">
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -238,12 +233,11 @@
                         @endforelse
                         </tbody>
                     </table>
->>>>>>> josue_matriculag5
+
                 </div>
             </div>
         </div>
     </div>
-<<<<<<< HEAD
 
     @push('styles')
         <style>
@@ -297,7 +291,4 @@
             }
         </style>
     @endpush
-<<<<<<< HEAD
-=======
->>>>>>> josue_matriculag5
 @endsection

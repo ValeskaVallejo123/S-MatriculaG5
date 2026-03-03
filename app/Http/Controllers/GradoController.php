@@ -182,10 +182,7 @@ class GradoController extends Controller
         $materias = Materia::where('nivel', $grado->nivel)
             ->where('activo', true)
             ->get();
-
-        // Usar id_rol consistente con el sistema de roles
-        $profesores = User::where('id_rol', 3)->get();
-
+$profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')->get();
         $materiasAsignadas = $grado->materias->pluck('id')->toArray();
 
         return view(
@@ -230,10 +227,7 @@ class GradoController extends Controller
         return view('grados.crear-masivo');
     }
 
-    /**
-     * Generar grados masivamente (9 grados × 4 secciones)
-     */
-    public function generarMasivo(Request $request): RedirectResponse
+    public function generarMasivo(Request $request)
     {
         $validated = $request->validate([
             'capacidad_maxima' => 'required|integer|min:1|max:50',

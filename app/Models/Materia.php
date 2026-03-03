@@ -26,12 +26,19 @@ class Materia extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | RELACIONES CORRECTAS
+    | RELACIONES
     |--------------------------------------------------------------------------
     */
 
+    // Una materia pertenece a muchos grados
+    public function grados()
+    {
+        return $this->belongsToMany(Grado::class, 'grado_materia')
+                    ->withPivot('profesor_id', 'horas_semanales')
+                    ->withTimestamps();
+    }
+
     // Una materia puede estar en muchos cursos
-    // Ej: Matemáticas → 1 A, 1 B, 2 A, etc.
     public function cursos()
     {
         return $this->belongsToMany(Curso::class, 'curso_materia')
@@ -39,7 +46,7 @@ class Materia extends Model
                     ->withTimestamps();
     }
 
-    // Professor asignado a esta materia en un curso específico
+    // Horarios de la materia
     public function horarios()
     {
         return $this->hasMany(Horario::class);
@@ -76,9 +83,9 @@ class Materia extends Model
     public function getNivelNombreAttribute()
     {
         return match ($this->nivel) {
-            'primaria' => 'Primaria (1° - 6°)',
+            'primaria'   => 'Primaria (1° - 6°)',
             'secundaria' => 'Secundaria (7° - 9°)',
-            default => 'Desconocido',
+            default      => 'Desconocido',
         };
     }
 }

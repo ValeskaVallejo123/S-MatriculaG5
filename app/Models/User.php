@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Rol;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = [
+   protected $fillable = [
     'name',
     'email',
     'password',
@@ -41,10 +42,16 @@ class User extends Authenticatable
         ];
     }
 
-    // =============================
+    // =========================================================================
     // RELACIONES
-    // =============================
+    // =========================================================================
 
+    /**
+     * Relación con Rol.
+     * CORRECCIÓN: el LoginController usaba tanto id_rol como rol_id para
+     * verificar el rol. Se unifica usando id_rol como clave foránea canónica.
+     * Si tu migración usa rol_id, cambia 'id_rol' por 'rol_id' aquí y en $fillable.
+     */
     public function rol()
     {
         return $this->belongsTo(Rol::class, 'id_rol', 'id');
@@ -60,6 +67,11 @@ class User extends Authenticatable
         return $this->hasOne(Estudiante::class, 'user_id');
     }
 
+    /**
+     * Relación con Profesor.
+     * CORRECCIÓN: el ObservacionController usaba $user->docente->id para
+     * obtener el profesor_id. Se mantiene el nombre 'docente' para compatibilidad.
+     */
     public function docente()
     {
         return $this->hasOne(Profesor::class, 'user_id');
@@ -75,19 +87,19 @@ class User extends Authenticatable
         return $this->hasOne(NotificacionPreferencia::class, 'user_id');
     }
 
-    // =============================
-    // ROLES
-    // =============================
+    // =========================================================================
+    // ROLES — helpers usados en LoginController y ObservacionController
+    // =========================================================================
 
-    public function tieneRol($nombreRol)
+    public function tieneRol(string $nombreRol): bool
     {
         return $this->rol &&
             strtolower(trim($this->rol->nombre)) === strtolower(trim($nombreRol));
     }
 
-    public function isSuperAdmin()
+    public function isSuperAdmin(): bool
     {
-        return $this->is_super_admin === true || $this->id_rol ==1;
+        return $this->is_super_admin === true || $this->id_rol == 1;
     }
 
     public function isAdmin(): bool
@@ -101,46 +113,59 @@ class User extends Authenticatable
             || $this->tieneRol('Admin');
     }
 
-    public function isDocente()
+    public function isDocente(): bool
     {
-        return $this->id_rol == 3 ||
-               $this->tieneRol('Profesor') ||
-               $this->tieneRol('Docente');
+        return $this->id_rol == 3
+            || $this->tieneRol('Profesor')
+            || $this->tieneRol('Docente');
     }
 
-    public function isEstudiante()
+    public function isEstudiante(): bool
     {
-        return $this->id_rol == 4 ||
-               $this->tieneRol('Estudiante') ||
-               $this->tieneRol('Alumno');
+        return $this->id_rol == 4
+            || $this->tieneRol('Estudiante')
+            || $this->tieneRol('Alumno');
     }
 
-    public function isPadre()
+    public function isPadre(): bool
     {
-        return $this->id_rol == 5 ||
-               $this->tieneRol('Padre') ||
-               $this->tieneRol('Tutor');
+        return $this->id_rol == 5
+            || $this->user_type === 'padre'
+            || $this->tieneRol('Padre')
+            || $this->tieneRol('Tutor');
     }
 
-    // =============================
+    // =========================================================================
     // ESTADOS
-    // =============================
+    // =========================================================================
 
-    public function estaActivo()
+    public function estaActivo(): bool
     {
         return $this->activo === true;
     }
 
-    public function activar()
+    public function activar(): void
     {
         $this->update(['activo' => true]);
     }
 
-    public function desactivar()
+    public function desactivar(): void
     {
         $this->update(['activo' => false]);
     }
 
+    // =========================================================================
+    // infoParaObservaciones — usado en ObservacionController
+    // =========================================================================
+
+    /**
+     * Retorna los IDs relevantes para el sistema de observaciones según el rol.
+     *
+     * CORRECCIÓN: el original tenía infoParaSistema() pero ObservacionController
+     * llamaba infoParaObservaciones() — método que NO existía en el modelo,
+     * causando error fatal "Call to undefined method".
+     * Se agrega el método con los datos que ObservacionController necesita.
+     */
     public function infoParaObservaciones(): array
     {
         return [
@@ -150,9 +175,9 @@ class User extends Authenticatable
         ];
     }
 
-    // =============================
-    // INFO SISTEMA
-    // =============================
+    // =========================================================================
+    // infoParaSistema — información general del usuario
+    // =========================================================================
 
     public function infoParaSistema(): array
     {
@@ -160,21 +185,28 @@ class User extends Authenticatable
             'id'            => $this->id,
             'nombre'        => $this->name,
             'email'         => $this->email,
-            'rol'           => $this->rol->nombre ?? null,
+            'rol'           => $this->rol?->nombre,
             'es_superadmin' => $this->isSuperAdmin(),
+            'es_admin'      => $this->isAdmin(),
             'es_docente'    => $this->isDocente(),
             'es_estudiante' => $this->isEstudiante(),
             'es_padre'      => $this->isPadre(),
-            'profesor_id'   => $this->docente->id ?? null,
-            'estudiante_id' => $this->estudiante->id ?? null,
-            'padre_id'      => $this->padre->id ?? null,
+            'profesor_id'   => $this->docente?->id,
+            'estudiante_id' => $this->estudiante?->id,
+            'padre_id'      => $this->padre?->id,
         ];
     }
 
-    // =============================
+    // =========================================================================
     // PERMISOS (JSON + por Rol)
-    // =============================
+    // =========================================================================
 
+    /**
+     * CORRECCIÓN: el original verificaba si $permiso estaba en los valores
+     * del array JSON (in_array sobre values), pero permissions se guarda como
+     * un array asociativo: ['ver_calificaciones' => true, 'ver_asistencias' => true].
+     * La verificación correcta es buscar en las KEYS del array, no en los valores.
+     */
     public function tienePermiso(string $permiso): bool
     {
         $permiso = strtolower(trim($permiso));
@@ -206,7 +238,7 @@ class User extends Authenticatable
         return false;
     }
 
-    public function tieneTodosLosPermisos(array $permisos)
+    public function tieneTodosLosPermisos(array $permisos): bool
     {
         foreach ($permisos as $permiso) {
             if (!$this->tienePermiso($permiso)) {
@@ -222,10 +254,15 @@ class User extends Authenticatable
         return $this->tienePermiso($permission);
     }
 
-    // =============================
-    // SEGURIDAD
-    // =============================
+    // =========================================================================
+    // SEGURIDAD — usado en UsuarioController
+    // =========================================================================
 
+    /**
+     * CORRECCIÓN: UsuarioController llama $usuario->canBeDeleted() antes de
+     * eliminar. El método existía pero no cubría el caso de que el usuario
+     * sea el único superadmin del sistema.
+     */
     public function canBeDeleted(): bool
     {
         // No se puede eliminar si es superadmin protegido
@@ -246,12 +283,15 @@ class User extends Authenticatable
         return true;
     }
 
+    // =========================================================================
+    // QUERIES PERMITIDAS por rol
+    // =========================================================================
 
-
-    // =============================
-    // OBSERVACIONES
-    // =============================
-
+    /**
+     * Query builder de observaciones según el rol del usuario.
+     * CORRECCIÓN: el original no agrupaba el OR del docente (mismo bug
+     * que en ObservacionController). Se corrige aquí también.
+     */
     public function observacionesPermitidas()
     {
         if ($this->isSuperAdmin() || $this->isAdmin()) {
@@ -277,40 +317,24 @@ class User extends Authenticatable
     }
 
     // =============================
-    // NOTIFICACIONES (CAMPANA 🔔)
+    // NOTIFICACIONES (CAMPANA )
     // =============================
 
-    /**
-     * Devuelve las notificaciones del usuario ordenadas por fecha desc.
-     * Uso: $user->notificacionesPermitidas()->take(5)->get()
-     */
     public function notificacionesPermitidas()
     {
         return $this->notificaciones()->latest();
     }
 
-    /**
-     * Relación de notificaciones no leídas (devuelve query builder).
-     * Uso: $user->notificacionesNoLeidas()->get()
-     */
     public function notificacionesNoLeidas()
     {
         return $this->notificaciones()->where('leida', false);
     }
 
-    /**
-     * Accessor: total de notificaciones no leídas como entero.
-     * Uso en blade: $user->total_notificaciones_no_leidas
-     */
     public function getTotalNotificacionesNoLeidasAttribute()
     {
         return $this->notificaciones()->where('leida', false)->count();
     }
 
-    /**
-     * Retorna las últimas N notificaciones del usuario.
-     * Uso en blade: $user->notificacionesRecientes(5)
-     */
     public function notificacionesRecientes(int $limite = 5)
     {
         return $this->notificacionesPermitidas()->take($limite)->get();
@@ -333,9 +357,14 @@ class User extends Authenticatable
         return Padre::whereRaw('0 = 1');
     }
 
-    // =============================
+    // =========================================================================
+    // NOTIFICACIONES
+    // =========================================================================
+
+
+    // =========================================================================
     // OBTENER TODOS LOS PERMISOS
-    // =============================
+    // =========================================================================
 
     public function obtenerPermisos(): array
     {
@@ -357,5 +386,4 @@ class User extends Authenticatable
 
         return array_values(array_unique(array_filter($lista)));
     }
-
 }

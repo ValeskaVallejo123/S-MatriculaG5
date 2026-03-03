@@ -2,66 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Estudiante;
-use App\Models\Padre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PadreDashboardController extends Controller
 {
+    /**
+     * Dashboard principal del padre/tutor.
+     * Carga todos sus hijos vinculados con sus matrículas aprobadas.
+     */
     public function index()
     {
-        // Usuario logueado
-        $usuario = Auth::user();
-
-        // Obtener el registro de "Padre" asociado a este usuario
-        $padre = Padre::where('user_id', $usuario->id)->first();
+        $user  = Auth::user();
+        $padre = $user->padre;
 
         if (!$padre) {
-            // En caso de que el usuario no tenga un perfil de padre
-            return redirect()->route('home')->with('error', 'No se encontró un perfil de padre asociado.');
+            abort(403, 'No tienes un perfil de padre/tutor vinculado.');
         }
 
-        // Obtener hijos reales del padre (asumiendo que Estudiante tiene padre_id)
-        $misHijos = Estudiante::where('padre_id', $padre->id)
-            ->where('estado', 'activo')
+        // Cargar hijos con sus matrículas aprobadas
+        $matriculas = $padre->matriculas()
+            ->with('estudiante')
+            ->where('estado', 'aprobada')
+            ->orderBy('anio_lectivo', 'desc')
             ->get();
 
-        $totalHijos = $misHijos->count();
+        // También cargar matrículas en otros estados para mostrar historial
+        $todasMatriculas = $padre->matriculas()
+            ->with('estudiante')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        // Estos valores quedan como "placeholder" hasta tener lógica real
-        $citasPendientes = 0;
-        $pagosVencidos = 0;
+        return view('padre.dashboard', compact('padre', 'matriculas', 'todasMatriculas'));
+    }
 
-        // Resumen por hijo (placeholder hasta tener calificaciones reales)
-        $resumenHijos = [];
-        foreach ($misHijos as $hijo) {
-            $resumenHijos[] = [
-                'nombre' => $hijo->nombre_completo,
-                'grado' => $hijo->grado,
-                'seccion' => $hijo->seccion,
-                'promedio' => null,
-                'asistencia' => null,
-                'comportamiento' => null,
-            ];
+    /**
+     * Vista de detalle de un hijo específico.
+     */
+    public function verHijo($estudianteId)
+    {
+        $user  = Auth::user();
+        $padre = $user->padre;
+
+        if (!$padre) {
+            abort(403);
         }
 
-        // Próximos eventos (placeholder)
-        $proximosEventos = [];
+        // Verificar que este estudiante realmente sea hijo de este padre
+        $matricula = $padre->matriculas()
+            ->with('estudiante')
+            ->where('estudiante_id', $estudianteId)
+            ->where('estado', 'aprobada')
+            ->firstOrFail();
 
-        // Notificaciones (placeholder)
-        $notificaciones = [];
+        $estudiante = $matricula->estudiante;
 
-        return view('padre.dashboard.index', compact(
-            'usuario',
-            'padre',
-            'misHijos',
-            'totalHijos',
-            'citasPendientes',
-            'pagosVencidos',
-            'resumenHijos',
-            'proximosEventos',
-            'notificaciones'
-        ));
+        return view('padre.hijo', compact('padre', 'estudiante', 'matricula'));
     }
 }

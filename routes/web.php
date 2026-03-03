@@ -121,7 +121,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
 */
 Route::middleware(['auth'])->group(function () {
 
-    //Route::get('/buscar-registro', [BuscarEstudianteController::class, 'index'])->name('buscarregistro');
+    Route::get('/buscar-registro', [BuscarEstudianteController::class, 'index'])->name('buscarregistro');
 
     // Dashboard con redirección por rol
     Route::get('/dashboard', function () {
@@ -304,7 +304,7 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::middleware('role:admin,superadmin')->group(function () {
 
-        //Route::get('/carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
+        Route::get('/carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
 
         // Estudiantes
         Route::resource('estudiantes', EstudianteController::class);

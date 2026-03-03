@@ -3,309 +3,381 @@
 @section('title', 'Estudiantes')
 @section('page-title', 'Gestión de Estudiantes')
 
+@section('topbar-actions')
+    {{-- CORRECCIÓN: el original no tenía botón de "Nuevo Estudiante" en el topbar --}}
+    <a href="{{ route('estudiantes.create') }}"
+       class="btn btn-sm btn-primary"
+       style="border-radius:8px; font-weight:600;">
+        <i class="fas fa-plus me-1"></i> Nuevo Estudiante
+    </a>
+@endsection
+
+@push('styles')
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.est-wrap { font-family: 'Inter', sans-serif; }
+
+.adm-btn-solid {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: #fff; border: none; text-decoration: none; transition: opacity .15s;
+}
+.adm-btn-solid:hover { opacity: .88; color: #fff; }
+
+/* ── Toolbar ── */
+.est-toolbar {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.est-search-wrap { position: relative; flex: 1; max-width: 380px; }
+.est-search-wrap i {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; font-size: .82rem; pointer-events: none;
+}
+.est-search {
+    width: 100%; padding: .42rem .75rem .42rem 2rem;
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: .82rem; font-family: 'Inter', sans-serif;
+    color: #0f172a; outline: none; transition: border-color .2s, box-shadow .2s;
+    background: #f8fafc;
+}
+.est-search:focus { border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.12); background: #fff; }
+
+.est-toolbar-right {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+}
+
+/* Selector de registros por página */
+.est-perpage {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .8rem; color: #64748b;
+}
+.est-perpage label { white-space: nowrap; font-weight: 500; }
+.est-perpage select {
+    padding: .3rem .6rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: .8rem; font-family: 'Inter', sans-serif; color: #0f172a;
+    background: #f8fafc; outline: none; cursor: pointer;
+    transition: border-color .2s;
+}
+.est-perpage select:focus { border-color: #4ec7d2; }
+
+.est-total {
+    display: flex; align-items: center; gap: .4rem;
+    font-size: .8rem; color: #64748b; white-space: nowrap;
+}
+.est-total strong { color: #003b73; font-weight: 700; }
+
+/* ── Table card ── */
+.est-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.est-card-head {
+    background: #003b73; padding: .85rem 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+}
+.est-card-head i { color: #4ec7d2; font-size: 1rem; }
+.est-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+
+/* ── Table ── */
+.est-tbl { width: 100%; border-collapse: collapse; }
+
+.est-tbl thead th {
+    background: #f8fafc;
+    padding: .65rem 1rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+}
+.est-tbl thead th.tc { text-align: center; }
+.est-tbl thead th.tr { text-align: right; }
+
+.est-tbl tbody td {
+    padding: .7rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: .82rem; color: #334155;
+    vertical-align: middle;
+}
+.est-tbl tbody td.tc { text-align: center; }
+.est-tbl tbody td.tr { text-align: right; }
+.est-tbl tbody tr:last-child td { border-bottom: none; }
+.est-tbl tbody tr { transition: background .12s; }
+.est-tbl tbody tr:hover { background: #f8fafc; }
+
+/* Número de lista */
+.est-num {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: #f1f5f9; color: #64748b;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700;
+}
+
+/* Photo */
+.est-photo {
+    width: 36px; height: 36px; border-radius: 50%;
+    object-fit: cover; border: 2px solid #4ec7d2;
+    display: block;
+}
+
+/* Name */
+.est-name { font-weight: 600; color: #0f172a; font-size: .83rem; }
+.est-email { font-size: .73rem; color: #94a3b8; margin-top: .1rem; }
+
+/* DNI monospace */
+.est-dni { font-family: monospace; font-size: .8rem; color: #00508f; }
+
+/* Badges */
+.bpill {
+    display: inline-flex; align-items: center; gap: .25rem;
+    padding: .22rem .65rem; border-radius: 999px;
+    font-size: .7rem; font-weight: 600; white-space: nowrap;
+}
+.b-cyan   { background: #e8f8f9; color: #00508f; border: 1px solid #b2e8ed; }
+.b-green  { background: #ecfdf5; color: #059669; }
+.b-red    { background: #fef2f2; color: #dc2626; }
+
+/* Action buttons */
+.act-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .75rem; text-decoration: none;
+    transition: all .15s;
+}
+.act-btn:hover { transform: translateY(-1px); }
+.act-view { background: #f0f9ff; color: #0369a1; }
+.act-view:hover { background: #0369a1; color: #fff; }
+.act-edit { background: #e8f8f9; color: #00508f; }
+.act-edit:hover { background: #4ec7d2; color: #fff; }
+.act-del  { background: #fef2f2; color: #ef4444; }
+.act-del:hover  { background: #ef4444; color: #fff; }
+
+/* ── Empty ── */
+.est-empty { padding: 3.5rem 1rem; text-align: center; }
+.est-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
+.est-empty p { color: #94a3b8; font-size: .85rem; margin: .25rem 0 1rem; }
+
+/* ── Pagination ── */
+.est-footer {
+    padding: .85rem 1.25rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafafa; flex-wrap: wrap; gap: .5rem;
+}
+.est-pages { font-size: .78rem; color: #94a3b8; }
+
+.pagination { margin: 0; gap: 3px; display: flex; }
+.pagination .page-link {
+    border-radius: 7px; padding: .3rem .65rem;
+    font-size: .78rem; font-weight: 500;
+    border: 1px solid #e2e8f0; color: #00508f;
+    transition: all .15s; line-height: 1.4;
+}
+.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-color: #4ec7d2; color: #fff;
+}
+.pagination .page-item.disabled .page-link { opacity: .45; }
+
+/* ── No results row ── */
+.no-results-row td { padding: 2rem; text-align: center; color: #94a3b8; font-size: .83rem; }
+</style>
+@endpush
+
 @section('content')
 <div class="container" style="max-width:1400px;">
 
-    {{-- ── Barra de búsqueda y resumen ──────────────────────────────────── --}}
-    <div class="card border-0 shadow-sm mb-3" style="border-radius:10px;">
-        <div class="card-body p-3">
-            <div class="row align-items-center g-2">
-
-                {{-- Buscador --}}
-                <div class="col-md-6">
-                    <div class="position-relative">
-                        <i class="fas fa-search position-absolute"
-                           style="left:12px; top:50%; transform:translateY(-50%);
-                                  color:#00508f; font-size:0.9rem;"></i>
-                        <input type="text" id="searchInput"
-                               class="form-control form-control-sm ps-5"
-                               placeholder="Buscar por nombre, DNI, grado..."
-                               style="border:2px solid #bfd9ea; border-radius:8px;
-                                      padding:0.5rem 1rem 0.5rem 2.5rem;">
-                    </div>
-                </div>
-
-                {{-- Resumen y acciones --}}
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center justify-content-md-end gap-3">
-
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-users" style="color:#00508f;"></i>
-                            <span class="small">
-                                <strong style="color:#00508f;">{{ $estudiantes->total() }}</strong>
-                                <span class="text-muted">Total</span>
-                            </span>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-check-circle" style="color:#4ec7d2;"></i>
-                            <span class="small">
-                                <strong style="color:#4ec7d2;">
-                                    {{ $estudiantes->where('estado', 'activo')->count() }}
-                                </strong>
-                                <span class="text-muted">Activos</span>
-                            </span>
-                        </div>
-
-                        <a href="{{ route('estudiantes.create') }}"
-                           class="btn btn-sm fw-semibold"
-                           style="background:linear-gradient(135deg,#4ec7d2,#00508f);
-                                  color:white; border:none; border-radius:8px;">
-                            <i class="fas fa-plus me-1"></i>Nuevo Estudiante
-                        </a>
-
-                        <button class="btn btn-sm"
-                                style="border:2px solid #4ec7d2; color:#4ec7d2; border-radius:8px;"
-                                title="Exportar">
-                            <i class="fas fa-download"></i>
-                        </button>
-
-                    </div>
-                </div>
-
+    {{-- Toolbar --}}
+    <div class="est-toolbar">
+        <div class="est-search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="est-search" placeholder="Buscar por nombre, DNI, grado...">
+        </div>
+        <div class="est-toolbar-right">
+            {{-- Selector de registros por página --}}
+            <div class="est-perpage">
+                <label for="perPageSelect"><i class="fas fa-list-ol" style="color:#4ec7d2;"></i> Mostrar:</label>
+                <select id="perPageSelect" onchange="cambiarPerPage(this.value)">
+                    @foreach([10, 25, 50] as $op)
+                        <option value="{{ $op }}" {{ request('per_page', 10) == $op ? 'selected' : '' }}>
+                            {{ $op }} por página
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="est-total">
+                <i class="fas fa-users" style="color:#4ec7d2;"></i>
+                <span><strong>{{ $estudiantes->total() }}</strong> estudiantes</span>
             </div>
         </div>
     </div>
 
-    {{-- ── Tabla de estudiantes ───────────────────────────────────────────── --}}
-    <div class="card border-0 shadow-sm" style="border-radius:10px;">
-        <div class="card-body p-0">
-            <div class="table-responsive">
+    {{-- Table card --}}
+    <div class="est-card">
+        <div class="est-card-head">
+            <i class="fas fa-user-graduate"></i>
+            <span>Lista de Estudiantes</span>
+        </div>
 
-                <table class="table table-hover align-middle mb-0" id="studentsTable">
-                    <thead style="background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%);">
-                        <tr>
-                            <th class="px-3 py-2 small text-uppercase fw-semibold">Foto</th>
-                            <th class="px-3 py-2 small text-uppercase fw-semibold">Nombre</th>
-                            <th class="px-3 py-2 small text-uppercase fw-semibold">DNI</th>
-                            <th class="px-3 py-2 small text-uppercase fw-semibold">Grado</th>
-                            <th class="px-3 py-2 small text-uppercase fw-semibold">Sección</th>
-                            <th class="px-3 py-2 small text-uppercase fw-semibold">Estado</th>
-                            <th class="px-3 py-2 small text-uppercase fw-semibold text-end">Acciones</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                    @forelse ($estudiantes as $estudiante)
-
-                        @php
-                            $estados = [
-                                'activo'     => ['color' => '#00508f', 'bg' => 'rgba(78,199,210,0.2)', 'label' => 'Activo',     'icon' => 'fa-check-circle'],
-                                'inactivo'   => ['color' => '#991b1b', 'bg' => '#fee2e2',              'label' => 'Inactivo',   'icon' => 'fa-times-circle'],
-                                'retirado'   => ['color' => '#b45309', 'bg' => '#fef3c7',              'label' => 'Retirado',   'icon' => 'fa-sign-out-alt'],
-                                'suspendido' => ['color' => '#4b5563', 'bg' => '#e5e7eb',              'label' => 'Suspendido', 'icon' => 'fa-pause-circle'],
-                            ];
-                            // Fallback si el estado no existe en el array
-                            $estadoInfo = $estados[$estudiante->estado] ?? [
-                                'color' => '#6b7280', 'bg' => '#f3f4f6',
-                                'label' => ucfirst($estudiante->estado), 'icon' => 'fa-circle',
-                            ];
-                        @endphp
-
-                        <tr class="student-row">
-
-                            {{-- Foto --}}
-                            <td class="px-3 py-2">
-                                @if($estudiante->foto)
-                                    <img src="{{ asset('storage/' . $estudiante->foto) }}"
-                                         alt="Foto de {{ $estudiante->nombre1 }}"
-                                         class="rounded-circle object-fit-cover"
-                                         style="width:35px; height:35px; border:2px solid #4ec7d2;">
-                                @else
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                         style="width:35px; height:35px; background:rgba(78,199,210,0.2);
-                                                border:2px solid #4ec7d2;">
-                                        <i class="fas fa-user" style="color:#00508f; font-size:0.85rem;"></i>
-                                    </div>
-                                @endif
-                            </td>
-
-                            {{-- Nombre --}}
-                            <td class="px-3 py-2">
-                                <div class="fw-semibold" style="color:#003b73; font-size:0.9rem;">
-                                    {{ $estudiante->nombre_completo }}
-                                </div>
-                                @if($estudiante->email)
-                                    <small class="text-muted" style="font-size:0.75rem;">
-                                        {{ $estudiante->email }}
-                                    </small>
-                                @endif
-                            </td>
-
-                            {{-- DNI --}}
-                            <td class="px-3 py-2">
-                                <span class="font-monospace small" style="color:#00508f;">
-                                    {{ $estudiante->dni ?? '—' }}
+        <div style="overflow-x:auto;">
+            <table class="est-tbl" id="studentsTable">
+                <thead>
+                    <tr>
+                        <th class="tc">#</th>
+                        <th>Foto</th>
+                        <th>Nombre</th>
+                        <th>DNI</th>
+                        <th class="tc">Grado</th>
+                        <th class="tc">Sección</th>
+                        <th class="tc">Estado</th>
+                        <th class="tr">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @forelse($estudiantes as $index => $estudiante)
+                    <tr class="student-row">
+                        <td class="tc">
+                            <span class="est-num">{{ $estudiantes->firstItem() + $index }}</span>
+                        </td>
+                        <td>
+                            <img src="{{ asset('storage/' . $estudiante->foto) }}"
+                                 class="est-photo" alt="Foto">
+                        </td>
+                        <td>
+                            <div class="est-name">{{ $estudiante->nombre_completo }}</div>
+                            @if($estudiante->email)
+                            <div class="est-email">{{ $estudiante->email }}</div>
+                            @endif
+                        </td>
+                        <td>
+                            <span class="est-dni">{{ $estudiante->dni }}</span>
+                        </td>
+                        <td class="tc">
+                            <span class="bpill b-cyan">{{ $estudiante->grado }}</span>
+                        </td>
+                        <td class="tc">
+                            <span class="bpill b-cyan">{{ $estudiante->seccion }}</span>
+                        </td>
+                        <td class="tc">
+                            @if($estudiante->estado === 'activo')
+                                <span class="bpill b-green">
+                                    <i class="fas fa-circle" style="font-size:.4rem;"></i> Activo
                                 </span>
-                            </td>
-
-                            {{-- Grado --}}
-                            <td class="px-3 py-2">
-                                <span class="badge"
-                                      style="background:rgba(78,199,210,0.15);
-                                             color:#00508f; border:1px solid #4ec7d2;">
-                                    {{ $estudiante->grado }}
+                            @else
+                                <span class="bpill b-red">
+                                    <i class="fas fa-circle" style="font-size:.4rem;"></i> Inactivo
                                 </span>
-                            </td>
-
-                            {{-- Sección --}}
-                            <td class="px-3 py-2">
-                                <span class="badge"
-                                      style="background:rgba(78,199,210,0.15);
-                                             color:#00508f; border:1px solid #4ec7d2;">
-                                    {{ $estudiante->seccion }}
-                                </span>
-                            </td>
-
-                            {{-- Estado --}}
-                            <td class="px-3 py-2">
-                                <span class="badge rounded-pill"
-                                      style="background:{{ $estadoInfo['bg'] }};
-                                             color:{{ $estadoInfo['color'] }};
-                                             padding:0.3rem 0.7rem;
-                                             border:1px solid {{ $estadoInfo['color'] }};">
-                                    <i class="fas {{ $estadoInfo['icon'] }} me-1" style="font-size:0.65rem;"></i>
-                                    {{ $estadoInfo['label'] }}
-                                </span>
-                            </td>
-
-                            {{-- Acciones --}}
-                            <td class="px-3 py-2 text-end">
-                                <div class="btn-group">
-
-                                    <a href="{{ route('estudiantes.show', $estudiante->id) }}"
-                                       class="btn btn-sm"
-                                       title="Ver detalle"
-                                       style="border:1.5px solid #00508f; color:#00508f;">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-
-                                    <a href="{{ route('estudiantes.edit', $estudiante->id) }}"
-                                       class="btn btn-sm"
-                                       title="Editar"
-                                       style="border:1.5px solid #4ec7d2; color:#4ec7d2;">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-
-                                    {{-- Botón eliminar — un solo botón con data-* --}}
-                                    <button type="button"
-                                            class="btn btn-sm btn-delete-estudiante"
-                                            title="Eliminar"
-                                            style="border:1.5px solid #ef4444; color:#ef4444;"
-                                            data-url="{{ route('estudiantes.destroy', $estudiante->id) }}"
-                                            data-nombre="{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-
-                                </div>
-                            </td>
-
-                        </tr>
-
-                    @empty
-
-                        <tr>
-                            <td colspan="7" class="text-center py-5">
-                                <i class="fas fa-inbox fa-2x mb-2 d-block" style="color:#00508f; opacity:0.5;"></i>
-                                <h6 class="mb-3" style="color:#003b73;">No hay estudiantes registrados</h6>
-                                <a href="{{ route('estudiantes.create') }}"
-                                   class="btn btn-sm"
-                                   style="background:linear-gradient(135deg,#4ec7d2,#00508f); color:white;">
-                                    <i class="fas fa-plus me-1"></i>Registrar Estudiante
+                            @endif
+                        </td>
+                        <td class="tr">
+                            <div style="display:inline-flex;gap:.35rem;align-items:center;">
+                                <a href="{{ route('estudiantes.show', $estudiante->id) }}"
+                                   class="act-btn act-view" title="Ver">
+                                    <i class="fas fa-eye"></i>
                                 </a>
-                            </td>
-                        </tr>
-
+                                <a href="{{ route('estudiantes.edit', $estudiante->id) }}"
+                                   class="act-btn act-edit" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                               <button type="button"
+        class="act-btn act-del btn-delete-estudiante"
+        data-route="{{ route('estudiantes.destroy', $estudiante->id) }}"
+        data-message="¿Estás seguro de eliminar este estudiante?"
+        data-name="{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}"
+        onclick="mostrarModalDeleteData(this)"
+        title="Eliminar">
+    <i class="fas fa-trash"></i>
+</button>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8">
+                            <div class="est-empty">
+                                <i class="fas fa-user-graduate"></i>
+                                <p>No hay estudiantes registrados</p>
+                                <a href="{{ route('estudiantes.create') }}" class="adm-btn-solid">
+                                    <i class="fas fa-plus"></i> Registrar Estudiante
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
                     @endforelse
-                    </tbody>
-                </table>
-
-            </div>
+                </tbody>
+            </table>
         </div>
+
+        {{-- Footer paginación --}}
+        @if($estudiantes->hasPages())
+        <div class="est-footer">
+            <span class="est-pages">
+                Mostrando {{ $estudiantes->firstItem() }}–{{ $estudiantes->lastItem() }} de {{ $estudiantes->total() }}
+            </span>
+            {{ $estudiantes->appends(['per_page' => request('per_page', 10)])->links() }}
+        </div>
+        @endif
     </div>
 
-    {{-- Paginación --}}
-    @if($estudiantes->hasPages())
-    <div class="d-flex justify-content-center mt-3">
-        {{ $estudiantes->links() }}
-    </div>
-    @endif
-
-</div>
-
-{{-- Modal de confirmación de eliminación --}}
-<div class="modal fade" id="modalDeleteEstudiante" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow" style="border-radius:12px;">
-            <div class="modal-header border-0 pb-0">
-                <div class="d-flex align-items-center gap-2">
-                    <div style="width:40px; height:40px; background:#fee2e2; border-radius:10px;
-                                display:flex; align-items:center; justify-content:center;">
-                        <i class="fas fa-trash" style="color:#ef4444;"></i>
+            {{-- ── Paginación ── --}}
+            @if($estudiantes->hasPages())
+                <div class="px-3 py-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <small class="text-muted">
+                        Mostrando {{ $estudiantes->firstItem() }}–{{ $estudiantes->lastItem() }}
+                        de {{ $estudiantes->total() }} estudiantes
+                    </small>
+                    <div>
+                        {{ $estudiantes->links() }}
                     </div>
-                    <h6 class="modal-title fw-bold mb-0" style="color:#003b73;">Eliminar Estudiante</h6>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body pt-3">
-                <p class="text-muted mb-0">
-                    ¿Estás seguro de que deseas eliminar a
-                    <strong id="modalNombreEstudiante" style="color:#003b73;"></strong>?
-                    Esta acción no se puede deshacer.
-                </p>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-sm fw-semibold"
-                        data-bs-dismiss="modal"
-                        style="border:2px solid #00508f; color:#00508f; border-radius:8px;">
-                    <i class="fas fa-times me-1"></i>Cancelar
-                </button>
-                <form id="formDeleteEstudiante" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="btn btn-sm fw-semibold"
-                            style="background:#ef4444; color:white; border:none; border-radius:8px;">
-                        <i class="fas fa-trash me-1"></i>Eliminar
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+            @endif
 
+        </div>{{-- /card-body --}}
+    </div>{{-- /card --}}
+
+</div>{{-- /container --}}
 @endsection
 
 @push('scripts')
 <script>
+function cambiarPerPage(valor) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', valor);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-
-    // ── Búsqueda en tiempo real ──────────────────────────────────────────
     const searchInput = document.getElementById('searchInput');
-    const rows        = document.querySelectorAll('.student-row');
-
-    searchInput?.addEventListener('input', function () {
-        const term = this.value.toLowerCase();
-        rows.forEach(function (row) {
-            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            document.querySelectorAll('#studentsTable .student-row').forEach(function (row) {
+                const texto = row.textContent.toLowerCase();
+                row.classList.toggle('hidden', q !== '' && !texto.includes(q));
+            });
         });
+    }
+
+        const prev = tbody.querySelector('.no-results-row');
+        if (prev) prev.remove();
+
+        if (visible === 0 && q !== '') {
+            const tr = document.createElement('tr');
+            tr.className = 'no-results-row';
+            tr.innerHTML = `<td colspan="8">
+                <i class="fas fa-search" style="color:#cbd5e1;font-size:1.5rem;display:block;margin-bottom:.5rem;"></i>
+                Sin resultados para "<strong>${q}</strong>"
+            </td>`;
+            tbody.appendChild(tr);
+        }
     });
 
-    // ── Modal eliminar ───────────────────────────────────────────────────
-    const botonesDelete = document.querySelectorAll('.btn-delete-estudiante');
-    const modalEl       = document.getElementById('modalDeleteEstudiante');
-    const modalNombre   = document.getElementById('modalNombreEstudiante');
-    const formDelete    = document.getElementById('formDeleteEstudiante');
-    const modal         = new bootstrap.Modal(modalEl);
-
-    botonesDelete.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            modalNombre.textContent  = this.dataset.nombre;
-            formDelete.action        = this.dataset.url;
-            modal.show();
-        });
-    });
-
-});
+})();
 </script>
 @endpush

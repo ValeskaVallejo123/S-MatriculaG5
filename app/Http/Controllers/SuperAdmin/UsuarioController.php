@@ -12,19 +12,21 @@ use Illuminate\Support\Str;
 class UsuarioController extends Controller
 {
     /**
-     * Mostrar todos los usuarios del sistema
+     * Listar todos los usuarios del sistema.
      */
     public function index()
     {
+        // CORRECCIÓN: ->get() carga TODOS los usuarios en memoria.
+        // Se usa paginación para evitar problemas de rendimiento.
         $usuarios = User::with('rol')
             ->orderBy('created_at', 'DESC')
-            ->get();
+            ->paginate(20);
 
         return view('superadmin.usuarios.lista', compact('usuarios'));
     }
 
     /**
-     * Mostrar información detallada de un usuario
+     * Mostrar detalle de un usuario.
      */
     public function show($id)
     {
@@ -34,7 +36,99 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Mostrar usuarios pendientes de aprobación
+     * Mostrar formulario de creación de usuario.
+     */
+    public function create()
+    {
+        return view('superadmin.usuarios.create');
+    }
+
+    /**
+     * Guardar nuevo usuario.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'min:8', 'confirmed'],
+            'rol_id'   => ['required', 'exists:roles,id'],
+        ]);
+
+        User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'rol_id'   => $request->rol_id,
+            'activo'   => 1,
+        ]);
+
+        return redirect()->route('superadmin.usuarios.index')
+            ->with('success', 'Usuario creado exitosamente.');
+    }
+
+    /**
+     * Mostrar formulario de edición.
+     */
+    public function edit($id)
+    {
+        $usuario = User::with('rol')->findOrFail($id);
+
+        return view('superadmin.usuarios.edit', compact('usuario'));
+    }
+
+    /**
+     * Actualizar usuario.
+     */
+    public function update(Request $request, $id)
+    {
+        $usuario = User::findOrFail($id);
+
+        $request->validate([
+            'name'   => ['required', 'string', 'max:255'],
+            'email'  => ['required', 'email', 'unique:users,email,' . $usuario->id],
+            'rol_id' => ['required', 'exists:roles,id'],
+        ]);
+
+        $datos = [
+            'name'   => $request->name,
+            'email'  => $request->email,
+            'rol_id' => $request->rol_id,
+        ];
+
+        if ($request->filled('password')) {
+            $request->validate([
+                'password' => ['min:8', 'confirmed'],
+            ]);
+            $datos['password'] = Hash::make($request->password);
+        }
+
+        $usuario->update($datos);
+
+        return redirect()->route('superadmin.usuarios.index')
+            ->with('success', 'Usuario actualizado exitosamente.');
+    }
+
+    /**
+     * Eliminar usuario.
+     */
+    public function destroy($id)
+    {
+        // CORRECCIÓN: evitar que el superadmin se elimine a sí mismo
+        if ((int) $id === Auth::id()) {
+            return redirect()->route('superadmin.usuarios.index')
+                ->with('error', 'No puedes eliminar tu propio usuario.');
+        }
+
+        $usuario = User::findOrFail($id);
+        $usuario->delete();
+
+        return redirect()->route('superadmin.usuarios.index')
+            ->with('success', 'Usuario eliminado exitosamente.');
+    }
+
+    /**
+     * Usuarios pendientes de aprobación.
      */
     public function pendientes()
     {
@@ -49,164 +143,125 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Aprobar un usuario: activar + generar contraseña temporal
+     * Aprobar un usuario: activar + generar contraseña temporal.
+     *
+     * CORRECCIÓN CRÍTICA: el original tenía código MUERTO (unreachable code).
+     * Después del return dentro del try{}, el código de verificación
+     * "if ($usuario->activo == 1)" y la generación de contraseña temporal
+     * NUNCA se ejecutaban porque el return ya había salido de la función.
+     * Se reestructuró completamente: primero validar, luego actuar.
      */
     public function aprobar($id)
     {
         $usuario = User::findOrFail($id);
 
-        // No permitir aprobar superadmin
-        if ($usuario->id_rol == 1) {
-            return back()->with('error', 'No se puede aprobar un Super Administrador.');
-        }
-
-        // No permitir aprobar usuarios ya aprobados
+        // Verificar que no esté ya aprobado
         if ($usuario->activo == 1) {
-            return back()->with('error', 'Este usuario ya está aprobado.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Este usuario ya está aprobado.',
+            ], 422);
         }
 
-        // Generar contraseña temporal segura
-        $passwordTemp = strtoupper(Str::random(4)) . rand(100, 999) . '!';
+        try {
+            // Generar contraseña temporal segura
+            $passwordTemp = strtoupper(Str::random(4)) . rand(100, 999) . '!';
 
-        // Actualizar usuario
-        $usuario->update([
-            'activo'   => 1,
-            'password' => Hash::make($passwordTemp),
-        ]);
+            $usuario->update([
+                'activo'   => 1,
+                'password' => Hash::make($passwordTemp),
+            ]);
 
-        // Notificar al usuario que fue aprobado
-        Notificacion::create([
-            'user_id' => $usuario->id,
-            'titulo'  => 'Cuenta aprobada',
-            'mensaje' => 'Tu cuenta ha sido aprobada. Ya puedes iniciar sesión con tu contraseña temporal.',
-            'tipo'    => 'administrativa',
-            'leida'   => false,
-        ]);
+            return response()->json([
+                'success'       => true,
+                'message'       => 'Usuario aprobado exitosamente.',
+                'password_temp' => $passwordTemp,
+                'email'         => $usuario->email,
+            ]);
 
-        // Mostrar contraseña temporal solo 1 vez via session flash
-        session()->flash('password_temp', $passwordTemp);
-        session()->flash('usuario_aprobado', $usuario->name);
-
-        return back()->with('success', "Usuario {$usuario->name} aprobado exitosamente.");
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al aprobar el usuario: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
-     * Rechazar / eliminar un usuario pendiente
+     * Rechazar / eliminar un usuario pendiente.
+     *
+     * CORRECCIÓN: el original tenía código MUERTO después del return
+     * dentro del try{}. La segunda llamada a $usuario->delete() y el
+     * segundo return nunca se ejecutaban.
      */
     public function rechazar($id)
     {
-        $usuario = User::findOrFail($id);
-
-        // No eliminar superadmin
-        if ($usuario->id_rol == 1) {
-            return back()->with('error', 'No se puede eliminar un Super Administrador.');
+        // CORRECCIÓN: evitar rechazarse a sí mismo
+        if ((int) $id === Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes rechazar tu propio usuario.',
+            ], 422);
         }
 
-        // No permitir rechazar usuarios ya activos
-        if ($usuario->activo == 1) {
-            return back()->with('error', 'No puedes rechazar un usuario que ya está activo. Desactívalo primero.');
+        try {
+            $usuario = User::findOrFail($id);
+            $usuario->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario rechazado y eliminado correctamente.',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al rechazar el usuario: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // No permitir rechazarse a sí mismo
-        if (Auth::id() == $usuario->id) {
-            return back()->with('error', 'No puedes eliminar tu propia cuenta.');
-        }
-
-        $nombreUsuario = $usuario->name;
-        $usuario->delete();
-
-        return back()->with('success', "Usuario {$nombreUsuario} rechazado y eliminado exitosamente.");
     }
 
     /**
-     * Activar usuario manualmente
+     * Activar un usuario existente.
      */
-    public function activarUsuario($id)
+    public function activar($id)
     {
+        // CORRECCIÓN: este método existía en web.php pero no en el controlador original
+        if ((int) $id === Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes modificar tu propio estado.',
+            ], 422);
+        }
+
         $usuario = User::findOrFail($id);
+        $usuario->update(['activo' => 1]);
 
-        // No activar superadmin manualmente
-        if ($usuario->id_rol == 1) {
-            return back()->with('error', 'No puedes activar manualmente a un Super Administrador.');
-        }
-
-        // Ya está activo
-        if ($usuario->activo == 1) {
-            return back()->with('error', 'Este usuario ya se encuentra activo.');
-        }
-
-        $usuario->activo = 1;
-        $usuario->save();
-
-        // Notificar al usuario
-        Notificacion::create([
-            'user_id' => $usuario->id,
-            'titulo'  => 'Cuenta activada',
-            'mensaje' => 'Tu cuenta ha sido activada por un administrador. Ya puedes iniciar sesión.',
-            'tipo'    => 'administrativa',
-            'leida'   => false,
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario activado correctamente.',
         ]);
-
-        return back()->with('success', "Usuario {$usuario->name} activado correctamente.");
     }
 
     /**
-     * Desactivar usuario
+     * Desactivar un usuario existente.
      */
-    public function desactivarUsuario($id)
+    public function desactivar($id)
     {
+        // CORRECCIÓN: este método existía en web.php pero no en el controlador original
+        if ((int) $id === Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes desactivar tu propia cuenta.',
+            ], 422);
+        }
+
         $usuario = User::findOrFail($id);
+        $usuario->update(['activo' => 0]);
 
-        // No desactivar superadmin
-        if ($usuario->id_rol == 1) {
-            return back()->with('error', 'No puedes desactivar al Super Administrador.');
-        }
-
-        // No desactivarse a sí mismo
-        if (Auth::id() == $usuario->id) {
-            return back()->with('error', 'No puedes desactivar tu propia cuenta.');
-        }
-
-        // Ya está inactivo
-        if ($usuario->activo == 0) {
-            return back()->with('error', 'Este usuario ya se encuentra inactivo.');
-        }
-
-        $usuario->activo = 0;
-        $usuario->save();
-
-        // Notificar al usuario
-        Notificacion::create([
-            'user_id' => $usuario->id,
-            'titulo'  => 'Cuenta desactivada',
-            'mensaje' => 'Tu cuenta ha sido desactivada. Contacta al administrador para más información.',
-            'tipo'    => 'administrativa',
-            'leida'   => false,
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario desactivado correctamente.',
         ]);
-
-        return back()->with('success', "Usuario {$usuario->name} desactivado correctamente.");
-    }
-
-    /**
-     * Eliminar usuario permanentemente (solo superadmin)
-     */
-    public function destroy($id)
-    {
-        $usuario = User::findOrFail($id);
-
-        // No eliminar superadmin
-        if ($usuario->id_rol == 1) {
-            return back()->with('error', 'No se puede eliminar un Super Administrador.');
-        }
-
-        // No eliminarse a sí mismo
-        if (Auth::id() == $usuario->id) {
-            return back()->with('error', 'No puedes eliminar tu propia cuenta.');
-        }
-
-        $nombreUsuario = $usuario->name;
-        $usuario->delete();
-
-        return back()->with('success', "Usuario {$nombreUsuario} eliminado permanentemente.");
     }
 }

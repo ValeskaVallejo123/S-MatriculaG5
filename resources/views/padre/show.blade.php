@@ -81,7 +81,7 @@
                         <label class="small fw-semibold text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Fecha de Registro</label>
                         <div style="color: #00508f; font-size: 0.9rem;">
                             <i class="fas fa-calendar-plus me-1" style="font-size: 0.8rem;"></i>
-                            {{ $padre->created_at->format('d/m/Y H:i') }}
+                            {{ $padre->created_at ? \Carbon\Carbon::parse($padre->created_at)->format('d/m/Y H:i') : '—' }}
                         </div>
                     </div>
 
@@ -89,7 +89,7 @@
                         <label class="small fw-semibold text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Última Actualización</label>
                         <div style="color: #00508f; font-size: 0.9rem;">
                             <i class="fas fa-calendar-check me-1" style="font-size: 0.8rem;"></i>
-                            {{ $padre->updated_at->format('d/m/Y H:i') }}
+{{ $padre->updated_at ? \Carbon\Carbon::parse($padre->updated_at)->format('d/m/Y H:i') : '—' }}
                         </div>
                     </div>
                 </div>

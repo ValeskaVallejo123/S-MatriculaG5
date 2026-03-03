@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EventoAcademico;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 
 class CalendarioController extends Controller
@@ -11,24 +12,9 @@ class CalendarioController extends Controller
     /**
      * Muestra la vista del calendario
      */
-    public function index()
-    {
-        $eventos = EventoAcademico::all();
-
-        return response()->json($eventos->map(function ($evento) {
-            return [
-                'id'            => $evento->id,
-                'title'         => $evento->titulo,
-                'start'         => $evento->fecha_inicio,
-                'end'           => $evento->fecha_fin,
-                'color'         => $evento->color,
-                'extendedProps' => [
-                    'description' => $evento->descripcion,
-                    'type'        => $evento->tipo,
-                ],
-            ];
-        }));
-    }
+   public function index()
+{
+    $eventos = EventoAcademico::all();
 
     /**
      * Alias público del index (eventos visibles sin autenticación)
@@ -64,6 +50,21 @@ class CalendarioController extends Controller
                     ],
                 ];
             });
+        $eventos = EventoAcademico::all()->map(function($evento) {
+            return [
+                'id' => $evento->id,
+                'title' => $evento->titulo,
+                'start' => $evento->fecha_inicio->format('Y-m-d'),
+                'end' => $evento->fecha_fin->copy()->addDay()->format('Y-m-d'),
+                'backgroundColor' => $evento->color,
+                'borderColor' => $evento->color,
+                'allDay' => (bool) $evento->todo_el_dia,
+                'extendedProps' => [
+                    'description' => $evento->descripcion,
+                    'type' => $evento->tipo
+                ]
+            ];
+        });
 
             return response()->json($eventos);
 
@@ -108,18 +109,21 @@ class CalendarioController extends Controller
     public function actualizar(Request $request, $id)
     {
         // Verificar permisos
-        if (!$this->tienePermisos()) {
-            return response()->json([
-                'exito'   => false,
-                'mensaje' => 'No tienes permisos para actualizar eventos.',
-            ], 403);
-        }
+        // En el método actualizar y eliminar, cambia esto:
+if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) { // Usar 'role' y 'super_admin'
+    return response()->json([
+        'exito' => false,
+        'mensaje' => 'No tienes permisos'
+    ], 403);
+}
 
         try {
             $validado = $this->validarEvento($request);
 
-            // Forzar valor booleano en todo_el_dia
-            $validado['todo_el_dia'] = $request->boolean('todo_el_dia');
+            // Forzar valor booleano
+            if ($request->has('todo_el_dia')) {
+                $validado['todo_el_dia'] = $request->boolean('todo_el_dia');
+            }
 
             $evento = EventoAcademico::findOrFail($id);
             $evento->update($validado);

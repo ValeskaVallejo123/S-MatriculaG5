@@ -77,16 +77,9 @@
     {{-- ===== DETALLE POR ROL ===== --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-<<<<<<< HEAD
-        <!-- SUPER ADMIN -->
-        <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl shadow-lg border-2 border-red-200 overflow-hidden">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-red-500 to-orange-500 px-6 py-4">
-=======
         {{-- ==================== SUPER ADMIN ==================== --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-6 py-4" style="background: linear-gradient(135deg, #ef4444, #f97316);">
->>>>>>> josue_matriculag5
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
@@ -175,18 +168,6 @@
                 </div>
             </div>
             <div class="p-6 space-y-4">
-<<<<<<< HEAD
-                <div class="bg-white rounded-lg p-4 border border-blue-200">
-                    <div class="flex items-center gap-2 mb-3">
-                        <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                        </svg>
-                        <h4 class="font-semibold text-gray-900">Permisos Disponibles</h4>
-                    </div>
-                    <p class="text-xs text-gray-600 mb-3">El Super Admin puede asignar los siguientes permisos:</p>
-
-                    <div class="grid grid-cols-1 gap-2">
-=======
                 {{-- Permisos asignables --}}
                 <div>
                     <h5 class="text-xs font-bold uppercase tracking-wider mb-3" style="color: #003b73;">
@@ -194,7 +175,6 @@
                         Permisos Configurables
                     </h5>
                     <div class="space-y-2">
->>>>>>> josue_matriculag5
                         @foreach($permisos as $key => $nombre)
                         <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
                             <svg class="w-5 h-5 flex-shrink-0" style="color: #4ec7d2;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -504,13 +484,16 @@
 
     {{-- Botón para volver --}}
     <div class="flex justify-end">
-<<<<<<< HEAD
+
+        <a href="{{ route('admins.index') }}"
+           class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #003b73, #00508f);">
+
         <a href="{{ route('admins.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 bg-primary-400 text-white rounded-lg hover:bg-primary-500 transition shadow-lg hover:shadow-xl">
-=======
-        <a href="{{ route('admins.index') }}" 
+
+        <a href="{{ route('admins.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #003b73, #00508f);">
->>>>>>> josue_matriculag5
+
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
             </svg>

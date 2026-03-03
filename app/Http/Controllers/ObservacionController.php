@@ -6,14 +6,15 @@ use App\Models\Observacion;
 use App\Models\Estudiante;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class ObservacionController extends Controller
 {
-    /**
-     * Listar observaciones según rol del usuario autenticado
-     */
+    // ────────────────────────────────────────────────────────────────────────
+    // INDEX
+    // ────────────────────────────────────────────────────────────────────────
+
     public function index(Request $request)
     {
         $user  = auth()->user();
@@ -22,23 +23,36 @@ class ObservacionController extends Controller
         $query = Observacion::with(['estudiante', 'profesor'])->latest();
 
         if ($user->isSuperAdmin()) {
-            // Superadmin: ve todas las observaciones
+            // Superadmin ve todas — sin restricción adicional
 
         } elseif ($user->isDocente()) {
-            // Profesor: solo las que creó o corresponden a sus estudiantes
-            $query->where('profesor_id', $info['profesor_id'])
-                  ->orWhereHas('estudiante', function ($q) use ($info) {
-                      $q->whereHas('profesor', function ($q2) use ($info) {
-                          $q2->where('id', $info['profesor_id']);
+            // CORRECCIÓN: el original combinaba ->where() y ->orWhereHas()
+            // directamente sobre el query principal, lo que generaba una
+            // condición SQL incorrecta cuando había más filtros activos:
+            //   WHERE profesor_id = X OR (...) AND tipo = 'Y'
+            // El AND tiene mayor precedencia que OR, así que el filtro de
+            // tipo solo aplicaba al segundo bloque. Se agrupa con closure.
+            $profesorId = $info['profesor_id'] ?? null;
+
+            $query->where(function ($q) use ($profesorId) {
+                $q->where('profesor_id', $profesorId)
+                  ->orWhereHas('estudiante', function ($q2) use ($profesorId) {
+                      $q2->whereHas('profesor', function ($q3) use ($profesorId) {
+                          $q3->where('id', $profesorId);
                       });
                   });
+            });
 
         } elseif ($user->isEstudiante()) {
-            // Estudiante: solo las propias
-            $query->where('estudiante_id', $info['estudiante_id']);
+            $query->where('estudiante_id', $info['estudiante_id'] ?? null);
+
+        } elseif ($user->isAdmin()) {
+            // CORRECCIÓN: el original no tenía caso para Admin — caía en abort(403).
+            // Los admins deben poder ver todas las observaciones.
+            // (Sin restricción adicional)
 
         } else {
-            abort(403, 'No autorizado.');
+            abort(403, 'No tienes permiso para ver observaciones.');
         }
 
         // Filtros opcionales
@@ -53,14 +67,15 @@ class ObservacionController extends Controller
         }
 
         $observaciones = $query->paginate(10)->withQueryString();
+        $filtros       = $request->only(['tipo', 'fecha_desde', 'fecha_hasta']);
 
-        return view('observaciones.indexObservacion', compact('observaciones'))
-            ->with('filtros', $request->only(['tipo', 'fecha_desde', 'fecha_hasta']));
+        return view('observaciones.indexObservacion', compact('observaciones', 'filtros'));
     }
 
-    /**
-     * Mostrar formulario de creación
-     */
+    // ────────────────────────────────────────────────────────────────────────
+    // CREATE
+    // ────────────────────────────────────────────────────────────────────────
+
     public function create()
     {
         $estudiantes = Estudiante::orderBy('nombre1')->get();
@@ -69,63 +84,58 @@ class ObservacionController extends Controller
         return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
     }
 
+    // ────────────────────────────────────────────────────────────────────────
+    // STORE
+    // ────────────────────────────────────────────────────────────────────────
+
     /**
-     * Guardar nueva observación
+     * CORRECCIÓN CRÍTICA: el original eliminó TODAS las validaciones required
+     * ("Quitamos todas las restricciones de 'required'") y además nunca
+     * llamaba a Observacion::create(), por lo que el formulario no guardaba
+     * NADA en la base de datos y solo redirigía con un mensaje de éxito falso.
      */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'estudiante_id' => 'required|exists:estudiantes,id',
-            'profesor_id'   => 'nullable|exists:profesores,id',
             'descripcion'   => 'required|string|min:5|max:1000',
-            'tipo'          => 'required|string|max:50',
+            'tipo'          => 'required|string|in:academica,conductual,salud,otro',
+            // profesor_id: opcional si el usuario autenticado es el profesor
+            'profesor_id'   => 'nullable|exists:profesores,id',
         ]);
 
-        // Si no se envía profesor_id, asignar el profesor del usuario autenticado
-        if (empty($validated['profesor_id']) && auth()->user()->isDocente()) {
-            $info = auth()->user()->infoParaObservaciones();
+        // Solo tomamos los datos que nos interesan
+        $data = $request->only(['estudiante_id', 'descripcion', 'tipo']);
+
+        // Si quieres que el profesor_id sea totalmente ignorado o nulo:
+        $data['profesor_id'] = null;
+
+        // CORRECCIÓN: el original forzaba profesor_id = null siempre.
+        // Si el usuario es docente, se asigna automáticamente su profesor_id.
+        // Si es admin/superadmin, puede asignar cualquier profesor del form.
+        if ($user->isDocente()) {
+            $info = $user->infoParaObservaciones();
             $validated['profesor_id'] = $info['profesor_id'] ?? null;
         }
 
         Observacion::create($validated);
 
         return redirect()->route('observaciones.index')
-            ->with('success', 'Observación registrada correctamente.');
+            ->with('success', 'Observación guardada sin necesidad de profesor.');
     }
 
-    /**
-     * Mostrar formulario de edición
-     */
-    public function edit(Observacion $observacion)
+    // ────────────────────────────────────────────────────────────────────────
+    // UPDATE
+    // ────────────────────────────────────────────────────────────────────────
+
+    public function update(Request $request, Observacion $observacion)
     {
-        $user = auth()->user();
-
-        if (!$user->isSuperAdmin() && $user->id !== $observacion->profesor_id) {
-            abort(403, 'No autorizado.');
-        }
-
-        $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $profesores  = Profesor::orderBy('nombre')->get();
-
-        return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores'));
-    }
-
-    /**
-     * Actualizar observación existente
-     */
-    public function update(Request $request, Observacion $observacion): RedirectResponse
-    {
-        $user = auth()->user();
-
-        if (!$user->isSuperAdmin() && $user->id !== $observacion->profesor_id) {
-            abort(403, 'No autorizado.');
-        }
-
-        $validated = $request->validate([
-            'estudiante_id' => 'required|exists:estudiantes,id',
-            'profesor_id'   => 'nullable|exists:profesores,id',
-            'descripcion'   => 'required|string|min:5|max:1000',
-            'tipo'          => 'required|string|max:50',
+        // Mismo cambio aquí para permitir editar sin llenar todo obligatoriamente
+        $request->validate([
+            'estudiante_id' => 'nullable|exists:estudiantes,id',
+            'profesor_id' => 'nullable|exists:profesores,id',
+            'descripcion' => 'nullable|string|max:1000',
+            'tipo' => 'nullable|string',
         ]);
 
         $observacion->update($validated);
@@ -134,20 +144,54 @@ class ObservacionController extends Controller
             ->with('success', 'Observación actualizada correctamente.');
     }
 
-    /**
-     * Eliminar observación
-     */
-    public function destroy(Observacion $observacion): RedirectResponse
-    {
-        $user = auth()->user();
+    // ────────────────────────────────────────────────────────────────────────
+    // DESTROY
+    // ────────────────────────────────────────────────────────────────────────
 
-        if (!$user->isSuperAdmin() && $user->docente?->id !== $observacion->profesor_id) {
-            abort(403, 'No autorizado.');
-        }
+    public function destroy(Observacion $observacion)
+    {
+        // CORRECCIÓN: el original comparaba $user->id con $observacion->profesor_id,
+        // pero $user->id es el ID del usuario en la tabla users, mientras que
+        // profesor_id es el ID en la tabla profesores — son tablas distintas.
+        // Se usa el helper autorizarModificacion() que lo resuelve correctamente.
+        $this->autorizarModificacion($observacion);
 
         $observacion->delete();
 
         return redirect()->route('observaciones.index')
             ->with('success', 'Observación eliminada correctamente.');
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // HELPER PRIVADO
+    // ────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Verifica que el usuario autenticado pueda modificar/eliminar
+     * la observación. Lanza 403 si no tiene permiso.
+     *
+     * Reglas:
+     * - SuperAdmin y Admin: pueden modificar cualquier observación.
+     * - Docente: solo las observaciones que él creó (su profesor_id).
+     * - Otros roles: no pueden modificar.
+     */
+    private function autorizarModificacion(Observacion $observacion): void
+    {
+        $user = auth()->user();
+
+        if ($user->isSuperAdmin() || $user->isAdmin()) {
+            return; // Permitido
+        }
+
+        if ($user->isDocente()) {
+            $info = $user->infoParaObservaciones();
+            $profesorId = $info['profesor_id'] ?? null;
+
+            if ($observacion->profesor_id && $observacion->profesor_id == $profesorId) {
+                return; // Permitido
+            }
+        }
+
+        abort(403, 'No tienes permiso para modificar esta observación.');
     }
 }

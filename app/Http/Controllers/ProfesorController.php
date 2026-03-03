@@ -10,15 +10,8 @@ class ProfesorController extends Controller
 {
     public function __construct()
     {
-        // Solo admin (id_rol 1 y 2) pueden manejar profesores
-        $this->middleware(['auth']);
-        $this->middleware(function ($request, $next) {
-            $user = auth()->user();
-            if (!in_array($user->id_rol, [1, 2])) {
-                abort(403, 'No tienes permisos para acceder a esta sección.');
-            }
-            return $next($request);
-        });
+        // Solo admin y super_admin pueden manejar profesores
+        $this->middleware(['auth', 'role:admin,super_admin']);
     }
 
     /**
@@ -32,10 +25,10 @@ class ProfesorController extends Controller
             ->when($busqueda, function ($query, $busqueda) {
                 $query->where(function ($q) use ($busqueda) {
                     $q->where('nombre', 'like', "%{$busqueda}%")
-                      ->orWhere('apellido', 'like', "%{$busqueda}%")
-                      ->orWhere('dni', 'like', "%{$busqueda}%")
-                      ->orWhere('email', 'like', "%{$busqueda}%")
-                      ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
+                    ->orWhere('apellido', 'like', "%{$busqueda}%")
+                    ->orWhere('dni', 'like', "%{$busqueda}%")
+                    ->orWhere('email', 'like', "%{$busqueda}%")
+                    ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
                 });
             })
             ->latest()
@@ -61,25 +54,25 @@ class ProfesorController extends Controller
         return view('profesores.create');
     }
 
-    /**
-     * Guardar nuevo profesor
-     */
-    public function store(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'nombre'             => 'required|string|max:50',
-            'apellido'           => 'required|string|max:50',
-            'dni'                => 'required|string|max:13|unique:profesores,dni',
-            'fecha_nacimiento'   => 'nullable|date',
-            'genero'             => 'nullable|in:masculino,femenino,otro',
-            'telefono'           => 'nullable|string|max:20',
-            'email'              => 'required|email|unique:profesores,email',
-            'direccion'          => 'nullable|string|max:255',
-            'especialidad'       => 'required|string|max:255',
-            'nivel_academico'    => 'nullable|in:bachillerato,licenciatura,maestria,doctorado',
-            'fecha_contratacion' => 'nullable|date',
-            'tipo_contrato'      => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
-            'estado'             => 'required|in:activo,inactivo,licencia',
+    public function store(Request $request)
+{
+
+    $validated = $request->validate([
+    'nombre' => 'required|string|max:50',
+    'apellido' => 'required|string|max:50',
+    'dni' => 'required|string|unique:profesores,dni|max:13',
+    'fecha_nacimiento' => 'nullable|date',
+    'genero' => 'nullable|in:masculino,femenino,otro',
+    'telefono' => 'nullable|string|max:20',
+    'email' => 'required|email|unique:profesores,email',
+    'direccion' => 'nullable|string',
+    'especialidad' => 'required|string|max:255',
+    'nivel_academico' => 'nullable|in:bachillerato,licenciatura,maestria,doctorado',
+    'fecha_contratacion' => 'nullable|date',
+    'tipo_contrato' => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
+    'estado' => 'required|in:activo,inactivo,licencia',
+
+
         ], [
             'nombre.required'       => 'El nombre es obligatorio.',
             'apellido.required'     => 'El apellido es obligatorio.',

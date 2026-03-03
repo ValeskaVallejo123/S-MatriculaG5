@@ -21,11 +21,7 @@
 @section('content')
 <div class="container-fluid" style="max-width: 1400px;">
 
-<<<<<<< HEAD
     {{-- Encabezado --}}
-=======
-    <!-- Encabezado -->
->>>>>>> josue_matriculag5
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1 fw-bold" style="color:#003b73;">
@@ -53,20 +49,12 @@
         </div>
     @endif
 
-<<<<<<< HEAD
     {{-- Info --}}
     <div class="alert alert-info mb-4 border-0"
          style="border-left:4px solid #4ec7d2 !important; border-radius:8px; background:rgba(78,199,210,0.08);">
         <i class="fas fa-info-circle me-2" style="color:#00508f;"></i>
         <strong style="color:#00508f;">Instrucciones:</strong>
         <span class="text-muted"> Seleccione un padre/tutor para configurar los permisos específicos de acceso a la información de sus hijos.</span>
-=======
-    <!-- Información de ayuda -->
-    <div class="alert alert-info mb-4">
-        <i class="fas fa-info-circle"></i>
-        <strong>Instrucciones:</strong>
-        Seleccione un padre/tutor para configurar los permisos específicos de acceso a la información de sus hijos.
->>>>>>> josue_matriculag5
     </div>
 
     {{-- Buscador --}}
@@ -79,21 +67,11 @@
                             <span class="input-group-text bg-white" style="border-color:#dee2e6;">
                                 <i class="fas fa-search text-muted"></i>
                             </span>
-<<<<<<< HEAD
                             <input type="text" name="buscar"
                                    class="form-control"
                                    placeholder="Buscar por nombre, apellido, DNI o email..."
                                    value="{{ request('buscar') }}"
                                    style="border-radius:0 8px 8px 0;">
-=======
-                            <input
-                                type="text"
-                                name="buscar"
-                                class="form-control"
-                                placeholder="Buscar por nombre, apellido, DNI o email..."
-                                value="{{ request('buscar') }}"
-                            >
->>>>>>> josue_matriculag5
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -154,7 +132,6 @@
                                         @endif
                                     </small>
                                 </div>
-<<<<<<< HEAD
                             </div>
                         </td>
 
@@ -206,38 +183,6 @@
         </div>
 
         {{-- Paginación --}}
-=======
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="badge bg-info">
-                                    {{ $padre->estudiantes->count() }}
-                                    {{ $padre->estudiantes->count() === 1 ? 'hijo' : 'hijos' }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <a
-                                    href="{{ route('admin.permisos.configurar', $padre->id) }}"
-                                    class="btn btn-sm btn-primary"
-                                    title="Configurar permisos"
-                                >
-                                    <i class="fas fa-cog"></i> Configurar
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                                <p class="text-muted mb-0">No se encontraron padres registrados</p>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
->>>>>>> josue_matriculag5
         @if($padres->hasPages())
         <div class="card-footer bg-white py-3 px-4" style="border-radius:0 0 12px 12px;">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -250,9 +195,6 @@
         @endif
     </div>
 
-<<<<<<< HEAD
-</div>
-=======
 <style>
     .avatar-circle {
         box-shadow: 0 2px 8px rgba(0, 59, 115, 0.15);
@@ -272,5 +214,4 @@
         font-size: 0.875rem;
     }
 </style>
->>>>>>> josue_matriculag5
 @endsection

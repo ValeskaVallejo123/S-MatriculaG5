@@ -94,36 +94,23 @@
     {{-- ── Tabs de nivel ─────────────────────────────────────────────────── --}}
     <ul class="nav nav-tabs mb-4" id="nivelTabs">
         <li class="nav-item">
-            <button class="nav-link active" data-nivel="" data-bs-toggle="tab"
-                    data-bs-target="#tab-todos" type="button"
-                    style="border-radius:10px 10px 0 0; font-weight:600; padding:0.75rem 1.5rem;">
+            <button class="nav-link active" id="todos-tab" data-nivel="" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-th-large me-2"></i>Todos
             </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-nivel="primaria" data-bs-toggle="tab"
-                    data-bs-target="#tab-primaria" type="button"
-                    style="border-radius:10px 10px 0 0; font-weight:600; padding:0.75rem 1.5rem;">
+            <button class="nav-link" id="primaria-tab" data-nivel="primaria" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-child me-2"></i>Primaria
             </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-nivel="básica" data-bs-toggle="tab"
-                    data-bs-target="#tab-basica" type="button"
-                    style="border-radius:10px 10px 0 0; font-weight:600; padding:0.75rem 1.5rem;">
-                <i class="fas fa-book me-2"></i>Básica
-            </button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-nivel="secundaria" data-bs-toggle="tab"
-                    data-bs-target="#tab-secundaria" type="button"
-                    style="border-radius:10px 10px 0 0; font-weight:600; padding:0.75rem 1.5rem;">
+            <button class="nav-link" id="secundaria-tab" data-nivel="secundaria" data-bs-toggle="tab" type="button" style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
                 <i class="fas fa-user-graduate me-2"></i>Secundaria
             </button>
         </li>
     </ul>
 
-    {{-- ── Contenido de Tabs ─────────────────────────────────────────────── --}}
+    {{-- Contenido de Tabs --}}
     <div class="tab-content" id="nivelTabsContent">
 
         {{-- Tab: Todos --}}
@@ -290,6 +277,7 @@
                         <i class="fas fa-inbox fa-2x mb-2 d-block" style="color:#00508f; opacity:0.5;"></i>
                         <p class="text-muted">No hay grados de Secundaria registrados.</p>
                     </div>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -298,10 +286,6 @@
 
 </div>
 @endsection
-
-{{-- ── Partial: _card.blade.php ─────────────────────────────────────────
-     Crea el archivo: resources/views/superadmin/grados/_card.blade.php
-     con el contenido de la card para evitar triplicar HTML --}}
 
 @push('styles')
 <style>
@@ -383,9 +367,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const nivel = filterNivel.value.toLowerCase();
 
         cards.forEach(function (card) {
-            const matchesSearch = card.textContent.toLowerCase().includes(term);
-            const matchesNivel  = nivel === '' || card.dataset.nivel === nivel;
-            card.style.display  = (matchesSearch && matchesNivel) ? '' : 'none';
+            const text  = card.textContent.toLowerCase();
+            const nivel = card.dataset.nivel;
+
+            const matchesSearch = text.includes(searchTerm);
+            const matchesNivel  = !nivelFilter || nivel === nivelFilter;
+
+            card.style.display = (matchesSearch && matchesNivel) ? '' : 'none';
         });
     }
 
@@ -417,3 +405,4 @@ function changePerPage(value) {
 }
 </script>
 @endpush
+@endsection

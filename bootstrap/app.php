@@ -12,36 +12,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
-        // Alias para middlewares personalizados
         $middleware->alias([
             'verificar.permiso' => \App\Http\Middleware\VerificarPermiso::class,
             'verificar.rol'     => \App\Http\Middleware\VerificarRol::class,
+            'role'              => \App\Http\Middleware\RoleMiddleware::class,
+            'es.padre'          => \App\Http\Middleware\EsPadre::class,
         ]);
 
-        // Si luego necesitas middleware global:
-        // $middleware->append(\App\Http\Middleware\Nombre::class);
-
-        // O grupo: web / api
-        // $middleware->appendToGroup('web', \App\Http\Middleware\AlgoMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Aquí puedes manejar errores personalizados
-        // Ejemplo:
-        // $exceptions->render(function (\Throwable $e) {
-        //     return response()->view('errors.500', [], 500);
-        // });
+        //
     })
-    ->withMiddleware(function (Middleware $middleware) {
-
-    // Alias para middlewares personalizados
-    $middleware->alias([
-        'verificar.permiso' => \App\Http\Middleware\VerificarPermiso::class,
-        'verificar.rol'     => \App\Http\Middleware\VerificarRol::class,
-
-        // ✅ ESTE ES EL QUE FALTABA
-        'role'              => \App\Http\Middleware\RoleMiddleware::class,
-    ]);
-
-})
-
     ->create();

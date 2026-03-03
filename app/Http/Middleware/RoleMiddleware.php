@@ -12,18 +12,26 @@ class RoleMiddleware
     {
         $user = Auth::user();
 
+        // Si no está autenticado → redirigir a login
         if (!$user) {
-            abort(403, 'No autenticado');
+            return redirect()->route('login')
+                ->with('error', 'Debes iniciar sesión para acceder.');
         }
 
-        // ✅ SUPER ADMINISTRADOR: acceso total
-        if ($user->is_super_admin == 1 || $user->id_rol == 1) {
+        // Si es super admin → pasa automáticamente
+        if ($user->is_super_admin === true || (int) $user->id_rol === 1) {
             return $next($request);
         }
 
-        // Validar rol normal
-        if (!$user->rol || !in_array(strtolower($user->rol->nombre), $roles)) {
-            abort(403, 'Acceso denegado');
+        // Normalizar roles recibidos en la ruta
+        $rolesNormalizados = array_map('strtolower', $roles);
+
+        // Obtener rol del usuario (seguro contra null)
+        $rolUsuario = strtolower(trim($user->rol->nombre ?? ''));
+
+        // Si no tiene rol o no coincide
+        if (!$user->rol || !in_array($rolUsuario, $rolesNormalizados)) {
+            abort(403, 'No tienes permiso para acceder a esta sección.');
         }
 
         return $next($request);
