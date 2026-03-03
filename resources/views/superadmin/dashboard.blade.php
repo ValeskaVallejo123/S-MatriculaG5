@@ -332,10 +332,10 @@
                     </div>
                 </div>
                 <div class="action-card-body">
-                    <a href="{{ route('grados.index') }}" class="btn btn-outline-primary w-100 mb-2">
+                    <a href="{{ route('superadmin.grados.index') }}" class="btn btn-outline-primary w-100 mb-2">
                         <i class="fas fa-list me-2"></i> Grados
                     </a>
-                    <a href="{{ route('materias.index') }}" class="btn btn-primary w-100">
+                    <a href="{{ route('superadmin.materias.index') }}" class="btn btn-primary w-100">
                         <i class="fas fa-book me-2"></i> Materias
                     </a>
                 </div>

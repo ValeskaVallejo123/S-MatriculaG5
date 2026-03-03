@@ -670,7 +670,7 @@
     </li>
 
     <li class="menu-item">
-        <a href="{{ route('grados.index') }}" 
+        <a href="{{ route('superadmin.grados.index') }}" 
         class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
         <i class="fas fa-book-reader"></i>
         <span>Plan de Estudios</span>
@@ -713,7 +713,7 @@
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('padres.buscar') }}" class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
+                <a href="{{ route('padres.index') }}" class="menu-link {{ request()->routeIs('padres.index') ? 'active' : '' }}">
                     <i class="fas fa-user-search"></i>
                     <span>Buscar Padre/Tutor</span>
                 </a>
@@ -737,28 +737,28 @@
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.grados.index') }}" class="menu-link {{ request()->routeIs('grados.*') ? 'active' : '' }}">
                     <i class="fas fa-layer-group"></i>
                     <span>Grados</span>
                 </a>
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('materias.index') }}" class="menu-link {{ request()->routeIs('materias.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.materias.index') }}" class="menu-link {{ request()->routeIs('materias.*') ? 'active' : '' }}">
                     <i class="fas fa-book"></i>
                     <span>Materias</span>
                 </a>
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('profesor_materia.index') }}" class="menu-link {{ request()->routeIs('profesor_materia.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.profesor_materia.index') }}" class="menu-link {{ request()->routeIs('profesor_materia.*') ? 'active' : '' }}">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <span>Asignar Profesor</span>
                 </a>
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('periodos-academicos.index') }}" class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.periodos-academicos.index') }}" class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Períodos Académicos</span>
                 </a>
@@ -782,7 +782,7 @@
             </li>
 
             <li class="menu-item">
-                <a href="{{ route('documentos.index') }}" class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.documentos.index') }}" class="menu-link {{ request()->routeIs(patterns: 'superadmin.documentos.*')}}">
                     <i class="fas fa-folder-open"></i>
                     <span>Documentos</span>
                 </a>
@@ -812,7 +812,7 @@
             @endif
 
             <li class="menu-item">
-                <a href="{{ route('cambiarcontrasenia.edit') }}" class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.cambiarcontrasenia.edit') }}" class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
                     <i class="fas fa-key"></i>
                     <span>Cambiar Contraseña</span>
                 </a>

@@ -202,7 +202,7 @@ php<!DOCTYPE html>
                         <a href="{{ route('plan-estudios.show', $grado) }}" class="action-btn view-btn">
     <i class="fas fa-eye"></i> Ver
 </a>
-                        <a href="{{ route('grados.edit', $grado) }}" class="action-btn edit-btn"><i class="fas fa-edit"></i> Editar</a>
+                        <a href="{{ route('superadmin.grados.edit', $grado) }}" class="action-btn edit-btn"><i class="fas fa-edit"></i> Editar</a>
                     </div>
                 </div>
             @empty

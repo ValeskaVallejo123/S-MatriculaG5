@@ -5,7 +5,7 @@
 @section('page-title', 'Gestión de Grados y Secciones')
 
 @section('topbar-actions')
-    <a href="{{ route('grados.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
+    <a href="{{ route('superadmin.grados.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
         <i class="fas fa-plus"></i>
         Nuevo Grado
     </a>
@@ -164,22 +164,22 @@
 
                         <!-- Acciones -->
                         <div class="d-flex gap-2">
-                            <a href="{{ route('grados.show', $grado) }}"
-                               class="btn btn-sm btn-outline-primary"
-                               title="Ver detalle">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('grados.asignar-materias', $grado) }}"
+                            <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}"
+   class="btn btn-sm btn-outline-info"
+   title="Asignar materias">
+   <i class="fas fa-tasks"></i>
+</a>
+                            <a href="{{ route('superadmin.grados.show', $grado) }}"
                                class="btn btn-sm btn-outline-info"
                                title="Asignar materias">
                                 <i class="fas fa-tasks"></i>
                             </a>
-                            <a href="{{ route('grados.edit', $grado) }}"
+                            <a href="{{ route('superadmin.grados.edit', $grado) }}"
                                class="btn btn-sm btn-outline-warning"
                                title="Editar">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <form action="{{ route('grados.destroy', $grado) }}"
+                            <form action="{{ route('superadmin.grados.destroy', $grado) }}"
                                   method="POST"
                                   class="d-inline"
                                   onsubmit="return confirm('¿Eliminar este grado?')">
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     searchInput.addEventListener('keyup', filterCards);
 });
-
+                                                                                                                                                                                                                                                                                                                                                                        
 function changePerPage(value) {
     const url = new URL(window.location.href);
     url.searchParams.set('per_page', value);
