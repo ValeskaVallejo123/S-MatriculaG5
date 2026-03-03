@@ -662,7 +662,7 @@
             </li>
 
     <li class="menu-item">
-        <a href="{{ route('calendario.publico') }}"
+        <a href="{{ route('calendario') }}"
         class="menu-link {{ request()->routeIs('/calendario/eventos') ? 'active' : '' }}">
         <i class="fas fa-calendar-alt"></i>
         <span>Calendario Académico</span>
