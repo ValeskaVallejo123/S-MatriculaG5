@@ -4,9 +4,9 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Notificacion;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class UsuarioController extends Controller
@@ -134,8 +134,6 @@ class UsuarioController extends Controller
     {
         $usuariosPendientes = User::with('rol')
             ->where('activo', 0)
-            ->whereNotNull('id_rol')         // Solo usuarios con rol asignado
-            ->where('id_rol', '!=', 1)       // Excluir superadmin
             ->orderBy('created_at', 'DESC')
             ->get();
 

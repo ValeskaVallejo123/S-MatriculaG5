@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Grado;
 use App\Models\Materia;
-use App\Models\User;
+//use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 

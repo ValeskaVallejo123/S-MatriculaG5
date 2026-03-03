@@ -38,7 +38,10 @@ class LoginController extends Controller
                 ->onlyInput('email');
         }
 
-        $usuario = Auth::user();
+        // FIX: cargar siempre con eager loading para evitar
+        // "Attempt to read property on null" al acceder a $usuario->rol->nombre
+        $usuario = User::with('rol')->find(Auth::id());
+        Auth::setUser($usuario);
 
         Log::info('Login exitoso', [
             'id'    => $usuario->id,
@@ -57,7 +60,6 @@ class LoginController extends Controller
         // ── Verificar cuenta activa ─────────────────────────────────
         if ($usuario->activo == 0 || $usuario->activo === false) {
 
-            // Detectar si es padre por rol O por user_type
             $esPadre = $usuario->isPadre();
 
             if ($esPadre) {
@@ -66,8 +68,9 @@ class LoginController extends Controller
                     ->where('id', $usuario->id)
                     ->update(['activo' => 1]);
 
-                // Refrescar el modelo para que estaActivo() funcione correctamente
-                $usuario = User::find($usuario->id);
+                // FIX: recargar CON la relación rol para que isPadre()
+                // y redirigirSegunRol() funcionen correctamente después
+                $usuario = User::with('rol')->find($usuario->id);
                 Auth::setUser($usuario);
 
                 Log::info('Padre activado en primer login', ['id' => $usuario->id]);
@@ -88,13 +91,10 @@ class LoginController extends Controller
 
     /**
      * Redirigir al dashboard según el rol del usuario.
-     * Usa normalización de strings para evitar fallos por mayúsculas/tildes.
      */
     private function redirigirSegunRol(User $usuario): \Illuminate\Http\RedirectResponse
     {
         $nombreRol = strtolower(trim($usuario->rol->nombre ?? ''));
-
-        // También verificar por user_type como fallback
         $userType  = strtolower(trim($usuario->user_type ?? ''));
 
         $mapa = [
