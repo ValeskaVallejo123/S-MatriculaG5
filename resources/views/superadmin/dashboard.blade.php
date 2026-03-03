@@ -10,13 +10,6 @@
             $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
             $displayRole = $isSuperAdmin ? 'Super Administrador' : ucfirst($user->role ?? 'Usuario');
         @endphp
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> josue_matriculag5
-=======
->>>>>>> origin/dev/valeska
         <span class="badge bg-primary" style="padding: 0.5rem 1rem; font-weight: 500;">
             <i class="fas fa-user-shield me-1"></i> {{ $displayRole }}
         </span>
@@ -108,7 +101,7 @@
             <div class="stat-card stat-card-users">
                 <div class="stat-icon"><i class="fas fa-users-cog"></i></div>
                 <div class="stat-content">
-                    <h6 class="stat-label">Usuarios del Sistema</h6>
+                    <h6 class="stat-label">Lista de Usuarios del Sistema</h6>
                     <h2 class="stat-value">{{ $totalUsuarios ?? \App\Models\User::count() }}</h2>
                     <div class="stat-footer">
                         <span class="stat-badge stat-badge-danger">
@@ -377,11 +370,6 @@
                 <div class="action-card-body">
                     <a href="{{ route('superadmin.horarios_grado.index') }}" class="btn btn-outline-primary w-100">
                         <i class="fas fa-list me-2"></i> Ver Horarios
-<<<<<<< HEAD
-                    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-primary w-100">
-                        <i class="fas fa-user-tie me-2"></i> Gestión de Admins
-=======
->>>>>>> origin/dev/valeska
                     </a>
                 </div>
             </div>

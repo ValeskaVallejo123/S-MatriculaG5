@@ -4,255 +4,442 @@
 @section('page-title', 'Gestión de Profesores')
 
 @section('topbar-actions')
-    <a href="{{ route('profesores.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
-        <i class="fas fa-plus"></i>
-        Nuevo Profesor
+    <a href="{{ route('profesores.create') }}"
+       style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;padding:.45rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;font-size:.88rem;box-shadow:0 2px 8px rgba(78,199,210,.3);">
+        <i class="fas fa-plus"></i> Agregar Nuevo Profesor
     </a>
 @endsection
 
+@push('styles')
+<style>
+:root {
+    --navy:     #003b73;
+    --blue:     #00508f;
+    --teal:     #4ec7d2;
+    --teal-s:   rgba(78,199,210,.11);
+    --border:   #e8edf4;
+    --bg:       #f5f8fc;
+    --text:     #0d2137;
+    --muted:    #6b7a90;
+    --green:    #10b981;
+    --amber:    #f59e0b;
+    --red:      #ef4444;
+    --r:        12px;
+    --shadow:   0 1px 6px rgba(0,59,115,.07);
+}
+
+/* ══ STATS ══ */
+.pr-stats {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: .85rem; margin-bottom: 1.25rem;
+}
+@media(max-width:900px){ .pr-stats { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:500px){ .pr-stats { grid-template-columns:1fr 1fr; gap:.6rem; } }
+
+.pr-stat {
+    background: white; border-radius: var(--r);
+    border: 1px solid var(--border);
+    padding: 1rem 1.1rem;
+    display: flex; align-items: center; gap: .85rem;
+    box-shadow: var(--shadow);
+    transition: transform .2s, box-shadow .2s;
+    position: relative; overflow: hidden;
+}
+.pr-stat::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    border-radius: 4px 0 0 4px;
+}
+.pr-stat-total::before   { background: var(--blue); }
+.pr-stat-active::before  { background: var(--teal); }
+.pr-stat-inactive::before { background: var(--amber); }
+.pr-stat-license::before { background: var(--green); }
+.pr-stat:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,59,115,.1); }
+
+.pr-stat-icon {
+    width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.05rem;
+}
+.pr-stat-total   .pr-stat-icon { background: rgba(0,80,143,.1);   color: var(--blue); }
+.pr-stat-active  .pr-stat-icon { background: var(--teal-s);       color: var(--teal); }
+.pr-stat-inactive .pr-stat-icon { background: rgba(245,158,11,.1); color: var(--amber); }
+.pr-stat-license .pr-stat-icon { background: rgba(16,185,129,.1); color: var(--green); }
+
+.pr-stat-lbl {
+    font-size: .65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--muted); margin-bottom: .15rem;
+}
+.pr-stat-num { font-size: 1.65rem; font-weight: 800; color: var(--navy); line-height: 1; }
+.pr-stat-sub { font-size: .7rem; color: var(--muted); margin-top: .1rem; }
+
+/* ══ TOOLBAR ══ */
+.pr-toolbar {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--r); padding: .85rem 1.2rem;
+    margin-bottom: 1.1rem; display: flex;
+    align-items: center; gap: 1rem; flex-wrap: wrap;
+    box-shadow: var(--shadow);
+}
+.pr-search-form { display: flex; align-items: center; gap: .5rem; flex: 1; min-width: 220px; }
+.pr-search-wrap { position: relative; flex: 1; }
+.pr-search-wrap i {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--blue); font-size: .82rem;
+}
+.pr-search {
+    width: 100%; padding: .48rem 1rem .48rem 2.3rem;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: .83rem; background: var(--bg);
+    outline: none; font-family: inherit; color: var(--text);
+    transition: border-color .2s, box-shadow .2s;
+}
+.pr-search:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(78,199,210,.15); background: white; }
+
+.pr-btn-sm {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: .42rem .85rem; border-radius: 7px;
+    font-size: .8rem; font-weight: 600; cursor: pointer; border: 1.5px solid;
+    transition: all .15s; white-space: nowrap; text-decoration: none; background: white;
+}
+.pr-btn-teal { border-color: var(--teal); color: var(--teal); }
+.pr-btn-teal:hover { background: var(--teal); color: white; }
+.pr-btn-red  { border-color: var(--red); color: var(--red); }
+.pr-btn-red:hover  { background: var(--red); color: white; }
+
+.pr-result-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .18rem .65rem; border-radius: 999px;
+    font-size: .72rem; font-weight: 600;
+    background: var(--teal-s); color: var(--blue);
+    border: 1px solid rgba(78,199,210,.35);
+}
+
+/* ══ CARD HEADER ══ */
+.pr-card-hd {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    border-radius: var(--r) var(--r) 0 0;
+    padding: .8rem 1.3rem;
+    display: flex; align-items: center; gap: .55rem;
+}
+.pr-card-hd i    { color: var(--teal); font-size: .95rem; }
+.pr-card-hd span { color: white; font-weight: 700; font-size: .9rem; }
+
+/* ══ LISTA DE PROFESORES ══ */
+.pr-list {
+    background: white; border: 1px solid var(--border);
+    border-top: none; border-radius: 0 0 var(--r) var(--r);
+    box-shadow: var(--shadow); overflow: hidden;
+}
+
+.pr-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: .85rem 1.3rem;
+    border-bottom: 1px solid #f0f4f9;
+    transition: background .15s;
+}
+.pr-row:last-child { border-bottom: none; }
+.pr-row:hover { background: #f7fbff; }
+
+/* Avatar */
+.pr-av {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--blue), var(--navy));
+    border: 2px solid rgba(78,199,210,.4);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: white; font-size: 1rem;
+}
+
+/* Info */
+.pr-name  { font-weight: 700; color: var(--navy); font-size: .9rem; line-height: 1.3; }
+.pr-email { font-size: .75rem; color: var(--muted); margin-top: .1rem; }
+.pr-dni   { font-size: .73rem; color: var(--muted); display: flex; align-items: center; gap: .25rem; }
+
+/* Chips especialidad/contrato */
+.pr-chip {
+    display: inline-flex; align-items: center; gap: .22rem;
+    padding: .2rem .6rem; border-radius: 999px;
+    font-size: .69rem; font-weight: 600; white-space: nowrap;
+}
+.chip-teal { background: var(--teal-s); color: var(--blue); border:1px solid rgba(78,199,210,.3); }
+.chip-navy { background: rgba(0,59,115,.07); color: var(--navy); border:1px solid rgba(0,59,115,.2); }
+
+/* Estado */
+.pr-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .22rem .7rem; border-radius: 999px;
+    font-size: .7rem; font-weight: 700; white-space: nowrap;
+}
+.b-activo   { background: var(--teal-s); color: var(--blue); border:1px solid rgba(78,199,210,.4); }
+.b-licencia { background: rgba(245,158,11,.12); color: #92400e; border:1px solid rgba(245,158,11,.35); }
+.b-inactivo { background: #fee2e2; color: #991b1b; border:1px solid #fca5a5; }
+.pr-dot { width:6px; height:6px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.dot-teal  { background: var(--teal); }
+.dot-amber { background: var(--amber); }
+.dot-red   { background: var(--red); }
+
+/* Botones acción */
+.act-btn {
+    width: 31px; height: 31px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid; font-size: .78rem; background: white;
+    cursor: pointer; transition: all .15s; text-decoration: none;
+}
+.act-view { border-color: var(--blue); color: var(--blue); }
+.act-edit { border-color: var(--teal); color: var(--teal); }
+.act-del  { border-color: var(--red);  color: var(--red); }
+.act-view:hover { background: var(--blue); color: white; transform: translateY(-1px); }
+.act-edit:hover { background: var(--teal); color: white; transform: translateY(-1px); }
+.act-del:hover  { background: var(--red);  color: white; transform: translateY(-1px); }
+
+/* Empty */
+.pr-empty {
+    padding: 3.5rem 1rem; text-align: center;
+}
+.pr-empty i { font-size: 2.5rem; color: #c5d0dc; display: block; margin-bottom: .85rem; }
+.pr-empty h6 { color: var(--navy); font-weight: 700; margin-bottom: .35rem; }
+.pr-empty p  { font-size: .83rem; color: var(--muted); margin-bottom: 1rem; }
+
+/* Footer paginación */
+.pr-footer {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+    padding: .8rem 1.3rem;
+    background: var(--bg); border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--r) var(--r);
+    font-size: .78rem; color: var(--muted);
+}
+.pagination { margin: 0; }
+.pagination .page-link {
+    border-radius: 7px; margin: 0 2px;
+    border: 1.5px solid var(--border);
+    color: var(--blue); padding: .28rem .6rem; font-size: .8rem;
+    transition: all .15s;
+}
+.pagination .page-link:hover { background: var(--teal-s); border-color: var(--teal); color: var(--navy); }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    border-color: var(--teal); color: white;
+    box-shadow: 0 2px 6px rgba(78,199,210,.35);
+}
+</style>
+@endpush
+
 @section('content')
-<div class="container" style="max-width: 1400px; padding-bottom: 0;">
+<div>
 
-    <!-- Barra de búsqueda y resumen compacto -->
-    <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px;">
-        <div class="card-body p-3">
-            <div class="row align-items-center g-2">
-                <!-- Buscador -->
-                <div class="col-md-6">
-                    <form action="{{ route('profesores.index') }}" method="GET" class="d-flex gap-2">
-                        <div class="position-relative flex-grow-1">
-                            <i class="fas fa-search position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.9rem;"></i>
-                            <input type="text"
-                                   name="busqueda"
-                                   value="{{ request('busqueda') }}"
-                                   id="searchInput"
-                                   class="form-control form-control-sm ps-5"
-                                   placeholder="Buscar por nombre, DNI, email..."
-                                   style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 1rem 0.5rem 2.5rem; transition: all 0.3s ease;">
-                        </div>
-                        <button type="submit" class="btn btn-sm" style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; padding: 0.3rem 0.8rem; font-size: 0.85rem;">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        @if(request('busqueda'))
-                            <a href="{{ route('profesores.index') }}" class="btn btn-sm" style="border: 2px solid #ef4444; color: #ef4444; background: white; border-radius: 6px; padding: 0.3rem 0.8rem; font-size: 0.85rem;">
-                                <i class="fas fa-times"></i>
-                            </a>
-                        @endif
-                    </form>
-                </div>
+    {{-- ══ STATS ══ --}}
+    <div class="pr-stats">
+        <div class="pr-stat pr-stat-total">
+            <div class="pr-stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div>
+                <div class="pr-stat-lbl">Total</div>
+                <div class="pr-stat-num">{{ $profesores->total() }}</div>
+                <div class="pr-stat-sub">Profesores</div>
+            </div>
+        </div>
+        <div class="pr-stat pr-stat-active">
+            <div class="pr-stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="pr-stat-lbl">Activos</div>
+                <div class="pr-stat-num">{{ $profesores->getCollection()->where('estado','activo')->count() }}</div>
+                <div class="pr-stat-sub">En servicio</div>
+            </div>
+        </div>
+        <div class="pr-stat pr-stat-inactive">
+            <div class="pr-stat-icon"><i class="fas fa-user-slash"></i></div>
+            <div>
+                <div class="pr-stat-lbl">Inactivos</div>
+                <div class="pr-stat-num">{{ $profesores->getCollection()->where('estado','inactivo')->count() }}</div>
+                <div class="pr-stat-sub">Suspendidos</div>
+            </div>
+        </div>
+        <div class="pr-stat pr-stat-license">
+            <div class="pr-stat-icon"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="pr-stat-lbl">En Licencia</div>
+                <div class="pr-stat-num">{{ $profesores->getCollection()->where('estado','licencia')->count() }}</div>
+                <div class="pr-stat-sub">Temporal</div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Resumen compacto -->
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center justify-content-md-end gap-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-chalkboard-teacher" style="color: #00508f; font-size: 0.9rem;"></i>
-                            <span class="small"><strong style="color: #00508f;">{{ $profesores->total() }}</strong> <span class="text-muted">Total</span></span>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-check-circle" style="color: #4ec7d2; font-size: 0.9rem;"></i>
-                            <span class="small"><strong style="color: #4ec7d2;">{{ $profesores->where('estado', 'activo')->count() }}</strong> <span class="text-muted">Activos</span></span>
-                        </div>
-                    </div>
+    {{-- ══ TOOLBAR ══ --}}
+    <div class="pr-toolbar">
+        <form action="{{ route('profesores.index') }}" method="GET" class="pr-search-form">
+            <div class="pr-search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" name="busqueda" value="{{ request('busqueda') }}"
+                       class="pr-search" placeholder="Buscar por nombre, DNI, email...">
+            </div>
+            <button type="submit" class="pr-btn-sm pr-btn-teal">
+                <i class="fas fa-search"></i>
+            </button>
+            @if(request('busqueda'))
+                <a href="{{ route('profesores.index') }}" class="pr-btn-sm pr-btn-red">
+                    <i class="fas fa-times"></i>
+                </a>
+            @endif
+        </form>
+
+        @if(request('busqueda'))
+            <div style="font-size:.8rem;color:var(--muted);">
+                @if($profesores->total() > 0)
+                    <span>{{ $profesores->total() }} resultado(s) para</span>
+                    <span class="pr-result-badge">{{ request('busqueda') }}</span>
+                @else
+                    <span style="color:var(--red);"><i class="fas fa-exclamation-circle me-1"></i>Sin resultados para "<strong>{{ request('busqueda') }}</strong>"</span>
+                @endif
+            </div>
+        @endif
+    </div>
+
+    {{-- ══ LISTA ══ --}}
+    <div class="pr-card-hd">
+        <i class="fas fa-list-ul"></i>
+        <span>Lista de Profesores</span>
+    </div>
+
+    <div class="pr-list">
+        @forelse($profesores as $profesor)
+        <div class="pr-row">
+
+            {{-- Avatar --}}
+            <div class="pr-av">
+                {{ strtoupper(substr($profesor->nombre ?? '', 0, 1) . substr($profesor->apellido ?? '', 0, 1)) }}
+            </div>
+
+            {{-- Nombre + contacto --}}
+            <div style="flex:2;min-width:0;">
+                <div class="pr-name">{{ $profesor->nombre_completo }}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.15rem;">
+                    @if($profesor->email)
+                        <span class="pr-email"><i class="fas fa-envelope" style="font-size:.63rem;opacity:.55;"></i> {{ $profesor->email }}</span>
+                    @endif
+                    @if($profesor->dni)
+                        <span class="pr-dni"><i class="fas fa-id-card" style="font-size:.63rem;opacity:.55;"></i> {{ $profesor->dni }}</span>
+                    @endif
                 </div>
             </div>
 
+            {{-- Especialidad --}}
+            <div style="flex:1;min-width:110px;">
+                <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.25rem;">Especialidad</div>
+                @if($profesor->especialidad)
+                    <span class="pr-chip chip-teal"><i class="fas fa-book" style="font-size:.6rem;"></i> {{ $profesor->especialidad }}</span>
+                @else
+                    <span style="font-size:.78rem;color:#c5d0dc;font-style:italic;">—</span>
+                @endif
+            </div>
+
+            {{-- Contrato --}}
+            <div style="flex:1;min-width:100px;">
+                <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.25rem;">Contrato</div>
+                @if($profesor->tipo_contrato)
+                    <span class="pr-chip chip-navy"><i class="fas fa-file-contract" style="font-size:.6rem;"></i> {{ ucwords(str_replace('_', ' ', $profesor->tipo_contrato)) }}</span>
+                @else
+                    <span style="font-size:.78rem;color:#c5d0dc;font-style:italic;">—</span>
+                @endif
+            </div>
+
+            {{-- Estado --}}
+            <div style="flex-shrink:0;">
+                @if($profesor->estado === 'activo')
+                    <span class="pr-badge b-activo"><span class="pr-dot dot-teal"></span> Activo</span>
+                @elseif($profesor->estado === 'licencia')
+                    <span class="pr-badge b-licencia"><span class="pr-dot dot-amber"></span> Licencia</span>
+                @else
+                    <span class="pr-badge b-inactivo"><span class="pr-dot dot-red"></span> Inactivo</span>
+                @endif
+            </div>
+
+            {{-- Solo botón Ver --}}
+            <div style="flex-shrink:0;">
+                <a href="{{ route('profesores.show', $profesor->id) }}" class="act-btn act-view" title="Ver detalle">
+                    <i class="fas fa-eye"></i>
+                </a>
+            </div>
+
+        </div>
+        @empty
+        <div class="pr-empty">
             @if(request('busqueda'))
-                <div class="mt-2 pt-2 border-top">
-                    <p class="small mb-0">
-                        @if($profesores->total() > 0)
-                            <span class="text-muted">Mostrando <strong>{{ $profesores->total() }}</strong> resultado(s) para:</span>
-                            <span class="badge" style="background: rgba(78, 199, 210, 0.2); color: #00508f; border: 1px solid #4ec7d2; font-size: 0.75rem;">{{ request('busqueda') }}</span>
-                        @else
-                            <span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>No se encontraron resultados para: <strong>"{{ request('busqueda') }}"</strong></span>
-                        @endif
-                    </p>
+                <i class="fas fa-search"></i>
+                <h6>Sin resultados</h6>
+                <p>No se encontró ningún profesor con "<strong>{{ request('busqueda') }}</strong>"</p>
+                <div style="display:flex;gap:.5rem;justify-content:center;">
+                    <a href="{{ route('profesores.index') }}" class="pr-btn-sm pr-btn-teal">
+                        <i class="fas fa-list me-1"></i> Ver todos
+                    </a>
                 </div>
+            @else
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h6>No hay profesores registrados</h6>
+                <p>Comienza agregando el primer profesor al sistema</p>
+                <a href="{{ route('profesores.create') }}"
+                   style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.2rem;background:linear-gradient(135deg,var(--teal),var(--blue));color:white;border-radius:9px;text-decoration:none;font-weight:600;font-size:.83rem;box-shadow:0 2px 8px rgba(78,199,210,.3);">
+                    <i class="fas fa-plus"></i> Nuevo Profesor
+                </a>
             @endif
         </div>
-    </div>
+        @endforelse
 
-    <!-- Lista de Profesores -->
-    @forelse($profesores as $profesor)
-    <div class="card border-0 shadow-sm mb-2" style="border-radius: 10px; transition: all 0.2s ease;">
-        <div class="card-body p-2">
-            <div class="row align-items-center g-2">
-
-                <!-- Avatar y Datos -->
-                <div class="col-lg-5">
-                    <div class="d-flex align-items-center gap-2">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid #4ec7d2;">
-                            <span class="text-white fw-bold" style="font-size: 0.95rem;">
-                                {{ strtoupper(substr($profesor->nombre, 0, 1) . substr($profesor->apellido ?? '', 0, 1)) }}
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 overflow-hidden">
-                            <h6 class="mb-0 fw-semibold text-truncate" style="color: #003b73; font-size: 0.9rem;">{{ $profesor->nombre_completo }}</h6>
-                            <div class="d-flex flex-wrap gap-2 align-items-center">
-                                @if($profesor->email)
-                                <small class="text-muted text-truncate" style="max-width: 180px; font-size: 0.75rem;">
-                                    <i class="fas fa-envelope me-1" style="font-size: 0.7rem;"></i>{{ $profesor->email }}
-                                </small>
-                                @endif
-                                @if($profesor->dni)
-                                <small class="text-muted" style="font-size: 0.75rem;">
-                                    <i class="fas fa-id-card me-1" style="font-size: 0.7rem;"></i>{{ $profesor->dni }}
-                                </small>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Especialidad y Tipo de Contrato -->
-                <div class="col-lg-4">
-                    <div class="d-flex flex-wrap gap-1">
-                        @if($profesor->especialidad)
-                        <span class="badge" style="background: rgba(78, 199, 210, 0.15); color: #00508f; border: 1px solid #4ec7d2; padding: 0.3rem 0.6rem; font-weight: 600; font-size: 0.7rem;">
-                            <i class="fas fa-book me-1" style="font-size: 0.65rem;"></i>{{ $profesor->especialidad }}
-                        </span>
-                        @endif
-                        @if($profesor->tipo_contrato)
-                        <span class="badge" style="background: rgba(0, 59, 115, 0.1); color: #003b73; border: 1px solid #00508f; padding: 0.3rem 0.6rem; font-weight: 600; font-size: 0.7rem;">
-                            <i class="fas fa-file-contract me-1" style="font-size: 0.65rem;"></i>{{ ucwords(str_replace('_', ' ', $profesor->tipo_contrato)) }}
-                        </span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Estado y Acciones -->
-                <div class="col-lg-3">
-                    <div class="d-flex align-items-center justify-content-end gap-2">
-                        <!-- Badge de Estado -->
-                        @if($profesor->estado === 'activo')
-                            <span class="badge rounded-pill" style="background: rgba(78, 199, 210, 0.2); color: #00508f; padding: 0.3rem 0.7rem; font-weight: 600; border: 1px solid #4ec7d2; font-size: 0.7rem;">
-                                <i class="fas fa-circle" style="font-size: 0.4rem; color: #4ec7d2;"></i> Activo
-                            </span>
-                        @elseif($profesor->estado === 'licencia')
-                            <span class="badge rounded-pill" style="background: #fef3c7; color: #92400e; padding: 0.3rem 0.7rem; font-weight: 600; border: 1px solid #fde68a; font-size: 0.7rem;">
-                                <i class="fas fa-clock" style="font-size: 0.4rem;"></i> Licencia
-                            </span>
-                        @else
-                            <span class="badge rounded-pill" style="background: #fee2e2; color: #991b1b; padding: 0.3rem 0.7rem; font-weight: 600; border: 1px solid #ef4444; font-size: 0.7rem;">
-                                <i class="fas fa-circle" style="font-size: 0.4rem;"></i> Inactivo
-                            </span>
-                        @endif
-
-                        <!-- Botones de Acción -->
-                        <div class="btn-group" role="group">
-                            <a href="{{ route('profesores.show', $profesor->id) }}"
-                               class="btn btn-sm"
-                               style="border-radius: 6px 0 0 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
-                               title="Ver"
-                               onmouseover="this.style.background='#00508f'; this.style.color='white';"
-                               onmouseout="this.style.background='white'; this.style.color='#00508f';">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('profesores.edit', $profesor->id) }}"
-                               class="btn btn-sm"
-                               style="border-radius: 0; border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
-                               title="Editar"
-                               onmouseover="this.style.background='#4ec7d2'; this.style.color='white';"
-                               onmouseout="this.style.background='white'; this.style.color='#4ec7d2';">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button onclick="confirmDelete('{{ $profesor->id }}', '{{ $profesor->nombre_completo }}')" class="btn btn-sm" style="border-radius: 0 6px 6px 0; border: 1.5px solid #ef4444; border-left: none; color: #ef4444; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;" title="Eliminar"
-                                    onmouseover="this.style.background='#ef4444'; this.style.color='white';"
-                                    onmouseout="this.style.background='white'; this.style.color='#ef4444';">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-
-                        <!-- Form oculto para eliminar -->
-                        <form id="delete-form-{{ $profesor->id }}"
-                              action="{{ route('profesores.destroy', $profesor->id) }}"
-                              method="POST"
-                              class="d-none">
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                    </div>
-                </div>
-
-            </div>
+        {{-- Paginación --}}
+        @if($profesores->hasPages())
+        <div class="pr-footer">
+            <span>Mostrando {{ $profesores->firstItem() }}–{{ $profesores->lastItem() }} de {{ $profesores->total() }}</span>
+            {{ $profesores->links() }}
         </div>
+        @endif
     </div>
-    @empty
-        <!-- Mensaje sin resultados -->
-        <div class="card border-0 shadow-sm mb-2" style="border-radius: 10px; margin-bottom:0;">
-            <div class="card-body text-center py-4">
-                @if(request('busqueda'))
-                    <i class="fas fa-search mb-2" style="font-size: 2rem; color: #ef4444; opacity: 0.5;"></i>
-                    <h6 class="fw-bold mb-1" style="color: #991b1b;">Profesor no encontrado</h6>
-                    <p class="text-muted small mb-3">No se encontró ningún profesor con: <strong class="text-danger">"{{ request('busqueda') }}"</strong></p>
-                @else
-                    <i class="fas fa-chalkboard-teacher mb-2" style="font-size: 2rem; color: #00508f; opacity: 0.5;"></i>
-                    <h6 style="color: #003b73;">No hay profesores registrados</h6>
-                    <p class="text-muted small mb-3">Comienza agregando el primer profesor</p>
-                @endif
-                <div class="d-flex gap-2 justify-content-center">
-                    <a href="{{ route('profesores.index') }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; border-radius: 8px; padding: 0.5rem 1rem;">
-                        <i class="fas fa-list me-1"></i>Ver todos
-                    </a>
-                    <a href="{{ route('profesores.create') }}" class="btn btn-sm" style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 8px; padding: 0.5rem 1rem;">
-                        <i class="fas fa-plus me-1"></i>Crear nuevo
-                    </a>
-                </div>
-            </div>
-        </div>
-    @endforelse
-
-    <!-- Paginación compacta -->
-    @if($profesores->hasPages())
-    <div class="card border-0 shadow-sm mt-2 mb-0" style="border-radius: 10px;">
-        <div class="card-body py-2 px-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-muted small" style="font-size: 0.8rem;">
-                    {{ $profesores->firstItem() }} - {{ $profesores->lastItem() }} de {{ $profesores->total() }}
-                </div>
-                <div>
-                    {{ $profesores->links() }}
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
 
 </div>
 
-<!-- Modal de Confirmación -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 12px; border: none; overflow: hidden;">
-            <div class="modal-header border-0" style="background: rgba(239, 68, 68, 0.1); padding: 1.2rem;">
-                <div class="d-flex align-items-center gap-2">
-                    <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-exclamation-triangle" style="color: #ef4444; font-size: 1.2rem;"></i>
+{{-- ══ MODAL ELIMINAR ══ --}}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);">
+
+            <div class="modal-header border-0" style="background:rgba(239,68,68,.07);padding:1.2rem 1.4rem;">
+                <div style="display:flex;align-items:center;gap:.7rem;">
+                    <div style="width:42px;height:42px;background:rgba(239,68,68,.15);border-radius:10px;
+                                display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fas fa-exclamation-triangle" style="color:#ef4444;font-size:1.1rem;"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 fw-bold" style="color: #003b73;">Confirmar Eliminación</h5>
-                        <p class="mb-0 small text-muted">Esta acción no se puede deshacer</p>
+                        <h6 class="mb-0 fw-bold" style="color:var(--navy);font-size:.93rem;">Confirmar Eliminación</h6>
+                        <p class="mb-0 small" style="color:var(--muted);">Esta acción no se puede deshacer</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" style="padding: 1.5rem;">
-                <p class="mb-2" style="color: #003b73; font-size: 0.95rem;">
-                    ¿Está seguro que desea eliminar al profesor <strong id="profesorNombre" style="color: #ef4444;"></strong>?
+
+            <div class="modal-body" style="padding:1.2rem 1.4rem;">
+                <p style="color:var(--text);font-size:.87rem;margin:0;">
+                    ¿Estás seguro de eliminar al profesor
+                    <strong id="profesorNombre" style="color:var(--red);"></strong>?
                 </p>
-                <p class="text-muted small mb-0">Se perderán todos los datos asociados a este profesor.</p>
+                <p class="mt-2 mb-0" style="font-size:.78rem;color:var(--muted);">
+                    Se perderán todos los datos asociados a este profesor.
+                </p>
             </div>
-            <div class="modal-footer border-0" style="background: #f8f9fa; padding: 1rem 1.5rem;">
-                <button type="button" class="btn btn-sm" data-bs-dismiss="modal" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600;">
+
+            <div class="modal-footer border-0" style="background:var(--bg);padding:.85rem 1.4rem;gap:.5rem;">
+                <button type="button" data-bs-dismiss="modal"
+                        style="padding:.42rem 1.1rem;border-radius:9px;border:1.5px solid var(--blue);
+                               background:white;color:var(--blue);font-size:.82rem;font-weight:600;cursor:pointer;">
                     Cancelar
                 </button>
-                <button type="button" onclick="submitDelete()" class="btn btn-sm" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);">
-                    Eliminar
+                <button type="button" onclick="submitDelete()"
+                        style="padding:.42rem 1.25rem;border-radius:9px;border:none;cursor:pointer;
+                               background:linear-gradient(135deg,#ef4444,#dc2626);color:white;
+                               font-size:.82rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;
+                               box-shadow:0 2px 10px rgba(239,68,68,.3);">
+                    <i class="fas fa-trash"></i> Eliminar
                 </button>
             </div>
+
         </div>
     </div>
 </div>
-
 @endsection
 
 @push('scripts')
@@ -262,14 +449,11 @@ let deleteFormId = '';
 function confirmDelete(id, nombre) {
     deleteFormId = 'delete-form-' + id;
     document.getElementById('profesorNombre').textContent = nombre;
-    var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    deleteModal.show();
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
 
 function submitDelete() {
-    if(deleteFormId) {
-        document.getElementById(deleteFormId).submit();
-    }
+    if (deleteFormId) document.getElementById(deleteFormId).submit();
 }
 </script>
 @endpush
