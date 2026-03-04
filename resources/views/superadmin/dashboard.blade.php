@@ -10,7 +10,7 @@
             $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
             $displayRole = $isSuperAdmin ? 'Super Administrador' : ucfirst($user->role ?? 'Usuario');
         @endphp
-        <span class="badge bg-primary" style="padding: 0.5rem 1rem; font-weight: 500;">
+        <span class="badge bg-primary" style="padding: .85rem .75rem; font-weight: 800;">
             <i class="fas fa-user-shield me-1"></i> {{ $displayRole }}
         </span>
     </div>

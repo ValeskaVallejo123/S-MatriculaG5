@@ -31,7 +31,10 @@
         │  Valor actual: 1rem (= 16px si html es 16px)                 │
         └──────────────────────────────────────────────────────────────┘
         */
-        body { font-family: 'Inter', sans-serif; background: #f5f7fa; overflow-x: hidden; font-size: 1rem; }
+        body { font-family: 'Inter', sans-serif;
+        background: #f5f7fa;
+        overflow-x: hidden;
+        font-size: 1rem; }
 
         /* ── SIDEBAR ── */
         .sidebar {
@@ -191,10 +194,16 @@
         .btn-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white; border: none;
-            padding: .38rem .9rem; border-radius: 7px;
-            font-size: .82rem; font-weight: 600;
-            display: flex; align-items: center; gap: .4rem;
-            cursor: pointer; transition: all .2s ease; white-space: nowrap;
+            padding: .6rem .75rem;
+            border-radius: 7px;
+            font-size: .83rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            cursor: pointer;
+            transition: all .2s ease;
+            white-space: nowrap;
         }
         .btn-logout:hover { opacity: .9; transform: translateY(-1px); }
 
