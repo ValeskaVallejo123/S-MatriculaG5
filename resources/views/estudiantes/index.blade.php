@@ -4,10 +4,17 @@
 @section('page-title', 'Gestión de Estudiantes')
 
 @section('topbar-actions')
-    <a href="{{ route('estudiantes.create') }}"
-       style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);color:white;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:none;box-shadow:0 2px 8px rgba(78,199,210,0.3);font-size:0.83rem;">
-        <i class="fas fa-plus"></i> Agregar Nuevo Estudiante
-    </a>
+
+<div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <a href="{{ url()->previous() }}"
+           style="background:white;color:#00508f;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:1.5px solid #00508f;font-size:0.83rem;transition:all .2s;">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+       <a href="{{ route('estudiantes.create') }}"
+         style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);color:white;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:none;box-shadow:0 2px 8px rgba(78,199,210,0.3);font-size:0.83rem;">
+         <i class="fas fa-plus"></i> Agregar Nuevo Estudiante
+        </a>
+</div>
 @endsection
 
 @push('styles')
@@ -279,6 +286,76 @@
     background: linear-gradient(135deg, var(--teal), var(--blue-mid));
     border-color: var(--teal); color: white;
     box-shadow: 0 2px 6px rgba(78,199,210,.35);
+}
+
+/* ── RESPONSIVE MOBILE ── */
+@media(max-width: 768px) {
+
+    /* Toolbar: búsqueda y badges en columna */
+    .est-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .75rem;
+    }
+    .est-search-wrap { min-width: unset; }
+    .est-badge-info {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    /* Ocultar columnas menos importantes en móvil */
+    .est-tbl thead th:nth-child(2),  /* Foto */
+    .est-tbl tbody td:nth-child(2),
+    .est-tbl thead th:nth-child(6),  /* Sección */
+    .est-tbl tbody td:nth-child(6) {
+        display: none;
+    }
+
+    /* Reducir padding de celdas */
+    .est-tbl thead th,
+    .est-tbl tbody td {
+        padding: .55rem .65rem;
+        font-size: .78rem;
+    }
+
+    /* Footer paginación en columna */
+    .est-footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: .75rem;
+    }
+}
+
+@media(max-width: 480px) {
+
+    /* Stats en 2 columnas compactas */
+    .est-stats { grid-template-columns: repeat(2,1fr); gap: .65rem; }
+    .est-stat { padding: .85rem .9rem; gap: .75rem; }
+    .est-stat-num { font-size: 1.45rem; }
+    .est-stat-icon { width: 38px; height: 38px; font-size: .95rem; }
+
+    /* Ocultar también DNI en pantallas muy pequeñas */
+    .est-tbl thead th:nth-child(4),
+    .est-tbl tbody td:nth-child(4) {
+        display: none;
+    }
+
+    /* Nombre más compacto */
+    .est-name  { font-size: .82rem; }
+    .est-email { display: none; }
+
+    /* Botones acción más pequeños */
+    .act-btn { width: 26px; height: 26px; font-size: .72rem; }
+
+    /* Chips más pequeños */
+    .chip { font-size: .65rem; padding: .18rem .5rem; }
+
+    /* Topbar botones en columna */
+    [style*="display:flex;gap:.5rem;flex-wrap:wrap"] {
+        width: 100%;
+    }
 }
 </style>
 @endpush

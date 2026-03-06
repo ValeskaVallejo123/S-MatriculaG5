@@ -253,23 +253,6 @@
                                 </div>
                             </div>
 
-                            {{-- Exportar PDF --}}
-                            <div>
-                                <div class="btn-group-label">
-                                    <i class="fas fa-file-pdf"></i> Exportar PDF
-                                </div>
-                                <div style="display:flex;gap:.5rem;">
-                                    <a href="{{ route('horarios_grado.pdf', [$g->id, 'matutina']) }}"
-                                       class="btn-pdf-h">
-                                        <i class="fas fa-sun"></i> Matutina
-                                    </a>
-                                    <a href="{{ route('horarios_grado.pdf', [$g->id, 'vespertina']) }}"
-                                       class="btn-pdf-h">
-                                        <i class="fas fa-moon"></i> Vespertina
-                                    </a>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
 

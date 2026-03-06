@@ -11,27 +11,33 @@ class Profesor extends Model
 
     protected $table = 'profesores';
 
-   protected $fillable = [
-    'nombre',
-    'apellido',
-    'dni',
-    'fecha_nacimiento',
-    'genero',
-    'telefono',
-    'email',
-    'direccion',
-    'especialidad',
-    'nivel_academico',
-    'fecha_contratacion',
-    'tipo_contrato',
-    'estado',
-];
-
+    protected $fillable = [
+        'user_id',           // ← agregado
+        'grado_guia_id',     // ← agregado
+        'seccion_guia',      // ← agregado
+        'nombre',
+        'apellido',
+        'dni',
+        'fecha_nacimiento',
+        'genero',
+        'telefono',
+        'email',
+        'direccion',
+        'especialidad',
+        'nivel_academico',
+        'fecha_contratacion',
+        'fecha_ingreso',     // ← agregado
+        'salario',           // ← agregado
+        'tipo_contrato',
+        'estado',
+        'observaciones',     // ← agregado
+    ];
 
     protected $casts = [
-        'fecha_nacimiento' => 'date',
-        'fecha_ingreso'    => 'date',
-        'salario'          => 'decimal:2',
+        'fecha_nacimiento'   => 'date',
+        'fecha_ingreso'      => 'date',
+        'fecha_contratacion' => 'date',
+        'salario'            => 'decimal:2',
     ];
 
     /**
@@ -62,6 +68,7 @@ class Profesor extends Model
             'Biología',
             'Historia',
             'Geografía',
+            'General',          // ← agregado
         ];
     }
 

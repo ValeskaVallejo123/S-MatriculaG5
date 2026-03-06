@@ -220,6 +220,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
         Route::post('/{matricula}/rechazar',  [MatriculaController::class, 'rechazar'])->name('rechazar');
         Route::post('/{matricula}/cancelar',  [MatriculaController::class, 'cancelar'])->name('cancelar');
+        Route ::post('/matricula}/pdf',      [MatriculaController::class, 'exportarPdf'])->name('pdf');
+        Route::patch('/{matricula}/aprobar',   [MatriculaController::class, 'aprobar'])->name('aprobar');
+
     });
 
     /*
@@ -487,7 +490,8 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('profesor')->name('profesor.')->middleware('role:profesor')->group(function () {
         Route::get('/dashboard',      [ProfesorDashboardController::class,      'index'])->name('dashboard');
-        Route::get('/mi-horario',     [HorarioController::class,                'miHorarioProfesor'])->name('miHorario');
+        //Route::get('/mi-horario',     [HorarioController::class,                'miHorarioProfesor'])->name('miHorario');
+        Route::get('/mi-horario', [HorarioController::class, 'miHorario'])->name('miHorario');
         Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'indexProfesor'])->name('notificaciones.index');
     });
 
@@ -499,7 +503,8 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('estudiante')->name('estudiante.')->middleware('role:estudiante')->group(function () {
         Route::get('/dashboard',      fn () => view('estudiante.dashboard.index'))->name('dashboard');
         Route::get('/mi-horario',     [HorarioController::class,                'miHorario'])->name('miHorario');
-        Route::get('/horario',        [HorarioController::class,                'horarioEstudiante'])->name('horario');
+        //Route::get('/horario',        [HorarioController::class,                'horarioEstudiante'])->name('horario');
+        Route::get('/mi-horario', [HorarioController::class, 'miHorario'])->name('miHorario');
         Route::get('/calificaciones', [EstudianteController::class,             'misNotas'])->name('calificaciones');
         Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'index'])->name('notificaciones.index');
     });

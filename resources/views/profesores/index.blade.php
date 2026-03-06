@@ -4,10 +4,16 @@
 @section('page-title', 'Gestión de Profesores')
 
 @section('topbar-actions')
-    <a href="{{ route('profesores.create') }}"
-       style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;padding:.45rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;font-size:.88rem;box-shadow:0 2px 8px rgba(78,199,210,.3);">
-        <i class="fas fa-plus"></i> Agregar Nuevo Profesor
-    </a>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <a href="{{ url()->previous() }}"
+           style="background:white;color:#00508f;padding:.45rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;font-size:.88rem;border:1.5px solid #00508f;transition:all .2s;">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <a href="{{ route('profesores.create') }}"
+           style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;padding:.45rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;font-size:.88rem;box-shadow:0 2px 8px rgba(78,199,210,.3);">
+            <i class="fas fa-plus"></i> Agregar Nuevo Profesor
+        </a>
+    </div>
 @endsection
 
 @push('styles')

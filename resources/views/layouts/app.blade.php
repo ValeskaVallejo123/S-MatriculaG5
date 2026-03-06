@@ -18,25 +18,23 @@
         ║  🔤 TAMAÑO DE LETRA GLOBAL — afecta TODO el sitio            ║
         ║  Cambia el número para hacer todo más grande o pequeño.      ║
         ║  • 14px → más compacto                                       ║
-        ║  • 16px → estándar (valor actual)                            ║
+        ║  • 16px → estándar                                           ║
+        ║  • 17px → valor actual                                       ║
         ║  • 18px → más grande                                         ║
         ╚══════════════════════════════════════════════════════════════╝
         */
         html { font-size: 17px; }
 
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 LETRA DEL CUERPO GENERAL                                  │
-        │  Afecta todo el texto base de la aplicación.                 │
-        │  Valor actual: 1rem (= 16px si html es 16px)                 │
-        └──────────────────────────────────────────────────────────────┘
-        */
-        body { font-family: 'Inter', sans-serif;
-        background: #f5f7fa;
-        overflow-x: hidden;
-        font-size: 1rem; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            overflow-x: hidden;
+            font-size: 1rem;
+        }
 
-        /* ── SIDEBAR ── */
+        /* ══════════════════════════════════════════════
+           SIDEBAR
+        ══════════════════════════════════════════════ */
         .sidebar {
             position: fixed; top: 0; left: 0;
             height: 100vh; width: 280px;
@@ -59,24 +57,14 @@
             display: flex; align-items: center; justify-content: center;
             border-radius: 12px; border: 3px solid rgba(245,158,11,.3);
         }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 NOMBRE DE LA ESCUELA en el sidebar ("Escuela G.M.")       │
-        │  Cambia font-size en .logo-text h4                           │
-        └──────────────────────────────────────────────────────────────┘
-        */
         .logo-text h4 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #f59e0b; line-height: 1.2; }
+        .logo-text p  { margin: 0; font-size: .75rem; color: rgba(245,158,11,.8); letter-spacing: .5px; font-weight: 500; }
 
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 SUBTÍTULO DEL LOGO ("Sistema de Gestión")                 │
-        │  Cambia font-size en .logo-text p                            │
-        └──────────────────────────────────────────────────────────────┘
-        */
-        .logo-text p { margin: 0; font-size: .75rem; color: rgba(245,158,11,.8); letter-spacing: .5px; font-weight: 500; }
-
-        .user-info { padding: 1.5rem 1.2rem; border-bottom: 1px solid rgba(78,199,210,.2); text-align: center; }
+        .user-info {
+            padding: 1.5rem 1.2rem;
+            border-bottom: 1px solid rgba(78,199,210,.2);
+            text-align: center;
+        }
         .user-avatar {
             width: 60px; height: 60px; border-radius: 50%;
             background: linear-gradient(135deg, #4ec7d2, #00508f);
@@ -85,48 +73,17 @@
             margin: 0 auto .8rem;
             box-shadow: 0 4px 12px rgba(78,199,210,.4);
         }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 NOMBRE DEL USUARIO en el sidebar                          │
-        │  Cambia font-size en .user-details h6                        │
-        └──────────────────────────────────────────────────────────────┘
-        */
         .user-details h6 { margin: 0; color: white; font-size: .95rem; font-weight: 600; }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 ROL DEL USUARIO ("Super Administrador", "Admin", etc.)    │
-        │  Cambia font-size en .user-details p                         │
-        └──────────────────────────────────────────────────────────────┘
-        */
-        .user-details p { margin: 0; font-size: .75rem; color: rgba(255,255,255,.6); font-weight: 500; }
+        .user-details p  { margin: 0; font-size: .75rem; color: rgba(255,255,255,.6); font-weight: 500; }
 
         .sidebar-menu { list-style: none; padding: 1rem 0; }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 TÍTULOS DE SECCIÓN del menú                               │
-        │     ("PRINCIPAL", "USUARIOS", "ACADÉMICO", etc.)             │
-        │  Cambia font-size en .menu-section-title                     │
-        └──────────────────────────────────────────────────────────────┘
-        */
         .menu-section-title {
             padding: 1rem 1.2rem .5rem;
             color: rgba(78,199,210,.8);
             font-size: .80rem; font-weight: 700;
             text-transform: uppercase; letter-spacing: 1.2px;
         }
-
         .menu-item { margin: 0; }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 ENLACES DEL MENÚ LATERAL                                  │
-        │     ("Dashboard", "Estudiantes", "Profesores", etc.)         │
-        │  Cambia font-size en .menu-link                              │
-        └──────────────────────────────────────────────────────────────┘
-        */
         .menu-link {
             display: flex; align-items: center; gap: 12px;
             padding: .75rem 1.2rem;
@@ -134,13 +91,6 @@
             text-decoration: none; transition: all .2s ease;
             font-size: .9rem; font-weight: 500;
         }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 ÍCONOS del menú lateral                                   │
-        │  Cambia font-size en .menu-link i                            │
-        └──────────────────────────────────────────────────────────────┘
-        */
         .menu-link i { font-size: 1.1rem; width: 24px; text-align: center; color: rgba(78,199,210,.9); }
         .menu-link:hover { background: rgba(78,199,210,.15); color: white; }
         .menu-link:hover i { color: #4ec7d2; }
@@ -152,10 +102,25 @@
         .menu-link.active i { color: #4ec7d2; }
         .menu-link.disabled-link { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
-        /* ── MAIN ── */
-        .main-content { margin-left: 280px; min-height: 100vh; background: #f5f7fa; }
+        /* ══════════════════════════════════════════════
+           MAIN CONTENT
+           — Con sidebar (admin/superadmin): margin-left 280px
+           — Sin sidebar (profesor/estudiante/padre): sin margen
+        ══════════════════════════════════════════════ */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
 
-        /* ── TOPBAR ── */
+        /* ← CLAVE: roles sin sidebar ocupan todo el ancho */
+        .main-content.no-sidebar {
+            margin-left: 0;
+        }
+
+        /* ══════════════════════════════════════════════
+           TOPBAR
+        ══════════════════════════════════════════════ */
         .topbar {
             background: white; padding: 0 1.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,.06);
@@ -165,59 +130,38 @@
             display: flex; align-items: center; justify-content: space-between;
         }
         .topbar-left { display: flex; align-items: center; gap: .75rem; }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 TÍTULO DE PÁGINA en la barra superior                     │
-        │     ("Perfil del Profesor", "Gestión de Estudiantes", etc.)  │
-        │  Cambia font-size en .topbar-left h5                         │
-        └──────────────────────────────────────────────────────────────┘
-        */
         .topbar-left h5 { margin: 0; color: #003b73; font-weight: 700; font-size: 1.15rem; }
-
         .topbar-right { display: flex; align-items: center; gap: .6rem; flex-wrap: nowrap; }
         .topbar-divider { width: 1px; height: 24px; background: #e2e8f0; flex-shrink: 0; }
 
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 FECHA en la barra superior                                │
-        │     ("mar., 3 de mar. de 2026")                              │
-        │  Cambia font-size en .topbar-date                            │
-        └──────────────────────────────────────────────────────────────┘
-        */
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 BOTÓN "CERRAR SESIÓN"                                     │
-        │  Cambia font-size en .btn-logout                             │
-        └──────────────────────────────────────────────────────────────┘
-        */
         .btn-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white; border: none;
-            padding: .6rem .75rem;
-            border-radius: 7px;
-            font-size: .83rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: .4rem;
-            cursor: pointer;
-            transition: all .2s ease;
+            padding: .6rem .75rem; border-radius: 7px;
+            font-size: .83rem; font-weight: 600;
+            display: flex; align-items: center; gap: .4rem;
+            cursor: pointer; transition: all .2s ease;
             white-space: nowrap;
         }
         .btn-logout:hover { opacity: .9; transform: translateY(-1px); }
 
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 ÁREA DE CONTENIDO (donde se renderizan todas las vistas)  │
-        │  Agrega font-size aquí para cambiar TODAS las páginas.       │
-        │  Ejemplo: font-size: 0.95rem;  ← un poco más pequeño        │
-        │  Ejemplo: font-size: 1.05rem;  ← un poco más grande         │
-        └──────────────────────────────────────────────────────────────┘
-        */
+        /* ══════════════════════════════════════════════
+           CONTENT WRAPPER
+           — Con sidebar: padding normal
+           — Sin sidebar: padding lateral más generoso
+        ══════════════════════════════════════════════ */
         .content-wrapper { padding: 2rem; }
 
-        /* ── RESPONSIVE ── */
+        .no-sidebar .content-wrapper {
+            padding: 1.5rem 2rem;
+            /* Sin max-width para que ocupe todo el ancho disponible */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* ══════════════════════════════════════════════
+           MOBILE MENU
+        ══════════════════════════════════════════════ */
         .mobile-menu-btn {
             display: none;
             background: linear-gradient(135deg, #4ec7d2, #00508f);
@@ -235,15 +179,18 @@
         @media (max-width: 768px) {
             .sidebar { left: -280px; }
             .sidebar.active { left: 0; }
-            .main-content { margin-left: 0; }
+            .main-content { margin-left: 0 !important; }
             .mobile-menu-btn { display: block !important; }
             .content-wrapper { padding: 1rem; }
+            .no-sidebar .content-wrapper { padding: 1rem; }
             .topbar { padding: .75rem 1rem; }
             .topbar-date { display: none; }
             .topbar-divider { display: none; }
         }
 
-        /* ── MODAL ELIMINACIÓN ── */
+        /* ══════════════════════════════════════════════
+           MODAL ELIMINACIÓN
+        ══════════════════════════════════════════════ */
         .modal-delete-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
@@ -287,24 +234,16 @@
             50%      { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239,68,68,0); }
         }
 
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 MODAL — título "¿Confirmar Eliminación?"                  │
-        │  Cambia font-size en .modal-delete-title                     │
-        └──────────────────────────────────────────────────────────────┘
-        */
-        .modal-delete-title { text-align: center; color: #1e293b; font-size: 1.5rem; font-weight: 700; margin: 0 0 1.5rem; padding: 0 2rem; }
-
+        .modal-delete-title {
+            text-align: center; color: #1e293b;
+            font-size: 1.5rem; font-weight: 700;
+            margin: 0 0 1.5rem; padding: 0 2rem;
+        }
         .modal-delete-content { padding: 0 2rem 2rem; }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 MODAL — texto descriptivo del mensaje                     │
-        │  Cambia font-size en .modal-delete-message                   │
-        └──────────────────────────────────────────────────────────────┘
-        */
-        .modal-delete-message { text-align: center; color: #64748b; font-size: .938rem; line-height: 1.6; margin: 0 0 1.5rem; }
-
+        .modal-delete-message {
+            text-align: center; color: #64748b;
+            font-size: .938rem; line-height: 1.6; margin: 0 0 1.5rem;
+        }
         .modal-delete-item {
             background: linear-gradient(135deg,#f8fafc,#e2e8f0);
             border-radius: 12px; padding: 1rem;
@@ -316,27 +255,17 @@
             display: flex; align-items: center; justify-content: center;
             color: #ef4444; font-size: 1.125rem; flex-shrink: 0;
         }
-        .delete-item-label { display: block; color: #64748b; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: .25rem; }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 MODAL — nombre del elemento a eliminar                    │
-        │  Cambia font-size en .delete-item-name                       │
-        └──────────────────────────────────────────────────────────────┘
-        */
+        .delete-item-label {
+            display: block; color: #64748b; font-size: .75rem;
+            font-weight: 600; text-transform: uppercase;
+            letter-spacing: .5px; margin-bottom: .25rem;
+        }
         .delete-item-name { display: block; color: #1e293b; font-size: .938rem; font-weight: 700; }
 
         .modal-delete-actions {
             padding: 1rem 1.5rem 1.5rem; display: flex; gap: .75rem;
             border-top: 1px solid #e2e8f0;
         }
-
-        /*
-        ┌──────────────────────────────────────────────────────────────┐
-        │  🔤 BOTONES del modal ("Cancelar" / "Eliminar")               │
-        │  Cambia font-size en .btn-delete-cancel / .btn-delete-confirm│
-        └──────────────────────────────────────────────────────────────┘
-        */
         .btn-delete-cancel, .btn-delete-confirm {
             flex: 1; padding: .75rem 1.25rem;
             border-radius: 10px; font-weight: 600; font-size: .875rem;
@@ -543,7 +472,8 @@
 </aside>
 @endif
 
-<div class="main-content">
+{{-- ← CLAVE: clase no-sidebar para roles sin menú lateral --}}
+<div class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
 
     <div class="topbar">
         <div class="topbar-left">
@@ -557,10 +487,10 @@
 
         <div class="topbar-right">
             @hasSection('topbar-actions')
-            <div class="topbar-actions-group">
-                @yield('topbar-actions')
-            </div>
-            <div class="topbar-divider"></div>
+                <div class="topbar-actions-group">
+                    @yield('topbar-actions')
+                </div>
+                <div class="topbar-divider"></div>
             @endif
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
