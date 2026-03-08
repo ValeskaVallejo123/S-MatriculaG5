@@ -21,10 +21,10 @@ class ProfesorController extends Controller
             ->when($busqueda, function ($query, $busqueda) {
                 return $query->where(function ($q) use ($busqueda) {
                     $q->where('nombre', 'like', "%{$busqueda}%")
-                    ->orWhere('apellido', 'like', "%{$busqueda}%")
-                    ->orWhere('dni', 'like', "%{$busqueda}%")
-                    ->orWhere('email', 'like', "%{$busqueda}%")
-                    ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
+                        ->orWhere('apellido', 'like', "%{$busqueda}%")
+                        ->orWhere('dni', 'like', "%{$busqueda}%")
+                        ->orWhere('email', 'like', "%{$busqueda}%")
+                        ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
                 });
             })
             ->latest()
@@ -45,22 +45,23 @@ class ProfesorController extends Controller
     }
 
     public function store(Request $request)
-{
+    {
 
-    $validated = $request->validate([
-    'nombre' => 'required|string|max:50',
-    'apellido' => 'required|string|max:50',
-    'dni' => 'required|string|unique:profesores,dni|max:13',
-    'fecha_nacimiento' => 'nullable|date',
-    'genero' => 'nullable|in:masculino,femenino,otro',
-    'telefono' => 'nullable|string|max:20',
-    'email' => 'required|email|unique:profesores,email',
-    'direccion' => 'nullable|string',
-    'especialidad' => 'required|string|max:255',
-    'nivel_academico' => 'nullable|in:bachillerato,licenciatura,maestria,doctorado',
-    'fecha_contratacion' => 'nullable|date',
-    'tipo_contrato' => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
-    'estado' => 'required|in:activo,inactivo,licencia',
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:50',
+            'apellido' => 'required|string|max:50',
+            'dni' => 'required|string|unique:profesores,dni|max:13',
+            'fecha_nacimiento' => 'nullable|date',
+            'genero' => 'nullable|in:masculino,femenino,otro',
+            'telefono' => 'nullable|string|max:20',
+            'email' => 'required|email|unique:profesores,email',
+            'direccion' => 'nullable|string',
+            'especialidad' => 'required|string|max:255',
+            'nivel_academico' => 'nullable|in:bachillerato,licenciatura,maestria,doctorado',
+            'fecha_contratacion' => 'nullable|date',
+            'fecha_ingreso' => 'nullable|date',
+            'tipo_contrato' => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
+            'estado' => 'required|in:activo,inactivo,licencia',
 
 
         ], [
@@ -75,10 +76,15 @@ class ProfesorController extends Controller
             'estado.required' => 'El estado es obligatorio',
         ]);
 
+        if (empty($validated['fecha_ingreso'])) {
+            $validated['fecha_ingreso'] = now()->format('Y-m-d');
+        }
+
         Profesor::create($validated);
 
         return redirect()->route('profesores.index')
-            ->with('success', ' Profesor creado exitosamente');
+            ->with('success', 'Profesor creado exitosamente');
+
     }
 
     public function show(Profesor $profesor)
@@ -124,6 +130,7 @@ class ProfesorController extends Controller
         return redirect()->route('profesores.index')
             ->with('success', ' Profesor actualizado exitosamente');
     }
+
 
     public function destroy(Profesor $profesor)
     {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BuscarEstudianteController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,12 +36,14 @@ use App\Http\Controllers\CupoMaximoController;
 use App\Http\Controllers\PublicoPlanEstudiosController;
 use App\Http\Controllers\SuperAdmin\UsuarioController;
 use App\Http\Controllers\CargaDocenteController;
+use App\Http\Controllers\PadreDashboardController;
 
 /*
 |--------------------------------------------------------------------------
 | PÁGINAS PÚBLICAS
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', fn () => redirect()->route('login'));
 
 Route::get('/inicio', function () {
@@ -119,13 +122,13 @@ Route::prefix('portal')->name('portal.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+
     Route::get('/buscar-registro', [BuscarEstudianteController::class, 'index'])->name('buscarregistro');
 
     // Dashboard con redirección por rol
     Route::get('/dashboard', function () {
         $user = Auth::user();
 
-        // ✅ Usar id_rol directamente (más seguro y evita cargar relación)
         $roleRouteMap = [
             1 => 'superadmin.dashboard',
             2 => 'admin.dashboard',
@@ -147,7 +150,7 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('superadmin')->name('superadmin.')->middleware('role:superadmin')->group(function () {
-    
+
         Route::get('/dashboard', fn () => view('superadmin.dashboard'))->name('dashboard');
 
         // Perfil
@@ -251,19 +254,17 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |----------------------------------------------------------------------
-    | PADRE
+    | PADRE / TUTOR — Portal familiar
     |----------------------------------------------------------------------
     */
-    Route::prefix('padre')->name('padre.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('padre.dashboard.index');
-        })->name('dashboard');
+    Route::prefix('padre')->name('padre.')->middleware('es.padre')->group(function () {
+        Route::get('/dashboard', [PadreDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/hijo/{estudianteId}', [PadreDashboardController::class, 'verHijo'])->name('hijo');
     });
 
     /*
     |----------------------------------------------------------------------
     | PANEL ADMINS
-    | Rutas estáticas ANTES de las dinámicas {admin}
     |----------------------------------------------------------------------
     */
     Route::prefix('admins')->name('admins.')->group(function () {
@@ -304,8 +305,8 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::middleware('role:admin,superadmin')->group(function () {
-        Route::get('/carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
 
+        Route::get('/carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
 
         // Estudiantes
         Route::resource('estudiantes', EstudianteController::class);
@@ -315,23 +316,23 @@ Route::middleware(['auth'])->group(function () {
 
         // Padres / Tutores
         Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar');
-       Route::post('/padres/{padre}/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
+        Route::post('/padres/{padre}/vincular', [PadreController::class, 'vincular'])->name('padres.vincular');
         Route::post('/padres/desvincular', [PadreController::class, 'desvincular'])->name('padres.desvincular');
         Route::resource('padres', PadreController::class);
-        
+
         // Matrículas
         Route::prefix('matriculas')->name('matriculas.')->group(function () {
-            Route::get('/', [MatriculaController::class, 'index'])->name('index');
-            Route::get('/crear', [MatriculaController::class, 'create'])->name('create');
-            Route::post('/', [MatriculaController::class, 'store'])->name('store');
-            Route::get('/{matricula}', [MatriculaController::class, 'show'])->name('show');
-            Route::get('/{matricula}/editar', [MatriculaController::class, 'edit'])->name('edit');
-            Route::put('/{matricula}', [MatriculaController::class, 'update'])->name('update');
-            Route::delete('/{matricula}', [MatriculaController::class, 'destroy'])->name('destroy');
-            Route::get('/{matricula}/detalles', [MatriculaController::class, 'detalles'])->name('detalles');
-            Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
-            Route::post('/{matricula}/rechazar', [MatriculaController::class, 'rechazar'])->name('rechazar');
-            Route::post('/{matricula}/cancelar', [MatriculaController::class, 'cancelar'])->name('cancelar');
+            Route::get('/',                        [MatriculaController::class, 'index'])->name('index');
+            Route::get('/crear',                   [MatriculaController::class, 'create'])->name('create');
+            Route::post('/',                       [MatriculaController::class, 'store'])->name('store');
+            Route::get('/{matricula}',             [MatriculaController::class, 'show'])->name('show');
+            Route::get('/{matricula}/editar',      [MatriculaController::class, 'edit'])->name('edit');
+            Route::put('/{matricula}',             [MatriculaController::class, 'update'])->name('update');
+            Route::delete('/{matricula}',          [MatriculaController::class, 'destroy'])->name('destroy');
+            Route::get('/{matricula}/detalles',    [MatriculaController::class, 'detalles'])->name('detalles');
+            Route::post('/{matricula}/confirmar',  [MatriculaController::class, 'confirmar'])->name('confirmar');
+            Route::post('/{matricula}/rechazar',   [MatriculaController::class, 'rechazar'])->name('rechazar');
+            Route::post('/{matricula}/cancelar',   [MatriculaController::class, 'cancelar'])->name('cancelar');
         });
 
         // Periodos académicos
@@ -350,6 +351,7 @@ Route::middleware(['auth'])->group(function () {
             'update'  => 'secciones.update',
             'destroy' => 'secciones.destroy',
         ]);
+
 
         // Cupos máximos
         Route::resource('cupos_maximos', CupoMaximoController::class);
@@ -379,6 +381,7 @@ Route::middleware(['auth'])->group(function () {
         // Cambiar contraseña
         Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
         Route::put('cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
+
 
     }); // fin role:admin,superadmin
 

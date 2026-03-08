@@ -72,8 +72,7 @@
                     <div class="stat-footer">
                         <span class="stat-badge stat-badge-info">
                             <i class="fas fa-check-circle"></i>
-                            {{ $profesoresActivos ?? \App\Models\Profesor::where('estado', 'activo')->count() }} En servicio
-                        </span>
+{{ $profesoresActivos ?? \App\Models\Profesor::count() }} En servicio                        </span>
                     </div>
                 </div>
             </div>

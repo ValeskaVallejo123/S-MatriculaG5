@@ -11,18 +11,18 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-   protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'id_rol',
-    'activo', 
-    'user_type',
-    'is_super_admin',
-    'is_protected',
-    'permissions',
-    'email_verified_at',
-];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'id_rol',
+        'activo',
+        'user_type',
+        'is_super_admin',
+        'is_protected',
+        'permissions',
+        'email_verified_at',
+    ];
 
     protected $hidden = [
         'password',
@@ -97,9 +97,10 @@ class User extends Authenticatable
             strtolower(trim($this->rol->nombre)) === strtolower(trim($nombreRol));
     }
 
-    public function isSuperAdmin(): bool
+    public function isSuperAdmin()
     {
-        return $this->is_super_admin === true || $this->id_rol == 1;
+        // Asegúrate de que id_rol sea 1 (el que asignaste en Tinker)
+        return (int) $this->id_rol === 1;
     }
 
     public function isAdmin(): bool
@@ -302,9 +303,9 @@ class User extends Authenticatable
             $profesorId = $this->docente->id;
             return Observacion::where(function ($q) use ($profesorId) {
                 $q->where('profesor_id', $profesorId)
-                  ->orWhereHas('estudiante.user', function ($q2) {
-                      $q2->where('id', $this->id);
-                  });
+                    ->orWhereHas('estudiante.user', function ($q2) {
+                        $q2->where('id', $this->id);
+                    });
             });
         }
 
@@ -361,7 +362,7 @@ class User extends Authenticatable
     // NOTIFICACIONES
     // =========================================================================
 
-  
+
     // =========================================================================
     // OBTENER TODOS LOS PERMISOS
     // =========================================================================

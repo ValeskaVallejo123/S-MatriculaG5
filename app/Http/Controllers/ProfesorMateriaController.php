@@ -5,75 +5,104 @@ namespace App\Http\Controllers;
 use App\Models\Profesor;
 use App\Models\Materia;
 use App\Models\Grado;
+use App\Models\ProfesorMateriaGrado; // Tu modelo de la última consulta
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
 
 class ProfesorMateriaController extends Controller
 {
     public function __construct()
     {
-        // Solo ADMIN y SUPERADMIN pueden administrar materias de profesores
-        $this->middleware(['auth', 'rol:admin,super_admin']);
+        $this->middleware(['auth', 'role:admin,super_admin']);
     }
 
     /**
-     * Mostrar lista de profesores con sus asignaciones (materia + grado + sección)
+     * Muestra la lista de asignaciones usando tu modelo personalizado.
      */
     public function index()
     {
-        $asignaciones = Profesor::with(['materiasGrupos.grado', 'materiasGrupos.materia'])
+        // Cargamos los profesores con sus relaciones a través de tu modelo intermedio
+        $asignaciones = Profesor::with(['materiasGrupos.materia', 'materiasGrupos.grado'])
+            ->orderBy('nombre')
             ->paginate(15);
 
         return view('profesor_materia.index', compact('asignaciones'));
     }
 
     /**
-     * Formulario de creación de asignación
+     * Carga los datos para que el selector (Select) NO esté vacío.
      */
     public function create()
     {
-        $profesores = Profesor::all();
-        $materias = Materia::all();
-        $grados = Grado::all();
-        $secciones = ['A', 'B', 'C', 'D'];
+        // 1. Cargamos profesores (temporalmente quitamos el filtro de 'activo' para probar)
+        $profesores = Profesor::orderBy('nombre')->get();
 
-        return view('profesor_materia.create', compact(
-            'profesores', 'materias', 'grados', 'secciones'
-        ));
+        // 2. Cargamos materias y grados
+        $materias = Materia::orderBy('nombre')->get();
+        $grados = Grado::orderBy('numero')->get();
+
+        // Debug rápido: Si al cargar la página ves una lista negra, es que hay datos.
+        // Si ves [], la tabla en la base de datos está vacía.
+        // dd($profesores);
+
+        return view('profesor_materia.create', compact('profesores', 'materias', 'grados'));
     }
 
     /**
-     * Guardar asignación (materia + grado + sección)
+     * Guarda usando tu modelo ProfesorMateriaGrado.
      */
     public function store(Request $request)
     {
         $request->validate([
             'profesor_id' => 'required|exists:profesores,id',
-            'materia_id' => 'required|exists:materias,id',
-            'grado_id' => 'required|exists:grados,id',
-            'seccion' => 'required|string|max:2',
+            'materia_ids' => 'required|array|min:1',
+            'grado_id'    => 'required|exists:grados,id',
+            'seccion'     => 'required|string|max:2',
         ]);
 
-        $profesor = Profesor::findOrFail($request->profesor_id);
-
-        $profesor->materiasGrupos()->create([
-            'materia_id' => $request->materia_id,
-            'grado_id' => $request->grado_id,
-            'seccion' => $request->seccion,
-        ]);
+        foreach ($request->materia_ids as $materiaId) {
+            // Usamos el método yaAsignado que tienes en tu modelo para evitar duplicados
+            if (!ProfesorMateriaGrado::yaAsignado($request->profesor_id, $materiaId, $request->grado_id, $request->seccion)) {
+                ProfesorMateriaGrado::create([
+                    'profesor_id' => $request->profesor_id,
+                    'materia_id'  => $materiaId,
+                    'grado_id'    => $request->grado_id,
+                    'seccion'     => $request->seccion,
+                ]);
+            }
+        }
 
         return redirect()->route('profesor_materia.index')
-            ->with('success', 'Asignación creada correctamente.');
+            ->with('success', 'Asignaciones creadas correctamente.');
     }
 
     /**
-     * Eliminar una relación de materia + grado + sección
+     * Asignación desde la vista de GRADOS (La de tu imagen).
      */
-    public function destroy($id)
+    public function guardarAsignacion(Request $request, Grado $grado)
     {
-        DB::table('profesor_materia_grado')->where('id', $id)->delete();
+        $request->validate([
+            'materias'   => 'required|array',
+            'profesores' => 'nullable|array',
+            'seccion'    => 'required|string',
+        ]);
 
-        return redirect()->route('profesor_materia.index')
-            ->with('success', 'Asignación eliminada.');
+        foreach ($request->materias as $materiaId) {
+            $profesorId = $request->input("profesores.$materiaId");
+
+            if ($profesorId) {
+                // Actualizamos o creamos la asignación en tu tabla profesor_materia_grados
+                ProfesorMateriaGrado::updateOrCreate(
+                    [
+                        'materia_id' => $materiaId,
+                        'grado_id'   => $grado->id,
+                        'seccion'    => $request->seccion,
+                    ],
+                    ['profesor_id' => $profesorId]
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'Profesores asignados con éxito.');
     }
 }

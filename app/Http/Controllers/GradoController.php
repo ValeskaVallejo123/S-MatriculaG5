@@ -93,14 +93,12 @@ class GradoController extends Controller
             'activo'       => $request->boolean('activo', true),
         ]);
 
-        // Asignar materias por defecto solo para Primaria
-        if ($grado->nivel === 'Primaria') {
+        // MEJORA: Asignar materias si es Primaria O Básica
+        if ($grado->nivel === 'Primaria' || $grado->nivel === 'Básica') {
             $this->asignarMateriasPorDefecto($grado);
         }
 
-        return redirect()
-            ->route('grados.index')
-            ->with('success', 'Grado creado correctamente.');
+        return redirect()->route('grados.index')->with('success', 'Grado creado correctamente.');
     }
 
     public function show(Grado $grado)
@@ -163,6 +161,7 @@ $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')
 
     public function guardarMaterias(Request $request, Grado $grado)
     {
+        // 1. Validamos que se hayan seleccionado materias
         $validated = $request->validate([
             'materias'   => 'required|array|min:1',
             'materias.*' => 'exists:materias,id',
@@ -172,18 +171,25 @@ $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')
 
         $syncData = [];
 
+        // 2. Recorremos solo las materias que fueron marcadas en los checkboxes
         foreach ($validated['materias'] as $materiaId) {
+            // Extraemos el profesor y las horas usando el ID de la materia como índice
+            $profesorId = $request->input("profesores.$materiaId");
+            $numHoras   = $request->input("horas.$materiaId");
+
             $syncData[$materiaId] = [
-                'profesor_id'     => $request->profesores[$materiaId] ?? null,
-                'horas_semanales' => $request->horas[$materiaId] ?? 0,
+                'profesor_id'     => !empty($profesorId) ? $profesorId : null,
+                'horas_semanales' => !empty($numHoras) ? $numHoras : 4, // 4 por defecto si está vacío
             ];
         }
 
+        // 3. Sincronizamos la tabla pivote
+        // sync() elimina las materias que no estén en el array y actualiza/crea las presentes
         $grado->materias()->sync($syncData);
 
         return redirect()
             ->route('grados.show', $grado)
-            ->with('success', 'Materias asignadas exitosamente.');
+            ->with('success', 'Materias y profesores asignados correctamente al grado.');
     }
 
     public function crearMasivo()

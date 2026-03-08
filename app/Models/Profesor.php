@@ -16,6 +16,7 @@ class Profesor extends Model
     'apellido',
     'dni',
     'fecha_nacimiento',
+       'fecha_ingreso',
     'genero',
     'telefono',
     'email',
@@ -104,8 +105,21 @@ class Profesor extends Model
     /**
      * Relación: Materias que imparte por grado y sección
      */
+    /**
+     * Relación con Materias (Muchos a Muchos)
+     * Conecta al profesor con las materias a través de la tabla intermedia grado_materia
+     */
+    public function materias()
+    {
+        // Muchos profesores pueden tener muchas materias (vía grado_materia)
+        return $this->belongsToMany(Materia::class, 'grado_materia')
+            ->withPivot('horas_semanales', 'grado_id')
+            ->withTimestamps();
+    }
     public function materiasGrupos()
     {
+        // Un profesor tiene muchas filas en la tabla profesor_materia_grados
         return $this->hasMany(ProfesorMateriaGrado::class, 'profesor_id');
     }
+
 }

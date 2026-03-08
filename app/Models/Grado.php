@@ -9,13 +9,13 @@ class Grado extends Model
 {
     use HasFactory;
 
-   protected $fillable = [
-    'nivel',
-    'numero',
-    'seccion',
-    'anio_lectivo',
-    'activo',
-];
+    protected $fillable = [
+        'nivel',
+        'numero',
+        'seccion',
+        'anio_lectivo',
+        'activo',
+    ];
 
     protected $casts = [
         'activo' => 'boolean',
@@ -25,8 +25,8 @@ class Grado extends Model
     public function materias()
     {
         return $this->belongsToMany(Materia::class, 'grado_materia')
-                    ->withPivot('profesor_id', 'horas_semanales')
-                    ->withTimestamps();
+            ->withPivot('profesor_id', 'horas_semanales')
+            ->withTimestamps();
     }
 
     // Accesor para nombre completo del grado
@@ -50,12 +50,12 @@ class Grado extends Model
         return $query->where('nivel', 'secundaria');
     }
     public function profesores()
-{
-    return $this->hasMany(ProfesorGradoSeccion::class, 'grado_id');
-}
-public function profesoresMaterias()
-{
-    return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
-}
+    {
+        return $this->hasMany(ProfesorGradoSeccion::class, 'grado_id');
+    }
+    public function profesoresMaterias()
+    {
+        return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
+    }
 
 }

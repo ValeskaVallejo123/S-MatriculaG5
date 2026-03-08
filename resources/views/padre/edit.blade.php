@@ -13,7 +13,7 @@
 
 @section('content')
 <div class="container" style="max-width: 1200px;">
-    
+
     <!-- Mensajes de error -->
     @if ($errors->any())
         <div class="alert alert-dismissible fade show mb-3" style="background: #fee2e2; border: 1px solid #ef4444; border-radius: 10px; color: #991b1b;" role="alert">
@@ -52,12 +52,12 @@
                         <label for="nombre" class="form-label small fw-semibold" style="color: #003b73;">
                             Nombre <span class="text-danger">*</span>
                         </label>
-                        <input type="text" 
-                               class="form-control @error('nombre') is-invalid @enderror" 
-                               id="nombre" 
-                               name="nombre" 
+                        <input type="text"
+                               class="form-control @error('nombre') is-invalid @enderror"
+                               id="nombre"
+                               name="nombre"
                                value="{{ old('nombre', $padre->nombre) }}"
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                required>
                         @error('nombre')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -69,12 +69,12 @@
                         <label for="apellido" class="form-label small fw-semibold" style="color: #003b73;">
                             Apellido <span class="text-danger">*</span>
                         </label>
-                        <input type="text" 
-                               class="form-control @error('apellido') is-invalid @enderror" 
-                               id="apellido" 
-                               name="apellido" 
+                        <input type="text"
+                               class="form-control @error('apellido') is-invalid @enderror"
+                               id="apellido"
+                               name="apellido"
                                value="{{ old('apellido', $padre->apellido) }}"
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                required>
                         @error('apellido')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -86,12 +86,12 @@
                         <label for="dni" class="form-label small fw-semibold" style="color: #003b73;">
                             DNI <span class="text-danger">*</span>
                         </label>
-                        <input type="text" 
-                               class="form-control @error('dni') is-invalid @enderror" 
-                               id="dni" 
-                               name="dni" 
+                        <input type="text"
+                               class="form-control @error('dni') is-invalid @enderror"
+                               id="dni"
+                               name="dni"
                                value="{{ old('dni', $padre->dni) }}"
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                maxlength="13"
                                required>
                         @error('dni')
@@ -104,10 +104,10 @@
                         <label for="parentesco" class="form-label small fw-semibold" style="color: #003b73;">
                             Parentesco <span class="text-danger">*</span>
                         </label>
-                        <select class="form-select @error('parentesco') is-invalid @enderror" 
-                                id="parentesco" 
+                        <select class="form-select @error('parentesco') is-invalid @enderror"
+                                id="parentesco"
                                 name="parentesco"
-                                style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                                style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                 required>
                             <option value="">Seleccione...</option>
                             <option value="padre" {{ old('parentesco', $padre->parentesco) == 'padre' ? 'selected' : '' }}>Padre</option>
@@ -129,12 +129,12 @@
                         <label for="parentesco_otro" class="form-label small fw-semibold" style="color: #003b73;">
                             Especifique el Parentesco
                         </label>
-                        <input type="text" 
-                               class="form-control @error('parentesco_otro') is-invalid @enderror" 
-                               id="parentesco_otro" 
-                               name="parentesco_otro" 
+                        <input type="text"
+                               class="form-control @error('parentesco_otro') is-invalid @enderror"
+                               id="parentesco_otro"
+                               name="parentesco_otro"
                                value="{{ old('parentesco_otro', $padre->parentesco_otro) }}"
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                maxlength="50">
                         @error('parentesco_otro')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -146,10 +146,10 @@
                         <label for="estado" class="form-label small fw-semibold" style="color: #003b73;">
                             Estado <span class="text-danger">*</span>
                         </label>
-                        <select class="form-select @error('estado') is-invalid @enderror" 
-                                id="estado" 
+                        <select class="form-select @error('estado') is-invalid @enderror"
+                                id="estado"
                                 name="estado"
-                                style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                                style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                 required>
                             <option value="1" {{ old('estado', $padre->estado) == '1' ? 'selected' : '' }}>Activo</option>
                             <option value="0" {{ old('estado', $padre->estado) == '0' ? 'selected' : '' }}>Inactivo</option>
@@ -177,10 +177,10 @@
                         <label for="correo" class="form-label small fw-semibold" style="color: #003b73;">
                             Correo Electrónico
                         </label>
-                        <input type="email" 
-                               class="form-control @error('correo') is-invalid @enderror" 
-                               id="correo" 
-                               name="correo" 
+                        <input type="email"
+                               class="form-control @error('correo') is-invalid @enderror"
+                               id="correo"
+                               name="correo"
                                value="{{ old('correo', $padre->correo) }}"
                                style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;">
                         @error('correo')
@@ -193,12 +193,12 @@
                         <label for="telefono" class="form-label small fw-semibold" style="color: #003b73;">
                             Teléfono <span class="text-danger">*</span>
                         </label>
-                        <input type="text" 
-                               class="form-control @error('telefono') is-invalid @enderror" 
-                               id="telefono" 
-                               name="telefono" 
+                        <input type="text"
+                               class="form-control @error('telefono') is-invalid @enderror"
+                               id="telefono"
+                               name="telefono"
                                value="{{ old('telefono', $padre->telefono) }}"
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                maxlength="8"
                                required>
                         <small class="text-muted">Formato: 8 dígitos</small>
@@ -212,12 +212,12 @@
                         <label for="telefono_secundario" class="form-label small fw-semibold" style="color: #003b73;">
                             Teléfono Secundario
                         </label>
-                        <input type="text" 
-                               class="form-control @error('telefono_secundario') is-invalid @enderror" 
-                               id="telefono_secundario" 
-                               name="telefono_secundario" 
+                        <input type="text"
+                               class="form-control @error('telefono_secundario') is-invalid @enderror"
+                               id="telefono_secundario"
+                               name="telefono_secundario"
                                value="{{ old('telefono_secundario', $padre->telefono_secundario) }}"
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                maxlength="8">
                         <small class="text-muted">Formato: 8 dígitos</small>
                         @error('telefono_secundario')
@@ -230,9 +230,9 @@
                         <label for="direccion" class="form-label small fw-semibold" style="color: #003b73;">
                             Dirección
                         </label>
-                        <textarea class="form-control @error('direccion') is-invalid @enderror" 
-                                  id="direccion" 
-                                  name="direccion" 
+                        <textarea class="form-control @error('direccion') is-invalid @enderror"
+                                  id="direccion"
+                                  name="direccion"
                                   rows="2"
                                   style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;">{{ old('direccion', $padre->direccion) }}</textarea>
                         @error('direccion')
@@ -258,10 +258,10 @@
                         <label for="ocupacion" class="form-label small fw-semibold" style="color: #003b73;">
                             Ocupación
                         </label>
-                        <input type="text" 
-                               class="form-control @error('ocupacion') is-invalid @enderror" 
-                               id="ocupacion" 
-                               name="ocupacion" 
+                        <input type="text"
+                               class="form-control @error('ocupacion') is-invalid @enderror"
+                               id="ocupacion"
+                               name="ocupacion"
                                value="{{ old('ocupacion', $padre->ocupacion) }}"
                                style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;">
                         @error('ocupacion')
@@ -274,10 +274,10 @@
                         <label for="lugar_trabajo" class="form-label small fw-semibold" style="color: #003b73;">
                             Lugar de Trabajo
                         </label>
-                        <input type="text" 
-                               class="form-control @error('lugar_trabajo') is-invalid @enderror" 
-                               id="lugar_trabajo" 
-                               name="lugar_trabajo" 
+                        <input type="text"
+                               class="form-control @error('lugar_trabajo') is-invalid @enderror"
+                               id="lugar_trabajo"
+                               name="lugar_trabajo"
                                value="{{ old('lugar_trabajo', $padre->lugar_trabajo) }}"
                                style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;">
                         @error('lugar_trabajo')
@@ -290,12 +290,12 @@
                         <label for="telefono_trabajo" class="form-label small fw-semibold" style="color: #003b73;">
                             Teléfono de Trabajo
                         </label>
-                        <input type="text" 
-                               class="form-control @error('telefono_trabajo') is-invalid @enderror" 
-                               id="telefono_trabajo" 
-                               name="telefono_trabajo" 
+                        <input type="text"
+                               class="form-control @error('telefono_trabajo') is-invalid @enderror"
+                               id="telefono_trabajo"
+                               name="telefono_trabajo"
                                value="{{ old('telefono_trabajo', $padre->telefono_trabajo) }}"
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;" 
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;"
                                maxlength="8">
                         <small class="text-muted">Formato: 8 dígitos</small>
                         @error('telefono_trabajo')
@@ -320,9 +320,9 @@
                         <label for="observaciones" class="form-label small fw-semibold" style="color: #003b73;">
                             Observaciones Adicionales
                         </label>
-                        <textarea class="form-control @error('observaciones') is-invalid @enderror" 
-                                  id="observaciones" 
-                                  name="observaciones" 
+                        <textarea class="form-control @error('observaciones') is-invalid @enderror"
+                                  id="observaciones"
+                                  name="observaciones"
                                   rows="3"
                                   style="border: 2px solid #bfd9ea; border-radius: 8px; transition: all 0.3s ease;">{{ old('observaciones', $padre->observaciones) }}</textarea>
                         @error('observaciones')
