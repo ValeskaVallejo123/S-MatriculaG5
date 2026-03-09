@@ -24,7 +24,7 @@ class AccionesImportantesController extends Controller
             ->get();
 
         // Últimas calificaciones
-        $calificacionesRecientes = RegistrarCalificacion::with(['estudiante', 'materia', 'curso'])
+        $calificacionesRecientes = RegistrarCalificacion::with(['estudiante', 'materia', 'grado'])
             ->latest()
             ->take(5)
             ->get();

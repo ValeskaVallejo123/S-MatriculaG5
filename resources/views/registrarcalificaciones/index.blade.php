@@ -1,13 +1,11 @@
 @extends('layouts.app')
 
-{{-- SECCION PARA EL BOTON DE VER CALIFICACIONES --}}
 @section('topbar-actions')
 
     @php
         $gradoSeleccionado = request('grado_id');
     @endphp
 
-    {{-- BOTÓN VOLVER --}}
     @php
         $usuario = auth()->user();
         $rutaDashboard = match($usuario->rol->nombre ?? '') {
@@ -22,40 +20,86 @@
 
     <div style="display:flex; gap:10px;">
 
-        {{-- BOTÓN VER CALIFICACIONES --}}
-            <a href="{{route('registrarcalificaciones.ver')}}"
-               class="btn btn-primary">
-                Ver Calificaciones
-            </a>
+        <a href="{{route('registrarcalificaciones.ver')}}"
+           class="btn"
+           style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
+       color:white;border:none;border-radius:8px;font-weight:600;">
+            <i class="fas fa-eye me-1"></i>
+            Ver Calificaciones
+        </a>
 
         <a href="{{ $rutaDashboard }}"
-           class="btn btn-outline-primary">
-            ← Volver
+           class="btn"
+           style="border:2px solid #00508f;color:#00508f;border-radius:8px;font-weight:600;">
+            <i class="fas fa-arrow-left me-1"></i>
+            Volver
         </a>
 
     </div>
 
 @endsection
-{{-- FIN DE LA SECCION --}}
+
 
 @section('content')
-    <div class="container">
 
-        <h2 class="mb-4">Registrar Calificaciones</h2>
+    <div class="container-fluid px-4 py-3">
+
+        <!-- HEADER -->
+        <div class="card border-0 shadow-sm mb-4"
+             style="border-radius:12px;background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);">
+
+            <div class="card-body p-3">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="me-3"
+                         style="width:48px;height:48px;border-radius:10px;
+                     background:rgba(255,255,255,0.2);
+                     display:flex;align-items:center;justify-content:center;">
+
+                        <i class="fas fa-clipboard-check text-white"></i>
+
+                    </div>
+
+                    <div class="text-white">
+
+                        <h5 class="mb-0 fw-bold">
+                            Registrar Calificaciones
+                        </h5>
+
+                        <p class="mb-0 opacity-90" style="font-size:0.85rem;">
+                            Seleccione un curso para registrar las notas de los estudiantes
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 
 
-        {{-- SELECT CURSO --}}
-        <div class="card mb-4">
+        <!-- SELECCIONAR CURSO -->
+        <div class="card border-0 shadow-sm mb-4" style="border-radius:12px;">
+
             <div class="card-body">
 
-                <label class="form-label fw-bold">Seleccione Curso</label>
+                <label class="form-label fw-semibold mb-2"
+                       style="color:#003b73;">
 
-                <form method="GET" action="{{ route('registrarcalificaciones.index') }}">
+                    Seleccione Curso
 
-                    <div class="mb-3">
+                </label>
+
+                <form method="GET"
+                      action="{{ route('registrarcalificaciones.index') }}">
+
+                    <div class="position-relative">
 
                         <select name="grado_id"
                                 class="form-select"
+                                style="border:2px solid #bfd9ea;border-radius:8px;"
                                 onchange="this.form.submit()"
                                 required>
 
@@ -82,10 +126,10 @@
                 </form>
 
             </div>
+
         </div>
 
 
-        {{-- SI HAY GRADO SELECCIONADO --}}
         @if(request()->filled('grado_id'))
 
             <form action="{{ route('registrarcalificaciones.store') }}" method="POST">
@@ -97,135 +141,210 @@
                        value="{{ request('grado_id') }}">
 
 
-                {{-- PROFESOR --}}
-                <div class="mb-3">
+                <!-- DATOS GENERALES -->
+                <div class="card border-0 shadow-sm mb-4" style="border-radius:12px;">
 
-                    <label class="form-label fw-bold">Profesor</label>
+                    <div class="card-body">
 
-                    <select name="profesor_id" class="form-select" required>
-
-                        <option value="">Seleccione profesor</option>
-
-                        @foreach($profesores as $profesor)
-
-                            <option value="{{ $profesor->id }}">
-                                {{ $profesor->apellido }},
-                                {{ $profesor->nombre }}
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                </div>
+                        <h6 class="fw-bold mb-3" style="color:#003b73;">
+                            <i class="fas fa-cogs me-2"></i>
+                            Información de la Calificación
+                        </h6>
 
 
-                {{-- MATERIA --}}
-                <div class="mb-3">
+                        <div class="row">
 
-                    <label class="form-label fw-bold">Materia</label>
+                            <!-- PROFESOR -->
+                            <div class="col-md-4 mb-3">
 
-                    <select name="materia_id" class="form-select" required>
+                                <label class="form-label fw-semibold small">Profesor</label>
 
-                        <option value="">Seleccione materia</option>
+                                <select name="profesor_id"
+                                        class="form-select"
+                                        style="border:2px solid #bfd9ea;border-radius:8px;"
+                                        required>
 
-                        @foreach($materias as $materia)
+                                    <option value="">Seleccione profesor</option>
 
-                            <option value="{{ $materia->id }}">
-                                {{ $materia->nombre }}
-                            </option>
+                                    @foreach($profesores as $profesor)
 
-                        @endforeach
+                                        <option value="{{ $profesor->id }}">
+                                            {{ $profesor->apellido }},
+                                            {{ $profesor->nombre }}
+                                        </option>
 
-                    </select>
+                                    @endforeach
 
-                </div>
+                                </select>
 
-
-                {{-- PERIODO --}}
-                <div class="mb-3">
-
-                    <label class="form-label fw-bold">Periodo Académico</label>
-
-                    <select name="periodo_academico_id" class="form-select" required>
-
-                        <option value="">Seleccione periodo</option>
-
-                        @foreach($periodos as $periodo)
-
-                            <option value="{{ $periodo->id }}">
-                                {{ $periodo->nombre_periodo }}
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                </div>
+                            </div>
 
 
-                <hr>
+                            <!-- MATERIA -->
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label fw-semibold small">Materia</label>
+
+                                <select name="materia_id"
+                                        class="form-select"
+                                        style="border:2px solid #bfd9ea;border-radius:8px;"
+                                        required>
+
+                                    <option value="">Seleccione materia</option>
+
+                                    @foreach($materias as $materia)
+
+                                        <option value="{{ $materia->id }}">
+                                            {{ $materia->nombre }}
+                                        </option>
+
+                                    @endforeach
+
+                                </select>
+
+                            </div>
 
 
-                {{-- ESTUDIANTES --}}
-                <h4 class="mb-3">Estudiantes del curso</h4>
+                            <!-- PERIODO -->
+                            <div class="col-md-4 mb-3">
 
-                @if($estudiantes->isEmpty())
+                                <label class="form-label fw-semibold small">
+                                    Periodo Académico
+                                </label>
 
-                    <div class="alert alert-warning">
-                        No hay estudiantes en este curso.
+                                <select name="periodo_academico_id"
+                                        class="form-select"
+                                        style="border:2px solid #bfd9ea;border-radius:8px;"
+                                        required>
+
+                                    <option value="">Seleccione periodo</option>
+
+                                    @foreach($periodos as $periodo)
+
+                                        <option value="{{ $periodo->id }}">
+                                            {{ $periodo->nombre_periodo }}
+                                        </option>
+
+                                    @endforeach
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
                     </div>
 
-                @else
+                </div>
 
-                    <table class="table table-bordered">
 
-                        <thead class="table-dark">
-                        <tr>
-                            <th>Estudiante</th>
-                            <th>Nota</th>
-                            <th>Observación</th>
-                        </tr>
-                        </thead>
+                <!-- TABLA DE ESTUDIANTES -->
 
-                        <tbody>
+                <div class="card border-0 shadow-sm" style="border-radius:12px;">
 
-                        @foreach($estudiantes as $estudiante)
+                    <div class="card-body">
 
-                            <tr>
+                        <h6 class="fw-bold mb-3" style="color:#003b73;">
+                            <i class="fas fa-users me-2"></i>
+                            Estudiantes del Curso
+                        </h6>
 
-                                <td>
-                                    {{ $estudiante->apellido1 }}
-                                    {{ $estudiante->apellido2 }},
-                                    {{ $estudiante->nombre1 }}
-                                    {{ $estudiante->nombre2 }}
-                                </td>
 
-                                <td>
+                        @if($estudiantes->isEmpty())
 
-                                    <input type="number"
-                                           name="notas[{{ $estudiante->id }}]"
-                                           class="form-control"
-                                           min="0"
-                                           max="100"
-                                           step="0.01">
+                            <div class="alert alert-warning">
+                                No hay estudiantes en este curso.
+                            </div>
 
-                                </td>
-                                <td>
-                                    <input type="text"
-                                           name="observacion[{{ $estudiante->id }}]"
-                                           class="form-control">
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                    <button type="submit"
-                            class="btn btn-success">
-                        Guardar Calificaciones
-                    </button>
-                @endif
+                        @else
+
+                            <div class="table-responsive">
+
+                                <table class="table table-hover align-middle">
+
+                                    <thead style="background:#003b73;color:white;">
+
+                                    <tr>
+                                        <th>Estudiante</th>
+                                        <th style="width:150px;">Nota</th>
+                                        <th>Observación</th>
+                                    </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                    @foreach($estudiantes as $estudiante)
+
+                                        <tr>
+
+                                            <td>
+
+                                                <strong>
+                                                    {{ $estudiante->apellido1 }}
+                                                    {{ $estudiante->apellido2 }},
+                                                    {{ $estudiante->nombre1 }}
+                                                    {{ $estudiante->nombre2 }}
+                                                </strong>
+
+                                            </td>
+
+                                            <td>
+
+                                                <input type="number"
+                                                       name="notas[{{ $estudiante->id }}]"
+                                                       class="form-control"
+                                                       min="0"
+                                                       max="100"
+                                                       step="0.01"
+                                                       style="border:2px solid #bfd9ea;border-radius:8px;">
+
+                                            </td>
+
+                                            <td>
+
+                                                <input type="text"
+                                                       name="observacion[{{ $estudiante->id }}]"
+                                                       class="form-control"
+                                                       style="border:2px solid #bfd9ea;border-radius:8px;">
+
+                                            </td>
+
+                                        </tr>
+
+                                    @endforeach
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+
+                            <div class="text-end mt-3">
+
+                                <button type="submit"
+                                        class="btn"
+                                        style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
+color:white;border:none;border-radius:8px;font-weight:600;padding:8px 18px;">
+
+                                    <i class="fas fa-save me-1"></i>
+                                    Guardar Calificaciones
+
+                                </button>
+
+                            </div>
+
+                        @endif
+
+                    </div>
+
+                </div>
+
             </form>
+
         @endif
+
     </div>
+
 @endsection
