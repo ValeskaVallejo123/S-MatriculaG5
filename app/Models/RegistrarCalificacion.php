@@ -13,7 +13,7 @@ class RegistrarCalificacion extends Model
 
     protected $fillable = [
         'profesor_id',
-        'curso_id',
+        'grado_id',
         'materia_id',
         'estudiante_id',
         'periodo_academico_id',
@@ -25,20 +25,20 @@ class RegistrarCalificacion extends Model
         'nota' => 'decimal:2',
     ];
 
-    /**
-     * ========================
-     *  RELACIONES
-     * ========================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONES
+    |--------------------------------------------------------------------------
+    */
 
     public function profesor()
     {
         return $this->belongsTo(Profesor::class, 'profesor_id');
     }
 
-    public function curso()
+    public function grado()
     {
-        return $this->belongsTo(Curso::class, 'curso_id');
+        return $this->belongsTo(Grado::class, 'grado_id');
     }
 
     public function materia()
@@ -56,37 +56,41 @@ class RegistrarCalificacion extends Model
         return $this->belongsTo(PeriodoAcademico::class, 'periodo_academico_id');
     }
 
-    /**
-     * ========================
-     *  VALIDACIONES DE DUPLICADO
-     * ========================
-     * Verifica si ya existe una calificación para:
-     * Profesor + Curso + Materia + Estudiante + Periodo
-     */
-    public static function existeCalificacion($profesorId, $cursoId, $materiaId, $estudianteId, $periodoId)
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDACIÓN DE DUPLICADOS
+    |--------------------------------------------------------------------------
+    */
+
+    public static function existeCalificacion(
+        $profesorId,
+        $gradoId,
+        $materiaId,
+        $estudianteId,
+        $periodoId
+    ) {
         return self::where('profesor_id', $profesorId)
-            ->where('curso_id', $cursoId)
+            ->where('grado_id', $gradoId)
             ->where('materia_id', $materiaId)
             ->where('estudiante_id', $estudianteId)
             ->where('periodo_academico_id', $periodoId)
             ->exists();
     }
 
-    /**
-     * ========================
-     *   SCOPES PROFESIONALES
-     * ========================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
 
     public function scopeDeProfesor($query, $profesorId)
     {
         return $query->where('profesor_id', $profesorId);
     }
 
-    public function scopeDeCurso($query, $cursoId)
+    public function scopeDeGrado($query, $gradoId)
     {
-        return $query->where('curso_id', $cursoId);
+        return $query->where('grado_id', $gradoId);
     }
 
     public function scopeDeMateria($query, $materiaId)
@@ -104,27 +108,23 @@ class RegistrarCalificacion extends Model
         return $query->where('periodo_academico_id', $periodoId);
     }
 
-    /**
-     * ========================
-     *   ACCESOR DE COLOR PARA LA NOTA
-     * ========================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESORES
+    |--------------------------------------------------------------------------
+    */
+
     public function getColorEstadoAttribute()
     {
         if ($this->nota === null) {
-            return 'bg-gray-200 text-gray-800';  // pendiente
+            return 'bg-gray-200 text-gray-800';
         }
 
         return $this->nota >= 60
-            ? 'bg-green-200 text-green-800'     // aprobado
-            : 'bg-red-200 text-red-800';        // reprobado
+            ? 'bg-green-200 text-green-800'
+            : 'bg-red-200 text-red-800';
     }
 
-    /**
-     * ========================
-     *   ACCESOR - ESTADO TEXTO
-     * ========================
-     */
     public function getEstadoAttribute()
     {
         if ($this->nota === null) {

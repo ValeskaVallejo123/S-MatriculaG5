@@ -8,6 +8,7 @@ use App\Models\Materia;
 use App\Models\Estudiante;
 use App\Models\PeriodoAcademico;
 use App\Models\ProfesorMateriaGrado;
+use App\Models\Grado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,144 +16,96 @@ class RegistrarCalificacionController extends Controller
 {
     public function __construct()
     {
-        // Solo PROFESORES pueden registrar calificaciones
         $this->middleware(['auth', 'rol:profesor']);
     }
 
     /**
-     * Mostrar calificaciones registradas por el profesor autenticado
+     * Mostrar formulario y listado
      */
-    public function index()
+    public function index(Request $request)
     {
         $profesor = auth()->user()->docente;
 
-        if (! $profesor) {
+        if (!$profesor) {
             return back()->with('error', 'No tienes perfil de profesor asignado.');
         }
 
-        $calificaciones = RegistrarCalificacion::with(['estudiante', 'materia', 'periodoAcademico'])
-            ->where('profesor_id', $profesor->id)
-            ->orderBy('created_at', 'desc')
+        $grados = Grado::where('activo', true)
+            ->orderBy('nivel')
+            ->orderBy('numero')
+            ->orderBy('seccion')
             ->get();
 
-        return view('registrarcalificaciones.index', compact('calificaciones'));
-    }
-
-    /**
-     * Mostrar formulario con filtros para registrar calificaciones
-     */
-    public function create(Request $request)
-    {
-        $profesor = auth()->user()->docente;
-
-        if (! $profesor) {
-            return back()->with('error', 'No tienes perfil de profesor asignado.');
-        }
-
-        // Grados y secciones asignados a este profesor
-        $asignaciones = ProfesorMateriaGrado::where('profesor_id', $profesor->id)
-            ->with(['materia', 'grado'])
-            ->get();
-
+        $materias = Materia::all();
         $periodos = PeriodoAcademico::all();
 
         $estudiantes = collect();
-        $calificacionesExistentes = [];
 
-        // Si se seleccionó un grado + sección + materia
-        if ($request->filled(['grado_id', 'seccion', 'materia_id', 'periodo_id'])) {
+        if ($request->filled('grado_id')) {
 
-            $gradoId = $request->grado_id;
-            $seccion = $request->seccion;
-            $materiaId = $request->materia_id;
-            $periodoId = $request->periodo_id;
+            $grado = Grado::find($request->grado_id);
 
-            // VALIDAR que el profesor imparte esa materia en ese grado y sección
-            $valido = ProfesorMateriaGrado::where('profesor_id', $profesor->id)
-                ->where('materia_id', $materiaId)
-                ->where('grado_id', $gradoId)
-                ->where('seccion', $seccion)
-                ->exists();
-
-            if (! $valido) {
-                return back()->with('error', 'No puedes registrar calificaciones para esta materia, grado o sección.');
-            }
-
-            // Cargar estudiantes del grado+sección
-            $estudiantes = Estudiante::where('grado', $gradoId)
-                ->where('seccion', $seccion)
-                ->get();
-
-            // Calificaciones existentes para prellenar
-            $existing = RegistrarCalificacion::where([
-                'profesor_id' => $profesor->id,
-                'materia_id' => $materiaId,
-                'periodo_academico_id' => $periodoId,
-                'grado_id' => $gradoId,
-                'seccion' => $seccion,
-            ])->get();
-
-            foreach ($existing as $c) {
-                $calificacionesExistentes[$c->estudiante_id] = [
-                    'nota' => $c->nota,
-                    'observacion' => $c->observacion,
-                ];
+            if ($grado) {
+                $estudiantes = Estudiante::where('grado', $grado->numero)
+                    ->where('seccion', $grado->seccion)
+                    ->orderBy('apellido1')
+                    ->get();
             }
         }
 
-        return view('registrarcalificaciones.registrarcalificaciones', compact(
+        return view('registrarcalificaciones.index', compact(
             'profesor',
-            'asignaciones',
+            'grados',
+            'materias',
             'periodos',
-            'estudiantes',
-            'calificacionesExistentes'
+            'estudiantes'
         ));
     }
 
     /**
-     * Guardar calificaciones masivamente
+     * Guardar calificaciones
      */
     public function store(Request $request)
     {
         $request->validate([
             'grado_id' => 'required|exists:grados,id',
-            'seccion' => 'required|string',
             'materia_id' => 'required|exists:materias,id',
             'periodo_academico_id' => 'required|exists:periodos_academicos,id',
             'notas' => 'required|array',
             'notas.*' => 'nullable|numeric|min:0|max:100',
-            'observacion.*' => 'nullable|string|max:2000',
+            'observacion' => 'nullable|array',
         ]);
 
         $profesor = auth()->user()->docente;
 
-        if (! $profesor) {
-            return back()->with('error', 'No tienes perfil de profesor asignado.');
+        if (!$profesor) {
+            return back()->with('error', 'No tienes perfil de profesor.');
         }
 
-        // Validar asignación profesor–materia–grado–sección
+        $grado = Grado::findOrFail($request->grado_id);
+
+        // Validar asignación profesor-materia-grado
         $valido = ProfesorMateriaGrado::where('profesor_id', $profesor->id)
             ->where('materia_id', $request->materia_id)
-            ->where('grado_id', $request->grado_id)
-            ->where('seccion', $request->seccion)
+            ->where('grado_id', $grado->id)
+            ->where('seccion', $grado->seccion)
             ->exists();
 
-        if (! $valido) {
-            return back()->with('error', 'No estás autorizado para registrar calificaciones en esta asignación.');
+        if (!$valido) {
+            return back()->with('error', 'No estás autorizado para esta asignación.');
         }
 
-        DB::transaction(function () use ($request, $profesor) {
+        DB::transaction(function () use ($request, $profesor, $grado) {
 
             foreach ($request->notas as $estudianteId => $nota) {
 
                 RegistrarCalificacion::updateOrCreate(
                     [
                         'profesor_id' => $profesor->id,
-                        'estudiante_id' => $estudianteId,
+                        'grado_id' => $grado->id,
                         'materia_id' => $request->materia_id,
+                        'estudiante_id' => $estudianteId,
                         'periodo_academico_id' => $request->periodo_academico_id,
-                        'grado_id' => $request->grado_id,
-                        'seccion' => $request->seccion,
                     ],
                     [
                         'nota' => $nota,
@@ -162,12 +115,30 @@ class RegistrarCalificacionController extends Controller
             }
         });
 
-        return redirect()->route('registrarcalificaciones.index')
-            ->with('success', 'Calificaciones registradas correctamente.');
+        return redirect()
+            ->route('registrarcalificaciones.index')
+            ->with('success', 'Calificaciones guardadas correctamente.');
     }
 
     /**
-     * Eliminar una calificación
+     * Ver calificaciones registradas
+     */
+    public function ver()
+    {
+        $calificaciones = RegistrarCalificacion::with([
+            'estudiante',
+            'grado',
+            'materia',
+            'periodoAcademico'
+        ])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('registrarcalificaciones.ver', compact('calificaciones'));
+    }
+
+    /**
+     * Eliminar calificación
      */
     public function destroy($id)
     {

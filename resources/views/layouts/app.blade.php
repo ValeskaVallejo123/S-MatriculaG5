@@ -537,6 +537,79 @@
             link.addEventListener('click', () => {
                 sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
             });
+
+            // Scroll automático al elemento activo si está fuera de vista
+            const activeLink = sidebar.querySelector('.menu-link.active');
+            if (activeLink && savedScrollPosition === null) {
+                const sidebarRect = sidebar.getBoundingClientRect();
+                const activeLinkRect = activeLink.getBoundingClientRect();
+
+                if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
+                    const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
+                    sidebar.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        }
+
+        // ========== MODAL DE ELIMINACIÓN ==========
+        //let deleteFormAction = null;
+
+        function mostrarModalDelete(url, mensaje = null, itemName = null) {
+            deleteFormAction = url;
+
+            if (mensaje) {
+                document.getElementById('deleteMessage').textContent = mensaje;
+            } else {
+                document.getElementById('deleteMessage').textContent = 'Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?';
+            }
+
+            const itemInfo = document.getElementById('deleteItemInfo');
+            if (itemName) {
+                document.getElementById('deleteItemName').textContent = itemName;
+                itemInfo.style.display = 'flex';
+            } else {
+                itemInfo.style.display = 'none';
+            }
+
+            document.getElementById('formDelete').action = url;
+
+            const modal = document.getElementById('modalDelete');
+            modal.classList.add('show');
+
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarModalDelete() {
+            const modal = document.getElementById('modalDelete');
+            modal.classList.remove('show');
+
+            document.body.style.overflow = '';
+
+            deleteFormAction = null;
+        }
+
+        function confirmarEliminacion() {
+            document.getElementById('formDelete').submit();
+        }
+
+        // Función para mostrar modal de eliminación usando data attributes
+        function mostrarModalDeleteData(button) {
+            const route = button.dataset.route;
+            const message = button.dataset.message;
+            const name = button.dataset.name;
+
+            mostrarModalDelete(route, message, name);
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('modalDelete');
+            if (e.target === modal) {
+                cerrarModalDelete();
+            }
         });
 
         sidebar.addEventListener('scroll', () => {
