@@ -7,7 +7,7 @@
 @section('topbar-actions')
     <div class="d-flex gap-2">
         
-        <a href="{{ route('grados.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; box-shadow: 0 2px 8px rgba(0, 80, 143, 0.2); font-size: 0.9rem;">
+        <a href="{{ route('superadmin.grados.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; box-shadow: 0 2px 8px rgba(0, 80, 143, 0.2); font-size: 0.9rem;">
             <i class="fas fa-arrow-left"></i>
             Volver
         </a>
@@ -114,7 +114,7 @@
                         <h6 class="mb-0 fw-bold">
                             <i class="fas fa-book-open"></i> Materias Asignadas ({{ $grado->materias->count() }})
                         </h6>
-                        <a href="{{ route('grados.asignar-materias', $grado) }}" class="btn btn-sm" style="background: white; color: #10b981; border-radius: 6px; padding: 0.3rem 0.8rem; font-weight: 600;">
+                        <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}" class="btn btn-sm" style="background: white; color: #10b981; border-radius: 6px; padding: 0.3rem 0.8rem; font-weight: 600;">
                             <i class="fas fa-plus"></i> Gestionar
                         </a>
                     </div>
@@ -233,16 +233,16 @@
                 </div>
                 <div class="card-body p-3">
                     <div class="d-grid gap-2">
-                        <a href="{{ route('grados.asignar-materias', $grado) }}" class="btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
+                        <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}" class="btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
                             <i class="fas fa-tasks"></i> Gestionar Materias
                         </a>
-                        <a href="{{ route('grados.edit', $grado) }}" class="btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
+                        <a href="{{ route('superadmin.grados.edit', $grado) }}" class="btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
                             <i class="fas fa-edit"></i> Editar Grado
                         </a>
-                        <a href="{{ route('materias.index') }}" class="btn" style="background: white; color: #4ec7d2; border: 2px solid #4ec7d2; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
+                        <a href="{{ route('superadmin.materias.index') }}" class="btn" style="background: white; color: #4ec7d2; border: 2px solid #4ec7d2; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
                             <i class="fas fa-book"></i> Ver Materias
                         </a>
-                        <form action="{{ route('grados.destroy', $grado) }}"
+                        <form action="{{ route('superadmin.grados.destroy', $grado) }}"
                               method="POST"
                               onsubmit="return confirm('¿Está seguro de eliminar este grado?')">
                             @csrf

@@ -54,7 +54,6 @@ Route::get('/plantilla', function () {
 
 Route::get('/plan-estudios', [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
 
-// **Detalle de un plan de estudio** ← AQUÍ SE AGREGA
 Route::get('/plan-estudios/{grado}', [PublicoPlanEstudiosController::class, 'show'])
     ->name('plan-estudios.show');
 
@@ -126,6 +125,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/buscar-registro', [BuscarEstudianteController::class, 'index'])->name('buscarregistro');
 
+    Route::middleware('role:admin,superadmin')->group(function () {
+
+        Route::get('/calendario/eventos', [CalendarioController::class, 'obtenerEventos']);
+        Route::post('/calendario/eventos', [CalendarioController::class, 'store']);
+        Route::put('/calendario/eventos/{id}', [CalendarioController::class, 'actualizar']);
+        Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar']);
+
+    });
+
     Route::get('/dashboard', function () {
         $user = Auth::user();
         $roleRouteMap = [
@@ -144,11 +152,9 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('superadmin')->name('superadmin.')->middleware('role:superadmin')->group(function () {
         Route::get('/dashboard', fn () => view('superadmin.dashboard'))->name('dashboard');
 
-        Route::resource(
-    'periodos-academicos',
-    PeriodoAcademicoController::class
-    )->names('periodos-academicos');
-        
+        Route::resource('periodos-academicos', PeriodoAcademicoController::class)
+            ->names('periodos-academicos');
+
         Route::get('/perfil', [SuperAdminController::class, 'perfil'])->name('perfil');
         Route::put('/perfil', [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
         Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
@@ -160,25 +166,20 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/administradores/permisos/guardar', [SuperAdminController::class, 'actualizarPermisos'])->name('administradores.permisos.update');
 
         Route::get('/administradores/crear', [SuperAdminController::class, 'create'])->name('administradores.create');
-        // Usamos match o resource para evitar conflictos manuales
         Route::get('/administradores', [SuperAdminController::class, 'index'])->name('administradores.index');
         Route::post('/administradores', [SuperAdminController::class, 'store'])->name('administradores.store');
-        
         Route::get('/administradores/{administrador}', [SuperAdminController::class, 'show'])->name('administradores.show');
         Route::get('/administradores/{administrador}/editar', [SuperAdminController::class, 'edit'])->name('administradores.edit');
         Route::put('/administradores/{administrador}', [SuperAdminController::class, 'update'])->name('administradores.update');
         Route::delete('/administradores/{administrador}', [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
 
         Route::resource('grados', GradoController::class);
-        
 
-    // Ruta personalizada para asignar materias
-    Route::get('grados/{grado}/asignar-materias', [GradoController::class, 'asignarMaterias'])
-         ->name('grados.asignar-materias');
+        Route::get('grados/{grado}/asignar-materias', [GradoController::class, 'asignarMaterias'])
+            ->name('grados.asignar-materias');
+        Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])
+            ->name('grados.guardar-materias');
 
-    // Opcional: ruta para guardar materias
-    Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])
-         ->name('grados.guardar-materias');
         Route::resource('materias', MateriaController::class);
         Route::resource('horarios_grado', HorarioGradoController::class);
         Route::resource('documentos', DocumentoController::class);
@@ -241,34 +242,40 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{admin}', [AdminController::class, 'destroy'])->name('destroy');
     });
 
-    /* --- RUTAS COMPARTIDAS --- */
-    /* --- RUTAS COMPARTIDAS --- */
-Route::middleware('role:admin,superadmin')->group(function () {
-    //Route::get('/carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
-    Route::resource('estudiantes', EstudianteController::class);
-    Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
-    Route::resource('padres', PadreController::class);
+    /* --- RUTAS COMPARTIDAS (admin + superadmin) --- */
+    Route::middleware('role:admin,superadmin')->group(function () {
+        //Route::get('/carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
+        Route::resource('estudiantes', EstudianteController::class);
+        Route::resource('profesores', ProfesorController::class)->parameters(['profesores' => 'profesor']);
+        Route::resource('padres', PadreController::class);
 
-    Route::prefix('matriculas')->name('matriculas.')->group(function () {
-        Route::get('/', [MatriculaController::class, 'index'])->name('index');
-        Route::get('/crear', [MatriculaController::class, 'create'])->name('create');
-        Route::post('/', [MatriculaController::class, 'store'])->name('store');
-        Route::get('/{matricula}', [MatriculaController::class, 'show'])->name('show');
-        Route::put('/{matricula}', [MatriculaController::class, 'update'])->name('update');
-        Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
+        Route::prefix('matriculas')->name('matriculas.')->group(function () {
+            Route::get('/', [MatriculaController::class, 'index'])->name('index');
+            Route::get('/crear', [MatriculaController::class, 'create'])->name('create');
+            Route::post('/', [MatriculaController::class, 'store'])->name('store');
+            Route::get('/{matricula}', [MatriculaController::class, 'show'])->name('show');
+            Route::put('/{matricula}', [MatriculaController::class, 'update'])->name('update');
+            Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
+        });
+
+        // ── Rutas de Sección (bloque único consolidado) ──────────────────────
+        Route::prefix('secciones')->name('secciones.')->group(function () {
+            Route::get('/',                 [SeccionController::class, 'index'])->name('index');
+            // ⚠️ Rutas con segmento fijo ANTES de las rutas con {parámetro}
+            Route::get('/create',            [SeccionController::class, 'create'])->name('secciones.create');
+            Route::post('/',                [SeccionController::class, 'store'])->name('store');
+            Route::get('/{seccion}/editar', [SeccionController::class, 'edit'])->name('edit');
+            Route::put('/{seccion}',        [SeccionController::class, 'update'])->name('update');
+            Route::delete('/{seccion}',     [SeccionController::class, 'destroy'])->name('destroy');
+            // ⚠️ Rutas con segmento fijo ANTES de las rutas con {parámetro}
+            Route::post('/asignar',         [SeccionController::class, 'asignar'])->name('asignar');
+            Route::patch('/quitar',         [SeccionController::class, 'quitar'])->name('quitar');
+        });
+
+        Route::resource('ciclos', CicloController::class);
+        Route::resource('cupos_maximos', CupoMaximoController::class);
+        Route::resource('observaciones', ObservacionController::class)->except(['show']);
+        Route::get('/calendario_admin', fn() => view('calendario-admin'))->name('calendario');
     });
-
-    // Rutas de Sección
-    Route::resource('seccion', SeccionController::class)->names('secciones');
-
-    // **Ruta POST personalizada para asignar estudiante a sección**
-    Route::post('seccion/asignar', [SeccionController::class, 'asignar'])
-         ->name('secciones.asignar');
-
-    Route::resource('ciclos', CicloController::class);
-    Route::resource('cupos_maximos', CupoMaximoController::class);
-    Route::resource('observaciones', ObservacionController::class)->except(['show']);
-    Route::get('/calendario_admin', fn() => view('calendario-admin'))->name('calendario');
-});
 
 }); // FIN AUTH

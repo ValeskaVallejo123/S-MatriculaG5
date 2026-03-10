@@ -78,30 +78,32 @@ public function eventosPublicos()
      */
     public function store(Request $request)
 {
-    $request->validate([
-        'titulo' => 'required|string|max:255',
-        'fecha_inicio' => 'required|date',
-        'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-        'tipo' => 'required|string',
-        'descripcion' => 'nullable|string',
-        'color' => 'nullable|string',
-        'todo_el_dia' => 'nullable|boolean',
-    ]);
+    try {
 
-    $evento = EventoAcademico::create([
-        'titulo' => $request->titulo,
-        'descripcion' => $request->descripcion,
-        'fecha_inicio' => $request->fecha_inicio,
-        'fecha_fin' => $request->fecha_fin,
-        'tipo' => $request->tipo,
-        'color' => $request->color,
-        'todo_el_dia' => $request->todo_el_dia ?? 1,
-    ]);
+        $validado = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+            'tipo' => 'required|string',
+            'descripcion' => 'nullable|string',
+            'color' => 'nullable|string',
+            'todo_el_dia' => 'nullable|boolean',
+        ]);
 
-    return response()->json([
-        'mensaje' => 'Evento creado correctamente',
-        'evento' => $evento
-    ]);
+        $evento = EventoAcademico::create($validado);
+
+        return response()->json([
+            'mensaje' => 'Evento creado correctamente',
+            'evento' => $evento
+        ]);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+
+        return response()->json([
+            'mensaje' => 'Error de validación',
+            'errores' => $e->errors()
+        ], 422);
+    }
 }
 
     /**
@@ -139,7 +141,7 @@ if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) { // Usar 'role' y 
             return response()->json([
                 'exito' => true,
                 'mensaje' => 'Evento actualizado con éxito',
-                'evento' => $eventoAcademico->update($validado) // CORRECCIÓN: Actualizar el evento después de encontrarlo
+                'evento' => $eventoAcademico
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([

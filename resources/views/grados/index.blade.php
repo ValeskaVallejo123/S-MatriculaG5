@@ -170,9 +170,9 @@
    <i class="fas fa-tasks"></i>
 </a>
                             <a href="{{ route('superadmin.grados.show', $grado) }}"
-                               class="btn btn-sm btn-outline-info"
-                               title="Asignar materias">
-                                <i class="fas fa-tasks"></i>
+                               class="btn btn-sm btn-outline-primary"
+                               title="Ver detalle">
+                                <i class="fas fa-eye"></i>
                             </a>
                             <a href="{{ route('superadmin.grados.edit', $grado) }}"
                                class="btn btn-sm btn-outline-warning"

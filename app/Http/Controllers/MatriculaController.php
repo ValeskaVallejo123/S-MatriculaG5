@@ -34,51 +34,50 @@ class MatriculaController extends Controller
     // ────────────────────────────────────────────────────────────────────────
 
     public function index(Request $request)
-    {
-        $query = Matricula::with(['estudiante', 'padre']);
+{
+    $query = Matricula::with(['estudiante', 'padre']);
 
-        if ($request->filled('buscar')) {
-            $buscar = $request->buscar;
-            $query->whereHas('estudiante', function ($q) use ($buscar) {
-                $q->where('nombre1',   'like', "%{$buscar}%")
-                  ->orWhere('apellido1', 'like', "%{$buscar}%")
-                  ->orWhere('dni',       'like', "%{$buscar}%");
-            });
-        }
-
-        if ($request->filled('grado')) {
-            $query->whereHas('estudiante', function ($q) use ($request) {
-                $q->where('grado', $request->grado);
-            });
-        }
-
-        if ($request->filled('estado')) {
-            $query->where('estado', $request->estado);
-        }
-
-        if ($request->filled('anio')) {
-            $query->where('anio_lectivo', $request->anio);
-        }
-
-        $matriculas = $query->latest()->paginate(15);
-
-        // CORRECCIÓN: las estadísticas se calculan sobre TODA la tabla,
-        // no sobre la página actual, así que son correctas. Se agrupan
-        // en una sola consulta para evitar 3 queries separadas.
-        $estadisticas = Matricula::selectRaw("
-            SUM(estado = 'aprobada')  as aprobadas,
-            SUM(estado = 'pendiente') as pendientes,
-            SUM(estado = 'rechazada') as rechazadas
-        ")->first();
-
-        $aprobadas  = $estadisticas->aprobadas  ?? 0;
-        $pendientes = $estadisticas->pendientes ?? 0;
-        $rechazadas = $estadisticas->rechazadas ?? 0;
-
-        return view('matriculas.index', compact(
-            'matriculas', 'aprobadas', 'pendientes', 'rechazadas'
-        ));
+    if ($request->filled('buscar')) {
+        $buscar = $request->buscar;
+        $query->whereHas('estudiante', function ($q) use ($buscar) {
+            $q->where('nombre1',   'like', "%{$buscar}%")
+              ->orWhere('apellido1', 'like', "%{$buscar}%")
+              ->orWhere('dni',       'like', "%{$buscar}%");
+        });
     }
+
+    if ($request->filled('grado')) {
+        $query->whereHas('estudiante', function ($q) use ($request) {
+            $q->where('grado', $request->grado);
+        });
+    }
+
+    if ($request->filled('estado')) {
+        $query->where('estado', $request->estado);
+    }
+
+    if ($request->filled('anio')) {
+        $query->where('anio_lectivo', $request->anio);
+    }
+
+    $matriculas = $query->latest()->paginate(15);
+
+    $totalMatriculas = Matricula::count(); // ← agregado
+
+    $estadisticas = Matricula::selectRaw("
+        SUM(estado = 'aprobada')  as aprobadas,
+        SUM(estado = 'pendiente') as pendientes,
+        SUM(estado = 'rechazada') as rechazadas
+    ")->first();
+
+    $aprobadas  = $estadisticas->aprobadas  ?? 0;
+    $pendientes = $estadisticas->pendientes ?? 0;
+    $rechazadas = $estadisticas->rechazadas ?? 0;
+
+    return view('matriculas.index', compact(
+        'matriculas', 'totalMatriculas', 'aprobadas', 'pendientes', 'rechazadas' // ← agregado
+    ));
+}
 
     // ────────────────────────────────────────────────────────────────────────
     // CREATE

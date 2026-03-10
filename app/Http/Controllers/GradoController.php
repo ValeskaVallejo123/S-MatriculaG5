@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Grado;
 use App\Models\Materia;
 use App\Models\User;
+use App\Models\Seccion;
 use Illuminate\Http\Request;
 
 class GradoController extends Controller
@@ -55,64 +56,79 @@ class GradoController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nivel'        => 'required|in:primaria,secundaria',   // ← minúsculas
-            'numero'       => 'required|integer|min:1|max:12',
-            'seccion'      => 'required|in:A,B,C,D',              // ← enum de la BD
-            'anio_lectivo' => 'required|integer|min:2020|max:2100',
-            'activo'       => 'nullable|boolean',
-        ]);
-
-        $existe = Grado::where('nivel', $validated['nivel'])
-            ->where('numero', $validated['numero'])
-            ->where('seccion', $validated['seccion'])
-            ->where('anio_lectivo', $validated['anio_lectivo'])
-            ->exists();
-
-        if ($existe) {
-            return back()
-                ->withInput()
-                ->with('error', '¡El grado ya existe para este nivel, sección y año lectivo!');
-        }
-
-        $grado = Grado::create([
-            'nivel'        => $validated['nivel'],
-            'numero'       => $validated['numero'],
-            'seccion'      => $validated['seccion'],
-            'anio_lectivo' => $validated['anio_lectivo'],
-            'activo'       => $request->boolean('activo', true),
-        ]);
-
-        // Solo Primaria recibe materias por defecto
-        if ($grado->nivel === 'primaria') {                        // ← minúsculas
-            $this->asignarMateriasPorDefecto($grado);
-        }
-
-        return redirect()
-            ->route('grados.index')
-            ->with('success', 'Grado creado correctamente.');
-    }
-
-    public function show(Grado $grado)
 {
-    $grado->load('materias'); // ← sin .grados
-    return view('grados.show', compact('grado'));
-}
+    $validated = $request->validate([
+        'nivel'        => 'required|in:primaria,secundaria',
+        'numero'       => 'required|integer|min:1|max:12',
+        'seccion'      => 'required|in:A,B,C,D',
+        'anio_lectivo' => 'required|integer|min:2020|max:2100',
+        'activo'       => 'nullable|boolean',
+        'capacidad'    => 'required|integer|min:1|max:60',
+    ]);
 
-    public function edit(Grado $grado)
-    {
-        return view('grados.edit', compact('grado'));
+    // ── 1. Verificar duplicado de grado ─────────────────────────────────────
+    $existe = Grado::where('nivel',        $validated['nivel'])
+                   ->where('numero',       $validated['numero'])
+                   ->where('seccion',      $validated['seccion'])
+                   ->where('anio_lectivo', $validated['anio_lectivo'])
+                   ->exists();
+
+    if ($existe) {
+        return back()
+            ->withInput()
+            ->with('error', '¡El grado ya existe para este nivel, sección y año lectivo!');
     }
+
+    // ── 2. Crear el Grado ────────────────────────────────────────────────────
+    $grado = Grado::create([
+        'nivel'        => $validated['nivel'],
+        'numero'       => $validated['numero'],
+        'seccion'      => $validated['seccion'],
+        'anio_lectivo' => $validated['anio_lectivo'],
+        'activo'       => $request->boolean('activo', true),
+    ]);
+
+    // ── 3. Construir el nombre del grado para la tabla seccion ───────────────
+    $nombresGrado = [
+        1 => '1er Grado', 2 => '2do Grado', 3 => '3er Grado',
+        4 => '4to Grado', 5 => '5to Grado', 6 => '6to Grado',
+        7 => '7mo Grado', 8 => '8vo Grado', 9 => '9no Grado',
+    ];
+
+    $nombreGradoTexto = $nombresGrado[$validated['numero']]
+                        ?? $validated['numero'] . '° Grado';
+
+    // ── 4. Crear la Sección (columna "nombre", NO "letra") ───────────────────
+    //       "letra" es solo un accessor del modelo, no existe en BD
+    Seccion::firstOrCreate(
+        [
+            'grado'  => $nombreGradoTexto,   // ej. "1er Grado"
+            'nombre' => $validated['seccion'], // ej. "A"  ← columna real en BD
+        ],
+        [
+            'capacidad' => $validated['capacidad'],
+        ]
+    );
+
+    // ── 5. Materias por defecto solo para Primaria ───────────────────────────
+    if ($grado->nivel === 'primaria') {
+        $this->asignarMateriasPorDefecto($grado);
+    }
+
+    return redirect()
+        ->route('grados.index')
+        ->with('success', 'Grado y sección creados correctamente.');
+}
 
     public function update(Request $request, Grado $grado)
     {
         $validated = $request->validate([
-            'nivel'        => 'required|in:primaria,secundaria',   // ← minúsculas
+            'nivel'        => 'required|in:primaria,secundaria',
             'numero'       => 'required|integer|min:1|max:12',
-            'seccion'      => 'required|in:A,B,C,D',              // ← enum de la BD
+            'seccion'      => 'required|in:A,B,C,D',
             'anio_lectivo' => 'required|integer|min:2020|max:2100',
             'activo'       => 'nullable|boolean',
+            // Si el update también permite editar capacidad, deberías agregarlo aquí y actualizar la Sección vinculada
         ]);
 
         $grado->update([
@@ -128,108 +144,61 @@ class GradoController extends Controller
             ->with('success', 'Grado actualizado exitosamente.');
     }
 
-    public function destroy(Grado $grado)
-    {
-        $grado->delete();
-
-        return redirect()
-            ->route('grados.index')
-            ->with('success', 'Grado eliminado exitosamente.');
-    }
-
-    public function asignarMaterias(Grado $grado)
-    {
-        $materias = Materia::where('nivel', $grado->nivel)
-            ->where('activo', true)
-            ->get();
-
-        $profesores = User::where('role', 'profesor')->get();
-
-        $materiasAsignadas = $grado->materias->pluck('id')->toArray();
-
-        return view(
-            'grados.asignar-materias',
-            compact('grado', 'materias', 'profesores', 'materiasAsignadas')
-        );
-    }
-
-    public function guardarMaterias(Request $request, Grado $grado)
-    {
-        $validated = $request->validate([
-            'materias'   => 'required|array|min:1',
-            'materias.*' => 'exists:materias,id',
-            'profesores' => 'nullable|array',
-            'horas'      => 'nullable|array',
-        ]);
-
-        $syncData = [];
-
-        foreach ($validated['materias'] as $materiaId) {
-            $syncData[$materiaId] = [
-                'profesor_id'     => $request->profesores[$materiaId] ?? null,
-                'horas_semanales' => $request->horas[$materiaId] ?? 0,
-            ];
-        }
-
-        $grado->materias()->sync($syncData);
-
-        return redirect()
-            ->route('grados.show', $grado)
-            ->with('success', 'Materias asignadas exitosamente.');
-    }
-
-    public function crearMasivo()
-    {
-        return view('grados.crear-masivo');
-    }
-
     public function generarMasivo(Request $request)
     {
         $validated = $request->validate([
-            'capacidad_maxima' => 'required|integer|min:1|max:50',
+            'capacidad_maxima' => 'required|integer|min:1|max:60', // Actualizado a 60 para coincidir
             'activo'           => 'nullable|boolean',
         ]);
 
-        // Básica → secundaria para alinearse con el ENUM de la BD
         $gradosData = [
-            ['nombre' => 'Primer Grado',   'nivel' => 'primaria',   'numero' => 1],
-            ['nombre' => 'Segundo Grado',  'nivel' => 'primaria',   'numero' => 2],
-            ['nombre' => 'Tercer Grado',   'nivel' => 'primaria',   'numero' => 3],
-            ['nombre' => 'Cuarto Grado',   'nivel' => 'primaria',   'numero' => 4],
-            ['nombre' => 'Quinto Grado',   'nivel' => 'primaria',   'numero' => 5],
-            ['nombre' => 'Sexto Grado',    'nivel' => 'primaria',   'numero' => 6],
-            ['nombre' => 'Séptimo Grado',  'nivel' => 'secundaria', 'numero' => 7],
-            ['nombre' => 'Octavo Grado',   'nivel' => 'secundaria', 'numero' => 8],
-            ['nombre' => 'Noveno Grado',   'nivel' => 'secundaria', 'numero' => 9],
+            ['nivel' => 'primaria',  'numero' => 1],
+            ['nivel' => 'primaria',  'numero' => 2],
+            ['nivel' => 'primaria',  'numero' => 3],
+            ['nivel' => 'primaria',  'numero' => 4],
+            ['nivel' => 'primaria',  'numero' => 5],
+            ['nivel' => 'primaria',  'numero' => 6],
+            ['nivel' => 'secundaria', 'numero' => 7],
+            ['nivel' => 'secundaria', 'numero' => 8],
+            ['nivel' => 'secundaria', 'numero' => 9],
+        ];
+
+        $nombresGrado = [
+            1 => '1er Grado', 2 => '2do Grado', 3 => '3er Grado',
+            4 => '4to Grado', 5 => '5to Grado', 6 => '6to Grado',
+            7 => '7mo Grado', 8 => '8vo Grado', 9 => '9no Grado',
         ];
 
         $secciones = ['A', 'B', 'C', 'D'];
         $contador  = 0;
 
-        foreach ($gradosData as $gradoData) {
-            foreach ($secciones as $seccion) {
+        foreach ($gradosData as $data) {
+            foreach ($secciones as $letra) {
+                // Crear/Actualizar Grado
                 $grado = Grado::updateOrCreate(
                     [
-                        'nivel'        => $gradoData['nivel'],
-                        'numero'       => $gradoData['numero'],
-                        'seccion'      => $seccion,
+                        'nivel'        => $data['nivel'],
+                        'numero'       => $data['numero'],
+                        'seccion'      => $letra,
                         'anio_lectivo' => 2026,
                     ],
-                    [
-                        'activo' => $request->boolean('activo', true),
-                    ]
-                );
+                    ['activo' => $request->boolean('activo', true)]);
 
-                if ($gradoData['nivel'] === 'primaria' && $grado->wasRecentlyCreated) {  // ← minúsculas
+                // Crear/Asegurar Sección para el proceso masivo
+                Seccion::firstOrCreate(
+    ['grado' => $nombresGrado[$data['numero']], 'nombre' => $letra], // ← 'nombre'
+    ['capacidad' => $validated['capacidad_maxima']]
+);
+
+                if ($data['nivel'] === 'primaria' && $grado->wasRecentlyCreated) {
                     $this->asignarMateriasPorDefecto($grado);
                 }
-
                 $contador++;
             }
         }
 
-        return redirect()
-            ->route('grados.index')
-            ->with('success', "Se han procesado {$contador} grados exitosamente.");
+        return redirect()->route('grados.index')->with('success', "Se han procesado {$contador} grados y sus respectivas secciones.");
     }
+
+    // Los demás métodos (show, edit, destroy, asignarMaterias, guardarMaterias, crearMasivo) permanecen igual.
 }

@@ -6,24 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    Schema::create('seccion', function (Blueprint $table) {
-        $table->id();
-        $table->string('nombre');
-        $table->integer('capacidad')->default(30);
-        $table->timestamps();
-    });
-}
+    {
+        Schema::table('seccion', function (Blueprint $table) {
+            $table->id();
 
-    /**
-     * Reverse the migrations.
-     */
+            // Grado al que pertenece la sección (ej: '1er Grado', '2do Grado'...)
+            $table->string('grado', 20)->after('id');
+
+            // Nombre/letra de la sección (ej: 'A', 'B', 'C')
+            $table->string('nombre', 10);
+
+            // Alias para compatibilidad con las vistas (letra = nombre)
+            // Se usa ->virtualAs() para que sea un alias sin columna extra
+            // Si prefieres columna real, cambia a: $table->string('letra', 10);
+            $table->string('letra', 10)->virtualAs('nombre');
+
+            // Capacidad máxima de alumnos
+            $table->unsignedSmallInteger('capacidad')->default(30);
+
+            $table->timestamps();
+
+            // Evitar secciones duplicadas: mismo grado + misma letra
+            $table->unique(['grado', 'nombre']);
+        });
+    }
+
     public function down(): void
     {
-        Schema::dropIfExists('seccion');
+        Schema::dropIfExists('secciones');
     }
 };

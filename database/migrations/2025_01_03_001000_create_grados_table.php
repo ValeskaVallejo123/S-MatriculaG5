@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('grados', function (Blueprint $table) {
+        Schema::create('grado', function (Blueprint $table) {
             $table->id();
 
             $table->enum('nivel', ['primaria', 'secundaria']);
@@ -28,13 +28,13 @@ return new class extends Migration
         });
 
         // índice único para evitar duplicados
-        Schema::table('grados', function (Blueprint $table) {
+        Schema::table('grado', function (Blueprint $table) {
             $table->unique(['nivel', 'numero', 'seccion', 'anio_lectivo']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('grados');
+        Schema::dropIfExists('grado');
     }
 };
