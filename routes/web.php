@@ -108,7 +108,7 @@ Route::get('/password/solicitar',           [PasswordResetController::class, 'sh
 Route::post('/password/solicitar',          [PasswordResetController::class, 'sendResetLink'])->name('password.enviar');
 Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
 Route::post('/password/restablecer',        [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
-Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
+//Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
 
 /*
 |--------------------------------------------------------------------------
@@ -131,7 +131,7 @@ Route::middleware(['auth'])->group(function () {
             'padre'       => 'padre.dashboard',
             'user'        => 'admin.dashboard',
         ];
-        return redirect()->route($roleRouteMap[Auth::user()->role] ?? 'inicio');
+        return redirect()->route($roleRouteMap[Auth::user()->user_type] ?? 'inicio');
     })->name('dashboard');
 
     /*
@@ -145,9 +145,11 @@ Route::middleware(['auth'])->group(function () {
     /*
     |----------------------------------------------------------------------
     | CALENDARIO
+    | — La vista es accesible para admin y superadmin
+    | — Las operaciones CRUD las valida el controlador (solo superadmin)
     |----------------------------------------------------------------------
     */
-    Route::get('/calendario',                     fn () => view('calendario-admin'))->name('calendario');
+    Route::get('/calendario',                     [CalendarioController::class, 'index'])->name('calendario');
     Route::get('/calendario/eventos',             [CalendarioController::class, 'obtenerEventos']);
     Route::post('/calendario/eventos',            [CalendarioController::class, 'store']);
     Route::put('/calendario/eventos/{id}',        [CalendarioController::class, 'actualizar']);
@@ -222,9 +224,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
         Route::post('/{matricula}/rechazar',  [MatriculaController::class, 'rechazar'])->name('rechazar');
         Route::post('/{matricula}/cancelar',  [MatriculaController::class, 'cancelar'])->name('cancelar');
-        Route ::post('/matricula}/pdf',      [MatriculaController::class, 'exportarPdf'])->name('pdf');
-        Route::patch('/{matricula}/aprobar',   [MatriculaController::class, 'aprobar'])->name('aprobar');
-
+        Route::post('/{matricula}/pdf',       [MatriculaController::class, 'exportarPdf'])->name('pdf');
+        Route::patch('/{matricula}/aprobar',  [MatriculaController::class, 'aprobar'])->name('aprobar');
     });
 
     /*
@@ -255,13 +256,6 @@ Route::middleware(['auth'])->group(function () {
         'update'  => 'secciones.update',
         'destroy' => 'secciones.destroy',
     ]);
-
-    /*
-    |----------------------------------------------------------------------
-    | CUPOS MÁXIMOS
-    |----------------------------------------------------------------------
-    */
-    Route::resource('cupos_maximos', CupoMaximoController::class);
 
     /*
     |----------------------------------------------------------------------
@@ -424,7 +418,6 @@ Route::middleware(['auth'])->group(function () {
         /*
         |------------------------------------------------------------------
         | HORARIOS DE GRADO (superadmin)
-        | ORDEN CRÍTICO: más específicas primero, index al final
         |------------------------------------------------------------------
         */
         Route::get('horarios_grado/{grado}/{jornada}/pdf',
@@ -456,6 +449,21 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/{profesor}',      [ProfesorMateriaController::class, 'update'])->name('update');
             Route::delete('/{profesor}',   [ProfesorMateriaController::class, 'destroy'])->name('destroy');
         });
+
+        /*
+        |------------------------------------------------------------------
+        | CUPOS MÁXIMOS — solo superadmin
+        |------------------------------------------------------------------
+        */
+        Route::resource('cupos_maximos', CupoMaximoController::class)->names([
+            'index'   => 'cupos_maximos.index',
+            'create'  => 'cupos_maximos.create',
+            'store'   => 'cupos_maximos.store',
+            'show'    => 'cupos_maximos.show',
+            'edit'    => 'cupos_maximos.edit',
+            'update'  => 'cupos_maximos.update',
+            'destroy' => 'cupos_maximos.destroy',
+        ]);
 
     }); // fin superadmin
 
@@ -491,13 +499,12 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('profesor')->name('profesor.')->middleware('role:profesor')->group(function () {
-    Route::get('/dashboard',      [ProfesorDashboardController::class,      'index'])->name('dashboard');
-    Route::get('/mi-horario',     [HorarioController::class,                'miHorario'])->name('miHorario');
-    Route::get('/mis-cursos',     [ProfesorGradosController::class,         'index'])->name('mis-cursos');  // ← AGREGAR ESTA
-    Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'indexProfesor'])->name('notificaciones.index');
-    //Route::get('/calificaciones', [ProfesorDashboardController::class,      'calificaciones'])->name('calificaciones');
-    Route::get('/mis-estudiantes/{grado}/{seccion}', [ProfesorEstudianteController::class, 'index'])->name('mis-estudiantes');
-   });
+        Route::get('/dashboard',      [ProfesorDashboardController::class,       'index'])->name('dashboard');
+        Route::get('/mi-horario',     [HorarioController::class,                 'miHorario'])->name('miHorario');
+        Route::get('/mis-cursos',     [ProfesorGradosController::class,          'index'])->name('mis-cursos');
+        Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'indexProfesor'])->name('notificaciones.index');
+        Route::get('/mis-estudiantes/{grado}/{seccion}', [ProfesorEstudianteController::class, 'index'])->name('mis-estudiantes');
+    });
 
     /*
     |----------------------------------------------------------------------
@@ -506,10 +513,8 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('estudiante')->name('estudiante.')->middleware('role:estudiante')->group(function () {
         Route::get('/dashboard',      fn () => view('estudiante.dashboard.index'))->name('dashboard');
-        Route::get('/mi-horario',     [HorarioController::class,                'miHorario'])->name('miHorario');
-        //Route::get('/horario',        [HorarioController::class,                'horarioEstudiante'])->name('horario');
-        Route::get('/mi-horario', [HorarioController::class, 'miHorario'])->name('miHorario');
-        Route::get('/calificaciones', [EstudianteController::class,             'misNotas'])->name('calificaciones');
+        Route::get('/mi-horario',     [HorarioController::class,                 'miHorario'])->name('miHorario');
+        Route::get('/calificaciones', [EstudianteController::class,              'misNotas'])->name('calificaciones');
         Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'index'])->name('notificaciones.index');
     });
 

@@ -418,11 +418,11 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('cupos_maximos.index') }}"
-               class="menu-link {{ request()->routeIs('cupos_maximos.*') ? 'active' : '' }}">
-                <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
-            </a>
-        </li>
+    <a href="{{ route('superadmin.cupos_maximos.index') }}"
+       class="menu-link {{ request()->routeIs('superadmin.cupos_maximos.*') ? 'active' : '' }}">
+        <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
+    </a>
+</li>
 
         <li class="menu-section-title">CALENDARIO</li>
         <li class="menu-item">
