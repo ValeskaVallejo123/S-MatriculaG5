@@ -12,7 +12,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BuscarEstudianteController;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\CambiarContraseniaController;
-//use App\Http\Controllers\CargaDocenteController;
 use App\Http\Controllers\CicloController;
 use App\Http\Controllers\ConsultaestudiantexcursoController;
 use App\Http\Controllers\CupoMaximoController;
@@ -57,7 +56,6 @@ Route::get('/', fn () => redirect()->route('login'));
 |=============================================================================
 | PÁGINAS PÚBLICAS GENERALES
 |=============================================================================
-| Accesibles por cualquier visitante sin necesidad de iniciar sesión.
 */
 Route::get('/inicio',    fn () => view('plantilla'))->name('inicio');
 Route::get('/plantilla', fn () => view('plantilla'))->name('plantilla');
@@ -72,8 +70,6 @@ Route::get('/calendario/eventos/public', [CalendarioController::class, 'eventosP
 |=============================================================================
 | PORTAL PÚBLICO
 |=============================================================================
-| Sección informativa del colegio: acerca de, contacto, horarios, profesores,
-| plan de estudios y formulario de matrícula pública.
 */
 Route::prefix('portal')->name('portal.')->group(function () {
     Route::view('/',          'portal.inicio')->name('inicio');
@@ -105,7 +101,7 @@ Route::post('/consultar-estudiante', [EstudianteController::class, 'consultarPub
 
 /*
 |=============================================================================
-| AUTENTICACIÓN — Login / Logout
+| AUTENTICACIÓN
 |=============================================================================
 */
 Route::get('/login',   [LoginController::class, 'showLoginForm'])->name('login');
@@ -121,11 +117,11 @@ Route::get('/password/solicitar',           [PasswordResetController::class, 'sh
 Route::post('/password/solicitar',          [PasswordResetController::class, 'sendResetLink'])->name('password.enviar');
 Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
 Route::post('/password/restablecer',        [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
-Route::view('/password/recuperar',          'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
+Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
 
 /*
 |=============================================================================
-| RUTAS PRIVADAS — Requieren autenticación (middleware: auth)
+| RUTAS PRIVADAS — Requieren autenticación
 |=============================================================================
 */
 Route::middleware(['auth'])->group(function () {
@@ -149,7 +145,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------
-    | CAMBIAR CONTRASEÑA — Disponible para todos los roles autenticados
+    | CAMBIAR CONTRASEÑA — Disponible para todos los roles
     |-------------------------------------------------------------------------
     */
     Route::get('cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
@@ -157,7 +153,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------
-    | CALENDARIO — Gestión de eventos (todos los roles autenticados)
+    | CALENDARIO
     |-------------------------------------------------------------------------
     */
     Route::get('/calendario',                     fn () => view('calendario-admin'))->name('calendario');
@@ -168,7 +164,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------
-    | NOTIFICACIONES — Ver y marcar como leídas (todos los roles)
+    | NOTIFICACIONES
     |-------------------------------------------------------------------------
     */
     Route::prefix('notificaciones')->name('notificaciones.')->group(function () {
@@ -204,7 +200,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------
-    | PROFESORES — CRUD
+    | PROFESORES
     |-------------------------------------------------------------------------
     */
     Route::resource('profesores', ProfesorController::class)
@@ -212,14 +208,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------
-    | CARGA DOCENTE
-    |-------------------------------------------------------------------------
-    */
-    //Route::get('carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
-
-    /*
-    |-------------------------------------------------------------------------
-    | PADRES / TUTORES — CRUD y vinculación con estudiantes
+    | PADRES / TUTORES
     |-------------------------------------------------------------------------
     */
     Route::get('/padres/buscar',            [PadreController::class, 'buscar'])->name('padres.buscar');
@@ -244,7 +233,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
         Route::post('/{matricula}/rechazar',  [MatriculaController::class, 'rechazar'])->name('rechazar');
         Route::post('/{matricula}/cancelar',  [MatriculaController::class, 'cancelar'])->name('cancelar');
-        Route::post('/{matricula}/pdf',       [MatriculaController::class, 'exportarPdf'])->name('pdf');  // corregido: arch1 tenía '/matricula}/pdf'
+        Route::post('/{matricula}/pdf',       [MatriculaController::class, 'exportarPdf'])->name('pdf');
         Route::patch('/{matricula}/aprobar',  [MatriculaController::class, 'aprobar'])->name('aprobar');
     });
 
@@ -326,7 +315,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------
-    | HORARIOS DE GRADO — Rutas manuales con 2 parámetros (grado + jornada)
+    | HORARIOS DE GRADO
     | ORDEN CRÍTICO: más específicas primero, index al final
     |-------------------------------------------------------------------------
     */
@@ -353,7 +342,7 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------
-    | CALIFICACIONES — Registro de notas
+    | CALIFICACIONES
     |-------------------------------------------------------------------------
     */
     Route::get('registrar-calificaciones',                     [RegistrarCalificacionController::class, 'create'])->name('registrarcalificaciones.create');
@@ -365,7 +354,6 @@ Route::middleware(['auth'])->group(function () {
     /*
     |-------------------------------------------------------------------------
     | PANEL GENERAL DE ADMINISTRADORES
-    | (accesible desde ambos roles: admin y superadmin)
     |-------------------------------------------------------------------------
     */
     Route::prefix('admins')->name('admins.')->group(function () {
@@ -397,17 +385,18 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('superadmin')->name('superadmin.')->middleware('role:super_admin')->group(function () {
 
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
-
-        // Perfil
-        Route::get('/perfil',          [SuperAdminController::class, 'perfil'])->name('perfil');
-        Route::put('/perfil',          [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
+        Route::get('/perfil',    [SuperAdminController::class, 'perfil'])->name('perfil');
+        Route::put('/perfil',    [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
         Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
 
-        // Cambiar contraseña propia del superadmin
         Route::get('/cambiarcontrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
         Route::put('/cambiarcontrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
 
-        // Gestión de administradores
+        /*
+        |---------------------------------------------------------------------
+        | ADMINISTRADORES
+        |---------------------------------------------------------------------
+        */
         Route::get('/administradores/permisos',         [SuperAdminController::class, 'permisosRoles'])->name('administradores.permisos');
         Route::get('/administradores/permisos-roles',   [SuperAdminController::class, 'permisosRoles'])->name('administradores.permisos-roles');
         Route::put('/administradores/permisos/guardar', [SuperAdminController::class, 'actualizarPermisos'])->name('administradores.permisos.update');
@@ -419,7 +408,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/administradores/{administrador}',        [SuperAdminController::class, 'update'])->name('administradores.update');
         Route::delete('/administradores/{administrador}',     [SuperAdminController::class, 'destroy'])->name('administradores.destroy');
 
-        // Gestión de usuarios
+        /*
+        |---------------------------------------------------------------------
+        | USUARIOS
+        |---------------------------------------------------------------------
+        */
         Route::get('usuarios/pendientes',       [UsuarioController::class, 'pendientes'])->name('usuarios.pendientes');
         Route::post('usuarios/{id}/aprobar',    [UsuarioController::class, 'aprobar'])->name('usuarios.aprobar');
         Route::delete('usuarios/{id}/rechazar', [UsuarioController::class, 'rechazar'])->name('usuarios.rechazar');
@@ -435,7 +428,11 @@ Route::middleware(['auth'])->group(function () {
             'destroy' => 'usuarios.destroy',
         ]);
 
-        // Grados (superadmin)
+        /*
+        |---------------------------------------------------------------------
+        | GRADOS (superadmin)
+        |---------------------------------------------------------------------
+        */
         Route::get('grados/crear-masivo',    [GradoController::class, 'crearMasivo'])->name('grados.crear-masivo');
         Route::post('grados/generar-masivo', [GradoController::class, 'generarMasivo'])->name('grados.generar-masivo');
         Route::resource('grados', GradoController::class)->names([
@@ -450,7 +447,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('grados/{grado}/asignar-materias',  [GradoController::class, 'asignarMaterias'])->name('grados.asignar-materias');
         Route::post('grados/{grado}/guardar-materias', [GradoController::class, 'guardarMaterias'])->name('grados.guardar-materias');
 
-        // Materias (superadmin)
+        /*
+        |---------------------------------------------------------------------
+        | MATERIAS (superadmin)
+        |---------------------------------------------------------------------
+        */
         Route::resource('materias', MateriaController::class)->names([
             'index'   => 'materias.index',
             'create'  => 'materias.create',
@@ -461,14 +462,23 @@ Route::middleware(['auth'])->group(function () {
             'destroy' => 'materias.destroy',
         ]);
 
-        // Horarios de grado (superadmin) — orden crítico: específicas primero
+        /*
+        |---------------------------------------------------------------------
+        | HORARIOS DE GRADO (superadmin)
+        | ORDEN CRÍTICO: más específicas primero, index al final
+        |---------------------------------------------------------------------
+        */
         Route::get('horarios_grado/{grado}/{jornada}/pdf',    [HorarioGradoController::class, 'exportarPdf'])->name('horarios_grado.pdf');
         Route::get('horarios_grado/{grado}/{jornada}/editar', [HorarioGradoController::class, 'edit'])->name('horarios_grado.edit');
         Route::put('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'update'])->name('horarios_grado.update');
         Route::get('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'show'])->name('horarios_grado.show');
         Route::get('horarios_grado',                          [HorarioGradoController::class, 'index'])->name('horarios_grado.index');
 
-        // Asignación de profesores a materias (superadmin)
+        /*
+        |---------------------------------------------------------------------
+        | PROFESOR-MATERIA (superadmin)
+        |---------------------------------------------------------------------
+        */
         Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
             Route::get('/',                [ProfesorMateriaController::class, 'index'])->name('index');
             Route::get('/create',          [ProfesorMateriaController::class, 'create'])->name('create');
@@ -538,7 +548,7 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('estudiante')->name('estudiante.')->middleware('role:estudiante')->group(function () {
         Route::get('/dashboard',      fn () => view('estudiante.dashboard.index'))->name('dashboard');
-        Route::get('/mi-horario',     [HorarioController::class,                 'miHorario'])->name('miHorario'); // sin duplicado
+        Route::get('/mi-horario',     [HorarioController::class,                 'miHorario'])->name('miHorario');
         Route::get('/calificaciones', [EstudianteController::class,              'misNotas'])->name('calificaciones');
         Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'index'])->name('notificaciones.index');
     }); // fin estudiante

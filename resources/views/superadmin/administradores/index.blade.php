@@ -5,11 +5,15 @@
 
 @section('topbar-actions')
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cesia-dev
     <a href="{{ route('superadmin.administradores.permisos') }}" class="adm-btn-outline">
         <i class="fas fa-shield-alt"></i> Permisos y Roles
     </a>
     <a href="{{ route('superadmin.administradores.create') }}" class="adm-btn-solid">
         <i class="fas fa-plus"></i> Nuevo Administrador
+<<<<<<< HEAD
 =======
     <a href="{{ route('superadmin.administradores.permisos') }}"
        style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem; margin-right: 0.5rem;">
@@ -21,6 +25,8 @@
         <i class="fas fa-plus"></i>
         Nuevo Administrador
 >>>>>>> cesia-dev
+=======
+>>>>>>> cesia-dev
     </a>
 @endsection
 
@@ -30,7 +36,6 @@
 
 .adm-wrap { font-family: 'Inter', sans-serif; }
 
-/* Topbar btns */
 .adm-btn-outline {
     display: inline-flex; align-items: center; gap: .4rem;
     padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
@@ -44,9 +49,8 @@
     background: linear-gradient(135deg, #4ec7d2, #00508f);
     color: #fff; border: none; text-decoration: none; transition: opacity .15s;
 }
-.adm-btn-solid:hover { opacity: .88; }
+.adm-btn-solid:hover { opacity: .88; color: #fff; }
 
-/* ── Stats ── */
 .adm-stats {
     display: grid; grid-template-columns: repeat(3,1fr);
     gap: 1rem; margin-bottom: 1.5rem;
@@ -66,7 +70,19 @@
 .adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
 .adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
 
-/* ── Card ── */
+.adm-toolbar {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: .85rem 1.25rem; margin-bottom: 1.25rem;
+    display: flex; align-items: center; justify-content: flex-end;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.adm-perpage { display: flex; align-items: center; gap: .5rem; font-size: .8rem; color: #64748b; }
+.adm-perpage select {
+    padding: .3rem .6rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
+}
+.adm-perpage select:focus { border-color: #4ec7d2; }
+
 .adm-card {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
     overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
@@ -78,40 +94,37 @@
 .adm-card-head i { color: #4ec7d2; font-size: 1rem; }
 .adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
 
-/* ── Table ── */
 .adm-tbl { width: 100%; border-collapse: collapse; }
-
 .adm-tbl thead th {
-    background: #f8fafc;
-    padding: .6rem 1rem;
+    background: #f8fafc; padding: .6rem 1rem;
     font-size: .7rem; font-weight: 700; letter-spacing: .07em;
     text-transform: uppercase; color: #64748b;
-    border-bottom: 1.5px solid #e2e8f0;
-    white-space: nowrap;
+    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
 }
 .adm-tbl thead th.tc { text-align: center; }
-
 .adm-tbl tbody td {
-    padding: .65rem 1rem;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: .82rem; color: #334155;
-    vertical-align: middle;
+    padding: .65rem 1rem; border-bottom: 1px solid #f1f5f9;
+    font-size: .82rem; color: #334155; vertical-align: middle;
 }
 .adm-tbl tbody td.tc { text-align: center; }
 .adm-tbl tbody tr:last-child td { border-bottom: none; }
 .adm-tbl tbody tr:hover { background: #fafbfc; }
 
-/* Avatar */
+.adm-num {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: #f1f5f9; color: #64748b;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700;
+}
 .adm-av {
     width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
     background: linear-gradient(135deg, #4ec7d2, #00508f);
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; color: #fff; font-size: .9rem;
 }
-.adm-name { font-weight: 600; color: #0f172a; font-size: .82rem; }
+.adm-name  { font-weight: 600; color: #0f172a; font-size: .82rem; }
 .adm-email { font-size: .75rem; color: #64748b; }
 
-/* Badges */
 .bpill {
     display: inline-flex; align-items: center; gap: .25rem;
     padding: .22rem .65rem; border-radius: 999px;
@@ -123,28 +136,44 @@
 .b-indigo { background: #eef2ff; color: #4f46e5; }
 .b-amber  { background: #fffbeb; color: #92400e; }
 
-/* Action btns */
 .act-btn {
     display: inline-flex; align-items: center; justify-content: center;
     width: 30px; height: 30px; border-radius: 7px; border: none;
-    cursor: pointer; font-size: .75rem; text-decoration: none;
-    transition: all .15s;
+    cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
 }
 .act-btn:hover { transform: translateY(-1px); }
-.act-edit   { background: #e8f8f9; color: #00508f; }
-.act-edit:hover   { background: #4ec7d2; color: #fff; }
-.act-del    { background: #fef2f2; color: #ef4444; }
-.act-del:hover    { background: #ef4444; color: #fff; }
+.act-edit { background: #e8f8f9; color: #00508f; }
+.act-edit:hover { background: #4ec7d2; color: #fff; }
+.act-del  { background: #fef2f2; color: #ef4444; }
+.act-del:hover  { background: #ef4444; color: #fff; }
 
-/* Empty */
 .adm-empty { padding: 3.5rem 1rem; text-align: center; }
 .adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
 .adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
+
+.adm-footer {
+    padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafafa; flex-wrap: wrap; gap: .5rem;
+}
+.adm-pages { font-size: .78rem; color: #94a3b8; }
+
+.pagination { margin: 0; gap: 3px; display: flex; }
+.pagination .page-link {
+    border-radius: 7px; padding: .3rem .65rem;
+    font-size: .78rem; font-weight: 500;
+    border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
+}
+.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-color: #4ec7d2; color: #fff;
+}
+.pagination .page-item.disabled .page-link { opacity: .45; }
 </style>
 @endpush
 
 @section('content')
-<<<<<<< HEAD
 <div class="adm-wrap">
 
     {{-- Stats --}}
@@ -155,6 +184,7 @@
             </div>
             <div>
                 <div class="adm-stat-lbl">Total</div>
+<<<<<<< HEAD
                 <div class="adm-stat-num">{{ $administradores->count() }}</div>
 =======
 <div class="container-fluid">
@@ -175,6 +205,9 @@
                     </div>
                 </div>
 >>>>>>> cesia-dev
+=======
+                <div class="adm-stat-num">{{ $administradores->total() }}</div>
+>>>>>>> cesia-dev
             </div>
         </div>
         <div class="adm-stat">
@@ -183,7 +216,7 @@
             </div>
             <div>
                 <div class="adm-stat-lbl">Super Admins</div>
-                <div class="adm-stat-num">{{ $administradores->where('is_super_admin', true)->count() }}</div>
+                <div class="adm-stat-num">{{ $administradores->getCollection()->where('is_super_admin', true)->count() }}</div>
             </div>
         </div>
         <div class="adm-stat">
@@ -192,12 +225,26 @@
             </div>
             <div>
                 <div class="adm-stat-lbl">Administradores</div>
-                <div class="adm-stat-num">{{ $administradores->where('is_super_admin', false)->count() }}</div>
+                <div class="adm-stat-num">{{ $administradores->getCollection()->where('is_super_admin', false)->count() }}</div>
             </div>
         </div>
     </div>
 
-    {{-- Table --}}
+    {{-- Toolbar --}}
+    <div class="adm-toolbar">
+        <div class="adm-perpage">
+            <label>Mostrar:</label>
+            <select onchange="cambiarPerPage(this.value)">
+                @foreach([10, 25, 50] as $op)
+                    <option value="{{ $op }}" {{ request('per_page', 10) == $op ? 'selected' : '' }}>
+                        {{ $op }} por página
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    {{-- Tabla --}}
     <div class="adm-card">
         <div class="adm-card-head">
             <i class="fas fa-user-shield"></i>
@@ -207,6 +254,7 @@
             <table class="adm-tbl">
                 <thead>
                     <tr>
+                        <th class="tc">#</th>
                         <th>Administrador</th>
                         <th>Email</th>
                         <th class="tc">Rol</th>
@@ -216,11 +264,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($administradores as $admin)
+                    @forelse($administradores as $index => $admin)
                     <tr>
+                        <td class="tc">
+                            <span class="adm-num">{{ $administradores->firstItem() + $index }}</span>
+                        </td>
                         <td>
                             <div style="display:flex;align-items:center;gap:.65rem;">
-                                <div class="adm-av">{{ substr($admin->name,0,1) }}</div>
+                                <div class="adm-av">{{ strtoupper(substr($admin->name,0,1)) }}</div>
                                 <div>
                                     <div class="adm-name">{{ $admin->name }}</div>
                                     @if($admin->is_protected)
@@ -229,12 +280,9 @@
                                         </span>
                                     @endif
                                 </div>
-<<<<<<< HEAD
                             </div>
                         </td>
-
                         <td class="adm-email">{{ $admin->email }}</td>
-
                         <td class="tc">
                             @if($admin->is_super_admin)
                                 <span class="bpill b-red"><i class="fas fa-crown"></i> Super Admin</span>
@@ -242,7 +290,6 @@
                                 <span class="bpill b-blue"><i class="fas fa-user-shield"></i> Administrador</span>
                             @endif
                         </td>
-
                         <td class="tc">
                             @php $perms = is_array($admin->permissions) ? count($admin->permissions) : 0; @endphp
                             @if($admin->is_super_admin)
@@ -251,11 +298,11 @@
                                 <span class="bpill b-indigo"><i class="fas fa-list"></i> {{ $perms }}</span>
                             @endif
                         </td>
-
                         <td class="tc">
-                            <span class="bpill b-green"><i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle;"></i> Activo</span>
+                            <span class="bpill b-green">
+                                <i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle;"></i> Activo
+                            </span>
                         </td>
-
                         <td class="tc">
                             @if(!$admin->is_protected)
                                 <div style="display:inline-flex;gap:.4rem;align-items:center;">
@@ -265,54 +312,6 @@
                                     </a>
                                     <button type="button"
                                             class="act-btn act-del"
-=======
-                            </td>
-                            <td class="px-4 py-3" style="color: #64748b; font-size: 0.875rem;">
-                                <i class="fas fa-envelope me-2" style="color: #4ec7d2;"></i>{{ $admin->email }}
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                @if($admin->is_super_admin)
-                                    <span class="badge" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);">
-                                        <i class="fas fa-crown me-1"></i>Super Admin
-                                    </span>
-                                @else
-                                    <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(78, 199, 210, 0.3);">
-                                        <i class="fas fa-user-shield me-1"></i>Administrador
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                @php
-                                    $permisosActivos = is_array($admin->permissions) ? count($admin->permissions) : 0;
-                                @endphp
-                                @if($admin->is_super_admin)
-                                    <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">
-                                        <i class="fas fa-infinity me-1"></i>Todos
-                                    </span>
-                                @else
-                                    <span class="badge" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);">
-                                        <i class="fas fa-list-check me-1"></i>{{ $permisosActivos }}
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.5rem 0.875rem; border-radius: 8px; font-size: 0.813rem; font-weight: 600; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">
-                                    <i class="fas fa-check-circle me-1"></i>Activo
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                @if(!$admin->is_protected)
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a href="{{ route('superadmin.administradores.edit', $admin->id) }}"
-                                       class="btn btn-sm"
-                                       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; padding: 0.5rem 0.875rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(78, 199, 210, 0.3);"
-                                       title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button type="button"
-                                            class="btn btn-sm"
-                                            style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; padding: 0.5rem 0.875rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);"
->>>>>>> cesia-dev
                                             data-route="{{ route('superadmin.administradores.destroy', $admin->id) }}"
                                             data-message="¿Estás seguro de eliminar a este administrador?"
                                             data-name="{{ $admin->name }}"
@@ -330,7 +329,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="adm-empty">
                                 <i class="fas fa-users"></i>
                                 <p>No hay administradores registrados</p>
@@ -341,12 +340,19 @@
                 </tbody>
             </table>
         </div>
-    </div>
 
+        @if($administradores->hasPages())
+        <div class="adm-footer">
+            <span class="adm-pages">
+                Mostrando {{ $administradores->firstItem() }}–{{ $administradores->lastItem() }}
+                de {{ $administradores->total() }} registros
+            </span>
+            {{ $administradores->appends(request()->query())->links() }}
+        </div>
+        @endif
+
+    </div>
 </div>
-<<<<<<< HEAD
-@endsection
-=======
 
 @push('styles')
 <style>
@@ -371,4 +377,18 @@
 </style>
 @endpush
 @endsection
+<<<<<<< HEAD
+>>>>>>> cesia-dev
+=======
+
+@push('scripts')
+<script>
+function cambiarPerPage(valor) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', valor);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
+</script>
+@endpush
 >>>>>>> cesia-dev

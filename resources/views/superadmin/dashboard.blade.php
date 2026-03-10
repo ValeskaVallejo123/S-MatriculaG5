@@ -11,8 +11,7 @@
             $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
             $displayRole = $isSuperAdmin ? 'Super Administrador' : ucfirst($user->role ?? 'Usuario');
         @endphp
-
-        <span class="badge bg-primary" style="padding: 0.5rem 1rem; font-weight: 500;">
+        <span class="badge bg-primary" style="padding: .85rem .75rem; font-weight: 800;">
             <i class="fas fa-user-shield me-1"></i> {{ $displayRole }}
         </span>
     </div>
@@ -110,8 +109,8 @@
                     <i class="fas fa-users-cog"></i>
                 </div>
                 <div class="stat-content">
-                    <h6 class="stat-label">Usuarios del Sistema</h6>
-                    <h2 class="stat-value">{{ \App\Models\User::count() }}</h2>
+                    <h6 class="stat-label">Lista de Usuarios del Sistema</h6>
+                    <h2 class="stat-value">{{ $totalUsuarios ?? \App\Models\User::count() }}</h2>
                     <div class="stat-footer">
                         <span class="stat-badge stat-badge-danger">
                             <i class="fas fa-user-clock"></i>
@@ -355,13 +354,12 @@
                     </div>
                 </div>
                 <div class="action-card-body">
-                    <a href="{{ route('admins.index') }}" class="btn btn-outline-primary w-100 mb-2">
-                    <i class="fas fa-users-cog me-2"></i> Administradores
-                </a>
-
-                    <a href="{{ route('admins.index') }}" class="btn btn-primary w-100">
-    <i class="fas fa-user-tie me-2"></i> Gestión de Admins
-</a>
+                    <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-users me-2"></i> Lista de Usuarios
+                    </a>
+                    <a href="{{ route('superadmin.usuarios.pendientes') }}" class="btn btn-warning w-100">
+                        <i class="fas fa-user-clock me-2"></i> Usuarios Pendientes
+                    </a>
                 </div>
             </div>
         </div>
@@ -1098,4 +1096,8 @@ function mostrarModalRechazoMatricula(matriculaId) {
 }
 </script>
 @endpush
+<<<<<<< HEAD
+=======
+
+>>>>>>> cesia-dev
 @endsection

@@ -195,5 +195,27 @@
         @endif
     </div>
 
+<<<<<<< HEAD
 </div>
+=======
+<style>
+    .avatar-circle {
+        box-shadow: 0 2px 8px rgba(0, 59, 115, 0.15);
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: translateX(2px);
+    }
+
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+</style>
+>>>>>>> cesia-dev
 @endsection

@@ -19,7 +19,8 @@ class NotificacionProfesorController extends Controller
      */
     public function index()
     {
-        $usuario = User::find(Auth::id()); // ✅ CORREGIDO
+        /** @var \App\Models\User $usuario */
+        $usuario = Auth::user();
 
         if (!$usuario->isDocente()) {
             abort(403, 'Solo los profesores pueden ver esta sección.');
@@ -37,7 +38,8 @@ class NotificacionProfesorController extends Controller
      */
     public function marcarLeida(Notificacion $notificacion)
     {
-        $usuario = User::find(Auth::id()); // ✅ CORREGIDO
+        /** @var \App\Models\User $usuario */
+        $usuario = Auth::user();
 
         if ($notificacion->user_id !== $usuario->id) {
             abort(403, 'No autorizado');
@@ -49,11 +51,12 @@ class NotificacionProfesorController extends Controller
     }
 
     /**
-     * Profesor envía notificación a Administración (Admins y SuperAdmins)
+     * Profesor envía notificación a Administración
      */
     public function enviarAAdministracion(Request $request)
     {
-        $usuario = User::find(Auth::id()); // ✅ CORREGIDO
+        /** @var \App\Models\User $usuario */
+        $usuario = Auth::user();
 
         if (!$usuario->isDocente()) {
             abort(403, 'Solo profesores pueden enviar mensajes a administración.');

@@ -1195,9 +1195,9 @@
       <h2>Nuestro Sistema</h2>
       <p>Plataforma completa para la gestión educativa moderna</p>
     </div>
-    
+
     <div class="features-grid">
-      
+
       <!-- Fila 1: 3 tarjetas -->
       <div class="feature-card">
         <div class="feature-icon">
@@ -1350,7 +1350,33 @@
   </div>
 </footer>
 
+<<<<<<< HEAD
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+=======
+  <!-- ========== STATS SECTION ========== -->
+  <section class="stats-section" id="nosotros">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <h3>850+</h3>
+          <p>Estudiantes Activos</p>
+        </div>
+        <div class="stat-item">
+          <h3>45</h3>
+          <p>Profesores</p>
+        </div>
+        <div class="stat-item">
+          <h3>12</h3>
+          <p>Grados Escolares</p>
+        </div>
+        <div class="stat-item">
+          <h3>98%</h3>
+          <p>Satisfacción</p>
+        </div>
+      </div>
+    </div>
+  </section>
+>>>>>>> cesia-dev
 
 <script>
   // Scroll suave

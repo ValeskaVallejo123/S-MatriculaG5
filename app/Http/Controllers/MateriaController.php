@@ -33,8 +33,7 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo',
             'descripcion' => 'nullable|string',
             'nivel' => 'required|in:primaria,secundaria',
-            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana',
-            'activo' => 'boolean',
+            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana,Química,Física,Biología,Historia,Geografía',
         ]);
 
         Materia::create($request->all());
@@ -61,7 +60,7 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo,' . $materia->id,
             'descripcion' => 'nullable|string',
             'nivel' => 'required|in:primaria,secundaria',
-            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana',
+            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana,Química,Física,Biología,Historia,Geografía',
             'activo' => 'boolean',
         ]);
 

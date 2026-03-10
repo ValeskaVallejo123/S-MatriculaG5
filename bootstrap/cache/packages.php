@@ -13,6 +13,18 @@
   ),
   'codezero/browser-locale' =>
   array (
+    'aliases' =>
+    array (
+      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+    ),
+    'providers' =>
+    array (
+      0 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    ),
+  ),
+  'codezero/browser-locale' =>
+  array (
     'providers' =>
     array (
       0 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',

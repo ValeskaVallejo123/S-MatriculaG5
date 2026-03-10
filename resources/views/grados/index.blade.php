@@ -3,6 +3,7 @@
 @section('title', 'Grados')
 @section('page-title', 'Gestión de Grados y Secciones')
 
+<<<<<<< HEAD
 {{-- ← NUEVO: botón en topbar (del archivo 2) --}}
 @section('topbar-actions')
     <a href="{{ route('grados.create') }}" class="btn-back"
@@ -16,6 +17,8 @@
     </a>
 @endsection
 
+=======
+>>>>>>> cesia-dev
 @push('styles')
 <style>
 :root {
@@ -274,6 +277,23 @@
     border-radius: 8px; padding: .4rem 1rem;
 }
 .gg-pag-info strong { color: var(--blue); }
+<<<<<<< HEAD
+=======
+.gg-pag-list { display: flex; gap: .35rem; flex-wrap: wrap; justify-content: center; list-style: none; margin: 0; padding: 0; }
+.gg-pag-list .page-link {
+    display: flex; align-items: center; justify-content: center;
+    min-width: 36px; height: 36px; padding: .4rem .65rem;
+    background: white; border: 1px solid var(--border); border-radius: 7px;
+    color: var(--muted); font-weight: 700; font-size: .78rem;
+    text-decoration: none; transition: all .18s;
+}
+.gg-pag-list .page-link:hover { border-color: var(--teal); color: var(--blue); }
+.gg-pag-list .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    border-color: var(--teal); color: white;
+}
+.gg-pag-list .page-item.disabled .page-link { opacity: .5; pointer-events: none; }
+>>>>>>> cesia-dev
 
 @media(max-width: 768px) {
     .gg-header { padding: 1.4rem 1.1rem; }
@@ -311,7 +331,11 @@
                     </span>
                 </div>
             </div>
+<<<<<<< HEAD
             <a href="{{ route('grados.create') }}" class="gg-btn-nuevo">
+=======
+            <a href="{{ route('superadmin.grados.create') }}" class="gg-btn-nuevo">
+>>>>>>> cesia-dev
                 <i class="fas fa-plus"></i> Nuevo Grado
             </a>
         </div>
@@ -320,7 +344,10 @@
     {{-- ── BODY ── --}}
     <div class="gg-body">
 
+<<<<<<< HEAD
         {{-- Alertas --}}
+=======
+>>>>>>> cesia-dev
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show mb-4"
                  style="border-radius:10px; border-left:4px solid #10b981; font-size:.83rem;">
@@ -329,6 +356,7 @@
             </div>
         @endif
 
+<<<<<<< HEAD
         {{-- ← NUEVO: alerta de error (del archivo 2) --}}
         @if(session('error'))
             <div class="alert alert-danger alert-dismissible fade show mb-4"
@@ -338,12 +366,15 @@
             </div>
         @endif
 
+=======
+>>>>>>> cesia-dev
         {{-- Filtros --}}
         <div class="gg-filters">
             <div class="gg-search-wrap">
                 <i class="fas fa-search gg-search-icon"></i>
                 <input type="text" id="searchInput" class="gg-search" placeholder="Buscar grado...">
             </div>
+<<<<<<< HEAD
 
             {{-- ← CORREGIDO: valores del ENUM (primaria | secundaria) sin "básica" --}}
             <select id="filterNivel" class="gg-select">
@@ -352,6 +383,14 @@
                 <option value="secundaria">Secundaria</option>
             </select>
 
+=======
+            <select id="filterNivel" class="gg-select">
+                <option value="">Todos los niveles</option>
+                <option value="primaria">Primaria</option>
+                <option value="básica">Básica</option>
+                <option value="secundaria">Secundaria</option>
+            </select>
+>>>>>>> cesia-dev
             <select class="gg-select" onchange="changePerPage(this.value)">
                 <option value="10"  {{ request('per_page') == 10  ? 'selected' : '' }}>10 / pág</option>
                 <option value="15"  {{ !request('per_page') || request('per_page') == 15 ? 'selected' : '' }}>15 / pág</option>
@@ -359,12 +398,16 @@
                 <option value="30"  {{ request('per_page') == 30  ? 'selected' : '' }}>30 / pág</option>
                 <option value="50"  {{ request('per_page') == 50  ? 'selected' : '' }}>50 / pág</option>
             </select>
+<<<<<<< HEAD
 
+=======
+>>>>>>> cesia-dev
             <div class="gg-stats-row">
                 <span class="gg-stat-pill">
                     <i class="fas fa-check-circle"></i>
                     {{ $grados->where('activo', true)->count() }} activos
                 </span>
+<<<<<<< HEAD
                 {{-- ← NUEVO: contador de páginas (del archivo 2) --}}
                 <span class="gg-stat-pill">
                     <i class="fas fa-layer-group"></i>
@@ -374,6 +417,12 @@
         </div>
 
         {{-- Tabs — CORREGIDO: "Secundaria" en vez de "Básica" para coincidir con ENUM --}}
+=======
+            </div>
+        </div>
+
+        {{-- Tabs --}}
+>>>>>>> cesia-dev
         <div class="gg-tabs" id="nivelTabs">
             <a class="gg-tab active" data-nivel="" href="#">
                 <i class="fas fa-th-large"></i> Todos
@@ -381,6 +430,12 @@
             <a class="gg-tab" data-nivel="primaria" href="#">
                 <i class="fas fa-child"></i> Primaria
             </a>
+<<<<<<< HEAD
+=======
+            <a class="gg-tab" data-nivel="básica" href="#">
+                <i class="fas fa-book"></i> Básica
+            </a>
+>>>>>>> cesia-dev
             <a class="gg-tab" data-nivel="secundaria" href="#">
                 <i class="fas fa-user-graduate"></i> Secundaria
             </a>
@@ -395,7 +450,11 @@
             <div class="gg-empty">
                 <i class="fas fa-inbox"></i>
                 <p>No hay grados registrados</p>
+<<<<<<< HEAD
                 <a href="{{ route('grados.create') }}"
+=======
+                <a href="{{ route('superadmin.grados.create') }}"
+>>>>>>> cesia-dev
                    style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;
                           background:linear-gradient(135deg,var(--teal),var(--blue));color:white;
                           padding:.5rem 1.2rem;border-radius:8px;text-decoration:none;font-size:.8rem;font-weight:700;">
@@ -405,9 +464,14 @@
         @else
             <div class="gg-grid" id="gradosContainer">
                 @foreach($grados as $grado)
+<<<<<<< HEAD
                     {{-- data-nivel usa el valor del ENUM directamente (ya en minúsculas) --}}
                     <div class="gg-card-wrap"
                          data-nivel="{{ $grado->nivel }}"
+=======
+                    <div class="gg-card-wrap"
+                         data-nivel="{{ strtolower($grado->nivel) }}"
+>>>>>>> cesia-dev
                          data-search="{{ strtolower($grado->nivel . ' ' . $grado->numero . ' ' . $grado->seccion . ' ' . $grado->anio_lectivo) }}">
                         @include('superadmin.grados._card', ['grado' => $grado])
                     </div>
@@ -415,7 +479,11 @@
             </div>
         @endif
 
+<<<<<<< HEAD
         {{-- Paginación —  simplificada con appends(request()->query()) (del archivo 2) --}}
+=======
+        {{-- Paginación --}}
+>>>>>>> cesia-dev
         @if($grados->hasPages())
             <div class="gg-pagination">
                 <div class="gg-pag-info">
@@ -423,7 +491,30 @@
                     a <strong>{{ $grados->lastItem() }}</strong>
                     de <strong>{{ $grados->total() }}</strong> resultados
                 </div>
+<<<<<<< HEAD
                 {{ $grados->appends(request()->query())->links() }}
+=======
+                <ul class="gg-pag-list">
+                    <li class="page-item {{ $grados->onFirstPage() ? 'disabled' : '' }}">
+                        <a class="page-link"
+                           href="{{ $grados->appends(['per_page' => request('per_page', 15)])->previousPageUrl() ?? '#' }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    @for($i = max(1, $grados->currentPage() - 2); $i <= min($grados->lastPage(), $grados->currentPage() + 2); $i++)
+                        <li class="page-item {{ $i == $grados->currentPage() ? 'active' : '' }}">
+                            <a class="page-link"
+                               href="{{ $grados->appends(['per_page' => request('per_page', 15)])->url($i) }}">{{ $i }}</a>
+                        </li>
+                    @endfor
+                    <li class="page-item {{ !$grados->hasMorePages() ? 'disabled' : '' }}">
+                        <a class="page-link"
+                           href="{{ $grados->appends(['per_page' => request('per_page', 15)])->nextPageUrl() ?? '#' }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+>>>>>>> cesia-dev
             </div>
         @endif
 
@@ -432,6 +523,7 @@
 </div>
 </div>
 
+<<<<<<< HEAD
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -447,23 +539,45 @@ document.addEventListener('DOMContentLoaded', function () {
         cards.forEach(function (card) {
             const matchSearch = card.dataset.search.includes(term);
             const matchNivel  = nivel === '' || card.dataset.nivel === nivel;
+=======
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+    const tabs        = document.querySelectorAll('.gg-tab');
+    const cards       = document.querySelectorAll('.gg-card-wrap');
+    let activeNivel   = '';
+
+    function filterCards() {
+        const term = searchInput.value.toLowerCase().trim();
+        cards.forEach(function (card) {
+            const matchSearch = card.dataset.search.includes(term);
+            const matchNivel  = !activeNivel || card.dataset.nivel === activeNivel;
+>>>>>>> cesia-dev
             card.style.display = (matchSearch && matchNivel) ? '' : 'none';
         });
     }
 
+<<<<<<< HEAD
     {{-- ← MEJORADO: sincronización bidireccional Tabs ↔ Select (del archivo 2) --}}
 
     // Tabs → Select
+=======
+>>>>>>> cesia-dev
     tabs.forEach(function (tab) {
         tab.addEventListener('click', function (e) {
             e.preventDefault();
             tabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
+<<<<<<< HEAD
             filterNivel.value = this.dataset.nivel;
+=======
+            activeNivel = this.dataset.nivel;
+>>>>>>> cesia-dev
             filterCards();
         });
     });
 
+<<<<<<< HEAD
     // Select → Tabs
     filterNivel.addEventListener('change', function () {
         const val = this.value;
@@ -474,6 +588,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     searchInput.addEventListener('input', filterCards);
+=======
+    searchInput.addEventListener('input', filterCards);
+    document.getElementById('filterNivel').addEventListener('change', function () {
+        activeNivel = this.value.toLowerCase();
+        tabs.forEach(t => t.classList.remove('active'));
+        const match = document.querySelector(`.gg-tab[data-nivel="${activeNivel}"]`);
+        if (match) match.classList.add('active');
+        filterCards();
+    });
+>>>>>>> cesia-dev
 });
 
 function changePerPage(value) {
@@ -483,5 +607,8 @@ function changePerPage(value) {
     window.location.href = url.toString();
 }
 </script>
+<<<<<<< HEAD
 @endpush
+=======
+>>>>>>> cesia-dev
 @endsection

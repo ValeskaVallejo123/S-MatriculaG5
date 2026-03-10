@@ -5,85 +5,65 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Matricula;
 use Illuminate\Http\Request;
+//use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-
 
 class SuperAdminController extends Controller
 {
     public function __construct()
     {
-        // Solo super admin puede manejar administradores
-        // Asegúrate de tener 'role' => RoleMiddleware::class en Kernel.php
         $this->middleware(['auth', 'role:super_admin']);
     }
 
-    /**
-     * Dashboard principal
-     */
     public function dashboard()
     {
-        // Obtener las últimas 10 matrículas pendientes
         $matriculasPendientes = Matricula::with(['estudiante', 'padre'])
             ->where('estado', 'pendiente')
             ->latest()
             ->take(10)
             ->get();
 
-            //Contar todas las matriculas por estador
-            $totalPendientes = Matricula::where('estado', 'pendiente')->count();
-            $totalAprobadas = Matricula::where('estado', 'aprobada')->count();
-            $totalRechazadas = Matricula::where('estado', 'rechazada')->count();
+        $totalPendientes  = Matricula::where('estado', 'pendiente')->count();
+        $totalAprobadas   = Matricula::where('estado', 'aprobada')->count();
+        $totalRechazadas  = Matricula::where('estado', 'rechazada')->count();
 
-        return view('superadmin.dashboard', [
+        return view('superadmin.dashboard', compact(
             'matriculasPendientes',
             'totalPendientes',
             'totalAprobadas',
             'totalRechazadas'
-        ]);
+        ));
     }
 
-    /**
-     * Listado de administradores (super admin + admin)
-     */
     public function index()
     {
+        $perPage = in_array(request('per_page'), [10, 25, 50]) ? request('per_page') : 10;
+
         $administradores = User::whereIn('user_type', ['admin', 'super_admin'])
             ->orderBy('is_super_admin', 'desc')
             ->orderBy('name')
-            ->get();
+            ->paginate($perPage)
+            ->withQueryString();
 
         return view('superadmin.administradores.index', compact('administradores'));
-        //Obtener administradores (unificados)
-        /*$administradores = User::where('id_rol', [1, 2]) // 1 = superadmin, 2 = admin
-            ->orderByRaw("CASE WHEN id_rol = 1 THEN 0 ELSE 1 END")
-            ->orderBy('name')
-            ->get();
-
-        return view('superadmin.administradores.index', compact('administradores'));*/
     }
 
-    /**
-     * Formulario de creación
-     */
     public function create()
     {
-        $permisos = $this->getAvailablePermissions();
-        return view('superadmin.administradores.create', compact('permisos'));
+        return view('superadmin.administradores.create');
     }
 
-    /**
-     * Guardar un nuevo administrador
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'email'       => 'required|email|unique:users,email',
-            'password'    => 'required|min:8|confirmed',
-            'permissions' => 'nullable|array',
-            'id_rol'      => 'required|in:2', // Solo ADMIN (super admin no se crea por aquí)
+            'name'         => 'required|string|max:255',
+            'email'        => 'required|email|unique:users,email',
+            'password'     => 'required|min:8|confirmed',
+            'role'         => 'required|in:super_admin,admin',
+            'permissions'  => 'nullable|array',
+            'is_protected' => 'nullable|boolean',
         ], [
             'name.required'      => 'El nombre es obligatorio',
             'email.required'     => 'El email es obligatorio',
@@ -92,102 +72,111 @@ class SuperAdminController extends Controller
             'password.required'  => 'La contraseña es obligatoria',
             'password.min'       => 'La contraseña debe tener al menos 8 caracteres',
             'password.confirmed' => 'Las contraseñas no coinciden',
+            'role.required'      => 'Debes seleccionar un rol',
         ]);
+
+        $isSuperAdmin = $request->role === 'super_admin';
 
         User::create([
             'name'           => $request->name,
             'email'          => $request->email,
             'password'       => Hash::make($request->password),
             'role'           => 'user',
-            'user_type'      => 'admin',
-            'permissions'    => $request->permissions ?? [],
-            'is_super_admin' => false,
-            'is_protected'   => false,
+            'user_type'      => $isSuperAdmin ? 'super_admin' : 'admin',
+            'permissions'    => $isSuperAdmin ? [] : ($request->permissions ?? []),
+            'is_super_admin' => $isSuperAdmin,
+            'is_protected'   => $request->boolean('is_protected'),
         ]);
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', 'Administrador creado exitosamente');
+            ->with('success', 'Administrador creado exitosamente.');
     }
 
-    /**
-     * Editar administrador
-     */
     public function edit(User $administrador)
     {
-        if ($administrador->is_protected) {
+        // No editar SuperAdmin protegido
+        if ($administrador->id_rol == 1 && $administrador->id !== Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'Este usuario no puede ser editado');
+                ->with('error', 'Este usuario está protegido y no puede ser editado');
         }
 
-        $permisos = $this->getAvailablePermissions();
-
-        return view('superadmin.administradores.edit', compact('administrador', 'permisos'));
+        return view('superadmin.administradores.edit', compact('administrador'));
     }
 
     public function update(Request $request, User $administrador)
     {
-        if ($administrador->is_protected) {
+        // No modificar otro SuperAdmin
+        if ($administrador->id_rol == 1 && $administrador->id !== Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'Este usuario no puede ser modificado');
+                ->with('error', 'Este usuario está protegido y no puede ser modificado');
         }
 
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'email'       => ['required', 'email', Rule::unique('users')->ignore($administrador->id)],
-            'permissions' => 'nullable|array',
+            'name'         => 'required|string|max:255',
+            'email'        => ['required', 'email', Rule::unique('users')->ignore($administrador->id)],
+            'role'         => 'required|in:super_admin,admin',
+            'permissions'  => 'nullable|array',
+            'password'     => 'nullable|min:8|confirmed',
+            'is_protected' => 'nullable|boolean',
+        ], [
+            'name.required'      => 'El nombre es obligatorio',
+            'email.required'     => 'El email es obligatorio',
+            'email.email'        => 'El email debe ser válido',
+            'email.unique'       => 'Este email ya está en uso',
+            'role.required'      => 'Debes seleccionar un rol',
+            'password.min'       => 'La contraseña debe tener al menos 8 caracteres',
+            'password.confirmed' => 'Las contraseñas no coinciden',
         ]);
+
+        $isSuperAdmin = $request->role === 'super_admin';
 
         $administrador->name        = $request->name;
         $administrador->email       = $request->email;
-        $administrador->permissions = $request->permissions ?? [];
-        $administrador->save();
+        $administrador->user_type   = $isSuperAdmin ? 'super_admin' : 'admin';
+        $administrador->is_super_admin = $isSuperAdmin;
+        $administrador->permissions = $isSuperAdmin ? [] : ($request->permissions ?? []);
+        $administrador->is_protected = $request->boolean('is_protected');
 
-        // Si se envía contraseña nueva, actualizarla
         if ($request->filled('password')) {
-            $request->validate(['password' => 'min:8|confirmed']);
             $administrador->password = Hash::make($request->password);
-            $administrador->save();
         }
 
+        $administrador->save();
+
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', 'Administrador actualizado exitosamente');
+            ->with('success', 'Administrador actualizado exitosamente.');
     }
 
-    /**
-     * Eliminar admin
-     */
     public function destroy(User $administrador)
     {
         if ($administrador->is_protected) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'Este usuario no puede ser eliminado (está protegido)');
+                ->with('error', 'Este usuario está protegido y no puede ser eliminado');
         }
 
         if ($administrador->id === Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'No puedes eliminarte a ti mismo');
+                ->with('error', 'No puedes eliminarte a ti mismo.');
+        }
+
+        if ($administrador->is_super_admin) {
+            return redirect()->route('superadmin.administradores.index')
+                ->with('error', 'No se puede eliminar a un Super Administrador');
         }
 
         $administrador->delete();
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', 'Administrador eliminado exitosamente');
+            ->with('success', 'Administrador eliminado exitosamente.');
     }
 
-    /**
-     * Perfil super admin
-     */
     public function perfil()
     {
-        /*$user = Auth::user();
-        return view('superadmin.perfil.index', compact('user'));*/
         $user = User::findOrFail(Auth::id());
+
         return view('superadmin.perfil.index', compact('user'));
     }
 
-    /**
-     * Actualizar perfil
-     */
     public function actualizarPerfil(Request $request)
     {
         $request->validate([
@@ -205,12 +194,9 @@ class SuperAdminController extends Controller
         $user->email = $request->email;
         $user->save();
 
-        return back()->with('success', 'Perfil actualizado correctamente');
+        return back()->with('success', 'Perfil actualizado correctamente.');
     }
 
-    /**
-     * Cambiar contraseña
-     */
     public function cambiarPassword(Request $request)
     {
         $request->validate([
@@ -226,89 +212,82 @@ class SuperAdminController extends Controller
         $user = User::findOrFail(Auth::id());
 
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'La contraseña actual es incorrecta']);
+            return back()->withErrors(['current_password' => 'La contraseña actual es incorrecta.']);
         }
-        // Actualizar contraseña
+
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return back()->with('success', 'Contraseña actualizada correctamente');
+        return back()->with('success', 'Contraseña actualizada correctamente.');
     }
 
-    /**
-     * Vista de permisos para administradores
-     */
     public function permisosRoles()
     {
-         // Solo obtener usuarios del sistema (tabla users) que sean configurables
-        $usuarios = User::where(function($query) {
-                // Solo administradores regulares
-                $query->where('role', 'admin')
-                      ->orWhere('user_type', 'admin')
-                      // O super admins no protegidos
-                      ->orWhere(function($q) {
-                          $q->where(function($q2) {
-                              $q2->where('role', 'super_admin')
-                                 ->orWhere('user_type', 'super_admin');
-                          })
-                          ->where('is_protected', 0);
-                      });
-            })
-            ->orderBy('role')
+        $usuarios = User::whereIn('user_type', ['admin', 'super_admin'])
+            ->orderBy('is_super_admin', 'desc')
             ->orderBy('name')
             ->get();
 
-        return view('superadmin.administradores.permisos', compact('permisos', 'usuarios'));
+        return view('superadmin.administradores.permisos', compact('usuarios'));
     }
 
-    /**
-     * Actualizar permisos de un administrador
-     */
-    public function actualizarPermisos(Request $request, $userId)
+    public function actualizarPermisos(Request $request)
     {
         $request->validate([
-            'rol'      => 'required|in:admin,super_admin',
-            'permisos' => 'nullable|array',
-        ], [
-            'rol.required' => 'Debes seleccionar un rol',
-            'rol.in'       => 'El rol seleccionado no es válido',
+            'usuario_id'  => 'required|exists:users,id',
+            'permissions' => 'nullable|array',
         ]);
 
-        $usuario = User::findOrFail($userId);
+        $usuario = User::findOrFail($request->usuario_id);
 
-        //Proteger al superadmin principal
         if ($usuario->is_protected) {
             return back()->with('error', 'Este usuario no puede modificarse.');
         }
 
-        // Ojo: aquí el formulario debe enviar 'permisos[]'
-        $usuario->permissions = $request->permisos ?? [];
+        $usuario->permissions = $request->permissions ?? [];
         $usuario->save();
 
         return redirect()->route('superadmin.administradores.permisos')
-            ->with('success', "Permisos actualizados para {$usuario->name}");
+            ->with('success', "Permisos actualizados para {$usuario->name}.");
     }
 
-    /**
-     * Permisos disponibles
-     */
     private function getAvailablePermissions()
     {
         return [
-            'gestionar_matriculas'     => 'Gestionar Matrículas',
-            'gestionar_estudiantes'    => 'Gestionar Estudiantes',
-            'gestionar_profesores'     => 'Gestionar Profesores',
-            'gestionar_secciones'      => 'Gestionar Secciones',
+            'ver_estudiantes'          => 'Ver Estudiantes',
+            'crear_estudiantes'        => 'Crear Estudiantes',
+            'editar_estudiantes'       => 'Editar Estudiantes',
+            'eliminar_estudiantes'     => 'Eliminar Estudiantes',
+            'ver_profesores'           => 'Ver Profesores',
+            'crear_profesores'         => 'Crear Profesores',
+            'editar_profesores'        => 'Editar Profesores',
+            'eliminar_profesores'      => 'Eliminar Profesores',
+            'ver_matriculas'           => 'Ver Matrículas',
+            'crear_matriculas'         => 'Crear Matrículas',
+            'aprobar_matriculas'       => 'Aprobar Matrículas',
+            'rechazar_matriculas'      => 'Rechazar Matrículas',
+            'ver_grados'               => 'Ver Grados',
             'gestionar_grados'         => 'Gestionar Grados',
+            'ver_secciones'            => 'Ver Secciones',
+            'gestionar_secciones'      => 'Gestionar Secciones',
+            'ver_materias'             => 'Ver Materias',
             'gestionar_materias'       => 'Gestionar Materias',
+            'ver_periodos'             => 'Ver Períodos',
+            'crear_periodos'           => 'Crear Períodos',
+            'editar_periodos'          => 'Editar Períodos',
+            'cerrar_periodos'          => 'Cerrar Períodos',
+            'ver_padres'               => 'Ver Padres',
+            'crear_padres'             => 'Crear Padres',
+            'editar_padres'            => 'Editar Padres',
+            'gestionar_accesos_padres' => 'Gestionar Accesos de Padres',
             'ver_reportes'             => 'Ver Reportes',
-            'gestionar_pagos'          => 'Gestionar Pagos',
-            'gestionar_calificaciones' => 'Gestionar Calificaciones',
-            'gestionar_asistencias'    => 'Gestionar Asistencias',
-            'gestionar_observaciones'  => 'Gestionar Observaciones',
-            'gestionar_documentos'     => 'Gestionar Documentos',
-            'gestionar_mensajes'       => 'Gestionar Mensajes',
-            'gestionar_avisos'         => 'Gestionar Avisos y Comunicados',
+            'generar_reportes'         => 'Generar Reportes',
+            'exportar_datos'           => 'Exportar Datos',
+            'ver_estadisticas'         => 'Ver Estadísticas',
+            'configurar_sistema'       => 'Configurar Sistema',
+            'gestionar_cupos'          => 'Gestionar Cupos',
+            'ver_logs'                 => 'Ver Logs',
+            'realizar_backups'         => 'Realizar Backups',
         ];
     }
 }

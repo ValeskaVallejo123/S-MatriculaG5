@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\NotificacionPreferencia;
-use App\Models\User;
+//use App\Models\Notificacion;
+//use App\Models\User;
 
 class NotificacionPreferenciaController extends Controller
 {
@@ -14,7 +15,8 @@ class NotificacionPreferenciaController extends Controller
      */
     public function edit()
     {
-        $user = User::find(Auth::id()); // ✅ CORREGIDO
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         // Obtener preferencias del usuario
         $preferencias = $user->notificacionPreferencias;
@@ -25,24 +27,24 @@ class NotificacionPreferenciaController extends Controller
                 'user_id' => $user->id,
 
                 // Canales
-                'correo'                         => true,
-                'mensaje_interno'                => true,
-                'alerta_visual'                  => true,
+                'correo'                      => true,
+                'mensaje_interno'             => true,
+                'alerta_visual'               => true,
 
                 // Generales
-                'notificacion_horario'           => true,
-                'notificacion_administrativa'    => true,
+                'notificacion_horario'        => true,
+                'notificacion_administrativa' => true,
 
                 // Estudiante
-                'notificacion_nueva_materia'     => true,
-                'notificacion_calificaciones'    => true,
-                'notificacion_observaciones'     => true,
+                'notificacion_nueva_materia'  => true,
+                'notificacion_calificaciones' => true,
+                'notificacion_observaciones'  => true,
 
                 // Padre
-                'notificacion_conducta'          => true,
-                'notificacion_tareas'            => true,
-                'notificacion_eventos'           => true,
-                'notificacion_matricula'         => true,
+                'notificacion_conducta'       => true,
+                'notificacion_tareas'         => true,
+                'notificacion_eventos'        => true,
+                'notificacion_matricula'      => true,
 
                 // Profesor
                 'notificacion_estudiante_matricula' => true,
@@ -58,14 +60,16 @@ class NotificacionPreferenciaController extends Controller
      */
     public function update(Request $request)
     {
-        $user = User::find(Auth::id()); // ✅ CORREGIDO
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
         $preferencias = $user->notificacionPreferencias;
 
         if (!$preferencias) {
             return back()->with('error', 'No se encontraron preferencias para actualizar.');
         }
 
-        // Lista de campos permitidos (coincide con la migración + modelo)
+        // Campos permitidos
         $campos = [
             'correo',
             'mensaje_interno',
@@ -94,16 +98,19 @@ class NotificacionPreferenciaController extends Controller
     }
 
     /**
-     * Listar notificaciones del usuario, según su rol
+     * Listar notificaciones del usuario según su rol
      */
     public function index()
     {
-        $user = User::find(Auth::id()); // ✅ CORREGIDO
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-        // Cargar notificaciones del usuario
-        $notificaciones = $user->notificaciones()->orderBy('created_at', 'desc')->get();
+        // Obtener notificaciones del usuario
+        $notificaciones = $user->notificaciones()
+            ->latest()
+            ->get();
 
-        // Vista por rol
+        // Vista según el rol
         return match ($user->id_rol) {
             4 => view('estudiante.notificaciones.index', compact('notificaciones')),
             3 => view('profesor.notificaciones.index', compact('notificaciones')),

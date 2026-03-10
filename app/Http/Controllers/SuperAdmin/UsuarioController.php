@@ -143,8 +143,6 @@ class UsuarioController extends Controller
 
     /**
      * Aprobar un usuario: activar + generar contraseña temporal.
-     * CORRECCIÓN: primero se valida que no esté ya aprobado, luego se actúa.
-     * Se envuelve en try/catch para manejar errores inesperados.
      */
     public function aprobar($id)
     {
@@ -155,27 +153,20 @@ class UsuarioController extends Controller
                 ->with('error', 'Este usuario ya está aprobado.');
         }
 
-        try {
-            $passwordTemp = strtoupper(Str::random(4)) . rand(100, 999) . '!';
+        $passwordTemp = strtoupper(Str::random(4)) . rand(100, 999) . '!';
 
-            $usuario->update([
-                'activo'   => 1,
-                'password' => Hash::make($passwordTemp),
-            ]);
+        $usuario->update([
+            'activo'   => 1,
+            'password' => Hash::make($passwordTemp),
+        ]);
 
-            return redirect()->route('superadmin.usuarios.pendientes')
-                ->with('success', "El usuario \"{$usuario->name}\" fue aprobado correctamente.")
-                ->with('password_temp', $passwordTemp);
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error al aprobar el usuario: ' . $e->getMessage());
-        }
+        return redirect()->route('superadmin.usuarios.pendientes')
+            ->with('success', "El usuario \"{$usuario->name}\" fue aprobado correctamente.")
+            ->with('password_temp', $passwordTemp);
     }
 
     /**
      * Rechazar / eliminar un usuario pendiente.
-     * CORRECCIÓN: se previene rechazarse a sí mismo y se envuelve en try/catch.
      */
     public function rechazar($id)
     {
@@ -184,18 +175,12 @@ class UsuarioController extends Controller
                 ->with('error', 'No puedes rechazar tu propio usuario.');
         }
 
-        try {
-            $usuario = User::findOrFail($id);
-            $nombre  = $usuario->name;
-            $usuario->delete();
+        $usuario = User::findOrFail($id);
+        $nombre  = $usuario->name;
+        $usuario->delete();
 
-            return redirect()->route('superadmin.usuarios.pendientes')
-                ->with('success', "El usuario \"$nombre\" fue rechazado y eliminado correctamente.");
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error al rechazar el usuario: ' . $e->getMessage());
-        }
+        return redirect()->route('superadmin.usuarios.pendientes')
+            ->with('success', "El usuario \"$nombre\" fue rechazado y eliminado correctamente.");
     }
 
     /**

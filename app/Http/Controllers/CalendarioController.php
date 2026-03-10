@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EventoAcademico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\EventoAcademico;
 use Illuminate\Contracts\View\View;
 
 class CalendarioController extends Controller
@@ -12,24 +12,25 @@ class CalendarioController extends Controller
     /**
      * Muestra todos los eventos en formato JSON simple (index básico).
      */
-    public function index()
-    {
-        $eventos = EventoAcademico::all();
+   public function index()
+{
+    $eventos = EventoAcademico::all();
 
-        return response()->json($eventos->map(function ($evento) {
-            return [
-                'id'    => $evento->id,
-                'title' => $evento->titulo,
-                'start' => $evento->fecha_inicio,
-                'end'   => $evento->fecha_fin,
-                'color' => $evento->color,
-                'extendedProps' => [
-                    'description' => $evento->descripcion,
-                    'type'        => $evento->tipo,
-                ],
-            ];
-        }));
-    }
+    return response()->json($eventos->map(function ($evento) {
+        return [
+            'id' => $evento->id,
+            'title' => $evento->titulo,
+            'start' => $evento->fecha_inicio,
+            'end' => $evento->fecha_fin,
+            'color' => $evento->color,
+            'extendedProps' => [
+                'description' => $evento->descripcion,
+                'type' => $evento->tipo
+            ]
+        ];
+    }));
+}
+
 
     /**
      * Eventos públicos (sin auth) — usa obtenerEventos() con formato completo.
@@ -47,10 +48,10 @@ class CalendarioController extends Controller
     public function obtenerEventos()
     {
         try {
-            $eventos = EventoAcademico::all()->map(function ($evento) {
-                $fechaFin = $evento->fecha_fin
-                    ? $evento->fecha_fin->copy()->addDay()
-                    : $evento->fecha_inicio->copy()->addDay();
+            $eventos = EventoAcademico::all()->map(function($evento) {
+                // CORRECCIÓN: No usar addDay() directamente sobre el objeto
+                // Crear una copia para no modificar el original
+                $fechaFin = $evento->fecha_fin ? $evento->fecha_fin->copy()->addDay() : $evento->fecha_inicio->copy()->addDay();
 
                 return [
                     'id'              => $evento->id,
@@ -66,6 +67,21 @@ class CalendarioController extends Controller
                     ],
                 ];
             });
+        $eventos = EventoAcademico::all()->map(function($evento) {
+            return [
+                'id' => $evento->id,
+                'title' => $evento->titulo,
+                'start' => $evento->fecha_inicio->format('Y-m-d'),
+                'end' => $evento->fecha_fin->copy()->addDay()->format('Y-m-d'),
+                'backgroundColor' => $evento->color,
+                'borderColor' => $evento->color,
+                'allDay' => (bool) $evento->todo_el_dia,
+                'extendedProps' => [
+                    'description' => $evento->descripcion,
+                    'type' => $evento->tipo
+                ]
+            ];
+        });
 
             return response()->json($eventos);
 
@@ -112,17 +128,19 @@ class CalendarioController extends Controller
      */
     public function actualizar(Request $request, $id)
     {
-        if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) {
-            return response()->json([
-                'exito'  => false,
-                'mensaje' => 'No tienes permisos',
-            ], 403);
-        }
+        // Verificar permisos
+        // En el método actualizar y eliminar, cambia esto:
+if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) { // Usar 'role' y 'super_admin'
+    return response()->json([
+        'exito' => false,
+        'mensaje' => 'No tienes permisos'
+    ], 403);
+}
 
         try {
             $validado = $this->validarEvento($request);
 
-            // Forzar valor booleano en todo_el_dia si viene en el request
+            // Forzar valor booleano
             if ($request->has('todo_el_dia')) {
                 $validado['todo_el_dia'] = $request->boolean('todo_el_dia');
             }

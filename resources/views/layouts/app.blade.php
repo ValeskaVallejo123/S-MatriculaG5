@@ -102,7 +102,7 @@
         .menu-link.active i { color: #4ec7d2; }
         .menu-link.disabled-link { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
-        {{-- ← NUEVO: badge rojo para notificaciones en items del menú (del arch2) --}}
+        /* Badge rojo para notificaciones en items del menú */
         .menu-badge {
             margin-left: auto;
             background: #ef4444; color: white;
@@ -113,14 +113,20 @@
 
         /* ══════════════════════════════════════════════
            MAIN CONTENT
+           — Con sidebar (admin/superadmin): margin-left 280px
+           — Sin sidebar (profesor/estudiante/padre): sin margen
         ══════════════════════════════════════════════ */
         .main-content {
             margin-left: 280px;
             min-height: 100vh;
             background: #f5f7fa;
-            transition: all .3s ease; {{-- ← NUEVO (del arch2) --}}
+            transition: all .3s ease;
         }
-        .main-content.no-sidebar { margin-left: 0; }
+
+        /* Roles sin sidebar ocupan todo el ancho */
+        .main-content.no-sidebar {
+            margin-left: 0;
+        }
 
         /* ══════════════════════════════════════════════
            TOPBAR
@@ -138,7 +144,7 @@
         .topbar-right { display: flex; align-items: center; gap: .6rem; flex-wrap: nowrap; }
         .topbar-divider { width: 1px; height: 24px; background: #e2e8f0; flex-shrink: 0; }
 
-        {{-- ← NUEVO: topbar-date con fondo (del arch2) --}}
+        /* Fecha/hora en topbar */
         .topbar-date {
             display: flex; align-items: center; gap: .5rem;
             color: #6b7280; font-size: .85rem;
@@ -155,21 +161,26 @@
             display: flex; align-items: center; gap: .4rem;
             cursor: pointer; transition: all .2s ease;
             white-space: nowrap;
-            box-shadow: 0 2px 6px rgba(239,68,68,.3); {{-- ← NUEVO (del arch2) --}}
+            box-shadow: 0 2px 6px rgba(239,68,68,.3);
         }
         .btn-logout:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c); {{-- ← MEJORADO (del arch2) --}}
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
             opacity: .9; transform: translateY(-1px);
             box-shadow: 0 4px 10px rgba(239,68,68,.4);
         }
 
         /* ══════════════════════════════════════════════
            CONTENT WRAPPER
+           — Con sidebar: padding normal
+           — Sin sidebar: padding lateral más generoso
         ══════════════════════════════════════════════ */
         .content-wrapper { padding: 2rem; }
+
         .no-sidebar .content-wrapper {
             padding: 1.5rem 2rem;
-            width: 100%; box-sizing: border-box;
+            /* Sin max-width para que ocupe todo el ancho disponible */
+            width: 100%;
+            box-sizing: border-box;
         }
 
         /* ══════════════════════════════════════════════
@@ -231,7 +242,7 @@
             display: flex; align-items: center; justify-content: center;
             transition: all .2s ease; z-index: 1;
         }
-        .modal-delete-close:hover { background: #e2e8f0; color: #1e293b; }
+        .modal-delete-close:hover { background: #e2e8f0; }
 
         .modal-delete-icon {
             width: 80px; height: 80px;
@@ -309,7 +320,7 @@
 
 @php
     $user = auth()->user();
-    {{-- Lógica dual: detecta rol por id_rol (arch1) Y por nombre del rol (arch2) --}}
+    {{-- Lógica dual: detecta rol por id_rol Y por nombre del rol --}}
     $isSuperAdmin = $user && (
         $user->is_super_admin == 1 ||
         $user->id_rol == 1 ||
@@ -319,7 +330,7 @@
         in_array($user->id_rol, [1, 2]) ||
         ($user->rol && in_array(strtolower($user->rol->nombre), ['admin', 'administrador']))
     );
-    $showSidebar = $isAdmin; {{-- arch1 correcto: solo admins tienen sidebar --}}
+    $showSidebar = $isAdmin; {{-- Solo admins tienen sidebar --}}
 
     if ($isSuperAdmin) {
         $roleName = 'Super Administrador';
@@ -361,7 +372,7 @@
         {{-- ── PRINCIPAL ── --}}
         <li class="menu-section-title">PRINCIPAL</li>
 
-        {{-- Dashboard separado por rol (del arch2, más preciso) --}}
+        {{-- Dashboard separado por rol --}}
         @if($isSuperAdmin)
         <li class="menu-item">
             <a href="{{ route('superadmin.dashboard') }}"
@@ -409,7 +420,7 @@
             </a>
         </li>
 
-        {{-- ── BÚSQUEDA (del arch2) ── --}}
+        {{-- ── BÚSQUEDA ── --}}
         <li class="menu-section-title">BÚSQUEDA</li>
 
         <li class="menu-item">
@@ -450,29 +461,24 @@
         {{-- ── ACADÉMICO ── --}}
         <li class="menu-section-title">ACADÉMICO</li>
 
-        {{-- Registrar calificaciones (del arch2) --}}
         <li class="menu-item">
             <a href="{{ route('registrarcalificaciones.index') }}"
                class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
                 <i class="fas fa-clipboard-list"></i><span>Registrar Calificaciones</span>
             </a>
         </li>
-
         <li class="menu-item">
             <a href="{{ $isSuperAdmin ? route('superadmin.grados.index') : route('grados.index') }}"
                class="menu-link {{ request()->routeIs('grados.*', 'superadmin.grados.*') ? 'active' : '' }}">
                 <i class="fas fa-layer-group"></i><span>Grados</span>
             </a>
         </li>
-
-        {{-- H20 Cursos (del arch2) --}}
         <li class="menu-item">
             <a href="{{ route('h20cursos.index') }}"
                class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
                 <i class="fas fa-layer-group"></i><span>Cursos</span>
             </a>
         </li>
-
         <li class="menu-item">
             <a href="{{ $isSuperAdmin ? route('superadmin.materias.index') : route('materias.index') }}"
                class="menu-link {{ request()->routeIs('materias.*', 'superadmin.materias.*') ? 'active' : '' }}">
@@ -546,8 +552,6 @@
             </a>
         </li>
         @endif
-
-        {{-- Cambiar contraseña (del arch2) --}}
         <li class="menu-item">
             <a href="{{ route('cambiarcontrasenia.edit') }}"
                class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
@@ -564,8 +568,6 @@
                 <i class="fas fa-question-circle"></i><span>Estado de Solicitud</span>
             </a>
         </li>
-
-        {{-- Acciones recientes (del arch2) --}}
         <li class="menu-item">
             <a href="{{ route('acciones_importantes.index') }}"
                class="menu-link {{ request()->routeIs('acciones_importantes.*') ? 'active' : '' }}">
@@ -591,7 +593,6 @@
         </div>
 
         <div class="topbar-right">
-            {{-- topbar-actions con @hasSection para compatibilidad (arch1) --}}
             @hasSection('topbar-actions')
                 <div class="topbar-actions-group">
                     @yield('topbar-actions')
@@ -599,7 +600,7 @@
                 <div class="topbar-divider"></div>
             @endif
 
-            {{-- Fecha/hora (del arch2) --}}
+            {{-- Fecha/hora --}}
             <div class="topbar-date">
                 <i class="far fa-clock"></i>
                 <span>{{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</span>
@@ -640,15 +641,6 @@
     </div>
 </div>
 
-{{-- Vista para usuarios no autenticados (del arch2) --}}
-@guest
-<div class="main-content no-sidebar" style="display:none;" id="guestContent">
-    <div class="content-wrapper">
-        @yield('content')
-    </div>
-</div>
-@endguest
-
 {{-- MODAL ELIMINACIÓN --}}
 <div class="modal-delete-overlay" id="modalDelete">
     <div class="modal-delete">
@@ -688,7 +680,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // ← MEJORADO: null-check del arch2
+    // Con null-check para seguridad
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
@@ -721,8 +713,8 @@
 
         const activeLink = sidebar.querySelector('.menu-link.active');
         if (activeLink && saved === null) {
-            // ← MEJORADO: verifica visibilidad antes de hacer scroll (del arch2)
-            const sidebarRect   = sidebar.getBoundingClientRect();
+            // Verifica visibilidad antes de hacer scroll
+            const sidebarRect    = sidebar.getBoundingClientRect();
             const activeLinkRect = activeLink.getBoundingClientRect();
             if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
                 const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);

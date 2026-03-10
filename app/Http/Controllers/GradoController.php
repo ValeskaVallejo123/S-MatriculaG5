@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Grado;
 use App\Models\Materia;
-use App\Models\User;
+//use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class GradoController extends Controller
 {
+    /**
+     * Nombres de las materias que se asignan automáticamente a todo grado de Primaria.
+     */
     private const MATERIAS_DEFAULT_PRIMARIA = [
         'Español (Lengua Materna)',
         'Matemáticas',
@@ -36,9 +40,13 @@ class GradoController extends Controller
             $syncData[$id] = ['horas_semanales' => 4, 'profesor_id' => null];
         }
 
+        // syncWithoutDetaching para no pisar asignaciones previas
         $grado->materias()->syncWithoutDetaching($syncData);
     }
 
+    /**
+     * Listar todos los grados
+     */
     public function index()
     {
         $grados = Grado::with('materias')
@@ -49,12 +57,18 @@ class GradoController extends Controller
         return view('grados.index', compact('grados'));
     }
 
+    /**
+     * Mostrar formulario de creación
+     */
     public function create()
     {
         return view('grados.create');
     }
 
-    public function store(Request $request)
+    /**
+     * Guardar un nuevo grado
+     */
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'nivel'        => 'required|in:primaria,secundaria',   // ← minúsculas
@@ -64,6 +78,7 @@ class GradoController extends Controller
             'activo'       => 'nullable|boolean',
         ]);
 
+        // Verificar duplicados
         $existe = Grado::where('nivel', $validated['nivel'])
             ->where('numero', $validated['numero'])
             ->where('seccion', $validated['seccion'])
@@ -94,18 +109,27 @@ class GradoController extends Controller
             ->with('success', 'Grado creado correctamente.');
     }
 
+    /**
+     * Mostrar detalle de un grado
+     */
     public function show(Grado $grado)
 {
     $grado->load('materias'); // ← sin .grados
     return view('grados.show', compact('grado'));
 }
 
+    /**
+     * Mostrar formulario de edición
+     */
     public function edit(Grado $grado)
     {
         return view('grados.edit', compact('grado'));
     }
 
-    public function update(Request $request, Grado $grado)
+    /**
+     * Actualizar un grado existente
+     */
+    public function update(Request $request, Grado $grado): RedirectResponse
     {
         $validated = $request->validate([
             'nivel'        => 'required|in:primaria,secundaria',   // ← minúsculas
@@ -128,8 +152,16 @@ class GradoController extends Controller
             ->with('success', 'Grado actualizado exitosamente.');
     }
 
-    public function destroy(Grado $grado)
+    /**
+     * Eliminar un grado
+     */
+    public function destroy(Grado $grado): RedirectResponse
     {
+        // Verificar si tiene estudiantes asignados antes de eliminar
+        // if ($grado->estudiantes()->count() > 0) {
+        //     return back()->with('error', 'No se puede eliminar el grado porque tiene estudiantes asignados.');
+        // }
+
         $grado->delete();
 
         return redirect()
@@ -137,14 +169,15 @@ class GradoController extends Controller
             ->with('success', 'Grado eliminado exitosamente.');
     }
 
+    /**
+     * Mostrar formulario de asignación de materias
+     */
     public function asignarMaterias(Grado $grado)
     {
         $materias = Materia::where('nivel', $grado->nivel)
             ->where('activo', true)
             ->get();
-
-        $profesores = User::where('role', 'profesor')->get();
-
+$profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')->get();
         $materiasAsignadas = $grado->materias->pluck('id')->toArray();
 
         return view(
@@ -153,7 +186,10 @@ class GradoController extends Controller
         );
     }
 
-    public function guardarMaterias(Request $request, Grado $grado)
+    /**
+     * Guardar materias asignadas a un grado
+     */
+    public function guardarMaterias(Request $request, Grado $grado): RedirectResponse
     {
         $validated = $request->validate([
             'materias'   => 'required|array|min:1',
@@ -165,11 +201,11 @@ class GradoController extends Controller
         $syncData = [];
 
         foreach ($validated['materias'] as $materiaId) {
-            $syncData[$materiaId] = [
-                'profesor_id'     => $request->profesores[$materiaId] ?? null,
-                'horas_semanales' => $request->horas[$materiaId] ?? 0,
-            ];
-        }
+    $syncData[$materiaId] = [
+        'profesor_id' => $request->profesores[$materiaId] ?? null,
+        'seccion'     => $request->seccion ?? $grado->seccion,
+    ];
+}
 
         $grado->materias()->sync($syncData);
 
@@ -178,6 +214,9 @@ class GradoController extends Controller
             ->with('success', 'Materias asignadas exitosamente.');
     }
 
+    /**
+     * Mostrar formulario de creación masiva
+     */
     public function crearMasivo()
     {
         return view('grados.crear-masivo');
@@ -192,15 +231,15 @@ class GradoController extends Controller
 
         // Básica → secundaria para alinearse con el ENUM de la BD
         $gradosData = [
-            ['nombre' => 'Primer Grado',   'nivel' => 'primaria',   'numero' => 1],
-            ['nombre' => 'Segundo Grado',  'nivel' => 'primaria',   'numero' => 2],
-            ['nombre' => 'Tercer Grado',   'nivel' => 'primaria',   'numero' => 3],
-            ['nombre' => 'Cuarto Grado',   'nivel' => 'primaria',   'numero' => 4],
-            ['nombre' => 'Quinto Grado',   'nivel' => 'primaria',   'numero' => 5],
-            ['nombre' => 'Sexto Grado',    'nivel' => 'primaria',   'numero' => 6],
-            ['nombre' => 'Séptimo Grado',  'nivel' => 'secundaria', 'numero' => 7],
-            ['nombre' => 'Octavo Grado',   'nivel' => 'secundaria', 'numero' => 8],
-            ['nombre' => 'Noveno Grado',   'nivel' => 'secundaria', 'numero' => 9],
+            ['nombre' => 'Primer Grado',  'nivel' => 'Primaria', 'numero' => 1],
+            ['nombre' => 'Segundo Grado', 'nivel' => 'Primaria', 'numero' => 2],
+            ['nombre' => 'Tercer Grado',  'nivel' => 'Primaria', 'numero' => 3],
+            ['nombre' => 'Cuarto Grado',  'nivel' => 'Primaria', 'numero' => 4],
+            ['nombre' => 'Quinto Grado',  'nivel' => 'Primaria', 'numero' => 5],
+            ['nombre' => 'Sexto Grado',   'nivel' => 'Primaria', 'numero' => 6],
+            ['nombre' => 'Séptimo Grado', 'nivel' => 'Básica',   'numero' => 7],
+            ['nombre' => 'Octavo Grado',  'nivel' => 'Básica',   'numero' => 8],
+            ['nombre' => 'Noveno Grado',  'nivel' => 'Básica',   'numero' => 9],
         ];
 
         $secciones = ['A', 'B', 'C', 'D'];
@@ -230,6 +269,6 @@ class GradoController extends Controller
 
         return redirect()
             ->route('grados.index')
-            ->with('success', "Se han procesado {$contador} grados exitosamente.");
+            ->with('success', "Se han procesado {$contador} grados exitosamente (9 grados × 4 secciones).");
     }
 }
