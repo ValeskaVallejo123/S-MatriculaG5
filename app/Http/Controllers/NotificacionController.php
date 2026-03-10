@@ -124,11 +124,11 @@ class NotificacionController extends Controller
      * Validar que solo SuperAdmin o Admin puedan enviar o eliminar notificaciones
      */
     private function autorizarAdmin()
-    {
-        $user = Auth::user();
+{
+    $user = \App\Models\User::find(Auth::id());
 
-        if (!$user->isSuperAdmin() && !$user->isAdmin()) {
-            abort(403, 'Solo administradores pueden realizar esta acción');
-        }
+    if (!$user || (!$user->isSuperAdmin() && !$user->isAdmin())) {
+        abort(403, 'Solo administradores pueden realizar esta acción');
     }
+}
 }

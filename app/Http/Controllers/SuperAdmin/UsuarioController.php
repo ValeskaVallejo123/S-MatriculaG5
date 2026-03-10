@@ -13,11 +13,10 @@ class UsuarioController extends Controller
 {
     /**
      * Listar todos los usuarios del sistema.
+     * Se usa paginación para evitar cargar todos los usuarios en memoria.
      */
     public function index()
     {
-        // CORRECCIÓN: ->get() carga TODOS los usuarios en memoria.
-        // Se usa paginación para evitar problemas de rendimiento.
         $usuarios = User::with('rol')
             ->orderBy('created_at', 'DESC')
             ->paginate(20);
@@ -111,20 +110,22 @@ class UsuarioController extends Controller
 
     /**
      * Eliminar usuario.
+     * CORRECCIÓN: se muestra el nombre del usuario eliminado en el mensaje
+     * y se previene que el superadmin se elimine a sí mismo.
      */
     public function destroy($id)
     {
-        // CORRECCIÓN: evitar que el superadmin se elimine a sí mismo
         if ((int) $id === Auth::id()) {
             return redirect()->route('superadmin.usuarios.index')
                 ->with('error', 'No puedes eliminar tu propio usuario.');
         }
 
         $usuario = User::findOrFail($id);
+        $nombre  = $usuario->name;
         $usuario->delete();
 
         return redirect()->route('superadmin.usuarios.index')
-            ->with('success', 'Usuario eliminado exitosamente.');
+            ->with('success', "El usuario \"$nombre\" fue eliminado correctamente.");
     }
 
     /**
@@ -142,27 +143,19 @@ class UsuarioController extends Controller
 
     /**
      * Aprobar un usuario: activar + generar contraseña temporal.
-     *
-     * CORRECCIÓN CRÍTICA: el original tenía código MUERTO (unreachable code).
-     * Después del return dentro del try{}, el código de verificación
-     * "if ($usuario->activo == 1)" y la generación de contraseña temporal
-     * NUNCA se ejecutaban porque el return ya había salido de la función.
-     * Se reestructuró completamente: primero validar, luego actuar.
+     * CORRECCIÓN: primero se valida que no esté ya aprobado, luego se actúa.
+     * Se envuelve en try/catch para manejar errores inesperados.
      */
     public function aprobar($id)
     {
         $usuario = User::findOrFail($id);
 
-        // Verificar que no esté ya aprobado
         if ($usuario->activo == 1) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Este usuario ya está aprobado.',
-            ], 422);
+            return redirect()->back()
+                ->with('error', 'Este usuario ya está aprobado.');
         }
 
         try {
-            // Generar contraseña temporal segura
             $passwordTemp = strtoupper(Str::random(4)) . rand(100, 999) . '!';
 
             $usuario->update([
@@ -170,96 +163,74 @@ class UsuarioController extends Controller
                 'password' => Hash::make($passwordTemp),
             ]);
 
-            return response()->json([
-                'success'       => true,
-                'message'       => 'Usuario aprobado exitosamente.',
-                'password_temp' => $passwordTemp,
-                'email'         => $usuario->email,
-            ]);
+            return redirect()->route('superadmin.usuarios.pendientes')
+                ->with('success', "El usuario \"{$usuario->name}\" fue aprobado correctamente.")
+                ->with('password_temp', $passwordTemp);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al aprobar el usuario: ' . $e->getMessage(),
-            ], 500);
+            return redirect()->back()
+                ->with('error', 'Error al aprobar el usuario: ' . $e->getMessage());
         }
     }
 
     /**
      * Rechazar / eliminar un usuario pendiente.
-     *
-     * CORRECCIÓN: el original tenía código MUERTO después del return
-     * dentro del try{}. La segunda llamada a $usuario->delete() y el
-     * segundo return nunca se ejecutaban.
+     * CORRECCIÓN: se previene rechazarse a sí mismo y se envuelve en try/catch.
      */
     public function rechazar($id)
     {
-        // CORRECCIÓN: evitar rechazarse a sí mismo
         if ((int) $id === Auth::id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No puedes rechazar tu propio usuario.',
-            ], 422);
+            return redirect()->back()
+                ->with('error', 'No puedes rechazar tu propio usuario.');
         }
 
         try {
             $usuario = User::findOrFail($id);
+            $nombre  = $usuario->name;
             $usuario->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Usuario rechazado y eliminado correctamente.',
-            ]);
+            return redirect()->route('superadmin.usuarios.pendientes')
+                ->with('success', "El usuario \"$nombre\" fue rechazado y eliminado correctamente.");
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al rechazar el usuario: ' . $e->getMessage(),
-            ], 500);
+            return redirect()->back()
+                ->with('error', 'Error al rechazar el usuario: ' . $e->getMessage());
         }
     }
 
     /**
      * Activar un usuario existente.
+     * CORRECCIÓN: se previene modificar el propio estado.
      */
     public function activar($id)
     {
-        // CORRECCIÓN: este método existía en web.php pero no en el controlador original
         if ((int) $id === Auth::id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No puedes modificar tu propio estado.',
-            ], 422);
+            return redirect()->back()
+                ->with('error', 'No puedes modificar tu propio estado.');
         }
 
         $usuario = User::findOrFail($id);
         $usuario->update(['activo' => 1]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario activado correctamente.',
-        ]);
+        return redirect()->back()
+            ->with('success', "El usuario \"{$usuario->name}\" fue activado correctamente.");
     }
 
     /**
      * Desactivar un usuario existente.
+     * CORRECCIÓN: se previene desactivar la propia cuenta.
      */
     public function desactivar($id)
     {
-        // CORRECCIÓN: este método existía en web.php pero no en el controlador original
         if ((int) $id === Auth::id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No puedes desactivar tu propia cuenta.',
-            ], 422);
+            return redirect()->back()
+                ->with('error', 'No puedes desactivar tu propia cuenta.');
         }
 
         $usuario = User::findOrFail($id);
         $usuario->update(['activo' => 0]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario desactivado correctamente.',
-        ]);
+        return redirect()->back()
+            ->with('success', "El usuario \"{$usuario->name}\" fue desactivado correctamente.");
     }
 }

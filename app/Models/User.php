@@ -381,4 +381,10 @@ class User extends Authenticatable
 
         return array_values(array_unique(array_filter($lista)));
     }
+    // Dentro de la clase User en app/Models/User.php
+
+/*public function role()
+{
+    return $this->belongsTo(Role::class, 'id_rol');
+}*/
 }

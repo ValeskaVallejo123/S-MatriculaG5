@@ -1,435 +1,479 @@
 @extends('layouts.app')
 
 @section('title', 'Grados')
-
 @section('page-title', 'Gestión de Grados y Secciones')
 
+{{-- ← NUEVO: botón en topbar (del archivo 2) --}}
 @section('topbar-actions')
-    <a href="{{ route('superadmin.grados.create') }}"
-       class="btn-back"
-       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
+    <a href="{{ route('grados.create') }}" class="btn-back"
+       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
+              color: white; padding: 0.5rem 1.2rem; border-radius: 8px;
+              text-decoration: none; font-weight: 600;
+              display: inline-flex; align-items: center; gap: 0.5rem;
+              transition: all 0.3s ease; border: none;
+              box-shadow: 0 2px 8px rgba(78,199,210,.3); font-size: 0.9rem;">
         <i class="fas fa-plus"></i> Nuevo Grado
     </a>
 @endsection
 
-@section('content')
-<div class="container-fluid">
-
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-radius: 10px; border-left: 4px solid #10b981;">
-        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    {{-- Filtros --}}
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
-        <div class="card-body p-4">
-            <div class="row align-items-center g-3">
-                <div class="col-md-3">
-                    <div class="position-relative">
-                        <i class="fas fa-search position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.938rem;"></i>
-                        <input type="text"
-                               id="searchInput"
-                               class="form-control ps-5"
-                               placeholder="Buscar grado..."
-                               style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 3rem; transition: all 0.3s ease;">
-                    </div>
-                </div>
-
-                <div class="col-md-2">
-                    <select id="filterNivel" class="form-select" style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
-                        <option value="">Todos los niveles</option>
-                        <option value="primaria">Primaria</option>
-                        <option value="secundaria">Secundaria</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2">
-                    <select id="perPageSelect" class="form-select" style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;" onchange="changePerPage(this.value)">
-                        <option value="10"  {{ request('per_page') == 10  ? 'selected' : '' }}>10 por página</option>
-                        <option value="15"  {{ request('per_page') == 15 || !request('per_page') ? 'selected' : '' }}>15 por página</option>
-                        <option value="20"  {{ request('per_page') == 20  ? 'selected' : '' }}>20 por página</option>
-                        <option value="30"  {{ request('per_page') == 30  ? 'selected' : '' }}>30 por página</option>
-                        <option value="50"  {{ request('per_page') == 50  ? 'selected' : '' }}>50 por página</option>
-                    </select>
-                </div>
-
-                <div class="col-md-5">
-                    <div class="d-flex align-items-center justify-content-md-end gap-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-school" style="color: #00508f; font-size: 1rem;"></i>
-                            <span class="small">
-                                <strong style="color: #00508f; font-size: 1rem;">{{ $grados->total() }}</strong>
-                                <span class="text-muted">Total</span>
-                            </span>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fas fa-check-circle" style="color: #10b981; font-size: 1rem;"></i>
-                            <span class="small">
-                                <strong style="color: #10b981; font-size: 1rem;">{{ $grados->where('activo', true)->count() }}</strong>
-                                <span class="text-muted">Activos</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Tabs --}}
-    <ul class="nav nav-tabs mb-4" id="nivelTabs" style="border: none;">
-        <li class="nav-item">
-            <button class="nav-link active" id="todos-tab" data-bs-toggle="tab" data-bs-target="#todos" type="button"
-                    style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
-                <i class="fas fa-th-large me-2"></i>Todos
-            </button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" id="primaria-tab" data-bs-toggle="tab" data-bs-target="#primaria" type="button"
-                    style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
-                <i class="fas fa-child me-2"></i>Primaria
-            </button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" id="secundaria-tab" data-bs-toggle="tab" data-bs-target="#secundaria" type="button"
-                    style="border-radius: 10px 10px 0 0; border: 2px solid #e2e8f0; border-bottom: none; color: #00508f; font-weight: 600; padding: 0.75rem 1.5rem;">
-                <i class="fas fa-user-graduate me-2"></i>Secundaria
-            </button>
-        </li>
-    </ul>
-
-    {{-- Contenido de Tabs --}}
-    <div class="tab-content" id="nivelTabsContent">
-
-        {{-- Tab: Todos --}}
-        <div class="tab-pane fade show active" id="todos">
-            <div class="row g-4" id="gradosContainer">
-                @forelse($grados as $grado)
-                <div class="col-md-6 col-lg-4 col-xl-3 grado-card"
-                     data-nivel="{{ $grado->nivel }}"
-                     data-grado="{{ $grado->numero }}"
-                     data-seccion="{{ $grado->seccion }}"
-                     data-anio="{{ $grado->anio_lectivo }}">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; transition: all 0.3s ease; border-left: 4px solid #4ec7d2;">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <h5 class="mb-2 fw-bold" style="color: #003b73; font-size: 1.125rem;">
-                                        <i class="fas fa-graduation-cap me-2" style="color: #4ec7d2;"></i>
-                                        {{ $grado->numero }}°
-                                        @if($grado->seccion)
-                                            <span style="color: #4ec7d2;">{{ $grado->seccion }}</span>
-                                        @endif
-                                    </h5>
-                                    <span class="badge" style="background: linear-gradient(135deg, rgba(78,199,210,0.15) 0%, rgba(0,80,143,0.15) 100%); color: #00508f; border: 1px solid #4ec7d2; padding: 0.4rem 0.75rem; font-size: 0.75rem; border-radius: 6px;">
-                                        <i class="fas fa-layer-group me-1"></i>{{ ucfirst($grado->nivel) }}
-                                    </span>
-                                </div>
-                                @if($grado->activo)
-                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(5,150,105,0.15) 100%); color: #059669; padding: 0.4rem 0.875rem; border: 1px solid #10b981; font-size: 0.75rem;">
-                                        <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>Activo
-                                    </span>
-                                @else
-                                    <span class="badge rounded-pill" style="background: rgba(239,68,68,0.1); color: #dc2626; padding: 0.4rem 0.875rem; border: 1px solid #ef4444; font-size: 0.75rem;">
-                                        <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>Inactivo
-                                    </span>
-                                @endif
-                            </div>
-
-                            <div class="mb-3">
-                                <div class="d-flex align-items-center justify-content-between mb-2 pb-2" style="border-bottom: 1px solid #e2e8f0;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-calendar-alt" style="color: #4ec7d2; font-size: 0.875rem;"></i>
-                                        <span class="text-muted" style="font-size: 0.875rem;">Año Lectivo</span>
-                                    </div>
-                                    <strong style="color: #003b73; font-size: 0.938rem;">{{ $grado->anio_lectivo }}</strong>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-book" style="color: #4ec7d2; font-size: 0.875rem;"></i>
-                                        <span class="text-muted" style="font-size: 0.875rem;">Materias</span>
-                                    </div>
-                                    <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.4rem 0.75rem; font-size: 0.813rem; border-radius: 6px;">
-                                        {{ $grado->materias->count() }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-2 mt-3">
-                                <a href="{{ route('superadmin.grados.show', $grado) }}"
-                                   class="btn btn-sm flex-fill btn-grado-view"
-                                   style="border: 2px solid #6366f1; color: #6366f1; background: white; border-radius: 8px; font-size: 0.875rem; padding: 0.5rem; font-weight: 600; transition: all 0.3s ease;">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}"
-                                   class="btn btn-sm flex-fill btn-grado-materias"
-                                   style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 8px; font-size: 0.875rem; padding: 0.5rem; font-weight: 600; transition: all 0.3s ease;">
-                                    <i class="fas fa-tasks"></i>
-                                </a>
-                                <a href="{{ route('superadmin.grados.edit', $grado) }}"
-                                   class="btn btn-sm btn-grado-edit"
-                                   style="border: 2px solid #f59e0b; color: #f59e0b; background: white; border-radius: 8px; font-size: 0.875rem; padding: 0.5rem 0.625rem; font-weight: 600; transition: all 0.3s ease;">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                        <div class="card-body text-center py-5">
-                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(78,199,210,0.1) 0%, rgba(0,80,143,0.1) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-                                <i class="fas fa-inbox" style="font-size: 2rem; color: #4ec7d2;"></i>
-                            </div>
-                            <h5 class="fw-bold mb-2" style="color: #003b73;">No hay grados registrados</h5>
-                            <p class="text-muted mb-4">Comienza agregando el primer grado</p>
-                            <a href="{{ route('superadmin.grados.create') }}"
-                               style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.6rem 1.5rem; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
-                                <i class="fas fa-plus"></i>Crear Grado
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                @endforelse
-            </div>
-
-            {{-- Paginación --}}
-            @if($grados->hasPages())
-                <div class="pagination-wrapper mt-4">
-                    <div class="pagination-info">
-                        Mostrando <strong>{{ $grados->firstItem() }}</strong> a <strong>{{ $grados->lastItem() }}</strong> de <strong>{{ $grados->total() }}</strong> resultados
-                    </div>
-                    <nav aria-label="Navegación de páginas">
-                        <ul class="pagination">
-                            {{-- Anterior --}}
-                            @if ($grados->onFirstPage())
-                                <li class="page-item disabled"><span class="page-link"><i class="fas fa-chevron-left"></i></span></li>
-                            @else
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $grados->appends(['per_page' => request('per_page', 15)])->previousPageUrl() }}" rel="prev">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                </li>
-                            @endif
-
-                            {{-- Primera página --}}
-                            @if($grados->currentPage() > 3)
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $grados->appends(['per_page' => request('per_page', 15)])->url(1) }}">1</a>
-                                </li>
-                                @if($grados->currentPage() > 4)
-                                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                                @endif
-                            @endif
-
-                            {{-- Páginas alrededor de la actual --}}
-                            @for ($i = max(1, $grados->currentPage() - 2); $i <= min($grados->lastPage(), $grados->currentPage() + 2); $i++)
-                                @if ($i == $grados->currentPage())
-                                    <li class="page-item active"><span class="page-link">{{ $i }}</span></li>
-                                @else
-                                    <li class="page-item">
-                                        <a class="page-link" href="{{ $grados->appends(['per_page' => request('per_page', 15)])->url($i) }}">{{ $i }}</a>
-                                    </li>
-                                @endif
-                            @endfor
-
-                            {{-- Última página --}}
-                            @if($grados->currentPage() < $grados->lastPage() - 2)
-                                @if($grados->currentPage() < $grados->lastPage() - 3)
-                                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                                @endif
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $grados->appends(['per_page' => request('per_page', 15)])->url($grados->lastPage()) }}">{{ $grados->lastPage() }}</a>
-                                </li>
-                            @endif
-
-                            {{-- Siguiente --}}
-                            @if ($grados->hasMorePages())
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $grados->appends(['per_page' => request('per_page', 15)])->nextPageUrl() }}" rel="next">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                </li>
-                            @else
-                                <li class="page-item disabled"><span class="page-link"><i class="fas fa-chevron-right"></i></span></li>
-                            @endif
-                        </ul>
-                    </nav>
-                </div>
-            @endif
-        </div>
-
-        {{-- Tab: Primaria --}}
-        <div class="tab-pane fade" id="primaria">
-            <div class="row g-4">
-                @forelse($grados->where('nivel', 'primaria') as $grado)
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border-left: 4px solid #4ec7d2;">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <h5 class="mb-2 fw-bold" style="color: #003b73; font-size: 1.125rem;">
-                                        <i class="fas fa-child me-2" style="color: #4ec7d2;"></i>
-                                        {{ $grado->numero }}° {{ $grado->seccion }}
-                                    </h5>
-                                    <span class="badge" style="background: linear-gradient(135deg, rgba(78,199,210,0.15) 0%, rgba(0,80,143,0.15) 100%); color: #00508f; border: 1px solid #4ec7d2; padding: 0.4rem 0.75rem; font-size: 0.75rem; border-radius: 6px;">
-                                        Primaria
-                                    </span>
-                                </div>
-                                @if($grado->activo)
-                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(5,150,105,0.15) 100%); color: #059669; padding: 0.4rem 0.875rem; border: 1px solid #10b981; font-size: 0.75rem;">Activo</span>
-                                @endif
-                            </div>
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between mb-2 pb-2" style="border-bottom: 1px solid #e2e8f0;">
-                                    <span class="text-muted" style="font-size: 0.875rem;">Año:</span>
-                                    <strong style="color: #003b73;">{{ $grado->anio_lectivo }}</strong>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span class="text-muted" style="font-size: 0.875rem;">Materias:</span>
-                                    <span class="badge" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.4rem 0.75rem;">{{ $grado->materias->count() }}</span>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('superadmin.grados.show', $grado) }}" class="btn btn-sm flex-fill btn-grado-view" style="border: 2px solid #6366f1; color: #6366f1; background: white; border-radius: 8px; font-size: 0.875rem; font-weight: 600;"><i class="fas fa-eye"></i></a>
-                                <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}" class="btn btn-sm flex-fill btn-grado-materias" style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 8px; font-size: 0.875rem; font-weight: 600;"><i class="fas fa-tasks"></i></a>
-                                <a href="{{ route('superadmin.grados.edit', $grado) }}" class="btn btn-sm btn-grado-edit" style="border: 2px solid #f59e0b; color: #f59e0b; background: white; border-radius: 8px; font-size: 0.875rem; font-weight: 600;"><i class="fas fa-edit"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(78,199,210,0.1) 0%, rgba(0,80,143,0.1) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-                            <i class="fas fa-inbox" style="font-size: 2rem; color: #4ec7d2;"></i>
-                        </div>
-                        <p class="text-muted">No hay grados de primaria registrados</p>
-                    </div>
-                </div>
-                @endforelse
-            </div>
-        </div>
-
-        {{-- Tab: Secundaria --}}
-        <div class="tab-pane fade" id="secundaria">
-            <div class="row g-4">
-                @forelse($grados->where('nivel', 'secundaria') as $grado)
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border-left: 4px solid #00508f;">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <h5 class="mb-2 fw-bold" style="color: #003b73; font-size: 1.125rem;">
-                                        <i class="fas fa-user-graduate me-2" style="color: #00508f;"></i>
-                                        {{ $grado->numero }}° {{ $grado->seccion }}
-                                    </h5>
-                                    <span class="badge" style="background: rgba(0,80,143,0.15); color: #003b73; border: 1px solid #00508f; padding: 0.4rem 0.75rem; font-size: 0.75rem; border-radius: 6px;">
-                                        Secundaria
-                                    </span>
-                                </div>
-                                @if($grado->activo)
-                                    <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(5,150,105,0.15) 100%); color: #059669; padding: 0.4rem 0.875rem; border: 1px solid #10b981; font-size: 0.75rem;">Activo</span>
-                                @endif
-                            </div>
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between mb-2 pb-2" style="border-bottom: 1px solid #e2e8f0;">
-                                    <span class="text-muted" style="font-size: 0.875rem;">Año:</span>
-                                    <strong style="color: #003b73;">{{ $grado->anio_lectivo }}</strong>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span class="text-muted" style="font-size: 0.875rem;">Materias:</span>
-                                    <span class="badge" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); color: white; padding: 0.4rem 0.75rem;">{{ $grado->materias->count() }}</span>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('superadmin.grados.show', $grado) }}" class="btn btn-sm flex-fill btn-grado-view" style="border: 2px solid #6366f1; color: #6366f1; background: white; border-radius: 8px; font-size: 0.875rem; font-weight: 600;"><i class="fas fa-eye"></i></a>
-                                <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}" class="btn btn-sm flex-fill btn-grado-materias" style="border: 2px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 8px; font-size: 0.875rem; font-weight: 600;"><i class="fas fa-tasks"></i></a>
-                                <a href="{{ route('superadmin.grados.edit', $grado) }}" class="btn btn-sm btn-grado-edit" style="border: 2px solid #f59e0b; color: #f59e0b; background: white; border-radius: 8px; font-size: 0.875rem; font-weight: 600;"><i class="fas fa-edit"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(0,80,143,0.1) 0%, rgba(0,59,115,0.1) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-                            <i class="fas fa-inbox" style="font-size: 2rem; color: #00508f;"></i>
-                        </div>
-                        <p class="text-muted">No hay grados de secundaria registrados</p>
-                    </div>
-                </div>
-                @endforelse
-            </div>
-        </div>
-
-    </div>
-</div>
-
 @push('styles')
 <style>
-.card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important; }
-.btn-grado-view:hover    { background: #6366f1 !important; color: white !important; transform: translateY(-2px); }
-.btn-grado-materias:hover{ background: #4ec7d2 !important; color: white !important; transform: translateY(-2px); }
-.btn-grado-edit:hover    { background: #f59e0b !important; color: white !important; transform: translateY(-2px); }
-.btn-back:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(78,199,210,0.4) !important; }
-
-#searchInput:focus, .form-select:focus {
-    border-color: #4ec7d2;
-    box-shadow: 0 0 0 0.2rem rgba(78,199,210,0.15);
-    outline: none;
+:root {
+    --blue:     #00508f;
+    --blue-mid: #003b73;
+    --teal:     #4ec7d2;
+    --border:   #e8edf4;
+    --muted:    #6b7a90;
+    --r:        14px;
 }
 
-.nav-tabs { border-bottom: 2px solid #e2e8f0; }
-.nav-tabs .nav-link { border: none; background: transparent; margin-right: 0.5rem; }
-.nav-tabs .nav-link.active { background: white; border: 2px solid #4ec7d2 !important; border-bottom: 2px solid white !important; margin-bottom: -2px; color: #00508f !important; }
-.nav-tabs .nav-link:hover:not(.active) { background: linear-gradient(135deg, rgba(78,199,210,0.1) 0%, rgba(0,80,143,0.1) 100%); }
+.gg-wrap { width: 100%; box-sizing: border-box; }
 
-.pagination-wrapper { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 2rem; }
-.pagination-info { text-align: center; color: #64748b; font-size: 0.875rem; padding: 0.75rem 1.5rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
-.pagination-info strong { color: #00508f; font-weight: 600; }
+/* ── HEADER ── */
+.gg-header {
+    border-radius: var(--r) var(--r) 0 0;
+    background: linear-gradient(135deg, #002d5a 0%, #00508f 55%, #0077b6 100%);
+    padding: 2rem 1.7rem;
+    position: relative; overflow: hidden;
+}
+.gg-header::before {
+    content: ''; position: absolute; right: -50px; top: -50px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(78,199,210,.13); pointer-events: none;
+}
+.gg-header::after {
+    content: ''; position: absolute; right: 100px; bottom: -45px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,.05); pointer-events: none;
+}
+.gg-header-inner {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+}
+.gg-header-left { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+.gg-avatar {
+    width: 80px; height: 80px; border-radius: 18px;
+    border: 3px solid rgba(78,199,210,.7);
+    background: rgba(255,255,255,.12);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25); flex-shrink: 0;
+}
+.gg-avatar i { color: white; font-size: 2rem; }
+.gg-header h2 {
+    font-size: 1.45rem; font-weight: 800; color: white;
+    margin: 0 0 .5rem; text-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.gg-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .22rem .7rem; border-radius: 999px;
+    font-size: .72rem; font-weight: 700;
+    border: 1px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.15); color: white;
+    margin-right: .4rem;
+}
+.gg-btn-nuevo {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35);
+    color: white; padding: .5rem 1.2rem; border-radius: 8px;
+    font-size: .82rem; font-weight: 700; text-decoration: none;
+    transition: all .2s; white-space: nowrap;
+}
+.gg-btn-nuevo:hover {
+    background: rgba(255,255,255,.25); color: white; text-decoration: none;
+}
 
-.pagination { display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 0; padding: 0; list-style: none; flex-wrap: wrap; }
-.page-item { list-style: none; }
-.page-link { display: flex; align-items: center; justify-content: center; min-width: 40px; height: 40px; padding: 0.5rem 0.75rem; background: white; border: 2px solid #e2e8f0; border-radius: 8px; color: #64748b; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: all 0.2s ease; }
-.page-link:hover { background: linear-gradient(135deg, rgba(78,199,210,0.1) 0%, rgba(0,80,143,0.1) 100%); border-color: #4ec7d2; color: #00508f; transform: translateY(-2px); }
-.page-item.active .page-link { background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-color: #4ec7d2; color: white; box-shadow: 0 4px 12px rgba(78,199,210,0.3); }
-.page-item.disabled .page-link { background: #f8fafc; border-color: #e2e8f0; color: #cbd5e1; cursor: not-allowed; opacity: 0.6; }
-.page-item.disabled .page-link:hover { transform: none; }
+/* ── BODY ── */
+.gg-body {
+    background: white;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--r) var(--r);
+    box-shadow: 0 4px 16px rgba(0,59,115,.10);
+    padding: 1.4rem 1.7rem;
+    margin-bottom: 1.3rem;
+}
 
-@media (max-width: 768px) {
-    .pagination { gap: 0.25rem; }
-    .page-link { min-width: 36px; height: 36px; padding: 0.4rem 0.6rem; font-size: 0.813rem; }
+/* ── FILTROS ── */
+.gg-filters {
+    display: flex; align-items: center; gap: .75rem;
+    flex-wrap: wrap; margin-bottom: 1.2rem;
+}
+.gg-search-wrap { position: relative; flex: 1; min-width: 200px; }
+.gg-search {
+    width: 100%; padding: .55rem 1rem .55rem 2.4rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: .82rem; color: var(--blue-mid);
+    background: #f9fbfd; outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+.gg-search:focus {
+    border-color: rgba(78,199,210,.5);
+    box-shadow: 0 0 0 3px rgba(78,199,210,.1);
+    background: white;
+}
+.gg-search-icon {
+    position: absolute; left: .8rem; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: .75rem; pointer-events: none;
+}
+.gg-select {
+    padding: .55rem .85rem; border: 1px solid var(--border);
+    border-radius: 8px; font-size: .8rem; color: var(--blue-mid);
+    background: #f9fbfd; outline: none; cursor: pointer;
+    transition: border-color .2s;
+}
+.gg-select:focus { border-color: rgba(78,199,210,.5); }
+
+/* stats */
+.gg-stats-row {
+    display: flex; align-items: center; gap: 1rem;
+    flex-wrap: wrap; margin-left: auto;
+}
+.gg-stat-pill {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-size: .75rem; font-weight: 700; color: var(--blue-mid);
+    background: #f5f8fc; border: 1px solid var(--border);
+    border-radius: 999px; padding: .3rem .85rem;
+}
+.gg-stat-pill i { color: var(--teal); font-size: .7rem; }
+
+/* ── TABS ── */
+.gg-tabs {
+    display: flex; gap: .4rem; margin-bottom: 1.2rem;
+    border-bottom: 2px solid var(--border); padding-bottom: 0;
+}
+.gg-tab {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .55rem 1.1rem; border-radius: 8px 8px 0 0;
+    font-size: .78rem; font-weight: 700; color: var(--muted);
+    background: #f5f8fc; border: 1px solid var(--border);
+    border-bottom: none; cursor: pointer;
+    transition: all .18s; margin-bottom: -2px;
+    text-decoration: none;
+}
+.gg-tab.active, .gg-tab:hover {
+    background: white; color: var(--blue);
+    border-color: rgba(78,199,210,.5);
+    border-bottom: 2px solid white;
+}
+.gg-tab i { color: var(--teal); }
+
+/* ── SECTION TITLE ── */
+.gg-sec {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .08em;
+    color: var(--blue); margin-bottom: .95rem;
+    padding-bottom: .55rem;
+    border-bottom: 2px solid rgba(78,199,210,.15);
+}
+.gg-sec i { color: var(--teal); }
+
+/* ── GRID ── */
+.gg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+/* ── GRADO CARD ── */
+.gg-card {
+    border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+    background: white;
+    transition: box-shadow .2s, transform .2s, border-color .2s;
+}
+.gg-card:hover {
+    box-shadow: 0 6px 24px rgba(0,80,143,.13);
+    border-color: rgba(78,199,210,.5);
+    transform: translateY(-2px);
+}
+.gg-card-top {
+    background: linear-gradient(135deg, #002d5a 0%, #00508f 60%, #0077b6 100%);
+    padding: 1rem 1.1rem .85rem;
+    position: relative; overflow: hidden;
+}
+.gg-card-top::after {
+    content: ''; position: absolute; right: -20px; top: -20px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(78,199,210,.12); pointer-events: none;
+}
+.gg-card-nivel {
+    font-size: .62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: rgba(78,199,210,.9); margin-bottom: .25rem;
+}
+.gg-card-grado {
+    font-size: 1.15rem; font-weight: 800; color: white; line-height: 1.1;
+}
+.gg-card-badges { margin-top: .4rem; display: flex; flex-wrap: wrap; gap: .3rem; }
+.gg-card-badge {
+    display: inline-flex; align-items: center; gap: .2rem;
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px; padding: .15rem .55rem;
+    font-size: .65rem; font-weight: 700; color: white;
+}
+.gg-card-badge.activo {
+    background: rgba(16,185,129,.25); border-color: rgba(16,185,129,.4); color: #6ee7b7;
+}
+.gg-card-badge.inactivo {
+    background: rgba(239,68,68,.2); border-color: rgba(239,68,68,.3); color: #fca5a5;
+}
+
+.gg-card-body { padding: .85rem 1rem; }
+.gg-card-info {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #f5f8fc; border: 1px solid var(--border); border-radius: 7px;
+    padding: .5rem .75rem; margin-bottom: .65rem;
+    font-size: .72rem;
+}
+.gg-card-info-label { color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: .3rem; }
+.gg-card-info-label i { color: var(--teal); }
+.gg-card-info-val { font-weight: 800; color: var(--blue-mid); }
+
+.gg-materia-tag {
+    display: inline-flex; align-items: center; gap: .2rem;
+    background: linear-gradient(135deg, rgba(78,199,210,.12), rgba(0,80,143,.07));
+    border: 1px solid rgba(78,199,210,.3); border-radius: 999px;
+    padding: .18rem .55rem; font-size: .65rem; font-weight: 600;
+    color: var(--blue-mid); margin: .1rem .1rem 0 0;
+}
+.gg-materia-tag i { color: var(--teal); font-size: .4rem; }
+
+.gg-card-footer {
+    border-top: 1px solid var(--border); padding: .65rem 1rem;
+    background: #f9fbfd; display: grid;
+    grid-template-columns: 1fr 1fr; gap: .4rem;
+}
+.gg-card-footer-full { grid-column: 1 / -1; }
+.gg-btn-sm {
+    display: flex; align-items: center; justify-content: center; gap: .3rem;
+    padding: .4rem .5rem; border-radius: 7px;
+    font-size: .7rem; font-weight: 700; text-decoration: none;
+    transition: all .18s; border: 1px solid transparent;
+}
+.gg-btn-ver   { background: #f0f7ff; color: var(--blue); border-color: rgba(0,80,143,.2); }
+.gg-btn-edit  { background: #fff8eb; color: #92400e; border-color: #fde68a; }
+.gg-btn-mat   { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; }
+.gg-btn-sm:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+
+/* ── EMPTY ── */
+.gg-empty {
+    text-align: center; padding: 3.5rem 1rem; color: var(--muted);
+}
+.gg-empty i { font-size: 2.8rem; display: block; margin-bottom: .75rem; color: rgba(78,199,210,.35); }
+.gg-empty p  { font-size: .9rem; font-weight: 600; margin: 0 0 .25rem; }
+
+/* ── PAGINATION ── */
+.gg-pagination {
+    display: flex; flex-direction: column; align-items: center;
+    gap: .75rem; margin-top: 1.5rem;
+}
+.gg-pag-info {
+    font-size: .75rem; color: var(--muted);
+    background: #f5f8fc; border: 1px solid var(--border);
+    border-radius: 8px; padding: .4rem 1rem;
+}
+.gg-pag-info strong { color: var(--blue); }
+
+@media(max-width: 768px) {
+    .gg-header { padding: 1.4rem 1.1rem; }
+    .gg-body   { padding: 1rem 1.1rem; }
+    .gg-avatar { width: 60px; height: 60px; }
+    .gg-avatar i { font-size: 1.5rem; }
+    .gg-header h2 { font-size: 1.1rem; }
+    .gg-grid { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width: 480px) {
+    .gg-grid { grid-template-columns: 1fr; }
 }
 </style>
 @endpush
+
+@section('content')
+<div class="container-fluid px-4">
+<div class="gg-wrap">
+
+    {{-- ── HEADER ── --}}
+    <div class="gg-header">
+        <div class="gg-header-inner">
+            <div class="gg-header-left">
+                <div class="gg-avatar">
+                    <i class="fas fa-school"></i>
+                </div>
+                <div>
+                    <h2>Gestión de Grados</h2>
+                    <span class="gg-badge">
+                        <i class="fas fa-layer-group"></i>
+                        {{ $grados->total() }} grados registrados
+                    </span>
+                    <span class="gg-badge">
+                        <i class="fas fa-calendar"></i> {{ now()->format('Y') }}
+                    </span>
+                </div>
+            </div>
+            <a href="{{ route('grados.create') }}" class="gg-btn-nuevo">
+                <i class="fas fa-plus"></i> Nuevo Grado
+            </a>
+        </div>
+    </div>
+
+    {{-- ── BODY ── --}}
+    <div class="gg-body">
+
+        {{-- Alertas --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show mb-4"
+                 style="border-radius:10px; border-left:4px solid #10b981; font-size:.83rem;">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        {{-- ← NUEVO: alerta de error (del archivo 2) --}}
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mb-4"
+                 style="border-radius:10px; border-left:4px solid #ef4444; font-size:.83rem;">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        {{-- Filtros --}}
+        <div class="gg-filters">
+            <div class="gg-search-wrap">
+                <i class="fas fa-search gg-search-icon"></i>
+                <input type="text" id="searchInput" class="gg-search" placeholder="Buscar grado...">
+            </div>
+
+            {{-- ← CORREGIDO: valores del ENUM (primaria | secundaria) sin "básica" --}}
+            <select id="filterNivel" class="gg-select">
+                <option value="">Todos los niveles</option>
+                <option value="primaria">Primaria</option>
+                <option value="secundaria">Secundaria</option>
+            </select>
+
+            <select class="gg-select" onchange="changePerPage(this.value)">
+                <option value="10"  {{ request('per_page') == 10  ? 'selected' : '' }}>10 / pág</option>
+                <option value="15"  {{ !request('per_page') || request('per_page') == 15 ? 'selected' : '' }}>15 / pág</option>
+                <option value="20"  {{ request('per_page') == 20  ? 'selected' : '' }}>20 / pág</option>
+                <option value="30"  {{ request('per_page') == 30  ? 'selected' : '' }}>30 / pág</option>
+                <option value="50"  {{ request('per_page') == 50  ? 'selected' : '' }}>50 / pág</option>
+            </select>
+
+            <div class="gg-stats-row">
+                <span class="gg-stat-pill">
+                    <i class="fas fa-check-circle"></i>
+                    {{ $grados->where('activo', true)->count() }} activos
+                </span>
+                {{-- ← NUEVO: contador de páginas (del archivo 2) --}}
+                <span class="gg-stat-pill">
+                    <i class="fas fa-layer-group"></i>
+                    {{ $grados->lastPage() }} páginas
+                </span>
+            </div>
+        </div>
+
+        {{-- Tabs — CORREGIDO: "Secundaria" en vez de "Básica" para coincidir con ENUM --}}
+        <div class="gg-tabs" id="nivelTabs">
+            <a class="gg-tab active" data-nivel="" href="#">
+                <i class="fas fa-th-large"></i> Todos
+            </a>
+            <a class="gg-tab" data-nivel="primaria" href="#">
+                <i class="fas fa-child"></i> Primaria
+            </a>
+            <a class="gg-tab" data-nivel="secundaria" href="#">
+                <i class="fas fa-user-graduate"></i> Secundaria
+            </a>
+        </div>
+
+        <div class="gg-sec">
+            <i class="fas fa-layer-group"></i> Grados Registrados
+        </div>
+
+        {{-- Grid --}}
+        @if($grados->isEmpty())
+            <div class="gg-empty">
+                <i class="fas fa-inbox"></i>
+                <p>No hay grados registrados</p>
+                <a href="{{ route('grados.create') }}"
+                   style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;
+                          background:linear-gradient(135deg,var(--teal),var(--blue));color:white;
+                          padding:.5rem 1.2rem;border-radius:8px;text-decoration:none;font-size:.8rem;font-weight:700;">
+                    <i class="fas fa-plus"></i> Crear Grado
+                </a>
+            </div>
+        @else
+            <div class="gg-grid" id="gradosContainer">
+                @foreach($grados as $grado)
+                    {{-- data-nivel usa el valor del ENUM directamente (ya en minúsculas) --}}
+                    <div class="gg-card-wrap"
+                         data-nivel="{{ $grado->nivel }}"
+                         data-search="{{ strtolower($grado->nivel . ' ' . $grado->numero . ' ' . $grado->seccion . ' ' . $grado->anio_lectivo) }}">
+                        @include('superadmin.grados._card', ['grado' => $grado])
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        {{-- Paginación —  simplificada con appends(request()->query()) (del archivo 2) --}}
+        @if($grados->hasPages())
+            <div class="gg-pagination">
+                <div class="gg-pag-info">
+                    Mostrando <strong>{{ $grados->firstItem() }}</strong>
+                    a <strong>{{ $grados->lastItem() }}</strong>
+                    de <strong>{{ $grados->total() }}</strong> resultados
+                </div>
+                {{ $grados->appends(request()->query())->links() }}
+            </div>
+        @endif
+
+    </div>{{-- fin gg-body --}}
+
+</div>
+</div>
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const filterNivel = document.getElementById('filterNivel');
-    const cards = document.querySelectorAll('.grado-card');
+    const tabs        = document.querySelectorAll('.gg-tab');
+    const cards       = document.querySelectorAll('.gg-card-wrap');
 
     function filterCards() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
-        const nivelFilter = filterNivel.value;
+        const term  = searchInput.value.toLowerCase().trim();
+        const nivel = filterNivel.value;
 
         cards.forEach(function (card) {
-            const text  = card.textContent.toLowerCase();
-            const nivel = card.dataset.nivel;
-
-            const matchesSearch = text.includes(searchTerm);
-            const matchesNivel  = !nivelFilter || nivel === nivelFilter;
-
-            card.style.display = (matchesSearch && matchesNivel) ? '' : 'none';
+            const matchSearch = card.dataset.search.includes(term);
+            const matchNivel  = nivel === '' || card.dataset.nivel === nivel;
+            card.style.display = (matchSearch && matchNivel) ? '' : 'none';
         });
     }
 
-    searchInput.addEventListener('keyup', filterCards);
-    filterNivel.addEventListener('change', filterCards);
+    {{-- ← MEJORADO: sincronización bidireccional Tabs ↔ Select (del archivo 2) --}}
+
+    // Tabs → Select
+    tabs.forEach(function (tab) {
+        tab.addEventListener('click', function (e) {
+            e.preventDefault();
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            filterNivel.value = this.dataset.nivel;
+            filterCards();
+        });
+    });
+
+    // Select → Tabs
+    filterNivel.addEventListener('change', function () {
+        const val = this.value;
+        tabs.forEach(t => t.classList.remove('active'));
+        const match = document.querySelector(`.gg-tab[data-nivel="${val}"]`);
+        if (match) match.classList.add('active');
+        filterCards();
+    });
+
+    searchInput.addEventListener('input', filterCards);
 });
 
 function changePerPage(value) {

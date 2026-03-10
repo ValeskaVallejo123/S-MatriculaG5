@@ -11,7 +11,6 @@ class NotificacionProfesorController extends Controller
 {
     public function __construct()
     {
-        // Cualquier usuario autenticado puede ver sus notificaciones
         $this->middleware('auth');
     }
 
@@ -20,7 +19,7 @@ class NotificacionProfesorController extends Controller
      */
     public function index()
     {
-        $usuario = Auth::user();
+        $usuario = User::find(Auth::id()); // ✅ CORREGIDO
 
         if (!$usuario->isDocente()) {
             abort(403, 'Solo los profesores pueden ver esta sección.');
@@ -38,9 +37,8 @@ class NotificacionProfesorController extends Controller
      */
     public function marcarLeida(Notificacion $notificacion)
     {
-        $usuario = Auth::user();
+        $usuario = User::find(Auth::id()); // ✅ CORREGIDO
 
-        // Validar que sea su notificación
         if ($notificacion->user_id !== $usuario->id) {
             abort(403, 'No autorizado');
         }
@@ -55,9 +53,8 @@ class NotificacionProfesorController extends Controller
      */
     public function enviarAAdministracion(Request $request)
     {
-        $usuario = Auth::user();
+        $usuario = User::find(Auth::id()); // ✅ CORREGIDO
 
-        // Solo profesores
         if (!$usuario->isDocente()) {
             abort(403, 'Solo profesores pueden enviar mensajes a administración.');
         }
@@ -67,7 +64,6 @@ class NotificacionProfesorController extends Controller
             'mensaje' => 'required|string|max:2000',
         ]);
 
-        // Buscar Admins y SuperAdmins
         $destinatarios = User::whereIn('id_rol', [1, 2])->get();
 
         foreach ($destinatarios as $admin) {

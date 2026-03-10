@@ -14,7 +14,7 @@ class NotificacionPreferenciaController extends Controller
      */
     public function edit()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id()); // ✅ CORREGIDO
 
         // Obtener preferencias del usuario
         $preferencias = $user->notificacionPreferencias;
@@ -58,7 +58,7 @@ class NotificacionPreferenciaController extends Controller
      */
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id()); // ✅ CORREGIDO
         $preferencias = $user->notificacionPreferencias;
 
         if (!$preferencias) {
@@ -98,7 +98,7 @@ class NotificacionPreferenciaController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id()); // ✅ CORREGIDO
 
         // Cargar notificaciones del usuario
         $notificaciones = $user->notificaciones()->orderBy('created_at', 'desc')->get();
