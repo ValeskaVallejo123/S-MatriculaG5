@@ -250,27 +250,26 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('padres', PadreController::class);
 
         Route::prefix('matriculas')->name('matriculas.')->group(function () {
-            Route::get('/', [MatriculaController::class, 'index'])->name('index');
-            Route::get('/crear', [MatriculaController::class, 'create'])->name('create');
-            Route::post('/', [MatriculaController::class, 'store'])->name('store');
-            Route::get('/{matricula}', [MatriculaController::class, 'show'])->name('show');
-            Route::put('/{matricula}', [MatriculaController::class, 'update'])->name('update');
-            Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
-        });
+    Route::get('/', [MatriculaController::class, 'index'])->name('index');
+    Route::get('/crear', [MatriculaController::class, 'create'])->name('create');
+    Route::post('/', [MatriculaController::class, 'store'])->name('store');
+    Route::get('/{matricula}/editar', [MatriculaController::class, 'edit'])->name('edit');        // ✅ ANTES de show
+    Route::get('/{matricula}', [MatriculaController::class, 'show'])->name('show');
+    Route::put('/{matricula}', [MatriculaController::class, 'update'])->name('update');
+    Route::post('/{matricula}/confirmar', [MatriculaController::class, 'confirmar'])->name('confirmar');
+});
 
         // ── Rutas de Sección (bloque único consolidado) ──────────────────────
         Route::prefix('secciones')->name('secciones.')->group(function () {
-            Route::get('/',                 [SeccionController::class, 'index'])->name('index');
-            // ⚠️ Rutas con segmento fijo ANTES de las rutas con {parámetro}
-            Route::get('/create',            [SeccionController::class, 'create'])->name('secciones.create');
-            Route::post('/',                [SeccionController::class, 'store'])->name('store');
-            Route::get('/{seccion}/editar', [SeccionController::class, 'edit'])->name('edit');
-            Route::put('/{seccion}',        [SeccionController::class, 'update'])->name('update');
-            Route::delete('/{seccion}',     [SeccionController::class, 'destroy'])->name('destroy');
-            // ⚠️ Rutas con segmento fijo ANTES de las rutas con {parámetro}
-            Route::post('/asignar',         [SeccionController::class, 'asignar'])->name('asignar');
-            Route::patch('/quitar',         [SeccionController::class, 'quitar'])->name('quitar');
-        });
+    Route::get('/',                 [SeccionController::class, 'index'])->name('index');
+    Route::get('/create',           [SeccionController::class, 'create'])->name('create');   // ✅
+    Route::post('/',                [SeccionController::class, 'store'])->name('store');
+    Route::get('/{seccion}/editar', [SeccionController::class, 'edit'])->name('edit');
+    Route::put('/{seccion}',        [SeccionController::class, 'update'])->name('update');
+    Route::delete('/{seccion}',     [SeccionController::class, 'destroy'])->name('destroy');
+    Route::post('/asignar',         [SeccionController::class, 'asignar'])->name('asignar');
+    Route::patch('/quitar',         [SeccionController::class, 'quitar'])->name('quitar');
+});
 
         Route::resource('ciclos', CicloController::class);
         Route::resource('cupos_maximos', CupoMaximoController::class);

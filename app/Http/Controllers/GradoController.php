@@ -36,7 +36,7 @@ class GradoController extends Controller
         foreach ($ids as $id) {
             $syncData[$id] = ['horas_semanales' => 4, 'profesor_id' => null];
         }
-
+    
         $grado->materias()->syncWithoutDetaching($syncData);
     }
 
@@ -199,6 +199,60 @@ class GradoController extends Controller
 
         return redirect()->route('grados.index')->with('success', "Se han procesado {$contador} grados y sus respectivas secciones.");
     }
+    public function show(Grado $grado)
+{
+    $grado->load('materias');
+    return view('grados.show', compact('grado'));
+}
 
+public function edit(Grado $grado)
+{
+    return view('grados.edit', compact('grado'));
+}
+
+public function destroy(Grado $grado)
+{
+    $grado->materias()->detach();
+    $grado->delete();
+
+    return redirect()
+        ->route('superadmin.grados.index')
+        ->with('success', 'Grado eliminado correctamente.');
+}
+
+ppublic function asignarMaterias(Grado $grado)
+{
+    $grado->load('materias');
+    $materias          = Materia::where('activo', true)->orderBy('nombre')->get();
+    $materiasAsignadas = $grado->materias->pluck('id')->toArray(); // ← IDs como array
+
+    return view('grados.asignar-materias', compact('grado', 'materias', 'materiasAsignadas'));
+}
+
+public function guardarMaterias(Request $request, Grado $grado)
+{
+    $validated = $request->validate([
+        'materias'                => 'nullable|array',
+        'materias.*'              => 'exists:materias,id',
+        'horas.*'                 => 'nullable|integer|min:1|max:40',
+        'profesor.*'              => 'nullable|exists:users,id',
+    ]);
+
+    $syncData = [];
+    foreach ($request->input('materias', []) as $materiaId) {
+        $syncData[$materiaId] = [
+            'horas_semanales' => $request->input("horas.{$materiaId}", 4),
+            'profesor_id'     => $request->input("profesor.{$materiaId}") ?: null,
+        ];
+    }
+
+    $grado->materias()->sync($syncData);
+
+    return redirect()
+        ->route('superadmin.grados.show', $grado)
+        ->with('success', 'Materias actualizadas correctamente.');
+}
+
+// Los demás métodos (show, edit, destroy, asignarMaterias, guardarMaterias, crearMasivo) permanecen igual.
     // Los demás métodos (show, edit, destroy, asignarMaterias, guardarMaterias, crearMasivo) permanecen igual.
 }

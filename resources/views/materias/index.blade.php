@@ -5,7 +5,7 @@
 @section('page-title', 'Gestión de Materias')
 
 @section('topbar-actions')
-    <a href="{{ route('materias.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
+    <a href="{{ route('superadmin.materias.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
         <i class="fas fa-plus"></i>
         Nueva Materia
     </a>
@@ -142,7 +142,7 @@
                                     </td>
                                     <td class="px-3 py-2 text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('materias.show', $materia) }}" 
+                                            <a href="{{ route('superadmin.materias.show', $materia) }}" 
                                                class="btn btn-sm" 
                                                style="border-radius: 6px 0 0 6px; border: 1.5px solid #00508f; color: #00508f; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
                                                title="Ver"
@@ -150,7 +150,7 @@
                                                onmouseout="this.style.background='white'; this.style.color='#00508f';">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('materias.edit', $materia) }}" 
+                                            <a href="{{ route('superadmin.materias.edit', $materia) }}" 
                                                class="btn btn-sm" 
                                                style="border-radius: 0; border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
                                                title="Editar"
@@ -158,7 +158,7 @@
                                                onmouseout="this.style.background='white'; this.style.color='#4ec7d2';">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('materias.destroy', $materia) }}" 
+                                            <form action="{{ route('superadmin.materias.destroy', $materia) }}" 
                                                   method="POST" 
                                                   class="d-inline"
                                                   onsubmit="return confirm('¿Está seguro de eliminar esta materia?')">
@@ -241,9 +241,9 @@
                                     </td>
                                     <td class="px-3 py-2 text-end">
                                         <div class="btn-group">
-                                            <a href="{{ route('materias.show', $materia) }}" class="btn btn-sm" style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px 0 0 6px;" title="Ver"><i class="fas fa-eye"></i></a>
-                                            <a href="{{ route('materias.edit', $materia) }}" class="btn btn-sm" style="border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white;" title="Editar"><i class="fas fa-edit"></i></a>
-                                            <form action="{{ route('materias.destroy', $materia) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar?')">
+                                            <a href="{{ route('superadmin.materias.show', $materia) }}" class="btn btn-sm" style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px 0 0 6px;" title="Ver"><i class="fas fa-eye"></i></a>
+                                            <a href="{{ route('superadmin.materias.edit', $materia) }}" class="btn btn-sm" style="border: 1.5px solid #4ec7d2; border-left: none; color: #4ec7d2; background: white;" title="Editar"><i class="fas fa-edit"></i></a>
+                                            <form action="{{ route('superadmin.materias.destroy', $materia) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar?')">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="btn btn-sm" style="border: 1.5px solid #ef4444; border-left: none; color: #ef4444; background: white; border-radius: 0 6px 6px 0;"><i class="fas fa-trash"></i></button>
                                             </form>

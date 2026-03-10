@@ -125,7 +125,7 @@
                             <i class="fas fa-inbox fa-3x mb-3" style="color: #00508f; opacity: 0.3;"></i>
                             <h6 style="color: #003b73;">No hay materias asignadas</h6>
                             <p class="text-muted mb-3">Asigna materias a este grado para comenzar</p>
-                            <a href="{{ route('grados.asignar-materias', $grado) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem;">
+                            <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem;">
                                 <i class="fas fa-plus"></i> Asignar Materias
                             </a>
                         </div>
@@ -236,7 +236,7 @@
                         <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}" class="btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
                             <i class="fas fa-tasks"></i> Gestionar Materias
                         </a>
-                        <a href="{{ route('superadmin.grados.edit', $grado) }}" class="btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
+                        <a href="{{ route('superadmin.grados.edit', parameters: $grado) }}" class="btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border-radius: 8px; padding: 0.6rem; font-weight: 600;">
                             <i class="fas fa-edit"></i> Editar Grado
                         </a>
                         <a href="{{ route('superadmin.materias.index') }}" class="btn" style="background: white; color: #4ec7d2; border: 2px solid #4ec7d2; border-radius: 8px; padding: 0.6rem; font-weight: 600;">

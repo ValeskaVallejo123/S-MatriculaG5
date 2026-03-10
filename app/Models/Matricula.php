@@ -39,6 +39,10 @@ class Matricula extends Model
     | RELACIONES
     |--------------------------------------------------------------------------
     */
+    public function seccion()                          // ← ESTA FALTABA
+    {
+        return $this->belongsTo(Seccion::class, 'seccion_id');
+    }
 
     public function estudiante()
     {
