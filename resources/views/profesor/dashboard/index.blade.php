@@ -283,41 +283,43 @@
         </div>
 
         {{-- Accesos rápidos --}}
-        <div class="pd-sec"><i class="fas fa-rocket"></i> Accesos Rápidos</div>
+<div class="pd-sec"><i class="fas fa-rocket"></i> Accesos Rápidos</div>
 
-        <div class="pd-quick">
-            {{-- Mis Estudiantes — no hay ruta aún, dejamos # --}}
-            <a href="#" class="pd-qcard qc-1">
-                <div class="pd-qcard-inner">
-                    <i class="fas fa-users"></i>
-                    <span>Mis Estudiantes</span>
-                </div>
-            </a>
+<div class="pd-quick">
 
-            {{-- Mis Cursos — carga docente --}}
-            <a href="{{ route('carga-docente.index') }}" class="pd-qcard qc-2">
-                <div class="pd-qcard-inner">
-                    <i class="fas fa-book"></i>
-                    <span>Mis Cursos</span>
-                </div>
-            </a>
-
-            {{-- Calificaciones — no hay ruta aún --}}
-            <a href="#" class="pd-qcard qc-3">
-                <div class="pd-qcard-inner">
-                    <i class="fas fa-clipboard-check"></i>
-                    <span>Calificaciones</span>
-                </div>
-            </a>
-
-            {{-- Mi Horario --}}
-            <a href="{{ route('profesor.miHorario') }}" class="pd-qcard qc-4">
-                <div class="pd-qcard-inner">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Mi Horario</span>
-                </div>
-            </a>
+    {{-- Mis Estudiantes → va a Mis Cursos para elegir el grado --}}
+    <a href="{{ route('profesor.mis-cursos') }}" class="pd-qcard qc-1">
+        <div class="pd-qcard-inner">
+            <i class="fas fa-users"></i>
+            <span>Mis Estudiantes</span>
         </div>
+    </a>
+
+    {{-- Mis Cursos --}}
+    <a href="{{ route('profesor.mis-cursos') }}" class="pd-qcard qc-2">
+        <div class="pd-qcard-inner">
+            <i class="fas fa-book"></i>
+            <span>Mis Cursos</span>
+        </div>
+    </a>
+
+    {{-- Calificaciones — no hay ruta aún --}}
+    <a href="#" class="pd-qcard qc-3">
+        <div class="pd-qcard-inner">
+            <i class="fas fa-clipboard-check"></i>
+            <span>Calificaciones</span>
+        </div>
+    </a>
+
+    {{-- Mi Horario --}}
+    <a href="{{ route('profesor.miHorario') }}" class="pd-qcard qc-4">
+        <div class="pd-qcard-inner">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Mi Horario</span>
+        </div>
+    </a>
+
+</div>
 
     </div>{{-- fin pd-body --}}
 

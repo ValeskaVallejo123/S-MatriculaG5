@@ -21,6 +21,8 @@ use App\Http\Controllers\CambiarContraseniaController;
 use App\Http\Controllers\PadrePermisoController;
 use App\Http\Controllers\PadreController;
 use App\Http\Controllers\ProfesorMateriaController;
+use App\Http\Controllers\ProfesorGradosController;
+use App\Http\Controllers\ProfesorEstudianteController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\HorarioGradoController;
@@ -489,11 +491,13 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('profesor')->name('profesor.')->middleware('role:profesor')->group(function () {
-        Route::get('/dashboard',      [ProfesorDashboardController::class,      'index'])->name('dashboard');
-        //Route::get('/mi-horario',     [HorarioController::class,                'miHorarioProfesor'])->name('miHorario');
-        Route::get('/mi-horario', [HorarioController::class, 'miHorario'])->name('miHorario');
-        Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'indexProfesor'])->name('notificaciones.index');
-    });
+    Route::get('/dashboard',      [ProfesorDashboardController::class,      'index'])->name('dashboard');
+    Route::get('/mi-horario',     [HorarioController::class,                'miHorario'])->name('miHorario');
+    Route::get('/mis-cursos',     [ProfesorGradosController::class,         'index'])->name('mis-cursos');  // ← AGREGAR ESTA
+    Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'indexProfesor'])->name('notificaciones.index');
+    //Route::get('/calificaciones', [ProfesorDashboardController::class,      'calificaciones'])->name('calificaciones');
+    Route::get('/mis-estudiantes/{grado}/{seccion}', [ProfesorEstudianteController::class, 'index'])->name('mis-estudiantes');
+   });
 
     /*
     |----------------------------------------------------------------------

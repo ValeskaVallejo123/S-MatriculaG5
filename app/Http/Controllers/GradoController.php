@@ -206,11 +206,11 @@ $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')
         $syncData = [];
 
         foreach ($validated['materias'] as $materiaId) {
-            $syncData[$materiaId] = [
-                'profesor_id'     => $request->profesores[$materiaId] ?? null,
-                'horas_semanales' => $request->horas[$materiaId] ?? 0,
-            ];
-        }
+    $syncData[$materiaId] = [
+        'profesor_id' => $request->profesores[$materiaId] ?? null,
+        'seccion'     => $request->seccion ?? $grado->seccion,
+    ];
+}
 
         $grado->materias()->sync($syncData);
 

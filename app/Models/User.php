@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Rol;
+use App\Models\Notificacion;
+use App\Models\NotificacionPreferencia;
+use App\Models\Padre;
+use App\Models\Estudiante;
+use App\Models\Profesor;
+
 
 /**
  * @method static \App\Models\User|null find($id)
