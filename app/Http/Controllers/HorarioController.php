@@ -18,12 +18,10 @@ class HorarioController extends Controller
             ->orderBy('dia')
             ->orderBy('hora_inicio');
 
-        // Profesor (rol 3)
         if ($user->id_rol == 3) {
             $query->where('profesor_id', $user->profesor_id);
         }
 
-        // Estudiante (rol 4)
         if ($user->id_rol == 4) {
             $query->where('seccion', $user->seccion);
         }
@@ -34,21 +32,19 @@ class HorarioController extends Controller
     }
 
 
-    /** FORMULARIO CREAR */
-   public function create()
-{
-    $profesores = \App\Models\Profesor::orderBy('nombre')->get();
-    $materias   = \App\Models\Materia::orderBy('nombre')->get();
-    $grados     = \App\Models\Grado::orderBy('nivel')
-                    ->orderBy('numero')
-                    ->orderBy('seccion')
-                    ->get();
+    public function create()
+    {
+        $profesores = \App\Models\Profesor::orderBy('nombre')->get();
+        $materias   = \App\Models\Materia::orderBy('nombre')->get();
+        $grados     = \App\Models\Grado::orderBy('nivel')
+                        ->orderBy('numero')
+                        ->orderBy('seccion')
+                        ->get();
 
-    return view('horarios.create', compact('profesores', 'materias', 'grados'));
-}
+        return view('horarios.create', compact('profesores', 'materias', 'grados'));
+    }
 
 
-    /** GUARDAR */
     public function store(Request $request)
     {
         $request->validate([
@@ -68,10 +64,9 @@ class HorarioController extends Controller
     }
 
 
-    /** EDITAR */
     public function edit(Horario $horario)
     {
-        if (!in_array(Auth::user()->id_rol, [1,2])) {
+        if (!in_array(Auth::user()->id_rol, [1, 2])) {
             abort(403);
         }
 
@@ -83,7 +78,6 @@ class HorarioController extends Controller
     }
 
 
-    /** ACTUALIZAR */
     public function update(Request $request, Horario $horario)
     {
         $request->validate([
@@ -103,10 +97,9 @@ class HorarioController extends Controller
     }
 
 
-    /** ELIMINAR */
     public function destroy(Horario $horario)
     {
-        if (!in_array(Auth::user()->id_rol, [1,2])) {
+        if (!in_array(Auth::user()->id_rol, [1, 2])) {
             abort(403);
         }
 
@@ -114,5 +107,116 @@ class HorarioController extends Controller
 
         return redirect()->route('horarios.index')
             ->with('success', 'Horario eliminado correctamente.');
+    }
+
+
+    /**
+     * Horario del profesor autenticado.
+     */
+    public function miHorarioProfesor()
+    {
+        $user     = Auth::user();
+        $profesor = \App\Models\Profesor::where('user_id', $user->id)->first();
+
+        if (!$profesor) {
+            return view('profesor.mi-horario', [
+                'horarios' => collect(),
+                'profesor' => null,
+            ]);
+        }
+
+        $todosHorarios = \App\Models\HorarioGrado::with('grado')->get();
+
+        $horarios = $todosHorarios->filter(function ($horarioGrado) use ($profesor) {
+            foreach ($horarioGrado->horario ?? [] as $dia => $horas) {
+                foreach ($horas ?? [] as $hora => $celda) {
+                    if (!empty($celda) && isset($celda['profesor_id']) && $celda['profesor_id'] == $profesor->id) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
+
+        return view('profesor.mi-horario', compact('horarios', 'profesor'));
+    }
+
+
+    /**
+     * Horario del estudiante autenticado.
+     */
+    public function miHorarioEstudiante()
+    {
+        $user       = Auth::user();
+        $estudiante = \App\Models\Estudiante::where('user_id', $user->id)->first();
+
+        if (!$estudiante) {
+            return view('estudiantes.mi-horario', [
+                'horarioGrado' => null,
+                'estudiante'   => null,
+            ]);
+        }
+
+        $mapaGrados = [
+            'primero'        => ['nivel' => 'primaria',   'numero' => 1],
+            'segundo'        => ['nivel' => 'primaria',   'numero' => 2],
+            'tercero'        => ['nivel' => 'primaria',   'numero' => 3],
+            'cuarto'         => ['nivel' => 'primaria',   'numero' => 4],
+            'quinto'         => ['nivel' => 'primaria',   'numero' => 5],
+            'sexto'          => ['nivel' => 'primaria',   'numero' => 6],
+            '6to grado'      => ['nivel' => 'primaria',   'numero' => 6],
+            'séptimo'        => ['nivel' => 'secundaria', 'numero' => 7],
+            'septimo'        => ['nivel' => 'secundaria', 'numero' => 7],
+            'octavo'         => ['nivel' => 'secundaria', 'numero' => 8],
+            '1ro secundaria' => ['nivel' => 'secundaria', 'numero' => 7],
+            '2do secundaria' => ['nivel' => 'secundaria', 'numero' => 8],
+            '3ro secundaria' => ['nivel' => 'secundaria', 'numero' => 9],
+        ];
+
+        $gradoTexto   = strtolower(trim($estudiante->grado ?? ''));
+        $mapa         = $mapaGrados[$gradoTexto] ?? null;
+        $horarioGrado = null;
+
+        if ($mapa) {
+            $grado = \App\Models\Grado::where('nivel', $mapa['nivel'])
+                ->where('numero', $mapa['numero'])
+                ->where('seccion', $estudiante->seccion)
+                ->first();
+
+            if (!$grado) {
+                $grado = \App\Models\Grado::where('nivel', $mapa['nivel'])
+                    ->where('numero', $mapa['numero'])
+                    ->first();
+            }
+
+            if ($grado) {
+                $horarioGrado = \App\Models\HorarioGrado::where('grado_id', $grado->id)
+                    ->with('grado')
+                    ->first();
+            }
+        }
+
+        return view('estudiantes.mihorario', compact('horarioGrado', 'estudiante'));
+    }
+
+
+    /**
+     * Método común — redirige según rol.
+     */
+    public function miHorario()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->id_rol == 3) {
+            return $this->miHorarioProfesor();
+        } elseif ($user->id_rol == 4) {
+            return $this->miHorarioEstudiante();
+        }
+
+        abort(403);
     }
 }

@@ -159,11 +159,11 @@ class EstudianteController extends Controller
         /* ============================================================
        VER DETALLE DE ESTUDIANTE
        ============================================================ */
-    public function show(Estudiante $estudiante)
-    {
-        return view('estudiantes.show', compact('estudiante'));
-    }
-
+  public function show(Estudiante $estudiante)
+{
+    $estudiante->load('padres');
+    return view('estudiantes.show', compact('estudiante'));
+}
 
     /* ============================================================
        FORMULARIO DE EDICIÓN

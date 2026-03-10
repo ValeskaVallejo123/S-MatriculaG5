@@ -160,7 +160,7 @@
                                             @foreach($profesores as $profesor)
                                                 <option value="{{ $profesor->id }}"
                                                     {{ $grado->materias->find($materia->id)?->pivot->profesor_id == $profesor->id ? 'selected' : '' }}>
-                                                    {{ $profesor->name }}
+                                                    {{ $profesor->nombre }} {{ $profesor->apellido }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -341,16 +341,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', function(e) {
             const checkedBoxes = document.querySelectorAll('.materia-checkbox:checked');
-<<<<<<< HEAD
-
-=======
-
->>>>>>> origin/dev/valeska
             if (checkedBoxes.length === 0) {
-                e.preventDefault();
-                alert('Por favor, selecciona al menos una materia para asignar al grado.');
-                return false;
-            }
+    e.preventDefault();
+    alert('Por favor, selecciona al menos una materia para asignar al grado.');
+    return false;
+}
         });
     }
 });

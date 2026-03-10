@@ -2,73 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Estudiante;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Session;
+//use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProfesorEstudianteController extends Controller
 {
     public function __construct()
     {
-        // Solo PROFESORES pueden ver esta sección
-        $this->middleware(['auth', 'rol:profesor']);
+        $this->middleware(['auth', 'role:profesor']);
     }
 
-    /**
-     * Lista de estudiantes asignados al profesor
-     */
-    public function index()
+    public function index($grado, $seccion)
     {
-        $usuario = Auth::user();
-        $profesor = $usuario->docente;
+        $user = Auth::user();
+
+        // Buscar el profesor por email
+        $profesor = DB::table('profesores')
+            ->where('email', $user->email)
+            ->first();
 
         if (!$profesor) {
-            return redirect()->back()->with('error', 'No se encontró información del profesor.');
+            return redirect()->route('profesor.dashboard')
+                ->with('error', 'No tienes perfil de profesor asignado.');
         }
 
-        // Buscar estudiantes asignados al profesor
-        $estudiantes = Estudiante::where('profesor_id', $profesor->id)->get();
+        // Verificar que el profesor tiene asignado ese grado/sección
+        $tieneAcceso = DB::table('profesor_materia_grados')
+            ->join('grados', 'profesor_materia_grados.grado_id', '=', 'grados.id')
+            ->where('profesor_materia_grados.profesor_id', $profesor->id)
+            ->where('grados.numero', $grado)
+            ->where('grados.seccion', $seccion)
+            ->exists();
 
-        if ($estudiantes->isEmpty()) {
-            Session::flash('info', 'No tienes estudiantes asignados aún.');
+        if (!$tieneAcceso) {
+            return redirect()->route('profesor.mis-cursos')
+                ->with('error', 'No tienes acceso a este grado.');
         }
 
-        return view('profesor.estudiantes.index', compact('estudiantes'));
-    }
+        // Obtener estudiantes activos del grado y sección
+        $estudiantes = DB::table('estudiantes')
+            ->where('grado', $grado)
+            ->where('seccion', $seccion)
+            ->where('estado', 'activo')
+            ->orderBy('apellido1')
+            ->orderBy('nombre1')
+            ->get();
 
-    /**
-     * Exportar a PDF los estudiantes asignados al profesor
-     */
-    public function exportPDF()
-    {
-        $usuario = Auth::user();
-        $profesor = $usuario->docente;
+        // Obtener materias que imparte el profesor en este grado
+        $materias = DB::table('profesor_materia_grados')
+            ->join('grados', 'profesor_materia_grados.grado_id', '=', 'grados.id')
+            ->join('materias', 'profesor_materia_grados.materia_id', '=', 'materias.id')
+            ->where('profesor_materia_grados.profesor_id', $profesor->id)
+            ->where('grados.numero', $grado)
+            ->where('grados.seccion', $seccion)
+            ->pluck('materias.nombre')
+            ->toArray();
 
-        if (!$profesor) {
-            return redirect()->route('profesor.estudiantes.index')
-                ->with('error', 'No se encontró información del profesor.');
-        }
-
-        $estudiantes = Estudiante::where('profesor_id', $profesor->id)->get();
-
-        if ($estudiantes->isEmpty()) {
-            return redirect()->route('profesor.estudiantes.index')
-                ->with('error', 'No hay estudiantes para generar el PDF.');
-        }
-
-        try {
-            $pdf = Pdf::loadView('profesor.estudiantes.pdf', [
-                'estudiantes' => $estudiantes,
-                'profesor' => $profesor
-            ]);
-
-            return $pdf->download('lista_estudiantes.pdf');
-
-        } catch (\Exception $e) {
-            return redirect()->route('profesor.estudiantes.index')
-                ->with('error', 'Ocurrió un error al generar el PDF.');
-        }
+        return view('profesor.estudiantes.index', compact(
+            'profesor',
+            'estudiantes',
+            'materias',
+            'grado',
+            'seccion'
+        ));
     }
 }

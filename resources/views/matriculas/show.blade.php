@@ -4,506 +4,557 @@
 @section('page-title', 'Detalles de Matrícula')
 
 @section('topbar-actions')
-    <a href="{{ route('matriculas.edit', $matricula->id) }}" 
-       style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; font-size: 0.9rem; margin-right: 0.5rem;">
-        <i class="fas fa-edit"></i>
-        Editar
+    <a href="{{ route('matriculas.edit', $matricula->id) }}"
+       style="background:linear-gradient(135deg,#f59e0b,#d97706); color:white;
+              padding:.6rem .75rem; border-radius:9px; font-size:.83rem; font-weight:600;
+              display:inline-flex; align-items:center; gap:.4rem;
+              text-decoration:none; border:none; transition:all .2s;">
+        <i class="fas fa-edit"></i> Editar
     </a>
-    <a href="{{ route('matriculas.index') }}" 
-       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
+    <a href="{{ route('matriculas.index') }}"
+       style="background:white; color:#00508f;
+              padding:.6rem .75rem; border-radius:9px; font-size:.83rem; font-weight:600;
+              display:inline-flex; align-items:center; gap:.4rem;
+              text-decoration:none; border:1.5px solid #00508f; transition:all .2s;">
+        <i class="fas fa-arrow-left"></i> Volver
     </a>
 @endsection
-
-@section('content')
-<<<<<<< HEAD
-<div class="container-fluid" style="max-width: 1200px;">
-<<<<<<< HEAD
-
-=======
-
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
-    <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="mb-1" style="color: #003b73; font-weight: 700;">
-                <i class="fas fa-id-card"></i> Detalles de Matrícula
-            </h2>
-            <p class="text-muted mb-0">Código: <strong>{{ $matricula->codigo_matricula }}</strong></p>
-        </div>
-        <div>
-            <a href="{{ route('matriculas.edit', $matricula->id) }}" class="btn btn-warning me-2">
-                <i class="fas fa-edit"></i> Editar
-            </a>
-            <a href="{{ route('matriculas.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
-        </div>
-    </div>
-=======
-<div class="container-fluid">
->>>>>>> origin/dev/valeska
-
-    <!-- Header con código y estado -->
-    <div class="card mb-4 border-0 shadow-sm" style="border-radius: 12px;">
-        <div class="card-body p-4">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);">
-                            <i class="fas fa-id-card" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-1 fw-bold" style="color: #003b73;">{{ $matricula->codigo_matricula }}</h5>
-                            <p class="mb-0" style="color: #64748b; font-size: 0.875rem;">
-                                <i class="fas fa-calendar me-1"></i>Registrada el {{ $matricula->fecha_matricula ? \Carbon\Carbon::parse($matricula->fecha_matricula)->format('d/m/Y') : 'N/A' }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 text-end">
-                    @if($matricula->estado === 'aprobada')
-                        <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 0.75rem 1.5rem; border-radius: 10px; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
-                            <i class="fas fa-check-circle me-2"></i>APROBADA
-                        </span>
-                    @elseif($matricula->estado === 'pendiente')
-                        <span class="badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 0.75rem 1.5rem; border-radius: 10px; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
-                            <i class="fas fa-clock me-2"></i>PENDIENTE
-                        </span>
-                    @elseif($matricula->estado === 'rechazada')
-                        <span class="badge" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 0.75rem 1.5rem; border-radius: 10px; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);">
-                            <i class="fas fa-times-circle me-2"></i>RECHAZADA
-                        </span>
-                    @else
-                        <span class="badge" style="background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%); padding: 0.75rem 1.5rem; border-radius: 10px; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3);">
-                            <i class="fas fa-question-circle me-2"></i>{{ strtoupper($matricula->estado) }}
-                        </span>
-                    @endif
-                </div>
-            </div>
-<<<<<<< HEAD
-
-=======
-
->>>>>>> 0c60f43d83749cde12f470882b2070e271fe5d92
-            @if($matricula->estado === 'rechazada' && $matricula->motivo_rechazo)
-            <div class="alert mt-3 mb-0" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px;">
-                <div class="d-flex align-items-start gap-2">
-                    <i class="fas fa-exclamation-triangle mt-1" style="color: #ef4444;"></i>
-                    <div>
-                        <strong style="color: #ef4444; font-size: 0.875rem;">Motivo del rechazo:</strong>
-                        <p class="mb-0 mt-1" style="color: #64748b; font-size: 0.875rem;">{{ $matricula->motivo_rechazo }}</p>
-                    </div>
-                </div>
-            </div>
-            @endif
-        </div>
-    </div>
-
-    <div class="row g-4 mb-4">
-        <!-- Información del Estudiante -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                <div class="card-header text-white" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fas fa-user-graduate" style="font-size: 1.25rem;"></i>
-                        <h5 class="mb-0 fw-bold">Información del Estudiante</h5>
-                    </div>
-                </div>
-                <div class="card-body p-4">
-                    @if($matricula->estudiante)
-                    <div class="info-item">
-                        <label><i class="fas fa-user"></i> Nombre Completo</label>
-                        <p>{{ $matricula->estudiante->nombre }} {{ $matricula->estudiante->apellido }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-id-card"></i> DNI</label>
-                        <p>{{ $matricula->estudiante->dni ?? 'No registrado' }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-birthday-cake"></i> Fecha de Nacimiento</label>
-                        <p>{{ $matricula->estudiante->fecha_nacimiento ? \Carbon\Carbon::parse($matricula->estudiante->fecha_nacimiento)->format('d/m/Y') : 'No registrada' }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-venus-mars"></i> Sexo</label>
-                        <p>{{ ucfirst($matricula->estudiante->sexo ?? 'No especificado') }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-graduation-cap"></i> Grado y Sección</label>
-                        <p>{{ $matricula->estudiante->grado ?? 'N/A' }} - Sección {{ $matricula->estudiante->seccion ?? 'N/A' }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
-                        <p>{{ $matricula->estudiante->direccion ?? 'No registrada' }}</p>
-                    </div>
-
-                    <div class="info-item mb-0">
-                        <label><i class="fas fa-phone"></i> Teléfono</label>
-                        <p>{{ $matricula->estudiante->telefono ?? 'No registrado' }}</p>
-                    </div>
-                    @else
-                    <div class="text-center py-5">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
-                        <p class="text-muted mb-0">No hay información del estudiante disponible</p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <!-- Información del Padre/Tutor -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                <div class="card-header text-white" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fas fa-user-friends" style="font-size: 1.25rem;"></i>
-                        <h5 class="mb-0 fw-bold">Información del Padre/Tutor</h5>
-                    </div>
-                </div>
-                <div class="card-body p-4">
-                    @if($matricula->padre)
-                    <div class="info-item">
-                        <label><i class="fas fa-user"></i> Nombre Completo</label>
-                        <p>{{ $matricula->padre->nombre }} {{ $matricula->padre->apellido }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-id-card"></i> DNI</label>
-                        <p>{{ $matricula->padre->dni ?? 'No registrado' }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-users"></i> Parentesco</label>
-                        <p>{{ $matricula->padre->parentesco_formateado ?? ucfirst($matricula->padre->parentesco) }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-envelope"></i> Correo</label>
-                        <p>{{ $matricula->padre->correo ?? 'No registrado' }}</p>
-                    </div>
-
-                    <div class="info-item">
-                        <label><i class="fas fa-phone"></i> Teléfono</label>
-                        <p>{{ $matricula->padre->telefono ?? 'No registrado' }}</p>
-                    </div>
-
-                    @if($matricula->padre->telefono_secundario)
-                    <div class="info-item">
-                        <label><i class="fas fa-phone-alt"></i> Teléfono Secundario</label>
-                        <p>{{ $matricula->padre->telefono_secundario }}</p>
-                    </div>
-                    @endif
-
-                    <div class="info-item">
-                        <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
-                        <p>{{ $matricula->padre->direccion ?? 'No registrada' }}</p>
-                    </div>
-
-                    @if($matricula->padre->ocupacion)
-                    <div class="info-item mb-0">
-                        <label><i class="fas fa-briefcase"></i> Ocupación</label>
-                        <p>{{ $matricula->padre->ocupacion }}</p>
-                    </div>
-                    @endif
-                    @else
-                    <div class="text-center py-5">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
-                        <p class="text-muted mb-0">No hay información del padre/tutor disponible</p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Documentos Adjuntos -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
-        <div class="card-header text-white" style="background: linear-gradient(135deg, #00508f 0%, #4ec7d2 100%); border-radius: 12px 12px 0 0; padding: 1.25rem 1.5rem;">
-            <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-paperclip" style="font-size: 1.25rem;"></i>
-                <h5 class="mb-0 fw-bold">Documentos Adjuntos</h5>
-            </div>
-        </div>
-        <div class="card-body p-4">
-            <div class="row g-3">
-                <!-- Foto del Estudiante -->
-                <div class="col-md-4 col-lg-2">
-                    <div class="documento-card">
-                        <div class="documento-icon">
-                            <i class="fas fa-camera"></i>
-                        </div>
-                        <h6>Foto del Estudiante</h6>
-                        @if($matricula->foto_estudiante)
-                            <a href="{{ asset('storage/' . $matricula->foto_estudiante) }}" target="_blank" class="btn-documento">
-                                <i class="fas fa-eye"></i> Ver
-                            </a>
-                        @else
-                            <span class="documento-empty">No adjuntado</span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Acta de Nacimiento -->
-                <div class="col-md-4 col-lg-2">
-                    <div class="documento-card">
-                        <div class="documento-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h6>Acta de Nacimiento</h6>
-                        @if($matricula->acta_nacimiento)
-                            <a href="{{ asset('storage/' . $matricula->acta_nacimiento) }}" target="_blank" class="btn-documento">
-                                <i class="fas fa-download"></i> Descargar
-                            </a>
-                        @else
-                            <span class="documento-empty">No adjuntado</span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Certificado de Estudios -->
-                <div class="col-md-4 col-lg-2">
-                    <div class="documento-card">
-                        <div class="documento-icon">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <h6>Certificado de Estudios</h6>
-                        @if($matricula->certificado_estudios)
-                            <a href="{{ asset('storage/' . $matricula->certificado_estudios) }}" target="_blank" class="btn-documento">
-                                <i class="fas fa-download"></i> Descargar
-                            </a>
-                        @else
-                            <span class="documento-empty">No adjuntado</span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Constancia de Conducta -->
-                <div class="col-md-4 col-lg-2">
-                    <div class="documento-card">
-                        <div class="documento-icon">
-                            <i class="fas fa-award"></i>
-                        </div>
-                        <h6>Constancia de Conducta</h6>
-                        @if($matricula->constancia_conducta)
-                            <a href="{{ asset('storage/' . $matricula->constancia_conducta) }}" target="_blank" class="btn-documento">
-                                <i class="fas fa-download"></i> Descargar
-                            </a>
-                        @else
-                            <span class="documento-empty">No adjuntado</span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- DNI del Estudiante -->
-                <div class="col-md-4 col-lg-2">
-                    <div class="documento-card">
-                        <div class="documento-icon">
-                            <i class="fas fa-id-card"></i>
-                        </div>
-                        <h6>DNI Estudiante</h6>
-                        @if($matricula->foto_dni_estudiante)
-                            <a href="{{ asset('storage/' . $matricula->foto_dni_estudiante) }}" target="_blank" class="btn-documento">
-                                <i class="fas fa-eye"></i> Ver
-                            </a>
-                        @else
-                            <span class="documento-empty">No adjuntado</span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- DNI del Padre/Tutor -->
-                <div class="col-md-4 col-lg-2">
-                    <div class="documento-card">
-                        <div class="documento-icon">
-                            <i class="fas fa-id-card-alt"></i>
-                        </div>
-                        <h6>DNI Padre/Tutor</h6>
-                        @if($matricula->foto_dni_padre)
-                            <a href="{{ asset('storage/' . $matricula->foto_dni_padre) }}" target="_blank" class="btn-documento">
-                                <i class="fas fa-eye"></i> Ver
-                            </a>
-                        @else
-                            <span class="documento-empty">No adjuntado</span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Observaciones -->
-    @if($matricula->observaciones)
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; border-left: 4px solid #f59e0b !important;">
-        <div class="card-body p-4">
-            <h6 class="fw-bold mb-3" style="color: #f59e0b;">
-                <i class="fas fa-sticky-note me-2"></i>Observaciones
-            </h6>
-            <p class="mb-0" style="color: #64748b;">{{ $matricula->observaciones }}</p>
-        </div>
-    </div>
-    @endif
-
-    <!-- Información del Sistema -->
-<<<<<<< HEAD
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="row text-muted small">
-                <div class="col-md-6">
-                    <i class="fas fa-calendar-plus"></i>
-                    <strong>Creado:</strong> {{ $matricula->created_at ? $matricula->created_at->format('d/m/Y H:i') : 'N/A' }}
-                </div>
-                <div class="col-md-6 text-end">
-                    <i class="fas fa-calendar-check"></i>
-=======
-    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-        <div class="card-body p-3">
-            <div class="row text-center">
-                <div class="col-md-6" style="color: #64748b; font-size: 0.875rem;">
-                    <i class="fas fa-calendar-plus me-2" style="color: #4ec7d2;"></i>
-                    <strong>Creado:</strong> {{ $matricula->created_at ? $matricula->created_at->format('d/m/Y H:i') : 'N/A' }}
-                </div>
-                <div class="col-md-6" style="color: #64748b; font-size: 0.875rem;">
-                    <i class="fas fa-calendar-check me-2" style="color: #4ec7d2;"></i>
->>>>>>> origin/dev/valeska
-                    <strong>Última actualización:</strong> {{ $matricula->updated_at ? $matricula->updated_at->format('d/m/Y H:i') : 'N/A' }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
 
 @push('styles')
 <style>
-    .info-item {
-        margin-bottom: 1.25rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
+/* ════════════════════════════════════════════════
+   TAMAÑOS — igualados al perfil del estudiante
+   ════════════════════════════════════════════════ */
+:root {
+    --blue-dark:  #003b73;
+    --blue-mid:   #00508f;
+    --cyan:       #4ec7d2;
+    --cyan-light: rgba(78,199,210,.1);
+    --cyan-border:#b2e8ed;
+    --red:        #ef4444;
+    --surface:    #f5f8fc;
+    --border:     #e8edf4;
+    --text:       #0d2137;
+    --muted:      #6b7a90;
+    --subtle:     #94a3b8;
+}
 
-<<<<<<< HEAD
-    .card-header {
-        border-bottom: 2px solid rgba(0, 59, 115, 0.1);
-    }
+/* ── Wrapper ── */
+.show-wrap {
+    width: 100%;                          /* ← ocupa todo el ancho como el perfil */
+    display: flex;
+    flex-direction: column;
+    gap: 0;                               /* secciones sin gap, separadas por border */
+}
 
-    .border.rounded {
-=======
-    .info-item:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
-    }
+/* ── Header principal ── */
+.profile-header-inner {
+    border-radius: 14px 14px 0 0;        /* ← REDONDEZ header */
+    background: linear-gradient(135deg,#002d5a 0%,#00508f 55%,#0077b6 100%);
+    padding: 2rem 1.7rem;                 /* ← PADDING header */
+    position: relative; overflow: hidden;
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
 
-    .info-item label {
-        display: block;
-        color: #00508f;
-        font-weight: 600;
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-    }
+/* burbujas decorativas */
+.profile-header-inner::after {
+    content:''; position:absolute; right:-50px; top:-50px;
+    width:200px; height:200px; border-radius:50%;
+    background:rgba(78,199,210,.13); pointer-events:none;
+}
+.profile-header-inner::before {
+    content:''; position:absolute; right:100px; bottom:-45px;
+    width:120px; height:120px; border-radius:50%;
+    background:rgba(255,255,255,.05); pointer-events:none;
+}
 
-    .info-item label i {
-        color: #4ec7d2;
-        margin-right: 0.5rem;
-        width: 16px;
-        text-align: center;
-    }
+.profile-header-left { display:flex; align-items:center; gap:1rem; position:relative; z-index:1; }
 
-    .info-item p {
-        margin: 0;
-        color: #1e293b;
-        font-size: 0.938rem;
-        padding-left: 1.75rem;
-    }
+.profile-icon {
+    width: 80px; height: 80px;           /* ← TAMAÑO ícono header */
+    border-radius: 18px; flex-shrink: 0;
+    background: rgba(255,255,255,.12);
+    border: 3px solid rgba(78,199,210,.7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: #fff;        /* ← TAMAÑO ícono interno */
+    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
 
-    .documento-card {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.5rem 1rem;
-        text-align: center;
->>>>>>> origin/dev/valeska
-        transition: all 0.3s ease;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+.profile-codigo {
+    font-size: 1.45rem;                  /* ← TAMAÑO código matrícula */
+    font-weight: 800; color: white;
+    margin: 0 0 .4rem;
+    text-shadow: 0 1px 4px rgba(0,0,0,.2);
+    position: relative; z-index: 1;
+}
 
-<<<<<<< HEAD
-    .border.rounded:hover {
-        box-shadow: 0 2px 8px rgba(0, 59, 115, 0.1);
-        border-color: #4ec7d2 !important;
-    }
-</style>
-@endsection
-=======
-    .documento-card:hover {
-        border-color: #4ec7d2;
-        box-shadow: 0 4px 12px rgba(78, 199, 210, 0.2);
-        transform: translateY(-2px);
-    }
+.profile-fecha {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .2rem .65rem; border-radius: 999px;
+    background: rgba(255,255,255,.14); color: rgba(255,255,255,.92);
+    font-size: .72rem; font-weight: 600; /* ← TAMAÑO fecha tag */
+    border: 1px solid rgba(255,255,255,.18);
+    position: relative; z-index: 1;
+}
 
-    .documento-icon {
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1rem;
-        box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);
-    }
+/* ── Estado badges ── */
+.estado-badge {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .3rem .95rem; border-radius: 999px;
+    font-size: .76rem; font-weight: 700; /* ← TAMAÑO texto badge estado */
+    white-space: nowrap; letter-spacing: .03em;
+    position: relative; z-index: 1;
+}
+.estado-aprobada  { background: white; color: #166534; border: 2px solid #86efac; }
+.estado-pendiente { background: white; color: #854d0e; border: 2px solid #fde047; }
+.estado-rechazada { background: white; color: #991b1b; border: 2px solid #fca5a5; }
+.estado-cancelada { background: white; color: var(--muted); border: 2px solid var(--border); }
 
-    .documento-icon i {
-        color: white;
-        font-size: 1.25rem;
-    }
+/* ── Motivo rechazo ── */
+.motivo-alert {
+    display: flex; align-items: flex-start; gap: .75rem;
+    padding: .9rem 1.7rem;
+    background: rgba(239,68,68,.06);
+    border-top: 1px solid rgba(239,68,68,.15);
+    font-size: .83rem; color: #991b1b;   /* ← TAMAÑO texto motivo rechazo */
+}
+.motivo-alert i { color: var(--red); margin-top: .05rem; flex-shrink: 0; }
 
-    .documento-card h6 {
-        color: #003b73;
-        font-size: 0.813rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        min-height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+/* ── Body del card ── */
+.show-body {
+    background: white;
+    border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 2px 16px rgba(0,59,115,.09);
+    overflow: hidden;
+}
 
-    .btn-documento {
-        background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-size: 0.813rem;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 6px rgba(78, 199, 210, 0.3);
-    }
+/* ── Secciones internas ── */
+.sm-sec {
+    padding: 1.4rem 1.7rem;              /* ← PADDING secciones */
+    border-bottom: 1px solid #f0f4f9;
+}
+.sm-sec:last-child { border-bottom: none; }
 
-    .btn-documento:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4);
-        color: white;
-    }
+/* ── Título de sección ── */
+.sm-sec-title {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .75rem; font-weight: 700; /* ← TAMAÑO títulos de sección */
+    text-transform: uppercase; letter-spacing: .08em;
+    color: var(--blue-mid);
+    margin-bottom: .95rem; padding-bottom: .55rem;
+    border-bottom: 2px solid rgba(78,199,210,.1);
+}
+.sm-sec-title i { color: var(--cyan); font-size: .88rem; }
 
-    .documento-empty {
-        color: #94a3b8;
-        font-size: 0.813rem;
-        font-style: italic;
-    }
+/* ── Two-column layout ── */
+.two-col {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border-bottom: 1px solid #f0f4f9;
+}
+.two-col > div:first-child {
+    border-right: 1px solid #f0f4f9;
+}
+@media(max-width:720px) {
+    .two-col { grid-template-columns: 1fr; }
+    .two-col > div:first-child { border-right: none; border-bottom: 1px solid #f0f4f9; }
+}
+
+/* ── Info items ── */
+.info-item {
+    padding-bottom: .85rem;
+    margin-bottom: .85rem;
+    border-bottom: 1px solid #f0f4f9;
+}
+.info-item:last-child { padding-bottom: 0; margin-bottom: 0; border-bottom: none; }
+
+.info-label {
+    font-size: .63rem; font-weight: 700;  /* ← TAMAÑO labels */
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--subtle); margin-bottom: .22rem;
+    display: flex; align-items: center; gap: .28rem;
+}
+.info-label i { color: var(--cyan); font-size: .68rem; }
+
+.info-value {
+    font-size: .88rem; font-weight: 600;  /* ← TAMAÑO valores */
+    color: var(--text); padding-left: 1rem; line-height: 1.4;
+}
+.info-value.empty { color: var(--subtle); font-weight: 400; font-style: italic; font-size: .83rem; }
+.info-value.mono  {
+    font-family: 'Courier New', monospace; font-size: .85rem;
+    color: var(--blue-mid);
+    background: rgba(0,80,143,.07); padding: .15rem .45rem;
+    border-radius: 5px; display: inline-block;
+}
+
+/* ── Documentos grid ── */
+.docs-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: .75rem;
+}
+@media(max-width:900px) { .docs-grid { grid-template-columns: repeat(3,1fr); } }
+@media(max-width:500px) { .docs-grid { grid-template-columns: repeat(2,1fr); } }
+
+.doc-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem .75rem;
+    text-align: center;
+    display: flex; flex-direction: column;
+    align-items: center; gap: .55rem;
+    transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.doc-card:hover {
+    border-color: var(--cyan-border);
+    box-shadow: 0 4px 12px rgba(78,199,210,.15);
+    transform: translateY(-2px);
+}
+.doc-card-icon {
+    width: 42px; height: 42px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue-mid));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: .9rem;       /* ← TAMAÑO ícono documento */
+    box-shadow: 0 2px 8px rgba(78,199,210,.3);
+}
+.doc-card-name {
+    font-size: .72rem; font-weight: 700; /* ← TAMAÑO nombre documento */
+    color: var(--blue-dark); line-height: 1.3;
+    min-height: 28px;
+    display: flex; align-items: center; justify-content: center;
+}
+.doc-btn {
+    display: inline-flex; align-items: center; gap: .25rem;
+    padding: .28rem .65rem; border-radius: 6px;
+    font-size: .7rem; font-weight: 700;  /* ← TAMAÑO botón ver/descargar */
+    background: linear-gradient(135deg, var(--cyan), var(--blue-mid));
+    color: #fff; text-decoration: none;
+    box-shadow: 0 1px 4px rgba(78,199,210,.3);
+    transition: opacity .15s;
+}
+.doc-btn:hover { opacity: .85; color: #fff; }
+.doc-empty {
+    font-size: .7rem; color: var(--subtle); font-style: italic; /* ← TAMAÑO "No adjuntado" */
+}
+
+/* ── Observaciones ── */
+.obs-title {
+    font-size: .75rem; font-weight: 700; /* ← TAMAÑO título observaciones */
+    color: #92400e; text-transform: uppercase;
+    letter-spacing: .08em; margin-bottom: .65rem;
+    display: flex; align-items: center; gap: .4rem;
+    padding-left: .5rem;
+    border-left: 3.5px solid #f59e0b;
+}
+.obs-text {
+    font-size: .88rem; color: var(--muted); /* ← TAMAÑO texto observaciones */
+    line-height: 1.65; margin: 0;
+}
+
+/* ── Sistema footer ── */
+.sistema-wrap {
+    display: flex; gap: 1.5rem; flex-wrap: wrap;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: .9rem 1.7rem;
+    border-radius: 0 0 14px 14px;
+}
+.sistema-item {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .78rem; color: var(--muted); /* ← TAMAÑO texto sistema */
+}
+.sistema-item i { color: var(--cyan); }
+.sistema-item strong { color: var(--blue-dark); }
 </style>
 @endpush
+
+@section('content')
+<div class="show-wrap">
+
+    {{-- ═══════════════════════════════════
+         Header: Código + Estado
+    ═══════════════════════════════════ --}}
+    <div>
+        <div class="profile-header-inner">
+            <div class="profile-header-left">
+                <div class="profile-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div>
+                    <p class="profile-codigo">{{ $matricula->codigo_matricula }}</p>
+                    <span class="profile-fecha">
+                        <i class="fas fa-calendar"></i>
+                        Registrada el {{ $matricula->fecha_matricula
+                            ? \Carbon\Carbon::parse($matricula->fecha_matricula)->format('d/m/Y')
+                            : 'N/A' }}
+                    </span>
+                </div>
+            </div>
+
+            @php
+                $estadoClass = match($matricula->estado) {
+                    'aprobada'  => 'estado-aprobada',
+                    'pendiente' => 'estado-pendiente',
+                    'rechazada' => 'estado-rechazada',
+                    default     => 'estado-cancelada',
+                };
+                $estadoIcon = match($matricula->estado) {
+                    'aprobada'  => 'fa-check-circle',
+                    'pendiente' => 'fa-clock',
+                    'rechazada' => 'fa-times-circle',
+                    default     => 'fa-question-circle',
+                };
+            @endphp
+
+            <span class="estado-badge {{ $estadoClass }}">
+                <i class="fas {{ $estadoIcon }}"></i>
+                {{ strtoupper($matricula->estado) }}
+            </span>
+        </div>
+
+        {{-- ── BODY ── --}}
+        <div class="show-body">
+
+            @if($matricula->estado === 'rechazada' && $matricula->motivo_rechazo)
+            <div class="motivo-alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Motivo del rechazo:</strong>
+                    <p style="margin:.2rem 0 0; color:#64748b;">{{ $matricula->motivo_rechazo }}</p>
+                </div>
+            </div>
+            @endif
+
+            {{-- ═══════════════════════════════════
+                 Estudiante + Padre/Tutor (2 cols)
+            ═══════════════════════════════════ --}}
+            <div class="two-col">
+
+                {{-- Estudiante --}}
+                <div class="sm-sec">
+                    <div class="sm-sec-title">
+                        <i class="fas fa-user-graduate"></i> Información del Estudiante
+                    </div>
+                    @if($matricula->estudiante)
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-user"></i> Nombre Completo</div>
+                            <div class="info-value">{{ $matricula->estudiante->nombre }} {{ $matricula->estudiante->apellido }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-id-card"></i> DNI</div>
+                            <div class="info-value mono">{{ $matricula->estudiante->dni ?? '—' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-birthday-cake"></i> Fecha de Nacimiento</div>
+                            <div class="info-value">
+                                {{ $matricula->estudiante->fecha_nacimiento
+                                    ? \Carbon\Carbon::parse($matricula->estudiante->fecha_nacimiento)->format('d/m/Y')
+                                    : 'No registrada' }}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-venus-mars"></i> Sexo</div>
+                            <div class="info-value">{{ ucfirst($matricula->estudiante->sexo ?? 'No especificado') }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-graduation-cap"></i> Grado y Sección</div>
+                            <div class="info-value">{{ $matricula->estudiante->grado ?? 'N/A' }} — Sección {{ $matricula->estudiante->seccion ?? 'N/A' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-map-marker-alt"></i> Dirección</div>
+                            <div class="info-value {{ !$matricula->estudiante->direccion ? 'empty' : '' }}">
+                                {{ $matricula->estudiante->direccion ?? 'No registrada' }}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-phone"></i> Teléfono</div>
+                            <div class="info-value {{ !$matricula->estudiante->telefono ? 'empty' : '' }}">
+                                {{ $matricula->estudiante->telefono ?? 'No registrado' }}
+                            </div>
+                        </div>
+                    @else
+                        <div style="text-align:center; padding:2rem; color:var(--subtle);">
+                            <i class="fas fa-exclamation-circle"
+                               style="font-size:2rem; display:block; margin-bottom:.75rem; color:var(--border);"></i>
+                            No hay información del estudiante disponible
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Padre/Tutor --}}
+                <div class="sm-sec">
+                    <div class="sm-sec-title">
+                        <i class="fas fa-user-friends"></i> Información del Padre/Tutor
+                    </div>
+                    @if($matricula->padre)
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-user"></i> Nombre Completo</div>
+                            <div class="info-value">{{ $matricula->padre->nombre }} {{ $matricula->padre->apellido }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-id-card"></i> DNI</div>
+                            <div class="info-value mono">{{ $matricula->padre->dni ?? '—' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-users"></i> Parentesco</div>
+                            <div class="info-value">{{ $matricula->padre->parentesco_formateado ?? ucfirst($matricula->padre->parentesco) }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-envelope"></i> Correo</div>
+                            <div class="info-value {{ !$matricula->padre->correo ? 'empty' : '' }}">
+                                {{ $matricula->padre->correo ?? 'No registrado' }}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-phone"></i> Teléfono</div>
+                            <div class="info-value {{ !$matricula->padre->telefono ? 'empty' : '' }}">
+                                {{ $matricula->padre->telefono ?? 'No registrado' }}
+                            </div>
+                        </div>
+                        @if($matricula->padre->telefono_secundario)
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-phone-alt"></i> Teléfono Secundario</div>
+                            <div class="info-value">{{ $matricula->padre->telefono_secundario }}</div>
+                        </div>
+                        @endif
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-map-marker-alt"></i> Dirección</div>
+                            <div class="info-value {{ !$matricula->padre->direccion ? 'empty' : '' }}">
+                                {{ $matricula->padre->direccion ?? 'No registrada' }}
+                            </div>
+                        </div>
+                        @if($matricula->padre->ocupacion)
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-briefcase"></i> Ocupación</div>
+                            <div class="info-value">{{ $matricula->padre->ocupacion }}</div>
+                        </div>
+                        @endif
+                    @else
+                        <div style="text-align:center; padding:2rem; color:var(--subtle);">
+                            <i class="fas fa-exclamation-circle"
+                               style="font-size:2rem; display:block; margin-bottom:.75rem; color:var(--border);"></i>
+                            No hay información del padre/tutor disponible
+                        </div>
+                    @endif
+                </div>
+
+            </div>{{-- fin two-col --}}
+
+            {{-- ═══════════════════════════════════
+                 Documentos Adjuntos
+            ═══════════════════════════════════ --}}
+            <div class="sm-sec">
+                <div class="sm-sec-title">
+                    <i class="fas fa-paperclip"></i> Documentos Adjuntos
+                </div>
+                <div class="docs-grid">
+
+                    <div class="doc-card">
+                        <div class="doc-card-icon"><i class="fas fa-camera"></i></div>
+                        <div class="doc-card-name">Foto del Estudiante</div>
+                        @if($matricula->foto_estudiante)
+                            <a href="{{ asset('storage/'.$matricula->foto_estudiante) }}" target="_blank" class="doc-btn">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+                        @else
+                            <span class="doc-empty">No adjuntado</span>
+                        @endif
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-card-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="doc-card-name">Acta de Nacimiento</div>
+                        @if($matricula->acta_nacimiento)
+                            <a href="{{ asset('storage/'.$matricula->acta_nacimiento) }}" target="_blank" class="doc-btn">
+                                <i class="fas fa-download"></i> Descargar
+                            </a>
+                        @else
+                            <span class="doc-empty">No adjuntado</span>
+                        @endif
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-card-icon"><i class="fas fa-certificate"></i></div>
+                        <div class="doc-card-name">Certificado de Estudios</div>
+                        @if($matricula->certificado_estudios)
+                            <a href="{{ asset('storage/'.$matricula->certificado_estudios) }}" target="_blank" class="doc-btn">
+                                <i class="fas fa-download"></i> Descargar
+                            </a>
+                        @else
+                            <span class="doc-empty">No adjuntado</span>
+                        @endif
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-card-icon"><i class="fas fa-award"></i></div>
+                        <div class="doc-card-name">Constancia de Conducta</div>
+                        @if($matricula->constancia_conducta)
+                            <a href="{{ asset('storage/'.$matricula->constancia_conducta) }}" target="_blank" class="doc-btn">
+                                <i class="fas fa-download"></i> Descargar
+                            </a>
+                        @else
+                            <span class="doc-empty">No adjuntado</span>
+                        @endif
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-card-icon"><i class="fas fa-id-card"></i></div>
+                        <div class="doc-card-name">DNI Estudiante</div>
+                        @if($matricula->foto_dni_estudiante)
+                            <a href="{{ asset('storage/'.$matricula->foto_dni_estudiante) }}" target="_blank" class="doc-btn">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+                        @else
+                            <span class="doc-empty">No adjuntado</span>
+                        @endif
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-card-icon"><i class="fas fa-id-card-alt"></i></div>
+                        <div class="doc-card-name">DNI Padre/Tutor</div>
+                        @if($matricula->foto_dni_padre)
+                            <a href="{{ asset('storage/'.$matricula->foto_dni_padre) }}" target="_blank" class="doc-btn">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+                        @else
+                            <span class="doc-empty">No adjuntado</span>
+                        @endif
+                    </div>
+
+                </div>
+            </div>{{-- fin documentos --}}
+
+            {{-- ═══════════════════════════════════
+                 Observaciones (condicional)
+            ═══════════════════════════════════ --}}
+            @if($matricula->observaciones)
+            <div class="sm-sec">
+                <div class="obs-title">
+                    <i class="fas fa-sticky-note"></i> Observaciones
+                </div>
+                <p class="obs-text">{{ $matricula->observaciones }}</p>
+            </div>
+            @endif
+
+            {{-- ═══════════════════════════════════
+                 Datos del Sistema
+            ═══════════════════════════════════ --}}
+            <div class="sistema-wrap">
+                <div class="sistema-item">
+                    <i class="fas fa-calendar-plus"></i>
+                    <span><strong>Creado:</strong> {{ $matricula->created_at?->format('d/m/Y H:i') ?? 'N/A' }}</span>
+                </div>
+                <div class="sistema-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span><strong>Última actualización:</strong> {{ $matricula->updated_at?->format('d/m/Y H:i') ?? 'N/A' }}</span>
+                </div>
+            </div>
+
+        </div>{{-- fin show-body --}}
+    </div>
+
+</div>{{-- fin show-wrap --}}
 @endsection
->>>>>>> origin/dev/valeska

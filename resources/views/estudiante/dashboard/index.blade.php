@@ -27,13 +27,11 @@
 @php
     $user       = auth()->user();
     $estudiante = $user->estudiante;
-    // Usa el accessor getTotalNotificacionesNoLeidasAttribute()
     $noLeidas   = $user->total_notificaciones_no_leidas;
-    // Usa notificacionesPermitidas() que ya tienes en el modelo
     $notificaciones = $user->notificacionesPermitidas()->take(5)->get();
 @endphp
 
-<div class="container" style="max-width: 1200px;">
+<div class="container-fluid px-4">
 
     {{-- Bienvenida --}}
     <div class="card border-0 shadow-sm mb-4"
@@ -81,60 +79,86 @@
         </div>
     </div>
 
-    {{-- Tarjetas resumen --}}
+    {{-- Tarjetas resumen (clicables) --}}
     <div class="row g-3 mb-4">
+
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100 info-card"
-                 style="border-radius:10px;border-left:4px solid #4ec7d2 !important;">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <i class="fas fa-book fa-2x" style="color:#4ec7d2;"></i>
-                    <div>
-                        <p class="text-muted mb-0 small">Mis Materias</p>
-                        <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalMaterias ?? '—' }}</h3>
+            <a href="{{ route('estudiante.miHorario') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 info-card"
+                     style="border-radius:10px;border-left:4px solid #003b73 !important;cursor:pointer;">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div style="width:50px;height:50px;background:rgba(0,59,115,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-calendar-alt fa-lg" style="color:#003b73;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-0 small">Mi Horario</p>
+                            <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalHoras ?? '—' }}</h3>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100 info-card"
-                 style="border-radius:10px;border-left:4px solid #00508f !important;">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <i class="fas fa-clipboard-check fa-2x" style="color:#00508f;"></i>
-                    <div>
-                        <p class="text-muted mb-0 small">Calificaciones</p>
-                        <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalCalificaciones ?? '—' }}</h3>
+            <a href="{{ route('estudiante.calificaciones') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 info-card"
+                     style="border-radius:10px;border-left:4px solid #00508f !important;cursor:pointer;">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div style="width:50px;height:50px;background:rgba(0,80,143,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-clipboard-check fa-lg" style="color:#00508f;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-0 small">Calificaciones</p>
+                            <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalCalificaciones ?? '—' }}</h3>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100 info-card"
-                 style="border-radius:10px;border-left:4px solid #003b73 !important;">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <i class="fas fa-calendar-alt fa-2x" style="color:#003b73;"></i>
-                    <div>
-                        <p class="text-muted mb-0 small">Horario</p>
-                        <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalHoras ?? '—' }}</h3>
+            <a href="{{ route('estado-solicitud') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 info-card"
+                     style="border-radius:10px;border-left:4px solid #4ec7d2 !important;cursor:pointer;">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div style="width:50px;height:50px;background:rgba(78,199,210,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-file-signature fa-lg" style="color:#4ec7d2;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-0 small">Mi Matrícula</p>
+                            <h3 class="mb-0 fw-bold" style="color:#003b73;">Estado</h3>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100 info-card"
-                 style="border-radius:10px;border-left:4px solid #f59e0b !important;">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <i class="fas fa-bell fa-2x" style="color:#f59e0b;"></i>
-                    <div>
-                        <p class="text-muted mb-0 small">Sin leer</p>
-                        {{-- Usa el accessor: total_notificaciones_no_leidas --}}
-                        <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $noLeidas }}</h3>
+            <a href="{{ route('notificaciones.index') }}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 info-card"
+                     style="border-radius:10px;border-left:4px solid #f59e0b !important;cursor:pointer;">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div style="width:50px;height:50px;background:rgba(245,158,11,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-bell fa-lg" style="color:#f59e0b;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-0 small">Notificaciones</p>
+                            <h3 class="mb-0 fw-bold" style="color:#003b73;">
+                                {{ $noLeidas }}
+                                @if($noLeidas > 0)
+                                    <span class="badge bg-danger ms-1" style="font-size:0.65rem;">Sin leer</span>
+                                @endif
+                            </h3>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
+
     </div>
 
     <div class="row g-4">
@@ -168,7 +192,6 @@
                                         <div class="flex-grow-1">
 
                                             <div class="d-flex align-items-center gap-2 mb-1">
-                                                {{-- Ícono según el campo 'tipo' de la tabla notificaciones --}}
                                                 @switch($notif->tipo)
                                                     @case('calificacion')
                                                         <i class="fas fa-star" style="color:#f59e0b;font-size:0.85rem;"></i>
@@ -238,6 +261,18 @@
                     </h5>
                 </div>
                 <div class="card-body p-3 d-flex flex-column gap-2">
+
+                    <a href="{{ route('estudiante.miHorario') }}"
+                       class="btn text-start fw-semibold"
+                       style="background:rgba(0,80,143,0.08);color:#003b73;border:1px solid #00508f;border-radius:8px;">
+                        <i class="fas fa-calendar-alt me-2" style="color:#00508f;"></i>Mi Horario de Clases
+                    </a>
+
+                    <a href="{{ route('estudiante.calificaciones') }}"
+                       class="btn text-start fw-semibold"
+                       style="background:rgba(78,199,210,0.08);color:#003b73;border:1px solid #4ec7d2;border-radius:8px;">
+                        <i class="fas fa-clipboard-check me-2" style="color:#4ec7d2;"></i>Mis Calificaciones
+                    </a>
 
                     <a href="{{ route('estado-solicitud') }}"
                        class="btn text-start fw-semibold"

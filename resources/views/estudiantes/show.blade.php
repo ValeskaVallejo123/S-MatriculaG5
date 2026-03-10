@@ -1,446 +1,542 @@
 @extends('layouts.app')
 
-@section('title', 'Detalles del Estudiante')
-@section('page-title', 'Detalles del Estudiante')
+@section('title', 'Perfil del Estudiante')
+@section('page-title', 'Perfil del Estudiante')
 
 @section('topbar-actions')
-    <div class="d-flex gap-2">
-
-        {{-- Volver --}}
-        <a href="{{ route('estudiantes.index') }}"
-           class="btn btn-sm"
-           style="background:white; color:#00508f; padding:.5rem 1rem; border-radius:8px;
-                  text-decoration:none; font-weight:600; border:2px solid #00508f;">
-            <i class="fas fa-arrow-left me-1"></i>Volver
-        </a>
-
-        {{-- Vincular padre/tutor --}}
-        <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}"
-           class="btn btn-sm btn-primary"
-           style="border-radius:8px; font-weight:600;">
-            <i class="fas fa-link me-1"></i> Vincular Padre/Tutor
-        </a>
-
-        {{-- Documentos --}}
-        @if($estudiante->documentos)
-            <a href="{{ route('documentos.show', $estudiante->documentos->id) }}"
-               class="btn btn-sm btn-outline-secondary"
-               style="border-radius:8px; font-weight:600;">
-                <i class="fas fa-file-alt me-1"></i> Ver Documentos
-            </a>
-        @else
-            <a href="{{ route('documentos.create', ['estudiante_id' => $estudiante->id]) }}"
-               class="btn btn-sm btn-outline-secondary"
-               style="border-radius:8px; font-weight:600;">
-                <i class="fas fa-file-upload me-1"></i> Subir Documentos
-            </a>
-        @endif
-
-    </div>
+    <a href="{{ route('estudiantes.index') }}" class="pf-btn b-back">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
 @endsection
 
+@push('styles')
+<style>
+:root {
+    --navy:     #003b73;
+    --blue:     #00508f;
+    --teal:     #4ec7d2;
+    --teal-s:   rgba(78,199,210,.1);
+    --border:   #e8edf4;
+    --bg:       #f5f8fc;
+    --text:     #0d2137;
+    --muted:    #6b7a90;
+    --green:    #10b981;
+    --amber:    #f59e0b;
+    --red:      #ef4444;
+    --r:        14px;
+    --shadow:   0 2px 16px rgba(0,59,115,.09);
+}
+
+.pf { width: 100%; }
+
+/* ══ HERO ══ */
+.pf-hero {
+    border-radius: var(--r) var(--r) 0 0;
+    background: linear-gradient(135deg, #002d5a 0%, #00508f 55%, #0077b6 100%);
+    padding: 2rem;
+    position: relative; overflow: hidden;
+}
+.pf-hero::after {
+    content: ''; position: absolute;
+    right: -50px; top: -50px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(78,199,210,.13); pointer-events: none;
+}
+.pf-hero::before {
+    content: ''; position: absolute;
+    right: 100px; bottom: -45px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,.05); pointer-events: none;
+}
+.pf-hero-inner {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap;
+}
+.pf-av {
+    width: 80px; height: 80px; border-radius: 18px; flex-shrink: 0;
+    border: 3px solid rgba(78,199,210,.7);
+    background: rgba(255,255,255,.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; font-weight: 800; color: white;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    overflow: hidden;
+}
+.pf-av img { width: 100%; height: 100%; object-fit: cover; }
+.pf-info { flex: 1; min-width: 0; }
+.pf-name {
+    font-size: 1.45rem; font-weight: 800; color: white;
+    margin: 0 0 .4rem; line-height: 1.2;
+    text-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.pf-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+.pf-tag {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .2rem .65rem; border-radius: 999px;
+    background: rgba(255,255,255,.14); color: rgba(255,255,255,.92);
+    font-size: .72rem; font-weight: 600;
+    border: 1px solid rgba(255,255,255,.18);
+}
+.pf-status {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .3rem .95rem; border-radius: 999px;
+    font-size: .76rem; font-weight: 700; flex-shrink: 0;
+}
+.st-on  { background: white; color: var(--blue);  border: 2px solid var(--teal); }
+.st-off { background: white; color: #dc2626;       border: 2px solid var(--red); }
+.pf-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.dot-t { background: var(--teal); }
+.dot-r { background: var(--red); }
+
+/* ══ BODY ══ */
+.pf-body {
+    background: white;
+    border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 var(--r) var(--r);
+    box-shadow: var(--shadow);
+}
+
+/* ══ SECTION ══ */
+.pf-sec { padding: 1.4rem 1.7rem; border-bottom: 1px solid #f0f4f9; }
+.pf-sec:last-of-type { border-bottom: none; }
+
+.pf-sec-hd {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: .95rem; padding-bottom: .55rem;
+    border-bottom: 2px solid var(--teal-s);
+}
+.pf-sec-title {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .75rem; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: .08em;
+}
+.pf-sec-title i { color: var(--teal); font-size: .88rem; }
+.pf-sec-action {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .74rem; font-weight: 600; color: var(--teal);
+    text-decoration: none; padding: .22rem .65rem;
+    border-radius: 6px; border: 1px solid rgba(78,199,210,.35);
+    background: var(--teal-s); transition: all .15s;
+}
+.pf-sec-action:hover { background: var(--teal); color: white; }
+
+/* ══ GRID ══ */
+.pf-grid   { display: grid; grid-template-columns: repeat(2,1fr); gap: .7rem; }
+.pf-grid-3 { grid-template-columns: repeat(3,1fr); }
+@media(max-width:620px){ .pf-grid, .pf-grid-3 { grid-template-columns: 1fr; } }
+
+/* ══ FIELD ══ */
+.pf-field {
+    background: var(--bg); border-radius: 10px;
+    border-left: 3px solid var(--teal); padding: .68rem .9rem;
+    transition: border-color .15s, box-shadow .15s;
+}
+.pf-field:hover { border-left-color: var(--blue); box-shadow: 0 2px 8px rgba(0,80,143,.06); }
+.pf-lbl {
+    font-size: .63rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--muted); margin-bottom: .22rem;
+    display: flex; align-items: center; gap: .28rem;
+}
+.pf-lbl i { font-size: .68rem; }
+.pf-val  { font-size: .88rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+.pf-val.mono {
+    font-family: 'Courier New', monospace; font-size: .85rem; color: var(--blue);
+    background: rgba(0,80,143,.07); padding: .15rem .45rem; border-radius: 5px; display: inline-block;
+}
+.pf-val.nil  { color: #c5d0dc; font-weight: 400; font-style: italic; font-size: .82rem; }
+.pf-sub { font-size: .7rem; color: var(--teal); font-weight: 600; margin-top: .18rem; }
+
+/* chip */
+.chip {
+    display: inline-flex; align-items: center; gap: .22rem;
+    padding: .22rem .65rem; border-radius: 999px;
+    font-size: .72rem; font-weight: 700;
+}
+.chip-t { background: var(--teal-s); color: var(--blue); border: 1px solid rgba(78,199,210,.3); }
+.chip-n { background: rgba(0,59,115,.07); color: var(--navy); border: 1px solid rgba(0,59,115,.15); }
+
+/* ══ PADRES ══ */
+.padre-row {
+    display: flex; align-items: center; gap: .85rem;
+    justify-content: space-between;
+    padding: .85rem 1rem;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: .55rem;
+    transition: border-color .15s, box-shadow .15s;
+}
+.padre-row:last-child { margin-bottom: 0; }
+.padre-row:hover { border-color: var(--teal); box-shadow: 0 2px 10px rgba(78,199,210,.13); }
+
+.padre-av {
+    width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--teal), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: white; font-size: 1rem;
+}
+.padre-name  { font-weight: 700; color: var(--text); font-size: .87rem; }
+.padre-meta  { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; margin-top: .22rem; }
+.padre-pill  {
+    display: inline-flex; align-items: center;
+    padding: .15rem .55rem; border-radius: 999px;
+    font-size: .67rem; font-weight: 700;
+    background: var(--teal-s); color: var(--blue);
+    border: 1px solid rgba(78,199,210,.3);
+}
+.padre-contact { font-size: .74rem; color: var(--muted); display: flex; align-items: center; gap: .25rem; }
+
+.btn-desvincular {
+    display: inline-flex; align-items: center; gap: .28rem;
+    padding: .28rem .7rem; border-radius: 7px;
+    font-size: .73rem; font-weight: 600; cursor: pointer;
+    background: #fef2f2; color: var(--red);
+    border: 1px solid #fecaca; text-decoration: none;
+    transition: all .15s; white-space: nowrap; flex-shrink: 0;
+}
+.btn-desvincular:hover { background: var(--red); color: white; border-color: var(--red); }
+
+.padre-empty {
+    text-align: center; padding: 1.75rem 1rem;
+    background: var(--bg); border-radius: 10px;
+    border: 2px dashed var(--border);
+}
+.padre-empty i { font-size: 1.75rem; color: #c5d0dc; display: block; margin-bottom: .6rem; }
+.padre-empty p { font-size: .83rem; color: var(--muted); margin-bottom: .75rem; }
+
+/* ══ FOOTER ══ */
+.pf-footer {
+    display: flex; gap: .6rem; flex-wrap: wrap;
+    padding: 1.1rem 1.7rem;
+    background: var(--bg); border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--r) var(--r);
+}
+.pf-btn {
+    flex: 1;
+    min-width: 100px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    padding: .6rem .75rem;
+    border-radius: 9px;
+    font-size: .83rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration:none;
+    border: none;
+    transition: all .2s;
+}
+.pf-btn:hover { transform: translateY(-2px); }
+.b-edit { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; box-shadow: 0 2px 10px rgba(78,199,210,.3); }
+.b-edit:hover { color: white; box-shadow: 0 4px 16px rgba(78,199,210,.4); }
+.b-back { background: white; color: var(--blue); border: 1.5px solid var(--blue); }
+.b-back:hover { background: #eff6ff; color: var(--blue); }
+.b-del  { background: white; color: var(--red); border: 1.5px solid var(--red); }
+.b-del:hover  { background: #fef2f2; }
+</style>
+@endpush
+
 @section('content')
-<div class="container" style="max-width:1200px;">
+<div class="pf">
 
-    {{-- ── Credenciales recién generadas ── --}}
-    @if(session('credenciales_estudiante'))
-        @php $cred = session('credenciales_estudiante'); @endphp
-        <div class="alert border-0 mb-3 py-2 px-3"
-             style="border-radius:8px; background:rgba(78,199,210,.12); border-left:3px solid #4ec7d2;">
-            <div class="d-flex align-items-start">
-                <i class="fas fa-key me-2 mt-1" style="color:#00508f;"></i>
-                <div>
-                    <strong style="color:#00508f;">Credenciales de acceso generadas para el estudiante:</strong>
-                    <div class="mt-1" style="font-size:.85rem;">
-                        <div><strong>Usuario (correo):</strong> {{ $cred['email']    ?? 'N/A' }}</div>
-                        <div><strong>Contraseña temporal:</strong> {{ $cred['password'] ?? 'N/A' }}</div>
-                    </div>
-                    <small class="text-muted" style="font-size:.75rem;">
-                        Recomiende al estudiante cambiar su contraseña en su primer inicio de sesión.
-                    </small>
-                </div>
-            </div>
-        </div>
-    @endif
+    {{-- ══ HERO ══ --}}
+    <div class="pf-hero">
+        <div class="pf-hero-inner">
 
-    {{-- ── Tarjeta de Perfil ── --}}
-    <div class="card border-0 shadow-sm mb-3" style="border-radius:10px; overflow:hidden;">
-
-        {{-- Header con gradiente --}}
-        <div style="background:linear-gradient(135deg,#00508f 0%,#003b73 100%); padding:1.5rem;">
-            <div class="d-flex align-items-center gap-3">
-
-                {{-- Foto / avatar --}}
+            <div class="pf-av">
                 @if($estudiante->foto)
-                    <img src="{{ asset('storage/' . $estudiante->foto) }}"
-                         alt="Foto de {{ $estudiante->nombre_completo }}"
-                         style="width:70px; height:70px; border-radius:12px; object-fit:cover;
-                                flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,.2);
-                                border:3px solid #4ec7d2;">
+                    <img src="{{ asset('storage/' . $estudiante->foto) }}" alt="Foto">
                 @else
-                    <div style="width:70px; height:70px; background:white; border-radius:12px;
-                                display:flex; align-items:center; justify-content:center;
-                                flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,.1);
-                                border:3px solid #4ec7d2;">
-                        <span style="color:#00508f; font-weight:800; font-size:1.8rem;">
-                            {{ strtoupper(
-                                substr($estudiante->nombre1 ?? 'E', 0, 1) .
-                                substr($estudiante->apellido1 ?? 'E', 0, 1)
-                            ) }}
-                        </span>
-                    </div>
+                    {{ strtoupper(substr($estudiante->nombre1 ?? 'E', 0, 1) . substr($estudiante->apellido1 ?? '', 0, 1)) }}
                 @endif
-
-                {{-- Nombre y grado --}}
-                <div class="flex-grow-1">
-                    <h2 class="mb-1 fw-bold text-white" style="font-size:1.4rem;">
-                        {{ $estudiante->nombre_completo }}
-                    </h2>
-                    <p class="mb-0 text-white opacity-75" style="font-size:.9rem;">
-                        <i class="fas fa-graduation-cap me-1"></i>
-                        {{ $estudiante->grado }}
-                        @if($estudiante->seccion)
-                            - Sección {{ $estudiante->seccion }}
-                        @else
-                            - Sin sección asignada
-                        @endif
-                    </p>
-                </div>
-
-                {{-- Badge de estado --}}
-                @php
-                    $estados = [
-                        'activo'     => ['label' => 'Activo',     'border' => '#4ec7d2', 'text' => '#00508f'],
-                        'inactivo'   => ['label' => 'Inactivo',   'border' => '#ef4444', 'text' => '#ef4444'],
-                        'retirado'   => ['label' => 'Retirado',   'border' => '#b45309', 'text' => '#b45309'],
-                        'suspendido' => ['label' => 'Suspendido', 'border' => '#4b5563', 'text' => '#4b5563'],
-                    ];
-                    $estado = $estados[$estudiante->estado ?? 'activo'] ?? $estados['activo'];
-                @endphp
-                <div>
-                    <span class="badge"
-                          style="background:white; color:{{ $estado['text'] }};
-                                 padding:.5rem 1rem; font-size:.85rem; font-weight:700;
-                                 border-radius:8px; border:2px solid {{ $estado['border'] }};">
-                        <i class="fas fa-circle" style="font-size:.5rem;"></i>
-                        {{ $estado['label'] }}
-                    </span>
-                </div>
-
             </div>
-        </div>
-        {{-- FIN header --}}
 
-        {{-- ── Cuerpo de la tarjeta ── --}}
-        <div class="card-body p-3">
-
-            {{-- Información Personal --}}
-            <div class="mb-3">
-                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center section-heading">
-                    <i class="fas fa-user me-2"></i>Información Personal
-                </h6>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Nombres',
-                            'value' => trim(($estudiante->nombre1 ?? '') . ' ' . ($estudiante->nombre2 ?? ''))])
-                    </div>
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Apellidos',
-                            'value' => trim(($estudiante->apellido1 ?? '') . ' ' . ($estudiante->apellido2 ?? ''))])
-                    </div>
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'DNI',
-                            'value' => $estudiante->dni ?? 'N/A', 'mono' => true])
-                    </div>
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Fecha de Nacimiento',
-                            'value' => $estudiante->fecha_nacimiento
-                                ? $estudiante->fecha_nacimiento->format('d/m/Y')
-                                : 'N/A'])
-                    </div>
+            <div class="pf-info">
+                <h2 class="pf-name">{{ $estudiante->nombre_completo }}</h2>
+                <div class="pf-tags">
+                    @if($estudiante->dni)
+                        <span class="pf-tag"><i class="fas fa-id-card"></i> {{ $estudiante->dni }}</span>
+                    @endif
+                    @if($estudiante->grado)
+                        <span class="pf-tag"><i class="fas fa-graduation-cap"></i> {{ $estudiante->grado }}</span>
+                    @endif
+                    @if($estudiante->seccion)
+                        <span class="pf-tag"><i class="fas fa-layer-group"></i> Sección {{ $estudiante->seccion }}</span>
+                    @endif
+                    @if($estudiante->fecha_nacimiento)
+                        <span class="pf-tag">
+                            <i class="fas fa-birthday-cake"></i>
+                            {{ \Carbon\Carbon::parse($estudiante->fecha_nacimiento)->age }} años
+                        </span>
+                    @endif
                 </div>
             </div>
 
-            {{-- Información de Contacto --}}
-            <div class="mb-3">
-                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center section-heading">
-                    <i class="fas fa-address-book me-2"></i>Información de Contacto
-                </h6>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Email',
-                            'value' => $estudiante->email ?? 'N/A'])
-                    </div>
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Teléfono',
-                            'value' => $estudiante->telefono ?? 'N/A'])
-                    </div>
-                    <div class="col-12">
-                        @include('estudiantes._info-item', ['label' => 'Dirección',
-                            'value' => $estudiante->direccion ?? 'N/A'])
-                    </div>
-                </div>
-            </div>
-
-            {{-- Información Académica --}}
-            <div class="mb-3">
-                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center section-heading">
-                    <i class="fas fa-graduation-cap me-2"></i>Información Académica
-                </h6>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Grado',
-                            'value' => $estudiante->grado ?? 'N/A'])
-                    </div>
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Sección',
-                            'value' => $estudiante->seccion ?? 'Sin asignar'])
-                    </div>
-                </div>
-            </div>
-
-            {{-- Observaciones (condicional) --}}
-            @if($estudiante->observaciones)
-                <div class="mb-3">
-                    <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center section-heading">
-                        <i class="fas fa-clipboard me-2"></i>Observaciones
-                    </h6>
-                    <div class="info-box">
-                        <p class="mb-0" style="color:#003b73; font-size:.9rem; line-height:1.6;">
-                            {{ $estudiante->observaciones }}
-                        </p>
-                    </div>
-                </div>
+            @if($estudiante->estado === 'activo')
+                <span class="pf-status st-on"><span class="pf-dot dot-t"></span> Activo</span>
+            @else
+                <span class="pf-status st-off"><span class="pf-dot dot-r"></span> Inactivo</span>
             @endif
 
-            {{-- Datos del Sistema --}}
-            <div class="mb-2">
-                <h6 class="mb-2 pb-2 border-bottom d-flex align-items-center section-heading">
-                    <i class="fas fa-clock me-2"></i>Datos del Sistema
-                </h6>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Fecha de Registro',
-                            'value' => $estudiante->created_at
-                                ? $estudiante->created_at->format('d/m/Y H:i')
-                                : 'N/A'])
-                    </div>
-                    <div class="col-md-6">
-                        @include('estudiantes._info-item', ['label' => 'Última Actualización',
-                            'value' => $estudiante->updated_at
-                                ? $estudiante->updated_at->format('d/m/Y H:i')
-                                : 'N/A'])
+        </div>
+    </div>
+
+    {{-- ══ BODY ══ --}}
+    <div class="pf-body">
+
+        {{-- PERSONAL --}}
+        <div class="pf-sec">
+            <div class="pf-sec-hd">
+                <div class="pf-sec-title"><i class="fas fa-user"></i> Información Personal</div>
+            </div>
+            <div class="pf-grid">
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-font"></i> Primer Nombre</div>
+                    <div class="pf-val">{{ $estudiante->nombre1 ?: '—' }}</div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-font"></i> Segundo Nombre</div>
+                    <div class="pf-val {{ !$estudiante->nombre2 ? 'nil' : '' }}">{{ $estudiante->nombre2 ?: 'No registrado' }}</div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-font"></i> Primer Apellido</div>
+                    <div class="pf-val">{{ $estudiante->apellido1 ?: '—' }}</div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-font"></i> Segundo Apellido</div>
+                    <div class="pf-val {{ !$estudiante->apellido2 ? 'nil' : '' }}">{{ $estudiante->apellido2 ?: 'No registrado' }}</div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-id-card"></i> DNI</div>
+                    <div class="pf-val mono">{{ $estudiante->dni ?: '—' }}</div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-calendar"></i> Fecha de Nacimiento</div>
+                    @if($estudiante->fecha_nacimiento)
+                        <div class="pf-val">{{ \Carbon\Carbon::parse($estudiante->fecha_nacimiento)->format('d/m/Y') }}</div>
+                        <div class="pf-sub">{{ \Carbon\Carbon::parse($estudiante->fecha_nacimiento)->age }} años</div>
+                    @else
+                        <div class="pf-val nil">No registrada</div>
+                    @endif
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-venus-mars"></i> Sexo</div>
+                    <div class="pf-val {{ !$estudiante->sexo ? 'nil' : '' }}">
+                        {{ $estudiante->sexo ? ucfirst($estudiante->sexo) : 'No registrado' }}
                     </div>
                 </div>
             </div>
+        </div>
 
-            {{-- Botones de Acción --}}
-            <div class="pt-3 border-top mt-3">
-                <div class="d-flex gap-2">
-                    <a href="{{ route('estudiantes.edit', $estudiante) }}"
-                       class="btn btn-sm flex-fill"
-                       style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
-                              color:white; border:none;
-                              box-shadow:0 2px 8px rgba(78,199,210,.3);
-                              padding:.6rem; border-radius:8px; font-weight:600;">
-                        <i class="fas fa-edit me-1"></i>Editar
+        {{-- CONTACTO --}}
+        <div class="pf-sec">
+            <div class="pf-sec-hd">
+                <div class="pf-sec-title"><i class="fas fa-address-book"></i> Contacto</div>
+            </div>
+            <div class="pf-grid">
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-envelope"></i> Email</div>
+                    <div class="pf-val {{ !$estudiante->email ? 'nil' : '' }}">{{ $estudiante->email ?: 'No registrado' }}</div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-phone"></i> Teléfono</div>
+                    <div class="pf-val {{ !$estudiante->telefono ? 'nil' : '' }}">{{ $estudiante->telefono ?: 'No registrado' }}</div>
+                </div>
+                <div class="pf-field" style="grid-column:1/-1;">
+                    <div class="pf-lbl"><i class="fas fa-map-marker-alt"></i> Dirección</div>
+                    <div class="pf-val {{ !$estudiante->direccion ? 'nil' : '' }}">{{ $estudiante->direccion ?: 'No registrada' }}</div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ACADÉMICO --}}
+        <div class="pf-sec">
+            <div class="pf-sec-hd">
+                <div class="pf-sec-title"><i class="fas fa-graduation-cap"></i> Información Académica</div>
+            </div>
+            <div class="pf-grid pf-grid-3">
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-layer-group"></i> Grado</div>
+                    <div class="pf-val"><span class="chip chip-t">{{ $estudiante->grado }}</span></div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-tag"></i> Sección</div>
+                    <div class="pf-val"><span class="chip chip-n">{{ $estudiante->seccion }}</span></div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-toggle-on"></i> Estado</div>
+                    <div class="pf-val">
+                        @if($estudiante->estado === 'activo')
+                            <span class="pf-status st-on" style="font-size:.7rem;padding:.2rem .7rem;">
+                                <span class="pf-dot dot-t"></span> Activo
+                            </span>
+                        @else
+                            <span class="pf-status st-off" style="font-size:.7rem;padding:.2rem .7rem;">
+                                <span class="pf-dot dot-r"></span> Inactivo
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- PADRES --}}
+        <div class="pf-sec">
+            <div class="pf-sec-hd">
+                <div class="pf-sec-title"><i class="fas fa-user-friends"></i> Padres / Tutores</div>
+                <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}" class="pf-sec-action">
+                    <i class="fas fa-plus"></i> Vincular
+                </a>
+            </div>
+
+            @if($estudiante->padres && $estudiante->padres->count() > 0)
+                @foreach($estudiante->padres as $padre)
+                <div class="padre-row">
+                    <div style="display:flex;align-items:center;gap:.8rem;min-width:0;">
+                        <div class="padre-av">{{ strtoupper(substr($padre->nombre ?? 'P', 0, 1)) }}</div>
+                        <div style="min-width:0;">
+                            <div class="padre-name">{{ $padre->nombre }} {{ $padre->apellido }}</div>
+                            <div class="padre-meta">
+                                <span class="padre-pill">{{ ucfirst($padre->parentesco ?? '—') }}</span>
+                                @if($padre->telefono)
+                                    <span class="padre-contact"><i class="fas fa-phone"></i> {{ $padre->telefono }}</span>
+                                @endif
+                                @if($padre->correo)
+                                    <span class="padre-contact"><i class="fas fa-envelope"></i> {{ $padre->correo }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <form action="{{ route('padres.desvincular') }}" method="POST" style="display:inline;flex-shrink:0;">
+                        @csrf
+                        <input type="hidden" name="padre_id"      value="{{ $padre->id }}">
+                        <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
+                        <button type="submit" class="btn-desvincular"
+                                onclick="return confirm('¿Desvincular a {{ addslashes($padre->nombre) }} {{ addslashes($padre->apellido) }}?')">
+                            <i class="fas fa-unlink"></i> Desvincular
+                        </button>
+                    </form>
+                </div>
+                @endforeach
+            @else
+                <div class="padre-empty">
+                    <i class="fas fa-user-slash"></i>
+                    <p>No hay padres o tutores vinculados</p>
+                    <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}"
+                       style="display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1.1rem;background:linear-gradient(135deg,var(--teal),var(--blue));color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:.82rem;">
+                        <i class="fas fa-link"></i> Vincular ahora
                     </a>
-
-                    <button type="button"
-                            onclick="abrirModalEliminar()"
-                            class="btn btn-sm flex-fill"
-                            style="border:2px solid #ef4444; color:#ef4444;
-                                   background:white; padding:.6rem;
-                                   border-radius:8px; font-weight:600;">
-                        <i class="fas fa-trash me-1"></i>Eliminar
-                    </button>
                 </div>
+            @endif
+        </div>
 
-                {{-- Form oculto para eliminar --}}
-                <form id="delete-form"
-                      action="{{ route('estudiantes.destroy', $estudiante) }}"
-                      method="POST"
-                      style="display:none;">
-                    @csrf
-                    @method('DELETE')
-                </form>
+        {{-- OBSERVACIONES --}}
+        @if($estudiante->observaciones)
+        <div class="pf-sec">
+            <div class="pf-sec-hd">
+                <div class="pf-sec-title"><i class="fas fa-clipboard-list"></i> Observaciones</div>
             </div>
+            <div class="pf-field">
+                <div class="pf-val" style="font-weight:400;line-height:1.65;font-size:.875rem;">
+                    {{ $estudiante->observaciones }}
+                </div>
+            </div>
+        </div>
+        @endif
 
-        </div>{{-- /card-body --}}
-    </div>{{-- /card --}}
+        {{-- SISTEMA --}}
+        <div class="pf-sec">
+            <div class="pf-sec-hd">
+                <div class="pf-sec-title"><i class="fas fa-database"></i> Datos del Sistema</div>
+            </div>
+            <div class="pf-grid">
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-calendar-plus"></i> Fecha de Registro</div>
+                    <div class="pf-val">{{ $estudiante->created_at?->format('d/m/Y H:i') ?? '—' }}</div>
+                </div>
+                <div class="pf-field">
+                    <div class="pf-lbl"><i class="fas fa-sync-alt"></i> Última Actualización</div>
+                    <div class="pf-val">{{ $estudiante->updated_at?->format('d/m/Y H:i') ?? '—' }}</div>
+                </div>
+            </div>
+        </div>
 
-</div>{{-- /container --}}
+        {{-- FOOTER --}}
+        <div class="pf-footer">
+            <a href="{{ route('estudiantes.edit', $estudiante) }}" class="pf-btn b-edit">
+                <i class="fas fa-pen"></i> Editar
+            </a>
+            <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}"
+               class="pf-btn b-back">
+                <i class="fas fa-link"></i> Vincular Padre/Tutor
+            </a>
+            <button type="button" onclick="confirmDelete()" class="pf-btn b-del">
+                <i class="fas fa-trash"></i> Eliminar
+            </button>
+        </div>
 
+    </div>{{-- /pf-body --}}
+</div>{{-- /pf --}}
 
-{{-- ============================================================
-     MODAL CONFIRMAR ELIMINACIÓN
-     CORRECCIÓN: el modal original tenía el párrafo del mensaje
-     duplicado y el @section('content') cerrado dos veces (@endsection
-     al final era el segundo cierre). Se limpió todo.
-============================================================ --}}
-<div id="deleteModal" class="modal fade" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:12px; border:none; overflow:hidden;">
+{{-- Form eliminar --}}
+<form id="delete-form" action="{{ route('estudiantes.destroy', $estudiante) }}" method="POST" style="display:none;">
+    @csrf @method('DELETE')
+</form>
 
-            {{-- Header --}}
-            <div class="modal-header border-0" style="background:rgba(239,68,68,.08); padding:1.2rem;">
-                <div class="d-flex align-items-center gap-2">
-                    <div style="width:40px; height:40px; background:rgba(239,68,68,.15);
-                                border-radius:10px; display:flex; align-items:center; justify-content:center;">
-                        <i class="fas fa-exclamation-triangle" style="color:#ef4444; font-size:1.1rem;"></i>
+{{-- Modal eliminar --}}
+<div id="deleteModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);">
+
+            <div class="modal-header border-0" style="background:rgba(239,68,68,.07);padding:1.2rem 1.4rem;">
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <div style="width:42px;height:42px;background:rgba(239,68,68,.15);border-radius:10px;
+                                display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fas fa-exclamation-triangle" style="color:#ef4444;font-size:1.1rem;"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title mb-0 fw-bold" id="deleteModalLabel"
-                            style="color:#003b73; font-size:.95rem;">Confirmar Eliminación</h5>
-                        <p class="mb-0 small text-muted">Esta acción no se puede deshacer</p>
+                        <h6 class="mb-0 fw-bold" style="color:var(--navy);font-size:.93rem;">Confirmar Eliminación</h6>
+                        <p class="mb-0 small" style="color:var(--muted);">Esta acción no se puede deshacer</p>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            {{-- Body --}}
-            <div class="modal-body" style="padding:1.5rem;">
-                <p class="mb-2" style="color:#003b73; font-size:.95rem;">
-                    ¿Está seguro que desea eliminar al estudiante
-                    <strong>{{ $estudiante->nombre_completo }}</strong>?
+            <div class="modal-body" style="padding:1.2rem 1.4rem;">
+                <p style="color:var(--text);font-size:.87rem;margin:0 0 .4rem;">
+                    ¿Estás seguro de eliminar a
+                    <strong style="color:var(--red);">{{ $estudiante->nombre_completo }}</strong>?
                 </p>
-                <p class="text-muted small mb-0">
-                    Se perderán todos los datos asociados a este estudiante de forma permanente.
+                <p style="font-size:.78rem;color:var(--muted);margin:0;">
+                    Se perderán todos los datos asociados permanentemente.
                 </p>
             </div>
 
-            {{-- Footer --}}
-            <div class="modal-footer border-0" style="background:#f8f9fa; padding:1rem 1.5rem;">
-                <button type="button"
-                        class="btn btn-sm"
-                        data-bs-dismiss="modal"
-                        style="border:2px solid #00508f; color:#00508f; background:white;
-                               padding:.5rem 1.2rem; border-radius:8px; font-weight:600;">
+            <div class="modal-footer border-0" style="background:var(--bg);padding:.85rem 1.4rem;gap:.5rem;">
+                <button type="button" data-bs-dismiss="modal"
+                        style="padding:.42rem 1.1rem;border-radius:9px;border:1.5px solid var(--blue);
+                               background:white;color:var(--blue);font-size:.82rem;font-weight:600;cursor:pointer;">
                     Cancelar
                 </button>
-                <button type="button"
-                        onclick="document.getElementById('delete-form').submit()"
-                        class="btn btn-sm"
-                        style="background:#ef4444; color:white; border:none;
-                               padding:.5rem 1.2rem; border-radius:8px; font-weight:600;
-                               box-shadow:0 2px 8px rgba(239,68,68,.3);">
-                    <i class="fas fa-trash me-1"></i>Sí, Eliminar
+                <button type="button" onclick="submitDelete()"
+                        style="padding:.42rem 1.25rem;border-radius:9px;border:none;cursor:pointer;
+                               background:linear-gradient(135deg,#ef4444,#dc2626);color:white;
+                               font-size:.82rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;
+                               box-shadow:0 2px 10px rgba(239,68,68,.3);">
+                    <i class="fas fa-trash"></i> Sí, Eliminar
                 </button>
             </div>
 
         </div>
     </div>
 </div>
-
 @endsection
-
-
-@push('styles')
-<style>
-    /* ── Secciones de información ── */
-    .section-heading {
-        color: #00508f;
-        font-weight: 600;
-        font-size: .95rem;
-    }
-    .info-box {
-        background: rgba(78,199,210,.08);
-        border-radius: 8px;
-        border-left: 3px solid #4ec7d2;
-        padding: .5rem .75rem;
-    }
-    .info-box .info-label {
-        font-size: .7rem;
-        font-weight: 600;
-        color: #6b7280;
-        text-transform: uppercase;
-        letter-spacing: .5px;
-        margin-bottom: .15rem;
-    }
-    .info-box .info-value {
-        color: #003b73;
-        font-size: .9rem;
-        font-weight: 600;
-        margin: 0;
-        word-break: break-word;
-    }
-    .info-box .info-value.font-monospace { font-family: monospace; }
-
-    /* ── Bordes y botones ── */
-    .border-bottom { border-color: rgba(0,80,143,.15) !important; }
-
-    .btn:hover { transform: translateY(-2px); transition: all .3s ease; }
-
-    /* ── Formulario (si se usa en esta vista) ── */
-    .form-control-sm, .form-select-sm {
-        border-radius: 6px;
-        border: 1.5px solid #e2e8f0;
-        padding: .5rem .75rem;
-        transition: all .3s ease;
-        font-size: .875rem;
-    }
-    .form-control-sm:focus, .form-select-sm:focus {
-        border-color: #4ec7d2;
-        box-shadow: 0 0 0 .15rem rgba(78,199,210,.15);
-    }
-</style>
-@endpush
-
 
 @push('scripts')
 <script>
-(function () {
-    'use strict';
-
-    /* ============================================================
-       Abrir modal de eliminación con Bootstrap 5
-       CORRECCIÓN: el original llamaba a confirmDelete() y submitDelete()
-       como funciones globales sin usar la API de Bootstrap. Ahora se
-       usa bootstrap.Modal correctamente.
-    ============================================================ */
-    window.abrirModalEliminar = function () {
-        const modalEl = document.getElementById('deleteModal');
-        if (modalEl) bootstrap.Modal.getOrCreate(modalEl).show();
-    };
-
-    /* ============================================================
-       Generador de correo automático
-       CORRECCIÓN: el original estaba dentro de @push('scripts') pero
-       DESPUÉS de @endsection, lo que hace que Blade ignore el bloque
-       completo. Ahora está correctamente antes del @endsection.
-
-       Además los selectores getElementById fallaban porque esta es
-       la vista SHOW (solo lectura), no la vista EDIT. Se agregan
-       guards para evitar errores en consola.
-    ============================================================ */
-    document.addEventListener('DOMContentLoaded', function () {
-        const nombre1Input   = document.getElementById('nombre1');
-        const apellido1Input = document.getElementById('apellido1');
-        const emailInput     = document.getElementById('email');
-
-        // Solo ejecutar si los campos existen (vista edit)
-        if (!nombre1Input || !apellido1Input || !emailInput) return;
-
-        function normalizar(txt) {
-            return (txt || '')
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')  // quita tildes
-                .replace(/[^a-zA-Z]/g, '')        // solo letras
-                .toLowerCase();
-        }
-
-        function generarCorreo() {
-            const nombre   = normalizar(nombre1Input.value);
-            const apellido = normalizar(apellido1Input.value);
-            emailInput.value = (nombre && apellido)
-                ? `${nombre}.${apellido}@egm.edu.hn`
-                : '';
-        }
-
-        nombre1Input.addEventListener('input', generarCorreo);
-        apellido1Input.addEventListener('input', generarCorreo);
-    });
-
-})();
+let deleteModal;
+document.addEventListener('DOMContentLoaded', () => {
+    deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+});
+function confirmDelete() { deleteModal.show(); }
+function submitDelete()  { document.getElementById('delete-form').submit(); }
 </script>
 @endpush

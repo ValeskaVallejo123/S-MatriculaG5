@@ -8,32 +8,51 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('registro_calificaciones', function (Blueprint $table) {
+        Schema::create('registrarcalificaciones', function (Blueprint $table) {
+
             $table->id();
 
-            $table->foreignId('profesor_id')->constrained('profesores')->onDelete('cascade');
-            $table->foreignId('curso_id')->constrained('cursos')->onDelete('cascade');
-            $table->foreignId('materia_id')->constrained('materias')->onDelete('cascade');
-            $table->foreignId('estudiante_id')->constrained('estudiantes')->onDelete('cascade');
+            $table->foreignId('profesor_id')
+                ->constrained('profesores')
+                ->onDelete('cascade');
 
-            // Dejamos el periodo obligatorio para evitar problemas con unique
-            $table->foreignId('periodo_academico_id')->constrained('periodos_academicos')->onDelete('cascade');
+            // ✅ CAMBIAR curso_id POR grado_id
+            $table->foreignId('grado_id')
+                ->constrained('grados')
+                ->onDelete('cascade');
+
+            $table->foreignId('materia_id')
+                ->constrained('materias')
+                ->onDelete('cascade');
+
+            $table->foreignId('estudiante_id')
+                ->constrained('estudiantes')
+                ->onDelete('cascade');
+
+            $table->foreignId('periodo_academico_id')
+                ->nullable()
+                ->constrained('periodos_academicos')
+                ->onDelete('set null');
 
             $table->decimal('nota', 5, 2)->nullable();
+
             $table->text('observacion')->nullable();
 
             $table->timestamps();
 
-            // Único por profesor, curso, materia, estudiante y periodo
-            $table->unique(
-                ['profesor_id','curso_id','materia_id','estudiante_id','periodo_academico_id'],
-                'registro_calificaciones_unique'
-            );
+            // ✅ UNIQUE CORRECTO
+            $table->unique([
+                'profesor_id',
+                'grado_id',
+                'materia_id',
+                'estudiante_id',
+                'periodo_academico_id'
+            ], 'registro_calificacion_unique');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('registro_calificaciones');
+        Schema::dropIfExists('registrarcalificaciones');
     }
 };

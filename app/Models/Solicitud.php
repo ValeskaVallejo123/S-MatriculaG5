@@ -22,17 +22,11 @@ class Solicitud extends Model
 
     protected $fillable = [
         'estudiante_id',
-        'estado',    // pendiente, aprobada, rechazada
-        'notificar', // boolean
-        // CORRECCIÓN: el original tenía $hidden = ['password'] y un setter
-        // setPasswordAttribute(), pero 'password' NO está en $fillable ni
-        // en la tabla solicitudes. Esto no causaba error pero era confuso
-        // y podía llevar a guardar contraseñas en una tabla que no debería
-        // tenerlas. Se elimina completamente.
-    ];
-
-    protected $casts = [
-        'notificar' => 'boolean',
+        'codigo',
+        'email',
+        'password',
+        'estado',
+        'notificar',
     ];
 
     // =========================================================================
