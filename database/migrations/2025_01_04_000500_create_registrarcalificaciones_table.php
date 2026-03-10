@@ -30,7 +30,7 @@ return new class extends Migration
 
             $table->foreignId('periodo_academico_id')
                 ->constrained('periodos_academicos')
-                ->onDelete('cascade');
+                ->onDelete('set null');
 
             $table->decimal('nota', 5, 2)->nullable();
 

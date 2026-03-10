@@ -127,12 +127,12 @@ class SuperAdminController extends Controller
 
         $isSuperAdmin = $request->role === 'super_admin';
 
-        $administrador->name        = $request->name;
-        $administrador->email       = $request->email;
-        $administrador->user_type   = $isSuperAdmin ? 'super_admin' : 'admin';
+        $administrador->name           = $request->name;
+        $administrador->email          = $request->email;
+        $administrador->user_type      = $isSuperAdmin ? 'super_admin' : 'admin';
         $administrador->is_super_admin = $isSuperAdmin;
-        $administrador->permissions = $isSuperAdmin ? [] : ($request->permissions ?? []);
-        $administrador->is_protected = $request->boolean('is_protected');
+        $administrador->permissions    = $isSuperAdmin ? [] : ($request->permissions ?? []);
+        $administrador->is_protected   = $request->boolean('is_protected');
 
         if ($request->filled('password')) {
             $administrador->password = Hash::make($request->password);
@@ -219,8 +219,17 @@ class SuperAdminController extends Controller
 
     public function permisosRoles()
     {
-        $usuarios = User::whereIn('user_type', ['admin', 'super_admin'])
-            ->orderBy('is_super_admin', 'desc')
+        $usuarios = User::where(function ($query) {
+                $query->where('role', 'admin')
+                      ->orWhere('user_type', 'admin')
+                      ->orWhere(function ($q) {
+                          $q->where(function ($q2) {
+                              $q2->where('role', 'super_admin')
+                                 ->orWhere('user_type', 'super_admin');
+                          })
+                          ->where('is_protected', 0);
+                      });
+            })
             ->orderBy('name')
             ->get();
 
@@ -240,7 +249,8 @@ class SuperAdminController extends Controller
             return back()->with('error', 'Este usuario no puede modificarse.');
         }
 
-        $usuario->permissions = $request->permissions ?? [];
+        // Acepta tanto 'permissions[]' como 'permisos[]' del formulario
+        $usuario->permissions = $request->permissions ?? $request->permisos ?? [];
         $usuario->save();
 
         return redirect()->route('superadmin.administradores.permisos')

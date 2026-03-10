@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RegistrarCalificacion extends Model
 {
@@ -22,7 +22,7 @@ class RegistrarCalificacion extends Model
     ];
 
     protected $casts = [
-        'nota' => 'decimal:2',
+        'nota' => 'float',
     ];
 
     /*
@@ -33,22 +33,22 @@ class RegistrarCalificacion extends Model
 
     public function profesor()
     {
-        return $this->belongsTo(Profesor::class, 'profesor_id');
+        return $this->belongsTo(Profesor::class);
     }
 
     public function grado()
     {
-        return $this->belongsTo(Grado::class, 'grado_id');
+        return $this->belongsTo(Grado::class);
     }
 
     public function materia()
     {
-        return $this->belongsTo(Materia::class, 'materia_id');
+        return $this->belongsTo(Materia::class);
     }
 
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class, 'estudiante_id');
+        return $this->belongsTo(Estudiante::class);
     }
 
     public function periodoAcademico()

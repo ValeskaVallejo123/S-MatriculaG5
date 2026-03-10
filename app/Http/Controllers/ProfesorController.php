@@ -71,7 +71,6 @@ class ProfesorController extends Controller
             'estado.required'       => 'El estado es obligatorio',
         ]);
 
-        // ✅ Eliminar campos null para no insertar NULL en columnas NOT NULL de la BD
         $validated = array_filter($validated, fn($v) => $v !== null && $v !== '');
 
         Profesor::create($validated);
@@ -118,7 +117,6 @@ class ProfesorController extends Controller
             'estado.required'       => 'El estado es obligatorio',
         ]);
 
-        //  Solo actualizar campos que el usuario realmente envió (no sobreescribir con null)
         $validated = array_filter($validated, fn($v) => $v !== null && $v !== '');
 
         $profesor->update($validated);
@@ -133,5 +131,14 @@ class ProfesorController extends Controller
 
         return redirect()->route('profesores.index')
             ->with('success', 'Profesor eliminado exitosamente.');
+    }
+
+    public function listarPublico()
+    {
+        $profesores = Profesor::where('estado', 'activo')
+            ->orderBy('apellido')
+            ->get();
+
+        return view('portal.profesores', compact('profesores'));
     }
 }

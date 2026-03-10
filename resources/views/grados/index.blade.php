@@ -58,9 +58,7 @@
     display: flex; align-items: center; justify-content: space-between;
     box-shadow: 0 1px 3px rgba(0,0,0,.05); gap: .75rem; flex-wrap: wrap;
 }
-.adm-search-wrap {
-    display: flex; align-items: center; gap: .5rem; flex: 1; min-width: 180px;
-}
+.adm-search-wrap { display: flex; align-items: center; gap: .5rem; flex: 1; min-width: 180px; }
 .adm-search-inner { position: relative; flex: 1; max-width: 280px; }
 .adm-search-inner i { position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.78rem;pointer-events:none; }
 .adm-search-inner input {
@@ -69,7 +67,6 @@
     font-size: .82rem; color: #0f172a; background: #f8fafc; outline: none;
 }
 .adm-search-inner input:focus { border-color: #4ec7d2; }
-
 .adm-filter select, .adm-perpage select {
     padding: .35rem .65rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
     font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
@@ -87,9 +84,7 @@
 .adm-tab:not(.active):hover { border-color: #4ec7d2; color: #00508f; background: #e8f8f9; }
 
 /* Grid de grados */
-.grados-grid {
-    display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem;
-}
+.grados-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
 @media(max-width:900px){ .grados-grid { grid-template-columns: repeat(2,1fr); } }
 @media(max-width:500px){ .grados-grid { grid-template-columns: 1fr; } }
 
@@ -100,22 +95,18 @@
 }
 .grado-card:hover { box-shadow: 0 4px 14px rgba(0,80,143,.1); transform: translateY(-2px); }
 
-.grado-card-head {
-    padding: .75rem 1rem;
-    display: flex; align-items: center; gap: .75rem;
-}
+.grado-card-head { padding: .75rem 1rem; display: flex; align-items: center; gap: .75rem; }
 .grado-numero-badge {
     width: 46px; height: 46px; border-radius: 10px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 1.15rem; color: #fff;
     background: linear-gradient(135deg, #4ec7d2, #00508f);
 }
-.grado-title { font-weight: 700; color: #0f172a; font-size: .95rem; margin: 0; }
-.grado-subtitle { font-size: .75rem; color: #64748b; margin: 0; }
+.grado-title   { font-weight: 700; color: #0f172a; font-size: .95rem; margin: 0; }
+.grado-subtitle{ font-size: .75rem; color: #64748b; margin: 0; }
 
 .grado-card-body {
-    padding: .65rem 1rem;
-    border-top: 1px solid #f1f5f9;
+    padding: .65rem 1rem; border-top: 1px solid #f1f5f9;
     display: flex; gap: .5rem; flex-wrap: wrap;
 }
 .grado-meta {
@@ -125,11 +116,7 @@
 }
 .grado-meta i { font-size: .65rem; }
 
-.grado-card-actions {
-    padding: .65rem 1rem;
-    border-top: 1px solid #f1f5f9;
-    display: flex; gap: .4rem;
-}
+.grado-card-actions { padding: .65rem 1rem; border-top: 1px solid #f1f5f9; display: flex; gap: .4rem; }
 .act-btn {
     display: inline-flex; align-items: center; justify-content: center;
     width: 30px; height: 30px; border-radius: 7px; border: none;
@@ -142,17 +129,23 @@
 .act-assign:hover { background: #0891b2; color: #fff; }
 .act-edit   { background: #fef9c3; color: #ca8a04; }
 .act-edit:hover   { background: #ca8a04; color: #fff; }
+.act-delete { background: #fee2e2; color: #dc2626; }
+.act-delete:hover { background: #dc2626; color: #fff; }
 
 /* Nivel badges */
 .nivel-primaria   { background: #ecfdf5; color: #059669; }
 .nivel-secundaria { background: #eef2ff; color: #4f46e5; }
+
+/* Estado activo/inactivo */
+.badge-activo   { background: #ecfdf5; color: #059669; padding: .2rem .6rem; border-radius: 6px; font-size: .72rem; font-weight: 600; }
+.badge-inactivo { background: #fee2e2; color: #dc2626; padding: .2rem .6rem; border-radius: 6px; font-size: .72rem; font-weight: 600; }
 
 /* empty */
 .adm-empty { padding: 3rem 1rem; text-align: center; grid-column: 1/-1; }
 .adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .65rem; display: block; }
 .adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
 
-/* Pagination container */
+/* Pagination */
 .adm-pagination-wrap {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
     padding: .75rem 1.25rem; margin-top: 1.25rem;
@@ -160,7 +153,6 @@
     box-shadow: 0 1px 3px rgba(0,0,0,.05); flex-wrap: wrap; gap: .5rem;
 }
 .adm-pages { font-size: .78rem; color: #94a3b8; }
-
 .pagination { margin: 0; gap: 3px; display: flex; }
 .pagination .page-link {
     border-radius: 7px; padding: .3rem .65rem;
@@ -182,6 +174,13 @@
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show mb-4" style="border-radius:10px;border:none;background:#ecfdf5;color:#059669;font-size:.85rem;">
         <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show mb-4" style="border-radius:10px;border-left:4px solid #ef4444;font-size:.85rem;">
+        <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
@@ -245,7 +244,7 @@
             <label>Mostrar:</label>
             <select onchange="changePerPage(this.value)">
                 @foreach([10,15,20,30,50] as $op)
-                    <option value="{{ $op }}" {{ request('per_page',$op==15?15:null)==$op?'selected':'' }}>{{ $op }}</option>
+                    <option value="{{ $op }}" {{ request('per_page', 15) == $op ? 'selected' : '' }}>{{ $op }}</option>
                 @endforeach
             </select>
         </div>
@@ -267,8 +266,9 @@
     {{-- Grid --}}
     <div class="grados-grid" id="gradosContainer">
         @forelse($grados as $grado)
-        <div class="grado-card" data-nivel="{{ $grado->nivel }}"
-             data-text="{{ strtolower($grado->numero.' '.$grado->seccion.' '.$grado->nivel.' '.$grado->anio_lectivo) }}">
+        <div class="grado-card"
+             data-nivel="{{ $grado->nivel }}"
+             data-text="{{ strtolower($grado->numero.' '.($grado->seccion ?? '').' '.$grado->nivel.' '.$grado->anio_lectivo) }}">
 
             <div class="grado-card-head">
                 <div class="grado-numero-badge">{{ $grado->numero }}</div>
@@ -278,7 +278,7 @@
                         @if($grado->seccion) — Sección {{ $grado->seccion }} @endif
                     </p>
                     <p class="grado-subtitle">
-                        <span class="grado-meta {{ $grado->nivel==='primaria'?'nivel-primaria':'nivel-secundaria' }}"
+                        <span class="grado-meta {{ $grado->nivel === 'primaria' ? 'nivel-primaria' : 'nivel-secundaria' }}"
                               style="padding:.15rem .55rem;">
                             {{ ucfirst($grado->nivel) }}
                         </span>
@@ -293,6 +293,13 @@
                 <span class="grado-meta">
                     <i class="fas fa-book"></i> {{ $grado->materias->count() }} materias
                 </span>
+                {{-- Estado activo/inactivo (nuevo del main) --}}
+                @if(isset($grado->activo))
+                    <span class="{{ $grado->activo ? 'badge-activo' : 'badge-inactivo' }}">
+                        <i class="fas fa-circle" style="font-size:.5rem;"></i>
+                        {{ $grado->activo ? 'Activo' : 'Inactivo' }}
+                    </span>
+                @endif
             </div>
 
             <div class="grado-card-actions">
@@ -308,6 +315,15 @@
                    class="act-btn act-edit" title="Editar">
                     <i class="fas fa-edit"></i>
                 </a>
+                {{-- Eliminar (nuevo del main) --}}
+                <button type="button" class="act-btn act-delete" title="Eliminar"
+                    onclick="mostrarModalDelete(
+                        '{{ route('superadmin.grados.destroy', $grado) }}',
+                        '¿Estás seguro de que deseas eliminar este grado? Esta acción no se puede deshacer.',
+                        '{{ $grado->numero }}° Grado{{ $grado->seccion ? " — Sección " . $grado->seccion : "" }}'
+                    )">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
 
         </div>
@@ -353,9 +369,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     searchInput.addEventListener('keyup', filterCards);
+
     filterNivel.addEventListener('change', function () {
         currentNivel = this.value;
-        // sync tabs
         document.querySelectorAll('.adm-tab').forEach(t => {
             t.classList.toggle('active', t.dataset.nivel === currentNivel);
         });

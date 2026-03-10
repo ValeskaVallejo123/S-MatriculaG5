@@ -53,13 +53,18 @@
         .user-details p  { margin: 0; font-size: .75rem; color: rgba(255,255,255,.6); font-weight: 500; }
 
         .sidebar-menu { list-style: none; padding: 1rem 0; }
+
         .menu-section-title {
-            padding: 1rem 1.2rem .5rem;
-            color: rgba(78,199,210,.8);
-            font-size: .65rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 1.2px;
+            padding: 1rem 1.2rem 0.5rem;
+            color: rgba(78, 199, 210, 0.8);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
         }
+
         .menu-item { margin: 0; }
+
         .menu-link {
             display: flex; align-items: center; gap: 12px;
             padding: .75rem 1.2rem;
@@ -117,11 +122,11 @@
         /* ── RESPONSIVE ── */
         .mobile-menu-btn {
             display: none;
-            background: linear-gradient(135deg, #4ec7d2, #00508f);
+            background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
             color: white; border: none;
-            padding: .5rem .75rem; border-radius: 7px;
-            font-size: 1rem; cursor: pointer;
+            padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 1.1rem;
         }
+
         .sidebar-overlay {
             display: none; position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -264,7 +269,6 @@
         </div>
     </div>
 
-    {{-- Menú --}}
     <ul class="sidebar-menu">
 
         {{-- ── PRINCIPAL ── --}}
@@ -367,6 +371,27 @@
             </a>
         </li>
 
+        {{-- ── CALIFICACIONES (NUEVO) ── --}}
+        <li class="menu-section-title">CALIFICACIONES</li>
+        <li class="menu-item">
+            <a href="{{ route('registrarcalificaciones.index') }}"
+               class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
+                <i class="fas fa-clipboard-check"></i><span>Registrar Calificaciones</span>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{{ route('consultaestudiantesxcurso.index') }}"
+               class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
+                <i class="fas fa-users"></i><span>Estudiantes por Curso</span>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{{ route('h20cursos.index') }}"
+               class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
+                <i class="fas fa-graduation-cap"></i><span>Cursos Secundaria</span>
+            </a>
+        </li>
+
         {{-- ── CALENDARIO ── --}}
         <li class="menu-section-title">CALENDARIO</li>
         <li class="menu-item">
@@ -411,6 +436,12 @@
             <a href="{{ route('estado-solicitud') }}"
                class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
                 <i class="fas fa-question-circle"></i><span>Estado de Solicitud</span>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{{ route('acciones_importantes.index') }}"
+               class="menu-link {{ request()->routeIs('acciones_importantes.*') ? 'active' : '' }}">
+                <i class="fas fa-bell"></i><span>Acciones Recientes</span>
             </a>
         </li>
 
@@ -494,7 +525,7 @@
             </p>
             <div class="modal-delete-item" id="deleteItemInfo" style="display:none;">
                 <div class="delete-item-icon"><i class="fas fa-file-alt"></i></div>
-                <div class="delete-item-details">
+                <div>
                     <span class="delete-item-label">Elemento a eliminar:</span>
                     <strong class="delete-item-name" id="deleteItemName"></strong>
                 </div>
@@ -537,79 +568,6 @@
             link.addEventListener('click', () => {
                 sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
             });
-
-            // Scroll automático al elemento activo si está fuera de vista
-            const activeLink = sidebar.querySelector('.menu-link.active');
-            if (activeLink && savedScrollPosition === null) {
-                const sidebarRect = sidebar.getBoundingClientRect();
-                const activeLinkRect = activeLink.getBoundingClientRect();
-
-                if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
-                    const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
-                    sidebar.scrollTo({
-                        top: scrollPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            }
-        }
-
-        // ========== MODAL DE ELIMINACIÓN ==========
-        //let deleteFormAction = null;
-
-        function mostrarModalDelete(url, mensaje = null, itemName = null) {
-            deleteFormAction = url;
-
-            if (mensaje) {
-                document.getElementById('deleteMessage').textContent = mensaje;
-            } else {
-                document.getElementById('deleteMessage').textContent = 'Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?';
-            }
-
-            const itemInfo = document.getElementById('deleteItemInfo');
-            if (itemName) {
-                document.getElementById('deleteItemName').textContent = itemName;
-                itemInfo.style.display = 'flex';
-            } else {
-                itemInfo.style.display = 'none';
-            }
-
-            document.getElementById('formDelete').action = url;
-
-            const modal = document.getElementById('modalDelete');
-            modal.classList.add('show');
-
-            document.body.style.overflow = 'hidden';
-        }
-
-        function cerrarModalDelete() {
-            const modal = document.getElementById('modalDelete');
-            modal.classList.remove('show');
-
-            document.body.style.overflow = '';
-
-            deleteFormAction = null;
-        }
-
-        function confirmarEliminacion() {
-            document.getElementById('formDelete').submit();
-        }
-
-        // Función para mostrar modal de eliminación usando data attributes
-        function mostrarModalDeleteData(button) {
-            const route = button.dataset.route;
-            const message = button.dataset.message;
-            const name = button.dataset.name;
-
-            mostrarModalDelete(route, message, name);
-        }
-
-        // Cerrar modal al hacer clic fuera de él
-        document.addEventListener('click', function(e) {
-            const modal = document.getElementById('modalDelete');
-            if (e.target === modal) {
-                cerrarModalDelete();
-            }
         });
 
         sidebar.addEventListener('scroll', () => {

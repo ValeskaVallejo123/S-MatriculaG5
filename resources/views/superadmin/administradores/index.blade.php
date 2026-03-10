@@ -4,11 +4,29 @@
 @section('page-title', 'Gestión de Administradores')
 
 @section('topbar-actions')
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/main
     <a href="{{ route('superadmin.administradores.permisos') }}" class="adm-btn-outline">
         <i class="fas fa-shield-alt"></i> Permisos y Roles
     </a>
     <a href="{{ route('superadmin.administradores.create') }}" class="adm-btn-solid">
         <i class="fas fa-plus"></i> Nuevo Administrador
+<<<<<<< HEAD
+=======
+=======
+    <a href="{{ route('superadmin.administradores.permisos') }}"
+       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem; margin-right: 0.5rem;">
+        <i class="fas fa-shield-alt"></i>
+        Permisos y Roles
+    </a>
+    <a href="{{ route('superadmin.administradores.create') }}"
+       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; font-size: 0.9rem;">
+        <i class="fas fa-plus"></i>
+        Nuevo Administrador
+>>>>>>> cesia-dev
+>>>>>>> origin/main
     </a>
 @endsection
 
@@ -166,7 +184,30 @@
             </div>
             <div>
                 <div class="adm-stat-lbl">Total</div>
+<<<<<<< HEAD
                 <div class="adm-stat-num">{{ $administradores->total() }}</div>
+=======
+                <div class="adm-stat-num">{{ $administradores->count() }}</div>
+=======
+<div class="container-fluid">
+    <!-- Estadísticas en Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Total -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);">
+                            <i class="fas fa-users" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-1" style="color: #64748b; font-size: 0.875rem; font-weight: 600;">Total Administradores</p>
+                            <h3 class="mb-0" style="color: #003b73; font-weight: 700; font-size: 1.875rem;">{{ $administradores->count() }}</h3>
+                        </div>
+                    </div>
+                </div>
+>>>>>>> cesia-dev
+>>>>>>> origin/main
             </div>
         </div>
         <div class="adm-stat">
@@ -314,6 +355,7 @@
 </div>
 @endsection
 
+<<<<<<< HEAD
 @push('scripts')
 <script>
 function cambiarPerPage(valor) {
@@ -324,3 +366,29 @@ function cambiarPerPage(valor) {
 }
 </script>
 @endpush
+=======
+@push('styles')
+<style>
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+        transform: scale(1.001);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    @media (max-width: 768px) {
+        .table {
+            font-size: 0.875rem;
+        }
+        .card-body {
+            padding: 1rem !important;
+        }
+    }
+</style>
+@endpush
+@endsection
+>>>>>>> cesia-dev
+>>>>>>> origin/main

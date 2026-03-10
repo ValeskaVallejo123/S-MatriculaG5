@@ -10,33 +10,86 @@ class Seccion extends Model
 {
     use HasFactory;
 
-    /**
-     * Nombre de la tabla
-     */
     protected $table = 'seccion';
 
-    /**
-     * Campos asignables en masa
-     */
-    protected $fillable = ['nombre', 'capacidad'];
+    protected $fillable = ['nombre', 'grado', 'letra', 'capacidad'];
+
+    // ─── Relaciones ───────────────────────────────────────────────
 
     /**
-     * Relación: una sección tiene muchas inscripciones
+     * Matrículas / inscripciones asignadas a esta sección
      */
-    public function inscripciones(): HasMany
+    public function matriculas(): HasMany
     {
-        // Opción 1: Sin argumentos nombrados (recomendado)
         return $this->hasMany(Matricula::class, 'seccion_id');
-        
-        // Opción 2: Todos los argumentos nombrados
-        // return $this->hasMany(related: Matricula::class, foreignKey: 'seccion_id');
     }
 
     /**
-     * Cupos disponibles en la sección
+     * Alias de matriculas() para compatibilidad con código existente
+     */
+    public function inscripciones(): HasMany
+    {
+        return $this->matriculas();
+    }
+
+    /**
+     * Estudiantes matriculados en esta sección (a través de matriculas)
+     */
+    public function estudiantes()
+    {
+        return $this->hasManyThrough(
+            Estudiante::class,
+            Matricula::class,
+            'seccion_id',   // FK en matriculas
+            'id',           // PK en estudiantes
+            'id',           // PK en secciones
+            'estudiante_id' // FK en matriculas → estudiantes
+        );
+    }
+
+    // ─── Accessors / Helpers ──────────────────────────────────────
+
+    /**
+     * Cuántos alumnos tiene actualmente la sección
+     */
+    public function totalAlumnos(): int
+    {
+        return $this->matriculas()->count();
+    }
+
+    /**
+     * Cupos disponibles
      */
     public function capacidadRestante(): int
     {
-        return $this->capacidad - $this->inscripciones()->count();
+        return max(0, $this->capacidad - $this->totalAlumnos());
+    }
+
+    /**
+     * ¿Tiene espacio disponible?
+     */
+    public function tieneEspacio(): bool
+    {
+        return $this->capacidadRestante() > 0;
+    }
+
+    // ─── Scopes ───────────────────────────────────────────────────
+
+    /**
+     * Filtrar por grado: Seccion::grado('1°')->get()
+     */
+    public function scopeGrado($query, string $grado)
+    {
+        return $query->where('grado', $grado);
+    }
+
+    /**
+     * Solo secciones con espacio disponible
+     */
+    public function scopeConEspacio($query)
+    {
+        return $query->whereRaw(
+            'capacidad > (SELECT COUNT(*) FROM matriculas WHERE matriculas.seccion_id = secciones.id)'
+        );
     }
 }

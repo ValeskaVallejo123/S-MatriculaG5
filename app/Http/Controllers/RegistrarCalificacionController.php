@@ -7,21 +7,12 @@ use App\Models\Profesor;
 use App\Models\Materia;
 use App\Models\Estudiante;
 use App\Models\PeriodoAcademico;
-use App\Models\ProfesorMateriaGrado;
 use App\Models\Grado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RegistrarCalificacionController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'rol:profesor']);
-    }
-
-    /**
-     * Mostrar formulario y listado
-     */
     public function index(Request $request)
     {
         $profesor = auth()->user()->docente;
@@ -42,7 +33,6 @@ class RegistrarCalificacionController extends Controller
         $estudiantes = collect();
 
         if ($request->filled('grado_id')) {
-
             $grado = Grado::find($request->grado_id);
 
             if ($grado) {
@@ -62,18 +52,20 @@ class RegistrarCalificacionController extends Controller
         ));
     }
 
-    /**
-     * Guardar calificaciones
-     */
+    public function create(Request $request)
+    {
+        return $this->index($request);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
-            'grado_id' => 'required|exists:grados,id',
-            'materia_id' => 'required|exists:materias,id',
+            'grado_id'             => 'required|exists:grados,id',
+            'materia_id'           => 'required|exists:materias,id',
             'periodo_academico_id' => 'required|exists:periodos_academicos,id',
-            'notas' => 'required|array',
-            'notas.*' => 'nullable|numeric|min:0|max:100',
-            'observacion' => 'nullable|array',
+            'notas'                => 'required|array|min:1',
+            'notas.*'              => 'nullable|numeric|min:0|max:100',
+            'observacion'          => 'nullable|array',
         ]);
 
         $profesor = auth()->user()->docente;
@@ -84,31 +76,18 @@ class RegistrarCalificacionController extends Controller
 
         $grado = Grado::findOrFail($request->grado_id);
 
-        // Validar asignación profesor-materia-grado
-        $valido = ProfesorMateriaGrado::where('profesor_id', $profesor->id)
-            ->where('materia_id', $request->materia_id)
-            ->where('grado_id', $grado->id)
-            ->where('seccion', $grado->seccion)
-            ->exists();
-
-        if (!$valido) {
-            return back()->with('error', 'No estás autorizado para esta asignación.');
-        }
-
         DB::transaction(function () use ($request, $profesor, $grado) {
-
             foreach ($request->notas as $estudianteId => $nota) {
-
                 RegistrarCalificacion::updateOrCreate(
                     [
-                        'profesor_id' => $profesor->id,
-                        'grado_id' => $grado->id,
-                        'materia_id' => $request->materia_id,
-                        'estudiante_id' => $estudianteId,
+                        'profesor_id'          => $profesor->id,
+                        'grado_id'             => $grado->id,
+                        'materia_id'           => $request->materia_id,
+                        'estudiante_id'        => $estudianteId,
                         'periodo_academico_id' => $request->periodo_academico_id,
                     ],
                     [
-                        'nota' => $nota,
+                        'nota'        => $nota,
                         'observacion' => $request->observacion[$estudianteId] ?? null,
                     ]
                 );
@@ -120,9 +99,6 @@ class RegistrarCalificacionController extends Controller
             ->with('success', 'Calificaciones guardadas correctamente.');
     }
 
-    /**
-     * Ver calificaciones registradas
-     */
     public function ver()
     {
         $calificaciones = RegistrarCalificacion::with([
@@ -137,9 +113,22 @@ class RegistrarCalificacionController extends Controller
         return view('registrarcalificaciones.ver', compact('calificaciones'));
     }
 
-    /**
-     * Eliminar calificación
-     */
+    public function obtenerEstudiantes($cursoId)
+    {
+        $grado = Grado::find($cursoId);
+
+        if (!$grado) {
+            return response()->json([]);
+        }
+
+        $estudiantes = Estudiante::where('grado', $grado->numero)
+            ->where('seccion', $grado->seccion)
+            ->orderBy('apellido1')
+            ->get(['id', 'nombre1', 'apellido1', 'apellido2']);
+
+        return response()->json($estudiantes);
+    }
+
     public function destroy($id)
     {
         RegistrarCalificacion::findOrFail($id)->delete();
