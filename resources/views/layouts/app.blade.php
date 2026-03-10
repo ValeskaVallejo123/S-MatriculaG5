@@ -102,15 +102,6 @@
         .menu-link.active i { color: #4ec7d2; }
         .menu-link.disabled-link { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
-        /* Badge rojo para notificaciones en items del menú */
-        .menu-badge {
-            margin-left: auto;
-            background: #ef4444; color: white;
-            font-size: .7rem; font-weight: 700;
-            padding: .15rem .5rem; border-radius: 12px;
-            min-width: 24px; text-align: center;
-        }
-
         /* ══════════════════════════════════════════════
            MAIN CONTENT
            — Con sidebar (admin/superadmin): margin-left 280px
@@ -120,10 +111,9 @@
             margin-left: 280px;
             min-height: 100vh;
             background: #f5f7fa;
-            transition: all .3s ease;
         }
 
-        /* Roles sin sidebar ocupan todo el ancho */
+        /* ← CLAVE: roles sin sidebar ocupan todo el ancho */
         .main-content.no-sidebar {
             margin-left: 0;
         }
@@ -144,15 +134,6 @@
         .topbar-right { display: flex; align-items: center; gap: .6rem; flex-wrap: nowrap; }
         .topbar-divider { width: 1px; height: 24px; background: #e2e8f0; flex-shrink: 0; }
 
-        /* Fecha/hora en topbar */
-        .topbar-date {
-            display: flex; align-items: center; gap: .5rem;
-            color: #6b7280; font-size: .85rem;
-            padding: .5rem 1rem;
-            background: #f9fafb; border-radius: 8px;
-        }
-        .topbar-date i { color: #00508f; }
-
         .btn-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white; border: none;
@@ -161,13 +142,8 @@
             display: flex; align-items: center; gap: .4rem;
             cursor: pointer; transition: all .2s ease;
             white-space: nowrap;
-            box-shadow: 0 2px 6px rgba(239,68,68,.3);
         }
-        .btn-logout:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            opacity: .9; transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(239,68,68,.4);
-        }
+        .btn-logout:hover { opacity: .9; transform: translateY(-1px); }
 
         /* ══════════════════════════════════════════════
            CONTENT WRAPPER
@@ -279,7 +255,6 @@
             display: flex; align-items: center; justify-content: center;
             color: #ef4444; font-size: 1.125rem; flex-shrink: 0;
         }
-        .delete-item-details { flex: 1; }
         .delete-item-label {
             display: block; color: #64748b; font-size: .75rem;
             font-weight: 600; text-transform: uppercase;
@@ -319,26 +294,11 @@
 <body>
 
 @php
-    $user = auth()->user();
-    {{-- Lógica dual: detecta rol por id_rol Y por nombre del rol --}}
-    $isSuperAdmin = $user && (
-        $user->is_super_admin == 1 ||
-        $user->id_rol == 1 ||
-        ($user->rol && strtolower($user->rol->nombre) === 'super administrador')
-    );
-    $isAdmin = $user && (
-        in_array($user->id_rol, [1, 2]) ||
-        ($user->rol && in_array(strtolower($user->rol->nombre), ['admin', 'administrador']))
-    );
-    $showSidebar = $isAdmin; {{-- Solo admins tienen sidebar --}}
-
-    if ($isSuperAdmin) {
-        $roleName = 'Super Administrador';
-    } elseif ($isAdmin) {
-        $roleName = 'Administrador';
-    } else {
-        $roleName = $user ? ucfirst($user->rol->nombre ?? 'Usuario') : 'Invitado';
-    }
+    $user         = auth()->user();
+    $isSuperAdmin = $user && ($user->is_super_admin == 1 || $user->id_rol == 1);
+    $isAdmin      = $user && in_array($user->id_rol, [1, 2]);
+    $showSidebar  = $isAdmin;
+    $roleName     = $isSuperAdmin ? 'Super Administrador' : ($isAdmin ? 'Administrador' : 'Usuario');
 @endphp
 
 @if($showSidebar)
@@ -369,27 +329,14 @@
     {{-- Menú --}}
     <ul class="sidebar-menu">
 
-        {{-- ── PRINCIPAL ── --}}
         <li class="menu-section-title">PRINCIPAL</li>
-
-        {{-- Dashboard separado por rol --}}
-        @if($isSuperAdmin)
         <li class="menu-item">
-            <a href="{{ route('superadmin.dashboard') }}"
-               class="menu-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
+            <a href="{{ $isSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}"
+               class="menu-link {{ request()->routeIs('superadmin.dashboard', 'admin.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-chart-line"></i><span>Dashboard</span>
             </a>
         </li>
-        @elseif($isAdmin)
-        <li class="menu-item">
-            <a href="{{ route('admin.dashboard') }}"
-               class="menu-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <i class="fas fa-chart-line"></i><span>Dashboard</span>
-            </a>
-        </li>
-        @endif
 
-        {{-- ── USUARIOS ── --}}
         <li class="menu-section-title">USUARIOS</li>
 
         @if($isSuperAdmin)
@@ -420,35 +367,17 @@
             </a>
         </li>
 
-        {{-- ── BÚSQUEDA ── --}}
-        <li class="menu-section-title">BÚSQUEDA</li>
-
+        <li class="menu-section-title">MATRÍCULAS</li>
         <li class="menu-item">
-            <a href="{{ route('buscarregistro') }}"
-               class="menu-link {{ request()->routeIs('buscarregistro') ? 'active' : '' }}">
-                <i class="fas fa-search"></i><span>Registro de Estudiante</span>
+            <a href="{{ route('matriculas.index') }}"
+               class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
+                <i class="fas fa-clipboard-list"></i><span>Matrículas</span>
             </a>
         </li>
         <li class="menu-item">
             <a href="{{ route('padres.buscar') }}"
                class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
-                <i class="fas fa-search"></i><span>Buscar Padre / Tutor</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('consultaestudiantesxcurso.index') }}"
-               class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
-                <i class="fas fa-search"></i><span>Consulta Estudiantes por Curso</span>
-            </a>
-        </li>
-
-        {{-- ── MATRÍCULAS ── --}}
-        <li class="menu-section-title">MATRÍCULAS</li>
-
-        <li class="menu-item">
-            <a href="{{ route('matriculas.index') }}"
-               class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
-                <i class="fas fa-clipboard-list"></i><span>Matrículas</span>
+               <i class="fas fa-search"></i><span>Buscar Padre / Tutor</span>
             </a>
         </li>
         <li class="menu-item">
@@ -458,25 +387,11 @@
             </a>
         </li>
 
-        {{-- ── ACADÉMICO ── --}}
         <li class="menu-section-title">ACADÉMICO</li>
-
-        <li class="menu-item">
-            <a href="{{ route('registrarcalificaciones.index') }}"
-               class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
-                <i class="fas fa-clipboard-list"></i><span>Registrar Calificaciones</span>
-            </a>
-        </li>
         <li class="menu-item">
             <a href="{{ $isSuperAdmin ? route('superadmin.grados.index') : route('grados.index') }}"
                class="menu-link {{ request()->routeIs('grados.*', 'superadmin.grados.*') ? 'active' : '' }}">
                 <i class="fas fa-layer-group"></i><span>Grados</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('h20cursos.index') }}"
-               class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
-                <i class="fas fa-layer-group"></i><span>Cursos</span>
             </a>
         </li>
         <li class="menu-item">
@@ -509,9 +424,7 @@
             </a>
         </li>
 
-        {{-- ── CALENDARIO ── --}}
         <li class="menu-section-title">CALENDARIO</li>
-
         <li class="menu-item">
             <a href="{{ route('periodos-academicos.index') }}"
                class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
@@ -525,9 +438,7 @@
             </a>
         </li>
 
-        {{-- ── DOCUMENTACIÓN ── --}}
         <li class="menu-section-title">DOCUMENTACIÓN</li>
-
         <li class="menu-item">
             <a href="{{ route('observaciones.index') }}"
                class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
@@ -541,9 +452,7 @@
             </a>
         </li>
 
-        {{-- ── CONFIGURACIÓN ── --}}
         <li class="menu-section-title">CONFIGURACIÓN</li>
-
         @if($isSuperAdmin)
         <li class="menu-item">
             <a href="{{ route('superadmin.perfil') }}"
@@ -553,25 +462,9 @@
         </li>
         @endif
         <li class="menu-item">
-            <a href="{{ route('cambiarcontrasenia.edit') }}"
-               class="menu-link {{ request()->routeIs('cambiarcontrasenia.*') ? 'active' : '' }}">
-                <i class="fas fa-key"></i><span>Cambiar Contraseña</span>
-            </a>
-        </li>
-
-        {{-- ── AYUDA ── --}}
-        <li class="menu-section-title">AYUDA</li>
-
-        <li class="menu-item">
             <a href="{{ route('estado-solicitud') }}"
                class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
                 <i class="fas fa-question-circle"></i><span>Estado de Solicitud</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('acciones_importantes.index') }}"
-               class="menu-link {{ request()->routeIs('acciones_importantes.*') ? 'active' : '' }}">
-                <i class="fas fa-history"></i><span>Ver Acciones Recientes</span>
             </a>
         </li>
 
@@ -579,7 +472,7 @@
 </aside>
 @endif
 
-{{-- Main content: sin sidebar para roles no-admin --}}
+{{-- ← CLAVE: clase no-sidebar para roles sin menú lateral --}}
 <div class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
 
     <div class="topbar">
@@ -599,15 +492,6 @@
                 </div>
                 <div class="topbar-divider"></div>
             @endif
-
-            {{-- Fecha/hora --}}
-            <div class="topbar-date">
-                <i class="far fa-clock"></i>
-                <span>{{ now()->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</span>
-            </div>
-
-            <div class="topbar-divider"></div>
-
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn-logout">
@@ -680,14 +564,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Con null-check para seguridad
     function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        if (sidebar && overlay) {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
     }
 
     setTimeout(() => {
@@ -713,13 +592,8 @@
 
         const activeLink = sidebar.querySelector('.menu-link.active');
         if (activeLink && saved === null) {
-            // Verifica visibilidad antes de hacer scroll
-            const sidebarRect    = sidebar.getBoundingClientRect();
-            const activeLinkRect = activeLink.getBoundingClientRect();
-            if (activeLinkRect.top < sidebarRect.top || activeLinkRect.bottom > sidebarRect.bottom) {
-                const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
-                sidebar.scrollTo({ top: scrollPosition, behavior: 'smooth' });
-            }
+            const scrollPosition = activeLink.offsetTop - (sidebar.clientHeight / 2) + (activeLink.clientHeight / 2);
+            sidebar.scrollTo({ top: scrollPosition, behavior: 'smooth' });
         }
     }
 
