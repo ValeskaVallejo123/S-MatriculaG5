@@ -1,257 +1,338 @@
 @extends('layouts.app')
 
 @section('title', 'Buscar Padre/Tutor')
-
 @section('page-title', 'Vincular Padre con Estudiante')
 
-@section('content')
-<div class="container-fluid px-4">
+@push('styles')
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    <!-- Información del Estudiante -->
+.adm-wrap { font-family: 'Inter', sans-serif; }
+
+.adm-btn-outline {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    background: #fff; color: #00508f; border: 1.5px solid #4ec7d2;
+    text-decoration: none; transition: background .15s;
+}
+.adm-btn-outline:hover { background: #e8f8f9; }
+.adm-btn-solid {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: #fff; border: none; text-decoration: none; transition: opacity .15s; cursor: pointer;
+}
+.adm-btn-solid:hover { opacity: .88; color: #fff; }
+
+/* Estudiante banner */
+.student-banner {
+    background: linear-gradient(135deg, #003b73, #00508f 60%, #4ec7d2);
+    border-radius: 12px; padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+    box-shadow: 0 4px 14px rgba(0,59,115,.18); position: relative; overflow: hidden;
+}
+.student-banner::before {
+    content:''; position: absolute; top: -40%; right: -5%;
+    width: 200px; height: 200px; background: rgba(255,255,255,.07); border-radius: 50%;
+}
+.student-banner-av {
+    width: 52px; height: 52px; background: rgba(255,255,255,.18);
+    border: 2.5px solid rgba(255,255,255,.3); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.4rem; flex-shrink: 0; position: relative; z-index: 1;
+}
+.student-banner-info { position: relative; z-index: 1; }
+.student-banner-label { color: rgba(255,255,255,.75); font-size: .73rem; font-weight: 500; margin-bottom: .2rem; }
+.student-banner-name  { color: #fff; font-size: 1.2rem; font-weight: 700; margin-bottom: .25rem; }
+.student-banner-meta  { display: flex; gap: .75rem; flex-wrap: wrap; }
+.student-banner-meta span {
+    color: rgba(255,255,255,.9); font-size: .78rem;
+    display: inline-flex; align-items: center; gap: .35rem;
+}
+
+/* Search card */
+.adm-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 1.25rem;
+}
+.adm-card-head {
+    background: #003b73; padding: .85rem 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+}
+.adm-card-head i { color: #4ec7d2; font-size: 1rem; }
+.adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+.adm-card-subhead { color: rgba(255,255,255,.6); font-size: .78rem; }
+
+.adm-card-body { padding: 1.5rem; }
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.25rem; }
+@media(max-width:768px){ .form-grid { grid-template-columns: 1fr; } }
+@media(max-width:992px) and (min-width:769px){ .form-grid { grid-template-columns: repeat(2,1fr); } }
+
+.form-group label {
+    display: flex; align-items: center; gap: .35rem;
+    font-size: .78rem; font-weight: 600; color: #334155; margin-bottom: .4rem;
+}
+.form-group label i { color: #00508f; }
+.form-group input {
+    width: 100%; padding: .5rem .85rem;
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: .85rem; color: #0f172a; background: #f8fafc; outline: none; transition: border .15s;
+}
+.form-group input:focus { border-color: #4ec7d2; background: #fff; box-shadow: 0 0 0 3px rgba(78,199,210,.1); }
+.form-group input::placeholder { color: #94a3b8; }
+
+.form-actions { display: flex; gap: .65rem; flex-wrap: wrap; }
+
+/* Results */
+.results-badge {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: #fff; padding: .25rem .85rem; border-radius: 999px; font-size: .75rem; font-weight: 600;
+}
+
+.adm-tbl { width: 100%; border-collapse: collapse; }
+.adm-tbl thead th {
+    background: #f8fafc; padding: .6rem 1rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+}
+.adm-tbl thead th.tc { text-align: center; }
+.adm-tbl tbody td {
+    padding: .75rem 1rem; border-bottom: 1px solid #f1f5f9;
+    font-size: .82rem; color: #334155; vertical-align: middle;
+}
+.adm-tbl tbody td.tc { text-align: center; }
+.adm-tbl tbody tr:last-child td { border-bottom: none; }
+.adm-tbl tbody tr:hover { background: #fafbfc; }
+
+.adm-av {
+    width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #fff; font-size: .9rem;
+}
+.adm-name  { font-weight: 600; color: #0f172a; font-size: .82rem; }
+.adm-email { font-size: .75rem; color: #64748b; }
+
+.bpill {
+    display: inline-flex; align-items: center; gap: .25rem;
+    padding: .22rem .65rem; border-radius: 999px;
+    font-size: .7rem; font-weight: 600; white-space: nowrap;
+}
+.b-blue   { background: #e8f8f9; color: #00508f; }
+.b-indigo { background: #eef2ff; color: #4f46e5; }
+.b-green  { background: #ecfdf5; color: #059669; }
+
+.act-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: .38rem .85rem; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .78rem; font-weight: 600; text-decoration: none;
+    gap: .35rem; transition: all .15s; white-space: nowrap;
+}
+.act-btn:hover { transform: translateY(-1px); }
+.act-link   { background: #ecfdf5; color: #059669; }
+.act-link:hover   { background: #059669; color: #fff; }
+.act-view   { background: #e8f8f9; color: #00508f; }
+.act-view:hover   { background: #00508f; color: #fff; }
+
+/* Empty/initial */
+.adm-empty { padding: 3.5rem 1rem; text-align: center; }
+.adm-empty .empty-ico {
+    width: 72px; height: 72px; border-radius: 50%; margin: 0 auto .85rem;
+    display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+}
+.adm-empty h5 { color: #0f172a; font-weight: 700; margin-bottom: .4rem; font-size: 1rem; }
+.adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0 0 1rem; }
+
+.tips-list { display: flex; flex-direction: column; gap: .6rem; max-width: 360px; margin: 0 auto; }
+.tip-item {
+    display: flex; align-items: center; gap: .65rem;
+    padding: .6rem .9rem; background: #f8fafc; border-radius: 9px;
+    color: #64748b; font-size: .8rem;
+}
+.tip-item i { color: #4ec7d2; font-size: 1rem; }
+</style>
+@endpush
+
+@section('content')
+<div class="adm-wrap">
+
+    {{-- Estudiante Banner --}}
     @if(isset($estudiante) && $estudiante)
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="student-info-card">
-                <div class="student-info-content">
-                    <div class="student-avatar">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <div class="student-details">
-                        <span class="student-label">Vincular padre/tutor para:</span>
-                        <h3 class="student-name">{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}</h3>
-                        <div class="student-meta">
-                            <span class="meta-item">
-                                <i class="fas fa-graduation-cap"></i>
-                                Grado: {{ $estudiante->grado }}
-                            </span>
-                            <span class="meta-separator">•</span>
-                            <span class="meta-item">
-                                <i class="fas fa-id-badge"></i>
-                                ID: {{ $estudiante->id }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+    <div class="student-banner">
+        <div class="student-banner-av"><i class="fas fa-user-graduate"></i></div>
+        <div class="student-banner-info">
+            <div class="student-banner-label">Vincular padre/tutor para:</div>
+            <div class="student-banner-name">{{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}</div>
+            <div class="student-banner-meta">
+                <span><i class="fas fa-graduation-cap"></i>Grado: {{ $estudiante->grado }}</span>
+                <span><i class="fas fa-id-badge"></i>ID: {{ $estudiante->id }}</span>
             </div>
         </div>
     </div>
     @endif
 
-    <!-- Formulario de Búsqueda -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="search-card">
-                <div class="search-card-header">
-                    <div class="d-flex align-items-center">
-                        <div class="header-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div>
-                            <h5 class="header-title">Buscar Padre/Tutor</h5>
-                            <p class="header-subtitle">Ingresa al menos un criterio de búsqueda</p>
-                        </div>
+    {{-- Formulario de búsqueda --}}
+    <div class="adm-card">
+        <div class="adm-card-head">
+            <i class="fas fa-search"></i>
+            <span>Buscar Padre/Tutor</span>
+            <span class="adm-card-subhead ms-auto">Ingresa al menos un criterio</span>
+        </div>
+        <div class="adm-card-body">
+            <form action="{{ route('padres.buscar') }}" method="GET">
+                @if(isset($estudiante) && $estudiante)
+                    <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
+                @endif
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Nombre o Apellido</label>
+                        <input type="text" name="nombre" value="{{ request('nombre') }}"
+                               placeholder="Ej: Juan Pérez">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-id-card"></i> DNI / Identidad</label>
+                        <input type="text" name="identidad" value="{{ request('identidad') }}"
+                               placeholder="Ej: 0801-1990-12345">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Teléfono</label>
+                        <input type="text" name="telefono" value="{{ request('telefono') }}"
+                               placeholder="Ej: 9999-9999">
                     </div>
                 </div>
-                <div class="search-card-body">
-                    <form action="{{ route('padres.buscar') }}" method="GET">
-                        @if(isset($estudiante) && $estudiante)
-                            <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
-                        @endif
-
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <div class="form-group-modern">
-                                    <label class="form-label-modern">
-                                        <i class="fas fa-user"></i>
-                                        Nombre o Apellido
-                                    </label>
-                                    <input type="text"
-                                           name="nombre"
-                                           class="form-control-modern"
-                                           placeholder="Ej: Juan Pérez"
-                                           value="{{ request('nombre') }}">
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group-modern">
-                                    <label class="form-label-modern">
-                                        <i class="fas fa-id-card"></i>
-                                        DNI/Identidad
-                                    </label>
-                                    <input type="text"
-                                           name="identidad"
-                                           class="form-control-modern"
-                                           placeholder="Ej: 0801-1990-12345"
-                                           value="{{ request('identidad') }}">
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group-modern">
-                                    <label class="form-label-modern">
-                                        <i class="fas fa-phone"></i>
-                                        Teléfono
-                                    </label>
-                                    <input type="text"
-                                           name="telefono"
-                                           class="form-control-modern"
-                                           placeholder="Ej: 9999-9999"
-                                           value="{{ request('telefono') }}">
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="action-buttons">
-                                    <button type="submit" class="btn-search">
-                                        <i class="fas fa-search"></i>
-                                        Buscar Padres
-                                    </button>
-                                    <a href="{{ isset($estudiante) ? route('estudiantes.show', $estudiante->id) : route('padres.index') }}"
-                                       class="btn-cancel">
-                                        <i class="fas fa-times"></i>
-                                        Cancelar
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                <div class="form-actions">
+                    <button type="submit" class="adm-btn-solid">
+                        <i class="fas fa-search"></i> Buscar Padres
+                    </button>
+                    <a href="{{ isset($estudiante) ? route('estudiantes.show', $estudiante->id) : route('padres.index') }}"
+                       class="adm-btn-outline">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                    <a href="{{ route('padres.create') }}" class="adm-btn-outline">
+                        <i class="fas fa-plus"></i> Registrar Nuevo
+                    </a>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
-    <!-- Resultados de Búsqueda -->
+    {{-- Resultados --}}
     @if(request()->anyFilled(['nombre', 'identidad', 'telefono']))
-    <div class="row">
-        <div class="col-12">
-            <div class="results-card">
-                <div class="results-header">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <div class="results-icon">
-                                <i class="fas fa-list"></i>
-                            </div>
-                            <h6 class="results-title">Resultados de Búsqueda</h6>
-                        </div>
-                        <span class="results-badge">
-                            {{ $padres->count() }} {{ $padres->count() == 1 ? 'encontrado' : 'encontrados' }}
-                        </span>
-                    </div>
-                </div>
-                <div class="results-body">
-                    @if($padres->count() > 0)
-                        @foreach($padres as $padre)
-                        <div class="parent-card">
-                            <div class="row align-items-center g-3">
-                                <!-- Información del Padre -->
-                                <div class="col-lg-5">
-                                    <div class="parent-info">
-                                        <div class="parent-avatar">
-                                            {{ substr($padre->nombre, 0, 1) }}{{ substr($padre->apellido, 0, 1) }}
-                                        </div>
-                                        <div class="parent-details">
-                                            <h6 class="parent-name">{{ $padre->nombre }} {{ $padre->apellido }}</h6>
-                                            <div class="parent-meta">
-                                                @if($padre->dni)
-                                                <span class="meta-badge">
-                                                    <i class="fas fa-id-card"></i>
-                                                    {{ $padre->dni }}
-                                                </span>
-                                                @endif
-                                                <span class="meta-badge meta-badge-primary">
-                                                    <i class="fas fa-user-tag"></i>
-                                                    {{ ucfirst($padre->parentesco) }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Contacto -->
-                                <div class="col-lg-4">
-                                    <div class="contact-info">
-                                        @if($padre->telefono)
-                                        <div class="contact-item">
-                                            <i class="fas fa-phone"></i>
-                                            <span>{{ $padre->telefono }}</span>
-                                        </div>
-                                        @endif
-                                        @if($padre->correo)
-                                        <div class="contact-item">
-                                            <i class="fas fa-envelope"></i>
-                                            <span>{{ $padre->correo }}</span>
-                                        </div>
-                                        @endif
-                                        @if(!$padre->telefono && !$padre->correo)
-                                        <div class="contact-item text-muted">
-                                            <i class="fas fa-info-circle"></i>
-                                            <span>Sin contacto registrado</span>
-                                        </div>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <!-- Acción -->
-                                <div class="col-lg-3">
-                                    <div class="parent-actions">
-                                        @if(isset($estudiante) && $estudiante)
-                                            <button type="button"
-                                                    class="btn-link-parent"
-                                                    onclick="mostrarModalVincular({{ $padre->id }}, '{{ addslashes($padre->nombre . ' ' . $padre->apellido) }}', {{ $estudiante->id }}, '{{ addslashes($estudiante->nombre1 . ' ' . $estudiante->apellido1) }}')">
-                                                <i class="fas fa-link"></i>
-                                                Vincular Padre
-                                            </button>
-                                        @else
-                                            <a href="{{ route('padres.show', $padre->id) }}" class="btn-view-details">
-                                                <i class="fas fa-eye"></i>
-                                                Ver Detalles
-                                            </a>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    @else
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <h5 class="empty-title">No se encontraron resultados</h5>
-                        <p class="empty-text">No hay padres/tutores que coincidan con tu búsqueda. Intenta con otros criterios.</p>
-                        <a href="{{ route('padres.create') }}" class="btn-create-new">
-                            <i class="fas fa-plus-circle"></i>
-                            Registrar Nuevo Padre/Tutor
-                        </a>
-                    </div>
-                    @endif
-                </div>
+    <div class="adm-card">
+        <div class="adm-card-head" style="justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <i class="fas fa-list"></i>
+                <span>Resultados de Búsqueda</span>
             </div>
+            <span class="results-badge">
+                {{ $padres->count() }} {{ $padres->count() == 1 ? 'encontrado' : 'encontrados' }}
+            </span>
+        </div>
+        <div style="overflow-x:auto;">
+            @if($padres->count() > 0)
+            <table class="adm-tbl">
+                <thead>
+                    <tr>
+                        <th>Padre / Tutor</th>
+                        <th class="tc">DNI</th>
+                        <th class="tc">Parentesco</th>
+                        <th>Contacto</th>
+                        <th class="tc">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($padres as $padre)
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:.65rem;">
+                                <div class="adm-av">
+                                    {{ strtoupper(substr($padre->nombre,0,1).substr($padre->apellido,0,1)) }}
+                                </div>
+                                <div>
+                                    <div class="adm-name">{{ $padre->nombre }} {{ $padre->apellido }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="tc">
+                            @if($padre->dni)
+                                <span class="bpill b-blue">
+                                    <i class="fas fa-id-card"></i> {{ $padre->dni }}
+                                </span>
+                            @else
+                                <span style="color:#cbd5e1;">—</span>
+                            @endif
+                        </td>
+                        <td class="tc">
+                            <span class="bpill b-indigo">
+                                <i class="fas fa-user-tag"></i> {{ ucfirst($padre->parentesco) }}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex;flex-direction:column;gap:.2rem;">
+                                @if($padre->telefono)
+                                <div class="adm-email"><i class="fas fa-phone" style="width:14px;color:#94a3b8;"></i> {{ $padre->telefono }}</div>
+                                @endif
+                                @if($padre->correo)
+                                <div class="adm-email"><i class="fas fa-envelope" style="width:14px;color:#94a3b8;"></i> {{ $padre->correo }}</div>
+                                @endif
+                                @if(!$padre->telefono && !$padre->correo)
+                                <span style="color:#cbd5e1;font-size:.75rem;">Sin contacto</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="tc">
+                            @if(isset($estudiante) && $estudiante)
+                                <button type="button"
+                                        class="act-btn act-link"
+                                        onclick="mostrarModalVincular({{ $padre->id }}, '{{ addslashes($padre->nombre . ' ' . $padre->apellido) }}', {{ $estudiante->id }}, '{{ addslashes($estudiante->nombre1 . ' ' . $estudiante->apellido1) }}')">
+                                    <i class="fas fa-link"></i> Vincular
+                                </button>
+                            @else
+                                <a href="{{ route('padres.show', $padre->id) }}" class="act-btn act-view">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            @else
+            <div class="adm-empty">
+                <div class="empty-ico" style="background:#fef2f2;">
+                    <i class="fas fa-search" style="color:#ef4444;"></i>
+                </div>
+                <h5>No se encontraron resultados</h5>
+                <p>Intenta con otros criterios de búsqueda.</p>
+                <a href="{{ route('padres.create') }}" class="adm-btn-solid">
+                    <i class="fas fa-plus-circle"></i> Registrar Nuevo Padre/Tutor
+                </a>
+            </div>
+            @endif
         </div>
     </div>
+
+    {{-- Estado inicial --}}
     @else
-    <!-- Estado inicial -->
-    <div class="row">
-        <div class="col-12">
-            <div class="initial-state-card">
-                <div class="initial-state-content">
-                    <div class="initial-state-icon">
-                        <i class="fas fa-search"></i>
+    <div class="adm-card">
+        <div class="adm-card-body">
+            <div class="adm-empty">
+                <div class="empty-ico" style="background:linear-gradient(135deg,rgba(0,80,143,.1),rgba(78,199,210,.1));">
+                    <i class="fas fa-search" style="color:#00508f;"></i>
+                </div>
+                <h5>Busca un padre o tutor</h5>
+                <p>Completa el formulario con al menos un criterio para encontrar padres/tutores registrados.</p>
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Puedes buscar por nombre, DNI o teléfono</span>
                     </div>
-                    <h4 class="initial-state-title">Busca un padre o tutor</h4>
-                    <p class="initial-state-text">
-                        Completa el formulario superior con al menos un criterio de búsqueda para encontrar padres/tutores registrados en el sistema.
-                    </p>
-                    <div class="initial-state-tips">
-                        <div class="tip-item">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>Puedes buscar por nombre, DNI o teléfono</span>
-                        </div>
-                        <div class="tip-item">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Los resultados se mostrarán automáticamente</span>
-                        </div>
+                    <div class="tip-item">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Los resultados se mostrarán automáticamente</span>
                     </div>
                 </div>
             </div>
@@ -261,587 +342,88 @@
 
 </div>
 
-<!-- Modal de Confirmación de Vinculación -->
-<div class="modal-vincular-overlay" id="modalVincular">
-    <div class="modal-vincular">
-        <button type="button" class="modal-close-btn" onclick="cerrarModalVincular()">
-            <i class="fas fa-times"></i>
-        </button>
+{{-- Modal Vinculación --}}
+<div id="modalVincularOverlay" style="
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;z-index:10000;">
+    <div style="background:#fff;border-radius:14px;max-width:400px;width:90%;overflow:hidden;box-shadow:0 12px 40px rgba(0,80,143,.2);animation:scaleUp .25s ease;">
+        <style>@keyframes scaleUp{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}</style>
+        <button onclick="cerrarModalVincular()" style="position:absolute;top:.85rem;right:.85rem;background:rgba(255,255,255,.18);border:none;border-radius:7px;width:28px;height:28px;color:#fff;cursor:pointer;z-index:1;font-size:.8rem;">✕</button>
 
-        <div class="modal-header-custom">
-            <div class="modal-icon-custom">
+        {{-- Header --}}
+        <div style="background:linear-gradient(135deg,#003b73,#4ec7d2);padding:1.4rem;text-align:center;position:relative;">
+            <div style="width:52px;height:52px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .65rem;color:#fff;font-size:1.3rem;">
                 <i class="fas fa-link"></i>
             </div>
-            <h5 class="modal-title-custom">Confirmar Vinculación</h5>
+            <h6 style="color:#fff;font-weight:700;margin:0;font-size:1rem;">Confirmar Vinculación</h6>
         </div>
 
-        <div class="modal-body-custom">
-            <div class="vinculacion-preview">
-                <div class="preview-item">
-                    <i class="fas fa-user-tie"></i>
+        {{-- Body --}}
+        <div style="padding:1.5rem;">
+            <div style="background:#f8fafc;border-radius:10px;padding:1rem;margin-bottom:1rem;">
+                <div style="background:#fff;border-radius:8px;padding:.65rem .85rem;display:flex;align-items:center;gap:.65rem;margin-bottom:.4rem;font-weight:600;color:#0f172a;font-size:.85rem;">
+                    <div style="width:32px;height:32px;background:linear-gradient(135deg,#4ec7d2,#00508f);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;flex-shrink:0;">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
                     <span id="modalPadreNombre"></span>
                 </div>
-                <div class="preview-separator">
-                    <i class="fas fa-link"></i>
-                </div>
-                <div class="preview-item">
-                    <i class="fas fa-user-graduate"></i>
+                <div style="text-align:center;color:#4ec7d2;font-size:.75rem;padding:.1rem 0;"><i class="fas fa-link"></i></div>
+                <div style="background:#fff;border-radius:8px;padding:.65rem .85rem;display:flex;align-items:center;gap:.65rem;margin-top:.4rem;font-weight:600;color:#0f172a;font-size:.85rem;">
+                    <div style="width:32px;height:32px;background:linear-gradient(135deg,#4ec7d2,#00508f);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;flex-shrink:0;">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
                     <span id="modalEstudianteNombre"></span>
                 </div>
             </div>
-
-            <p class="modal-message-custom">
+            <p style="text-align:center;color:#64748b;font-size:.85rem;margin:0;">
                 ¿Deseas vincular este padre/tutor con el estudiante?
             </p>
         </div>
 
-        {{-- ✅ Formulario con action dinámico vía JS --}}
-        <form id="formVincular" method="POST" style="display: none;">
+        <form id="formVincular" method="POST" style="display:none;">
             @csrf
             <input type="hidden" name="estudiante_id" id="formEstudianteId">
         </form>
 
-        <div class="modal-footer-custom">
-            <button type="button" class="btn-modal-cancel" onclick="cerrarModalVincular()">
-                <i class="fas fa-times"></i>
-                Cancelar
+        {{-- Footer --}}
+        <div style="padding:.85rem 1.5rem 1.25rem;display:flex;gap:.6rem;">
+            <button onclick="cerrarModalVincular()"
+                    style="flex:1;padding:.55rem;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;font-size:.82rem;font-weight:600;cursor:pointer;">
+                <i class="fas fa-times"></i> Cancelar
             </button>
-            <button type="button" class="btn-modal-confirm" onclick="confirmarVinculacion()">
-                <i class="fas fa-check"></i>
-                Confirmar
+            <button onclick="confirmarVinculacion()"
+                    style="flex:1;padding:.55rem;border-radius:8px;border:none;background:linear-gradient(135deg,#4ec7d2,#00508f);color:#fff;font-size:.82rem;font-weight:600;cursor:pointer;box-shadow:0 3px 10px rgba(0,80,143,.25);">
+                <i class="fas fa-check"></i> Confirmar
             </button>
         </div>
     </div>
 </div>
-
 @endsection
-
-@push('styles')
-<style>
-:root {
-    --primary: #00508f;
-    --secondary: #4ec7d2;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #fbbf24;
-    --light: #f8fafc;
-    --dark: #1e293b;
-    --border: #e2e8f0;
-}
-
-.student-info-card {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 80, 143, 0.15);
-    position: relative;
-    overflow: hidden;
-}
-.student-info-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 300px;
-    height: 300px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-}
-.student-info-content {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    position: relative;
-    z-index: 1;
-}
-.student-avatar {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2rem;
-    backdrop-filter: blur(10px);
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    flex-shrink: 0;
-}
-.student-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.875rem;
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-.student-name {
-    color: white;
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem 0;
-}
-.student-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-.meta-item {
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 0.875rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-.meta-separator { color: rgba(255, 255, 255, 0.5); }
-
-.search-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.05);
-    overflow: hidden;
-}
-.search-card-header {
-    background: linear-gradient(135deg, var(--light) 0%, #e2e8f0 100%);
-    padding: 1.5rem 2rem;
-    border-bottom: 2px solid var(--border);
-}
-.header-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.25rem;
-    margin-right: 1rem;
-}
-.header-title { color: var(--primary); font-size: 1.25rem; font-weight: 700; margin: 0; }
-.header-subtitle { color: #64748b; font-size: 0.875rem; margin: 0; }
-.search-card-body { padding: 2rem; }
-
-.form-label-modern {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--dark);
-    font-weight: 600;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-}
-.form-label-modern i { color: var(--primary); }
-.form-control-modern {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    font-size: 0.938rem;
-    transition: all 0.3s ease;
-    background: white;
-}
-.form-control-modern:focus {
-    outline: none;
-    border-color: var(--secondary);
-    box-shadow: 0 0 0 4px rgba(78, 199, 210, 0.1);
-}
-.form-control-modern::placeholder { color: #94a3b8; }
-
-.action-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
-.btn-search {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
-    border: none;
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.938rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 80, 143, 0.2);
-}
-.btn-search:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 80, 143, 0.3); }
-.btn-cancel {
-    background: white;
-    color: #64748b;
-    border: 2px solid var(--border);
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.938rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-.btn-cancel:hover { background: var(--light); }
-
-.results-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.05);
-    overflow: hidden;
-}
-.results-header {
-    background: white;
-    padding: 1.5rem 2rem;
-    border-bottom: 2px solid var(--border);
-}
-.results-icon {
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 80, 143, 0.1);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    margin-right: 1rem;
-}
-.results-title { color: var(--dark); font-weight: 700; margin: 0; }
-.results-badge {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
-    padding: 0.5rem 1.25rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-.results-body { padding: 1.5rem; }
-
-.parent-card {
-    background: white;
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
-.parent-card:last-child { margin-bottom: 0; }
-.parent-card:hover {
-    border-color: var(--secondary);
-    box-shadow: 0 4px 12px rgba(78, 199, 210, 0.15);
-    transform: translateY(-2px);
-}
-.parent-info { display: flex; align-items: center; gap: 1rem; }
-.parent-avatar {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-}
-.parent-name { color: var(--dark); font-weight: 700; font-size: 1.063rem; margin: 0 0 0.5rem 0; }
-.parent-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-.meta-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.25rem 0.75rem;
-    background: #f1f5f9;
-    color: #64748b;
-    border-radius: 6px;
-    font-size: 0.813rem;
-    font-weight: 500;
-}
-.meta-badge-primary { background: rgba(0, 80, 143, 0.1); color: var(--primary); }
-.contact-info { display: flex; flex-direction: column; gap: 0.5rem; }
-.contact-item { display: flex; align-items: center; gap: 0.75rem; color: #64748b; font-size: 0.875rem; }
-.contact-item i { color: var(--primary); width: 20px; }
-.parent-actions { display: flex; justify-content: flex-end; }
-
-.btn-link-parent {
-    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-    width: 100%;
-    justify-content: center;
-}
-.btn-link-parent:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35); }
-
-.btn-view-details {
-    background: white;
-    color: var(--primary);
-    border: 2px solid var(--primary);
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    width: 100%;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-.btn-view-details:hover { background: var(--primary); color: white; }
-
-.empty-state { text-align: center; padding: 4rem 2rem; }
-.empty-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, rgba(0,80,143,.1) 0%, rgba(78,199,210,.1) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    font-size: 2rem;
-    margin: 0 auto 1.5rem;
-}
-.empty-title { color: var(--dark); font-weight: 700; font-size: 1.25rem; margin-bottom: 0.5rem; }
-.empty-text { color: #64748b; margin-bottom: 1.5rem; }
-.btn-create-new {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
-    border: none;
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-.btn-create-new:hover { transform: translateY(-2px); }
-
-.initial-state-card {
-    background: linear-gradient(135deg, var(--light) 0%, white 100%);
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 3rem 2rem;
-}
-.initial-state-content { text-align: center; max-width: 600px; margin: 0 auto; }
-.initial-state-icon {
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(135deg, rgba(0,80,143,.1) 0%, rgba(78,199,210,.1) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    font-size: 2.5rem;
-    margin: 0 auto 1.5rem;
-}
-.initial-state-title { color: var(--dark); font-weight: 700; font-size: 1.5rem; margin-bottom: 0.75rem; }
-.initial-state-text { color: #64748b; font-size: 1rem; line-height: 1.6; margin-bottom: 2rem; }
-.initial-state-tips { display: flex; flex-direction: column; gap: 1rem; max-width: 400px; margin: 0 auto; }
-.tip-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: white;
-    border-radius: 10px;
-    color: #64748b;
-    font-size: 0.875rem;
-}
-.tip-item i { color: var(--secondary); font-size: 1.25rem; }
-
-/* Modal */
-.modal-vincular-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,.6);
-    backdrop-filter: blur(4px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.modal-vincular-overlay.show { display: flex; animation: fadeIn 0.3s ease forwards; }
-@keyframes fadeIn { to { opacity: 1; } }
-
-.modal-vincular {
-    background: white;
-    border-radius: 16px;
-    max-width: 420px;
-    width: 90%;
-    box-shadow: 0 10px 40px rgba(0,80,143,.15);
-    transform: scale(0.95);
-    animation: scaleUp 0.3s cubic-bezier(0.68,-0.55,0.265,1.55) forwards;
-    position: relative;
-    overflow: hidden;
-}
-@keyframes scaleUp { to { transform: scale(1); } }
-
-.modal-close-btn {
-    position: absolute;
-    top: 1rem; right: 1rem;
-    width: 32px; height: 32px;
-    background: rgba(255,255,255,.2);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-}
-.modal-close-btn:hover { background: rgba(255,255,255,.3); }
-
-.modal-header-custom {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    padding: 1.5rem;
-    text-align: center;
-}
-.modal-icon-custom {
-    width: 56px; height: 56px;
-    background: rgba(255,255,255,.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 0.75rem;
-    color: white;
-    font-size: 1.5rem;
-    border: 3px solid rgba(255,255,255,.3);
-}
-.modal-title-custom { color: white; font-size: 1.25rem; font-weight: 700; margin: 0; }
-
-.modal-body-custom { padding: 1.5rem; }
-.vinculacion-preview {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-.preview-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    background: white;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--dark);
-    font-size: 0.938rem;
-}
-.preview-item:last-child { margin-bottom: 0; }
-.preview-item i {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 0.875rem;
-    flex-shrink: 0;
-}
-.preview-separator { display: flex; justify-content: center; padding: 0.25rem 0; color: var(--secondary); }
-.modal-message-custom { text-align: center; color: #64748b; font-size: 0.938rem; margin: 0; line-height: 1.5; }
-
-.modal-footer-custom { padding: 1rem 1.5rem 1.5rem; display: flex; gap: 0.75rem; }
-.btn-modal-cancel, .btn-modal-confirm {
-    flex: 1;
-    padding: 0.75rem 1.25rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-.btn-modal-cancel { background: #f1f5f9; color: #64748b; }
-.btn-modal-cancel:hover { background: #e2e8f0; transform: translateY(-2px); }
-.btn-modal-confirm {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(0,80,143,.2);
-}
-.btn-modal-confirm:hover { transform: translateY(-2px); }
-
-@media (max-width: 991px) {
-    .student-info-content { flex-direction: column; text-align: center; }
-    .parent-actions { justify-content: stretch; }
-    .btn-link-parent, .btn-view-details { width: 100%; }
-}
-@media (max-width: 767px) {
-    .student-info-card { padding: 1.5rem; }
-    .student-avatar { width: 60px; height: 60px; font-size: 1.5rem; }
-    .student-name { font-size: 1.5rem; }
-    .search-card-body { padding: 1.5rem; }
-    .action-buttons { flex-direction: column; }
-    .btn-search, .btn-cancel { width: 100%; justify-content: center; }
-    .parent-card { padding: 1rem; }
-    .modal-vincular { max-width: calc(100% - 2rem); margin: 1rem; }
-    .modal-footer-custom { flex-direction: column; }
-    .btn-modal-cancel, .btn-modal-confirm { width: 100%; }
-}
-</style>
-@endpush
 
 @push('scripts')
 <script>
-let padreIdActual = null;
-
 function mostrarModalVincular(padreId, padreNombre, estudianteId, estudianteNombre) {
-    padreIdActual = padreId;
-
     document.getElementById('modalPadreNombre').textContent = padreNombre;
     document.getElementById('modalEstudianteNombre').textContent = estudianteNombre;
     document.getElementById('formEstudianteId').value = estudianteId;
-
-    // ✅ URL correcta con padre_id en la ruta
     document.getElementById('formVincular').action = `/padres/${padreId}/vincular`;
-
-    const modal = document.getElementById('modalVincular');
-    modal.classList.add('show');
+    const overlay = document.getElementById('modalVincularOverlay');
+    overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 }
-
 function cerrarModalVincular() {
-    const modal = document.getElementById('modalVincular');
-    modal.classList.remove('show');
+    document.getElementById('modalVincularOverlay').style.display = 'none';
     document.body.style.overflow = '';
-    padreIdActual = null;
 }
-
 function confirmarVinculacion() {
     document.getElementById('formVincular').submit();
 }
-
-document.addEventListener('click', function(e) {
-    const modal = document.getElementById('modalVincular');
-    if (e.target === modal) cerrarModalVincular();
+document.getElementById('modalVincularOverlay').addEventListener('click', function(e) {
+    if(e.target === this) cerrarModalVincular();
 });
-
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') cerrarModalVincular();
+    if(e.key === 'Escape') cerrarModalVincular();
 });
 </script>
 @endpush
