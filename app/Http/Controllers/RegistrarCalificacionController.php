@@ -15,12 +15,6 @@ class RegistrarCalificacionController extends Controller
 {
     public function index(Request $request)
     {
-        $profesor = auth()->user()->docente;
-
-        if (!$profesor) {
-            return back()->with('error', 'No tienes perfil de profesor asignado.');
-        }
-
         $grados = Grado::where('activo', true)
             ->orderBy('nivel')
             ->orderBy('numero')
@@ -29,7 +23,7 @@ class RegistrarCalificacionController extends Controller
 
         $materias = Materia::all();
         $periodos = PeriodoAcademico::all();
-
+        $profesores = Profesor::orderBy('apellido')->get();
         $estudiantes = collect();
 
         if ($request->filled('grado_id')) {
@@ -44,22 +38,18 @@ class RegistrarCalificacionController extends Controller
         }
 
         return view('registrarcalificaciones.index', compact(
-            'profesor',
             'grados',
             'materias',
             'periodos',
+            'profesores',
             'estudiantes'
         ));
-    }
-
-    public function create(Request $request)
-    {
-        return $this->index($request);
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'profesor_id'          => 'required|exists:profesores,id',
             'grado_id'             => 'required|exists:grados,id',
             'materia_id'           => 'required|exists:materias,id',
             'periodo_academico_id' => 'required|exists:periodos_academicos,id',
@@ -68,20 +58,14 @@ class RegistrarCalificacionController extends Controller
             'observacion'          => 'nullable|array',
         ]);
 
-        $profesor = auth()->user()->docente;
+        $gradoId = $request->grado_id;
 
-        if (!$profesor) {
-            return back()->with('error', 'No tienes perfil de profesor.');
-        }
-
-        $grado = Grado::findOrFail($request->grado_id);
-
-        DB::transaction(function () use ($request, $profesor, $grado) {
+        DB::transaction(function () use ($request, $gradoId) {
             foreach ($request->notas as $estudianteId => $nota) {
                 RegistrarCalificacion::updateOrCreate(
                     [
-                        'profesor_id'          => $profesor->id,
-                        'grado_id'             => $grado->id,
+                        'profesor_id'          => $request->profesor_id,
+                        'grado_id'             => $gradoId,
                         'materia_id'           => $request->materia_id,
                         'estudiante_id'        => $estudianteId,
                         'periodo_academico_id' => $request->periodo_academico_id,
@@ -96,7 +80,7 @@ class RegistrarCalificacionController extends Controller
 
         return redirect()
             ->route('registrarcalificaciones.index')
-            ->with('success', 'Calificaciones guardadas correctamente.');
+            ->with('success', 'Calificaciones guardadas correctamente');
     }
 
     public function ver()
@@ -111,28 +95,5 @@ class RegistrarCalificacionController extends Controller
             ->paginate(10);
 
         return view('registrarcalificaciones.ver', compact('calificaciones'));
-    }
-
-    public function obtenerEstudiantes($cursoId)
-    {
-        $grado = Grado::find($cursoId);
-
-        if (!$grado) {
-            return response()->json([]);
-        }
-
-        $estudiantes = Estudiante::where('grado', $grado->numero)
-            ->where('seccion', $grado->seccion)
-            ->orderBy('apellido1')
-            ->get(['id', 'nombre1', 'apellido1', 'apellido2']);
-
-        return response()->json($estudiantes);
-    }
-
-    public function destroy($id)
-    {
-        RegistrarCalificacion::findOrFail($id)->delete();
-
-        return back()->with('success', 'Calificación eliminada.');
     }
 }

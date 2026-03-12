@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class PadreDashboardController extends Controller
 {
@@ -59,4 +60,24 @@ class PadreDashboardController extends Controller
 
         return view('padre.hijo', compact('padre', 'estudiante', 'matricula'));
     }
+
+    public function cambiarPassword(Request $request)
+{
+    $request->validate([
+        'password_actual'               => 'required',
+        'password_nuevo'                => 'required|min:8|confirmed',
+    ]);
+
+    $user = auth()->user();
+
+    if (!Hash::check($request->password_actual, $user->password)) {
+        return back()->with('pw_error', 'La contraseña actual es incorrecta.');
+    }
+
+    $user->update([
+        'password' => Hash::make($request->password_nuevo),
+    ]);
+
+    return back()->with('pw_success', 'Contraseña actualizada correctamente.');
+}
 }

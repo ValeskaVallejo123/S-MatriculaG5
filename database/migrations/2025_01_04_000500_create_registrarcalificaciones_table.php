@@ -29,6 +29,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->foreignId('periodo_academico_id')
+                ->nullable()
                 ->constrained('periodos_academicos')
                 ->onDelete('set null');
 
@@ -38,7 +39,6 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Evita duplicar calificaciones
             $table->unique([
                 'profesor_id',
                 'grado_id',

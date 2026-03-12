@@ -90,9 +90,11 @@ class User extends Authenticatable
     // ELIMINADO: estudiante() — la tabla `estudiantes` no tiene columna user_id.
     // Los estudiantes no tienen cuenta propia en users; acceden a través del padre.
 
-    public function docente()
+    // NOTA: La tabla `profesores` NO tiene columna user_id.
+    // Se busca el profesor por email. No es una relación Eloquent tradicional.
+    public function getDocenteAttribute(): ?Profesor
     {
-        return $this->hasOne(Profesor::class, 'user_id');
+        return Profesor::where('email', $this->email)->first();
     }
 
     public function notificaciones()
@@ -176,7 +178,7 @@ class User extends Authenticatable
     public function infoParaObservaciones(): array
     {
         return [
-            'profesor_id'   => $this->docente?->id,
+            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
             'estudiante_id' => null, // estudiantes no tienen cuenta en users
             'padre_id'      => $this->padre?->id,
         ];
@@ -198,7 +200,7 @@ class User extends Authenticatable
             'es_docente'    => $this->isDocente(),
             'es_estudiante' => $this->isEstudiante(),
             'es_padre'      => $this->isPadre(),
-            'profesor_id'   => $this->docente?->id,
+            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
             'estudiante_id' => null, // estudiantes no tienen cuenta en users
             'padre_id'      => $this->padre?->id,
         ];
@@ -282,11 +284,11 @@ class User extends Authenticatable
             return Observacion::query();
         }
 
-        if ($this->isDocente() && $this->docente) {
-            $profesorId = $this->docente->id;
-            return Observacion::where(function ($q) use ($profesorId) {
-                $q->where('profesor_id', $profesorId);
-            });
+        if ($this->isDocente()) {
+            $profesorId = Profesor::where('email', $this->email)->value('id');
+            if ($profesorId) {
+                return Observacion::where('profesor_id', $profesorId);
+            }
         }
 
         // Los estudiantes no tienen cuenta propia — sin acceso directo
@@ -295,7 +297,6 @@ class User extends Authenticatable
         }
 
         if ($this->isPadre() && $this->padre) {
-            // El padre puede ver observaciones de sus hijos matriculados
             $estudianteIds = $this->padre
                 ->estudiantes()
                 ->pluck('estudiantes.id');
