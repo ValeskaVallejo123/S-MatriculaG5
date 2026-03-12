@@ -335,16 +335,31 @@
                         </td>
 
                         <td class="tc">
-                            @if($matricula->estado === 'aprobada')
-                                <span class="bpill b-green"><i class="fas fa-check-circle"></i> Aprobada</span>
-                            @elseif($matricula->estado === 'pendiente')
-                                <span class="bpill b-yellow"><i class="fas fa-clock"></i> Pendiente</span>
-                            @elseif($matricula->estado === 'rechazada')
-                                <span class="bpill b-red"><i class="fas fa-times-circle"></i> Rechazada</span>
-                            @else
-                                <span class="bpill b-gray">{{ ucfirst($matricula->estado) }}</span>
-                            @endif
-                        </td>
+                          @if($matricula->estado === 'aprobada')
+                          <span class="bpill b-green">
+                            <i class="fas fa-check-circle"></i> Aprobada
+                          </span>
+                             @elseif($matricula->estado === 'pendiente')
+                              <form action="{{ route('matriculas.aprobar', $matricula->id) }}" method="POST"
+                               style="display:inline;">
+                               @csrf
+                               @method('PATCH')
+                               <button type="submit" class="bpill b-yellow"
+                                style="border:none;cursor:pointer;font-family:inherit;"
+                                onclick="return confirm('¿Aprobar esta matrícula?')"
+                                title="Clic para aprobar">
+                                 <i class="fas fa-clock"></i> Pendiente
+                                <i class="fas fa-arrow-right" style="font-size:.6rem;margin-left:.2rem;opacity:.6;"></i>
+                               </button>
+                            </form>
+                               @elseif($matricula->estado === 'rechazada')
+                                 <span class="bpill b-red">
+                                  <i class="fas fa-times-circle"></i> Rechazada
+                                 </span>
+                               @else
+                         <span class="bpill b-gray">{{ ucfirst($matricula->estado) }}</span>
+                    @endif
+                </td>
 
                         <td class="tr">
                             <div style="display:inline-flex;gap:.35rem;">

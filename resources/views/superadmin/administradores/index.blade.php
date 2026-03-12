@@ -4,18 +4,13 @@
 @section('page-title', 'Gestión de Administradores')
 
 @section('topbar-actions')
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> origin/main
+
     <a href="{{ route('superadmin.administradores.permisos') }}" class="adm-btn-outline">
         <i class="fas fa-shield-alt"></i> Permisos y Roles
     </a>
     <a href="{{ route('superadmin.administradores.create') }}" class="adm-btn-solid">
         <i class="fas fa-plus"></i> Nuevo Administrador
-<<<<<<< HEAD
-=======
-=======
+
     <a href="{{ route('superadmin.administradores.permisos') }}"
        style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem; margin-right: 0.5rem;">
         <i class="fas fa-shield-alt"></i>
@@ -25,8 +20,7 @@
        style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; font-size: 0.9rem;">
         <i class="fas fa-plus"></i>
         Nuevo Administrador
->>>>>>> cesia-dev
->>>>>>> origin/main
+
     </a>
 @endsection
 
@@ -185,8 +179,11 @@
             <div>
                 <div class="adm-stat-lbl">Total</div>
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <div class="adm-stat-num">{{ $administradores->total() }}</div>
 =======
+=======
+>>>>>>> origin/main
                 <div class="adm-stat-num">{{ $administradores->count() }}</div>
 =======
 <div class="container-fluid">
@@ -206,8 +203,9 @@
                         </div>
                     </div>
                 </div>
->>>>>>> cesia-dev
->>>>>>> origin/main
+
+                <div class="adm-stat-num">{{ $administradores->total() }}</div>
+
             </div>
         </div>
         <div class="adm-stat">
@@ -353,9 +351,8 @@
 
     </div>
 </div>
-@endsection
 
-<<<<<<< HEAD
+
 @push('scripts')
 <script>
 function cambiarPerPage(valor) {
@@ -366,7 +363,7 @@ function cambiarPerPage(valor) {
 }
 </script>
 @endpush
-=======
+
 @push('styles')
 <style>
     .table tbody tr:hover {
@@ -390,5 +387,15 @@ function cambiarPerPage(valor) {
 </style>
 @endpush
 @endsection
->>>>>>> cesia-dev
->>>>>>> origin/main
+
+
+@push('scripts')
+<script>
+function cambiarPerPage(valor) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', valor);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
+</script>
+@endpush

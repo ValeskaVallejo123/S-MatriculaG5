@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Matricula;
 use Illuminate\Http\Request;
+//use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -88,12 +89,13 @@ class SuperAdminController extends Controller
         ]);
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', 'Administrador creado exitosamente');
+            ->with('success', 'Administrador creado exitosamente.');
     }
 
     public function edit(User $administrador)
     {
-        if ($administrador->is_protected) {
+        // No editar SuperAdmin protegido
+        if ($administrador->id_rol == 1 && $administrador->id !== Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
                 ->with('error', 'Este usuario está protegido y no puede ser editado');
         }
@@ -103,7 +105,8 @@ class SuperAdminController extends Controller
 
     public function update(Request $request, User $administrador)
     {
-        if ($administrador->is_protected) {
+        // No modificar otro SuperAdmin
+        if ($administrador->id_rol == 1 && $administrador->id !== Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
                 ->with('error', 'Este usuario está protegido y no puede ser modificado');
         }
@@ -141,7 +144,7 @@ class SuperAdminController extends Controller
         $administrador->save();
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', 'Administrador actualizado exitosamente');
+            ->with('success', 'Administrador actualizado exitosamente.');
     }
 
     public function destroy(User $administrador)
@@ -153,7 +156,7 @@ class SuperAdminController extends Controller
 
         if ($administrador->id === Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
-                ->with('error', 'No puedes eliminarte a ti mismo');
+                ->with('error', 'No puedes eliminarte a ti mismo.');
         }
 
         if ($administrador->is_super_admin) {
@@ -164,12 +167,13 @@ class SuperAdminController extends Controller
         $administrador->delete();
 
         return redirect()->route('superadmin.administradores.index')
-            ->with('success', 'Administrador eliminado exitosamente');
+            ->with('success', 'Administrador eliminado exitosamente.');
     }
 
     public function perfil()
     {
         $user = User::findOrFail(Auth::id());
+
         return view('superadmin.perfil.index', compact('user'));
     }
 
@@ -190,7 +194,7 @@ class SuperAdminController extends Controller
         $user->email = $request->email;
         $user->save();
 
-        return back()->with('success', 'Perfil actualizado correctamente');
+        return back()->with('success', 'Perfil actualizado correctamente.');
     }
 
     public function cambiarPassword(Request $request)
@@ -208,13 +212,13 @@ class SuperAdminController extends Controller
         $user = User::findOrFail(Auth::id());
 
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'La contraseña actual es incorrecta']);
+            return back()->withErrors(['current_password' => 'La contraseña actual es incorrecta.']);
         }
 
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return back()->with('success', 'Contraseña actualizada correctamente');
+        return back()->with('success', 'Contraseña actualizada correctamente.');
     }
 
     public function permisosRoles()
@@ -254,7 +258,7 @@ class SuperAdminController extends Controller
         $usuario->save();
 
         return redirect()->route('superadmin.administradores.permisos')
-            ->with('success', "Permisos actualizados para {$usuario->name}");
+            ->with('success', "Permisos actualizados para {$usuario->name}.");
     }
 
     private function getAvailablePermissions()

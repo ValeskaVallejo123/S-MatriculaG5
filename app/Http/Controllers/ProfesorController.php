@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Profesor;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class ProfesorController extends Controller
 {
@@ -12,13 +13,16 @@ class ProfesorController extends Controller
         $this->middleware(['auth', 'role:admin,super_admin']);
     }
 
+    /**
+     * Listar profesores con búsqueda
+     */
     public function index(Request $request)
     {
         $busqueda = $request->input('busqueda');
 
         $profesores = Profesor::query()
             ->when($busqueda, function ($query, $busqueda) {
-                return $query->where(function ($q) use ($busqueda) {
+                $query->where(function ($q) use ($busqueda) {
                     $q->where('nombre', 'like', "%{$busqueda}%")
                       ->orWhere('apellido', 'like', "%{$busqueda}%")
                       ->orWhere('dni', 'like', "%{$busqueda}%")
@@ -33,16 +37,17 @@ class ProfesorController extends Controller
         return view('profesores.index', compact('profesores'));
     }
 
-    public function dashboard()
-    {
-        return view('profesor.dashboard');
-    }
-
+    /**
+     * Mostrar formulario de creación
+     */
     public function create()
     {
         return view('profesores.create');
     }
 
+    /**
+     * Guardar nuevo profesor
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -79,17 +84,26 @@ class ProfesorController extends Controller
             ->with('success', 'Profesor creado exitosamente.');
     }
 
+    /**
+     * Mostrar detalle de un profesor
+     */
     public function show(Profesor $profesor)
     {
         return view('profesores.show', compact('profesor'));
     }
 
+    /**
+     * Mostrar formulario de edición
+     */
     public function edit(Profesor $profesor)
     {
         return view('profesores.edit', compact('profesor'));
     }
 
-    public function update(Request $request, Profesor $profesor)
+    /**
+     * Actualizar profesor existente
+     */
+    public function update(Request $request, Profesor $profesor): RedirectResponse
     {
         $validated = $request->validate([
             'nombre'             => 'required|string|max:255',
@@ -125,7 +139,10 @@ class ProfesorController extends Controller
             ->with('success', 'Profesor actualizado exitosamente.');
     }
 
-    public function destroy(Profesor $profesor)
+    /**
+     * Eliminar profesor
+     */
+    public function destroy(Profesor $profesor): RedirectResponse
     {
         $profesor->delete();
 

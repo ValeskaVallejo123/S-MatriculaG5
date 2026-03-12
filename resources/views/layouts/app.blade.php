@@ -12,9 +12,29 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #f5f7fa; overflow-x: hidden; }
 
-        /* ── SIDEBAR ── */
+        /*
+        ╔══════════════════════════════════════════════════════════════╗
+        ║   TAMAÑO DE LETRA GLOBAL — afecta TODO el sitio            ║
+        ║  Cambia el número para hacer todo más grande o pequeño.      ║
+        ║  • 14px → más compacto                                       ║
+        ║  • 16px → estándar                                           ║
+        ║  • 17px → valor actual                                       ║
+        ║  • 18px → más grande                                         ║
+        ╚══════════════════════════════════════════════════════════════╝
+        */
+        html { font-size: 17px; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            overflow-x: hidden;
+            font-size: 1rem;
+        }
+
+        /* ══════════════════════════════════════════════
+           SIDEBAR
+        ══════════════════════════════════════════════ */
         .sidebar {
             position: fixed; top: 0; left: 0;
             height: 100vh; width: 280px;
@@ -40,7 +60,11 @@
         .logo-text h4 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #f59e0b; line-height: 1.2; }
         .logo-text p  { margin: 0; font-size: .75rem; color: rgba(245,158,11,.8); letter-spacing: .5px; font-weight: 500; }
 
-        .user-info { padding: 1.5rem 1.2rem; border-bottom: 1px solid rgba(78,199,210,.2); text-align: center; }
+        .user-info {
+            padding: 1.5rem 1.2rem;
+            border-bottom: 1px solid rgba(78,199,210,.2);
+            text-align: center;
+        }
         .user-avatar {
             width: 60px; height: 60px; border-radius: 50%;
             background: linear-gradient(135deg, #4ec7d2, #00508f);
@@ -53,14 +77,11 @@
         .user-details p  { margin: 0; font-size: .75rem; color: rgba(255,255,255,.6); font-weight: 500; }
 
         .sidebar-menu { list-style: none; padding: 1rem 0; }
-
         .menu-section-title {
-            padding: 1rem 1.2rem 0.5rem;
-            color: rgba(78, 199, 210, 0.8);
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
+            padding: 1rem 1.2rem .5rem;
+            color: rgba(78,199,210,.8);
+            font-size: .80rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.2px;
         }
 
         .menu-item { margin: 0; }
@@ -81,11 +102,14 @@
             padding-left: calc(1.2rem - 3px);
         }
         .menu-link.active i { color: #4ec7d2; }
+        .menu-link.disabled-link { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
         /* ── MAIN ── */
         .main-content { margin-left: 280px; min-height: 100vh; background: #f5f7fa; }
 
-        /* ── TOPBAR ── */
+        /* ══════════════════════════════════════════════
+           TOPBAR
+        ══════════════════════════════════════════════ */
         .topbar {
             background: white; padding: 0 1.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,.06);
@@ -98,25 +122,23 @@
         .topbar-left h5 { margin: 0; color: #003b73; font-weight: 700; font-size: 1.15rem; }
         .topbar-right { display: flex; align-items: center; gap: .6rem; flex-wrap: nowrap; }
         .topbar-divider { width: 1px; height: 24px; background: #e2e8f0; flex-shrink: 0; }
-        .topbar-date {
-            display: flex; align-items: center; gap: .4rem;
-            color: #6b7280; font-size: .8rem;
-            padding: .38rem .75rem;
-            background: #f9fafb; border-radius: 7px; border: 1px solid #e5e7eb;
-            white-space: nowrap; flex-shrink: 0;
-        }
-        .topbar-date i { color: #00508f; }
-        .topbar-actions-group { display: flex; align-items: center; gap: .5rem; flex-wrap: nowrap; }
+
         .btn-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white; border: none;
-            padding: .38rem .9rem; border-radius: 7px;
-            font-size: .82rem; font-weight: 600;
+            padding: .6rem .75rem; border-radius: 7px;
+            font-size: .83rem; font-weight: 600;
             display: flex; align-items: center; gap: .4rem;
-            cursor: pointer; transition: all .2s ease; white-space: nowrap;
+            cursor: pointer; transition: all .2s ease;
+            white-space: nowrap;
         }
         .btn-logout:hover { opacity: .9; transform: translateY(-1px); }
 
+        /* ══════════════════════════════════════════════
+           CONTENT WRAPPER
+           — Con sidebar: padding normal
+           — Sin sidebar: padding lateral más generoso
+        ══════════════════════════════════════════════ */
         .content-wrapper { padding: 2rem; }
 
         /* ── RESPONSIVE ── */
@@ -126,7 +148,6 @@
             color: white; border: none;
             padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 1.1rem;
         }
-
         .sidebar-overlay {
             display: none; position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -137,15 +158,18 @@
         @media (max-width: 768px) {
             .sidebar { left: -280px; }
             .sidebar.active { left: 0; }
-            .main-content { margin-left: 0; }
+            .main-content { margin-left: 0 !important; }
             .mobile-menu-btn { display: block !important; }
             .content-wrapper { padding: 1rem; }
+            .no-sidebar .content-wrapper { padding: 1rem; }
             .topbar { padding: .75rem 1rem; }
             .topbar-date { display: none; }
             .topbar-divider { display: none; }
         }
 
-        /* ── MODAL ELIMINACIÓN ── */
+        /* ══════════════════════════════════════════════
+           MODAL ELIMINACIÓN
+        ══════════════════════════════════════════════ */
         .modal-delete-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
@@ -280,7 +304,6 @@
             </a>
         </li>
 
-        {{-- ── USUARIOS ── --}}
         <li class="menu-section-title">USUARIOS</li>
 
         @if($isSuperAdmin)
@@ -311,7 +334,6 @@
             </a>
         </li>
 
-        {{-- ── MATRÍCULAS ── --}}
         <li class="menu-section-title">MATRÍCULAS</li>
         <li class="menu-item">
             <a href="{{ route('matriculas.index') }}"
@@ -332,7 +354,6 @@
             </a>
         </li>
 
-        {{-- ── ACADÉMICO ── --}}
         <li class="menu-section-title">ACADÉMICO</li>
         <li class="menu-item">
             <a href="{{ $isSuperAdmin ? route('superadmin.grados.index') : route('grados.index') }}"
@@ -353,8 +374,7 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('carga-docente.index') }}"
-               class="menu-link {{ request()->routeIs('carga-docente.*') ? 'active' : '' }}">
+            <a href="#" class="menu-link disabled-link" title="Próximamente disponible">
                 <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
             </a>
         </li>
@@ -407,7 +427,6 @@
             </a>
         </li>
 
-        {{-- ── DOCUMENTACIÓN ── --}}
         <li class="menu-section-title">DOCUMENTACIÓN</li>
         <li class="menu-item">
             <a href="{{ route('observaciones.index') }}"
@@ -422,7 +441,6 @@
             </a>
         </li>
 
-        {{-- ── CONFIGURACIÓN ── --}}
         <li class="menu-section-title">CONFIGURACIÓN</li>
         @if($isSuperAdmin)
         <li class="menu-item">
@@ -449,9 +467,9 @@
 </aside>
 @endif
 
-<div class="main-content">
+{{-- ← CLAVE: clase no-sidebar para roles sin menú lateral --}}
+<div class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
 
-    {{-- TOPBAR --}}
     <div class="topbar">
         <div class="topbar-left">
             @if($showSidebar)
@@ -464,17 +482,11 @@
 
         <div class="topbar-right">
             @hasSection('topbar-actions')
-            <div class="topbar-actions-group">
-                @yield('topbar-actions')
-            </div>
-            <div class="topbar-divider"></div>
+                <div class="topbar-actions-group">
+                    @yield('topbar-actions')
+                </div>
+                <div class="topbar-divider"></div>
             @endif
-
-            <div class="topbar-date">
-                <i class="far fa-clock"></i>
-                <span>{{ now()->locale('es')->isoFormat('ddd, D [de] MMM [de] YYYY') }}</span>
-            </div>
-
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn-logout">
@@ -484,7 +496,6 @@
         </div>
     </div>
 
-    {{-- CONTENT --}}
     <div class="content-wrapper">
 
         @if(session('success'))

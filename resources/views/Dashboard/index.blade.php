@@ -224,7 +224,7 @@
             <h1 style="font-size:1.2rem;font-weight:700;color:#111827;margin:0">Permisos y Roles</h1>
             <p style="font-size:.82rem;color:#6b7280;margin:.25rem 0 0">Gestiona el nivel de acceso de cada administrador</p>
         </div>
-        <a href="{{ route('admins.index') }}" class="btn btn-ghost" style="font-size:.82rem;">
+        <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-ghost" style="font-size:.82rem;">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
@@ -439,7 +439,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="alert alert-danger border-0 mb-0" style="background:rgba(239,68,68,.08);border-left:4px solid #ef4444 !important;border-radius:8px;">
+                        <div class="alert border-0 mb-0" style="background:rgba(239,68,68,.08);border-left:4px solid #ef4444 !important;border-radius:8px;">
                             <div class="d-flex align-items-start gap-2">
                                 <i class="fas fa-exclamation-triangle text-danger mt-1 flex-shrink-0"></i>
                                 <div>
@@ -484,7 +484,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="alert alert-warning border-0 mb-0" style="background:rgba(245,158,11,.08);border-left:4px solid #f59e0b !important;border-radius:8px;">
+                        <div class="alert border-0 mb-0" style="background:rgba(245,158,11,.08);border-left:4px solid #f59e0b !important;border-radius:8px;">
                             <div class="d-flex align-items-start gap-2">
                                 <i class="fas fa-info-circle text-warning mt-1 flex-shrink-0"></i>
                                 <div>
@@ -548,7 +548,7 @@
         </div>
 
         <div class="d-flex justify-content-end">
-            <a href="{{ route('admins.index') }}" class="btn btn-primary px-4 py-2" style="border-radius:8px;">
+            <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-primary px-4 py-2" style="border-radius:8px;">
                 <i class="fas fa-users me-2"></i>Gestionar Administradores
             </a>
         </div>

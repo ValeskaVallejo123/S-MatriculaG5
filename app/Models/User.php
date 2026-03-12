@@ -6,7 +6,38 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Rol;
+use App\Models\Notificacion;
+use App\Models\NotificacionPreferencia;
+use App\Models\Padre;
+use App\Models\Estudiante;
+use App\Models\Profesor;
 
+
+/**
+ * @method static \App\Models\User|null find($id)
+ * @method static \Illuminate\Database\Eloquent\Builder with($relations)
+ *
+ * Estas anotaciones le indican al IDE que auth()->user() retorna este modelo.
+ * Sin esto, el IDE marca "Undefined method 'user'" aunque el código funcione.
+ *
+ * @property int         $id
+ * @property string      $name
+ * @property string      $email
+ * @property int|null    $id_rol
+ * @property bool        $activo
+ * @property string|null $user_type
+ * @property bool        $is_super_admin
+ * @property bool        $is_protected
+ * @property array|null  $permissions
+ * @property string|null $email_verified_at
+ *
+ * @property-read \App\Models\Rol|null                     $rol
+ * @property-read \App\Models\Padre|null                   $padre
+ * @property-read \App\Models\Estudiante|null              $estudiante
+ * @property-read \App\Models\Profesor|null                $docente
+ * @property-read \Illuminate\Support\Collection           $notificaciones
+ * @property-read \App\Models\NotificacionPreferencia|null $notificacionPreferencias
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -139,7 +170,7 @@ class User extends Authenticatable
     }
 
     // =========================================================================
-    // infoParaObservaciones — usado en ObservacionController
+    // INFO PARA OBSERVACIONES
     // =========================================================================
 
     public function infoParaObservaciones(): array
@@ -174,7 +205,7 @@ class User extends Authenticatable
     }
 
     // =========================================================================
-    // PERMISOS (JSON + por Rol)
+    // PERMISOS
     // =========================================================================
 
     public function tienePermiso(string $permiso): bool
@@ -182,9 +213,11 @@ class User extends Authenticatable
         $permiso = strtolower(trim($permiso));
 
         $jsonPerms = $this->permissions ?? [];
+
         if (is_array($jsonPerms)) {
             $keys = array_map('strtolower', array_keys($jsonPerms));
-            if (in_array($permiso, $keys) && $jsonPerms[array_search($permiso, $keys)] === true) {
+            $idx  = array_search($permiso, $keys);
+            if ($idx !== false && $jsonPerms[array_keys($jsonPerms)[$idx]] === true) {
                 return true;
             }
         }
@@ -199,9 +232,7 @@ class User extends Authenticatable
     public function tieneAlgunPermiso(array $permisos): bool
     {
         foreach ($permisos as $permiso) {
-            if ($this->tienePermiso($permiso)) {
-                return true;
-            }
+            if ($this->tienePermiso($permiso)) return true;
         }
         return false;
     }
@@ -209,9 +240,7 @@ class User extends Authenticatable
     public function tieneTodosLosPermisos(array $permisos): bool
     {
         foreach ($permisos as $permiso) {
-            if (!$this->tienePermiso($permiso)) {
-                return false;
-            }
+            if (!$this->tienePermiso($permiso)) return false;
         }
         return true;
     }
@@ -244,7 +273,7 @@ class User extends Authenticatable
     }
 
     // =========================================================================
-    // QUERIES PERMITIDAS por rol
+    // QUERIES POR ROL
     // =========================================================================
 
     public function observacionesPermitidas()

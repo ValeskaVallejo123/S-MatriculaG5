@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EventoAcademico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\EventoAcademico;
+use Illuminate\Contracts\View\View;
 
 class CalendarioController extends Controller
 {
     /**
-     * Muestra la vista del calendario
+     * Muestra todos los eventos en formato JSON simple (index básico).
      */
     public function index()
     {
@@ -39,16 +40,17 @@ class CalendarioController extends Controller
     }
 
     /**
-     * Obtiene todos los eventos en formato JSON para FullCalendar
+     * Obtiene todos los eventos en formato JSON para FullCalendar.
+     * CORRECCIÓN: usar ->copy()->addDay() para no mutar el objeto original.
+     * CORRECCIÓN: manejo de fecha_fin nula usando fecha_inicio como fallback.
      */
     public function obtenerEventos()
     {
         try {
-            $eventos = EventoAcademico::all()->map(function ($evento) {
-                // Usar copy() para no mutar el objeto original
-                $fechaFin = $evento->fecha_fin
-                    ? $evento->fecha_fin->copy()->addDay()
-                    : $evento->fecha_inicio->copy()->addDay();
+            $eventos = EventoAcademico::all()->map(function($evento) {
+                // CORRECCIÓN: No usar addDay() directamente sobre el objeto
+                // Crear una copia para no modificar el original
+                $fechaFin = $evento->fecha_fin ? $evento->fecha_fin->copy()->addDay() : $evento->fecha_inicio->copy()->addDay();
 
                 return [
                     'id'              => $evento->id,
@@ -64,6 +66,21 @@ class CalendarioController extends Controller
                     ],
                 ];
             });
+        $eventos = EventoAcademico::all()->map(function($evento) {
+            return [
+                'id' => $evento->id,
+                'title' => $evento->titulo,
+                'start' => $evento->fecha_inicio->format('Y-m-d'),
+                'end' => $evento->fecha_fin->copy()->addDay()->format('Y-m-d'),
+                'backgroundColor' => $evento->color,
+                'borderColor' => $evento->color,
+                'allDay' => (bool) $evento->todo_el_dia,
+                'extendedProps' => [
+                    'description' => $evento->descripcion,
+                    'type' => $evento->tipo
+                ]
+            ];
+        });
 
             return response()->json($eventos);
 
@@ -76,7 +93,7 @@ class CalendarioController extends Controller
     }
 
     /**
-     * Guarda un nuevo evento
+     * Guarda un nuevo evento.
      */
     public function store(Request $request)
     {
@@ -107,7 +124,9 @@ class CalendarioController extends Controller
     }
 
     /**
-     * Actualiza un evento existente
+     * Actualiza un evento existente.
+     * CORRECCIÓN: primero validar permisos, luego buscar el evento,
+     * luego actualizar — en ese orden correcto.
      */
     public function actualizar(Request $request, $id)
     {
@@ -147,6 +166,7 @@ class CalendarioController extends Controller
                 'exito'   => false,
                 'errores' => $e->errors(),
             ], 422);
+
         } catch (\Exception $e) {
             return response()->json([
                 'exito'   => false,
@@ -156,7 +176,7 @@ class CalendarioController extends Controller
     }
 
     /**
-     * Elimina un evento
+     * Elimina un evento.
      */
     public function eliminar(EventoAcademico $evento)
     {
@@ -181,5 +201,21 @@ class CalendarioController extends Controller
                 'mensaje' => 'Error al eliminar: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Validación compartida entre store() y actualizar().
+     * Extraída del archivo 2 para evitar duplicar reglas.
+     */
+    private function validarEvento(Request $request): array
+    {
+        return $request->validate([
+            'titulo'       => 'required|string|max:255',
+            'descripcion'  => 'nullable|string',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin'    => 'required|date|after_or_equal:fecha_inicio',
+            'tipo'         => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
+            'color'        => 'required|string',
+        ]);
     }
 }

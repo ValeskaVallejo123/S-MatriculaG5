@@ -8,6 +8,7 @@ use App\Models\Estudiante;
 use App\Models\User;
 use App\Models\Rol;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -466,9 +467,12 @@ class MatriculaController extends Controller
     public function confirmar(Matricula $matricula)
     {
         if ($matricula->estado !== 'pendiente') {
-            return back()->withErrors([
-                'error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'.",
-            ]);
+            if (request()->ajax()) {
+                return response()->json([
+                    'error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'."
+                ], 422);
+            }
+            return back()->withErrors(['error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'."]);
         }
 
         $matricula->update([
@@ -479,19 +483,26 @@ class MatriculaController extends Controller
 
         $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
 
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Matrícula aprobada correctamente.']);
+        }
+
         return back()->with('success', 'Matrícula aprobada y acceso creado para el padre/tutor.');
     }
 
     public function rechazar(Request $request, Matricula $matricula)
     {
         $request->validate([
-            'motivo_rechazo' => 'required|string|max:500',
+            'motivo_rechazo' => 'required|string|min:10|max:500',
         ]);
 
         if ($matricula->estado !== 'pendiente') {
-            return back()->withErrors([
-                'error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'.",
-            ]);
+            if ($request->ajax()) {
+                return response()->json([
+                    'error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'."
+                ], 422);
+            }
+            return back()->withErrors(['error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'."]);
         }
 
         $matricula->update([
@@ -500,10 +511,17 @@ class MatriculaController extends Controller
             'fecha_confirmacion' => now(),
         ]);
 
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Matrícula rechazada correctamente.']);
+        }
+
         return back()->with('success', 'Matrícula rechazada correctamente.');
     }
 
-    public function cancelar(Matricula $matricula)
+    /**
+     * Cancelar matrícula.
+     */
+    public function cancelar(Matricula $matricula): RedirectResponse
     {
         if (in_array($matricula->estado, ['cancelada', 'rechazada'])) {
             return back()->withErrors([
@@ -514,6 +532,16 @@ class MatriculaController extends Controller
         $matricula->update(['estado' => 'cancelada']);
 
         return back()->with('success', 'Matrícula cancelada correctamente.');
+    }
+
+    /**
+     * Aprobar rápido (patch desde index).
+     */
+    public function aprobar(Matricula $matricula)
+    {
+        $matricula->update(['estado' => 'aprobada']);
+
+        return back()->with('success', 'Matrícula aprobada correctamente.');
     }
 
     // ────────────────────────────────────────────────────────────────────────

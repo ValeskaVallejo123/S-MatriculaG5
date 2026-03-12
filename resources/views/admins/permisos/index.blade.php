@@ -195,6 +195,7 @@
         @endif
     </div>
 
+
 <style>
     .avatar-circle {
         box-shadow: 0 2px 8px rgba(0, 59, 115, 0.15);
@@ -214,4 +215,5 @@
         font-size: 0.875rem;
     }
 </style>
+
 @endsection

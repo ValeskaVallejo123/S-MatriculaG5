@@ -262,6 +262,64 @@
             <button type="submit" class="btn-search"><i class="fas fa-search"></i></button>
             @if(request('busqueda'))
                 <a href="{{ route('profesores.index') }}" class="btn-clear"><i class="fas fa-times"></i></a>
+            {{-- Especialidad --}}
+            <div style="flex:1;min-width:110px;">
+                <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.25rem;">Especialidad</div>
+                @if($profesor->especialidad)
+                    <span class="pr-chip chip-teal"><i class="fas fa-book" style="font-size:.6rem;"></i> {{ $profesor->especialidad }}</span>
+                @else
+                    <span style="font-size:.78rem;color:#c5d0dc;font-style:italic;">—</span>
+                @endif
+            </div>
+
+            {{-- Contrato --}}
+            <div style="flex:1;min-width:100px;">
+                <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.25rem;">Contrato</div>
+                @if($profesor->tipo_contrato)
+                    <span class="pr-chip chip-navy"><i class="fas fa-file-contract" style="font-size:.6rem;"></i> {{ ucwords(str_replace('_', ' ', $profesor->tipo_contrato)) }}</span>
+                @else
+                    <span style="font-size:.78rem;color:#c5d0dc;font-style:italic;">—</span>
+                @endif
+            </div>
+
+            {{-- Estado --}}
+            <div style="flex-shrink:0;">
+                @if($profesor->estado === 'activo')
+                    <span class="pr-badge b-activo"><span class="pr-dot dot-teal"></span> Activo</span>
+                @elseif($profesor->estado === 'licencia')
+                    <span class="pr-badge b-licencia"><span class="pr-dot dot-amber"></span> Licencia</span>
+                @else
+                    <span class="pr-badge b-inactivo"><span class="pr-dot dot-red"></span> Inactivo</span>
+                @endif
+            </div>
+
+            {{-- Solo botón Ver --}}
+            <div style="flex-shrink:0;">
+                <a href="{{ route('profesores.show', $profesor->id) }}" class="act-btn act-view" title="Ver detalle">
+                    <i class="fas fa-eye"></i>
+                </a>
+            </div>
+
+        </div>
+        @empty
+        <div class="pr-empty">
+            @if(request('busqueda'))
+                <i class="fas fa-search"></i>
+                <h6>Sin resultados</h6>
+                <p>No se encontró ningún profesor con "<strong>{{ request('busqueda') }}</strong>"</p>
+                <div style="display:flex;gap:.5rem;justify-content:center;">
+                    <a href="{{ route('profesores.index') }}" class="pr-btn-sm pr-btn-teal">
+                        <i class="fas fa-list me-1"></i> Ver todos
+                    </a>
+                </div>
+            @else
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h6>No hay profesores registrados</h6>
+                <p>Comienza agregando el primer profesor al sistema</p>
+                <a href="{{ route('profesores.create') }}"
+                   style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.2rem;background:linear-gradient(135deg,var(--teal),var(--blue));color:white;border-radius:9px;text-decoration:none;font-weight:600;font-size:.83rem;box-shadow:0 2px 8px rgba(78,199,210,.3);">
+                    <i class="fas fa-plus"></i> Nuevo Profesor
+                </a>
             @endif
         </form>
         <div class="adm-perpage">
@@ -272,7 +330,7 @@
                 @endforeach
             </select>
         </div>
-    </div>
+        @endforelse
 
     {{-- Search result info --}}
     @if(request('busqueda'))
@@ -287,6 +345,14 @@
         @endif
     </div>
     @endif
+        {{-- Paginación --}}
+        @if($profesores->hasPages())
+        <div class="pr-footer">
+            <span>Mostrando {{ $profesores->firstItem() }}–{{ $profesores->lastItem() }} de {{ $profesores->total() }}</span>
+            {{ $profesores->links() }}
+        </div>
+        @endif
+    </div>
 
     {{-- Tabla --}}
     <div class="adm-card">
@@ -441,18 +507,20 @@
 
 </div>
 
-{{-- Modal Eliminar --}}
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
-        <div class="modal-content" style="border-radius:12px;border:none;overflow:hidden;">
-            <div class="modal-header border-0" style="background:#fef2f2;padding:1.2rem;">
-                <div style="display:flex;align-items:center;gap:.75rem;">
-                    <div style="width:40px;height:40px;background:rgba(239,68,68,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+{{-- ══ MODAL ELIMINAR ══ --}}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);">
+
+            <div class="modal-header border-0" style="background:rgba(239,68,68,.07);padding:1.2rem 1.4rem;">
+                <div style="display:flex;align-items:center;gap:.7rem;">
+                    <div style="width:42px;height:42px;background:rgba(239,68,68,.15);border-radius:10px;
+                                display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="fas fa-exclamation-triangle" style="color:#ef4444;font-size:1.1rem;"></i>
                     </div>
                     <div>
-                        <h6 class="mb-0 fw-bold" style="color:#003b73;">Confirmar Eliminación</h6>
-                        <p class="mb-0 small text-muted">Esta acción no se puede deshacer</p>
+                        <h6 class="mb-0 fw-bold" style="color:var(--navy);font-size:.93rem;">Confirmar Eliminación</h6>
+                        <p class="mb-0 small" style="color:var(--muted);">Esta acción no se puede deshacer</p>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -473,6 +541,7 @@
                     Eliminar
                 </button>
             </div>
+
         </div>
     </div>
 </div>
