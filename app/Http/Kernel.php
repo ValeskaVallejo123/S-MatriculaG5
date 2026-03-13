@@ -45,6 +45,8 @@ class Kernel extends HttpKernel
 
     // Middleware REAL de roles
     'role' => \App\Http\Middleware\RoleMiddleware::class,
+        // AGREGA ESTA LÍNEA AQUÍ:
+        'rol' => \App\Http\Middleware\RoleMiddleware::class,
 
     // Permisos
     'permiso' => \App\Http\Middleware\VerificarPermiso::class,

@@ -397,7 +397,7 @@
             <h1 class="text-xl font-bold text-gray-900">Permisos y Roles</h1>
             <p class="text-sm text-gray-500 mt-0.5">Gestiona el nivel de acceso de cada administrador</p>
         </div>
-        <a href="{{ route('admins.index') }}" class="btn btn-ghost text-sm">
+        <a href="{{ route('admin.index') }}" class="btn btn-ghost text-sm">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>

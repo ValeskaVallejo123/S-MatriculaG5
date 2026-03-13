@@ -116,4 +116,8 @@ class Matricula extends Model
             ? $this->estudiante->nombre_completo
             : 'N/A';
     }
+
+    public function seccion() {
+        return $this->belongsTo(Seccion::class, 'seccion_id');
+    }
 }

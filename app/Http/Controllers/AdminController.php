@@ -47,7 +47,7 @@ public function index(Request $request)
 
     $permisos = $this->getAvailablePermissions();
 
-    return view('admins.index', compact('admins', 'permisos'));
+    return view('admin.index', compact('admins', 'permisos'));
 }
 
     public function create()
@@ -62,7 +62,7 @@ public function index(Request $request)
             'configuracion' => 'Configuración del Sistema'
         ];
 
-        return view('admins.create', compact('permisos'));
+        return view('admin.create', compact('permisos'));
     }
 
     public function store(Request $request)
@@ -106,7 +106,7 @@ public function index(Request $request)
         ]);
 
         // Guardar credenciales en sesión para mostrarlas después
-        return redirect()->route('admins.index')
+        return redirect()->route('admin.index')
             ->with([
                 'success' => 'Administrador creado exitosamente',
                 'credentials' => [
@@ -180,7 +180,7 @@ public function index(Request $request)
                     ->orWhere('role', 'super_admin')
                     ->findOrFail($id);
 
-        return view('admins.show', compact('admin'));
+        return view('admin.show', compact('admin'));
     }
 
     public function edit($id)
@@ -202,7 +202,7 @@ public function index(Request $request)
             'eliminar' => 'Eliminar usuarios',
         ];
 
-        return view('admins.edit', compact('admin', 'permisos'));
+        return view('admin.edit', compact('admin', 'permisos'));
     }
 
     public function update(Request $request, $id)
@@ -264,7 +264,7 @@ public function index(Request $request)
             $admin->update(['password' => Hash::make($validated['password'])]);
         }
 
-        return redirect()->route('admins.index')->with('success', 'Administrador actualizado exitosamente');
+        return redirect()->route('admin.index')->with('success', 'Administrador actualizado exitosamente');
     }
 
     public function destroy($id)
@@ -275,7 +275,7 @@ public function index(Request $request)
 
         $admin->delete();
 
-        return redirect()->route('admins.index')->with('success', 'Administrador eliminado exitosamente');
+        return redirect()->route('admin.index')->with('success', 'Administrador eliminado exitosamente');
     }
 
    public function permisosRoles()
@@ -286,7 +286,7 @@ public function index(Request $request)
     $usuarios = User::where(function($query) {
             // Usuarios con rol admin, profesor o padre
             $query->whereIn('role', ['admin', 'profesor', 'padre'])
-                  // O super admins que no estén protegidos
+                  // O super admin que no estén protegidos
                   ->orWhere(function($q) {
                       $q->where('role', 'super_admin')
                         ->where('is_protected', 0);

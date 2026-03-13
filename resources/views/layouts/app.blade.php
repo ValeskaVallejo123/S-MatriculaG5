@@ -381,8 +381,8 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('admins.permisos.index') }}"
-               class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.permisos.index') }}"
+               class="menu-link {{ request()->routeIs('admin.permisos.*') ? 'active' : '' }}">
                 <i class="fas fa-user-lock"></i><span>Permisos de Padres</span>
             </a>
         </li>

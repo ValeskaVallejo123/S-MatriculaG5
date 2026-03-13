@@ -322,7 +322,7 @@
                     <a href="{{ route('horarios_grado.index') }}" class="btn btn-outline-primary w-100 mb-2">
                         <i class="fas fa-list me-2"></i> Ver Horarios
                     </a>
-                    <a href="{{ route('admins.permisos.index') }}" class="btn btn-primary w-100">
+                    <a href="{{ route('admin.permisos.index') }}" class="btn btn-primary w-100">
                         <i class="fas fa-user-lock me-2"></i> Permisos Padres
                     </a>
                 </div>

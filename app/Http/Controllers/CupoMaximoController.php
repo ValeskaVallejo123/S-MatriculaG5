@@ -2,63 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CupoMaximo;
 use Illuminate\Http\Request;
 
 class CupoMaximoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Muestra la tabla con todos los cupos
     public function index()
     {
-        //
+        $cursos = CupoMaximo::all();
+        return view('cupos_maximos.index', compact('cursos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Muestra el formulario para crear
     public function create()
     {
-        //
+        return view('cupos_maximos.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Guarda los datos en la base de datos
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre'      => 'required',
+            'cupo_maximo' => 'required|numeric|max:35',
+            'jornada'     => 'required',
+            'seccion'     => 'required',
+        ]);
+
+        CupoMaximo::create($request->all());
+
+        return redirect()->route('cupos_maximos.index')
+            ->with('success', '¡Cupo registrado exitosamente!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Muestra el formulario para editar
+    public function edit($id)
     {
-        //
+        $curso = CupoMaximo::findOrFail($id);
+        return view('cupos_maximos.edit', compact('curso'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    // Procesa la actualización
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'nombre'      => 'required',
+            'cupo_maximo' => 'required|numeric|max:35',
+            'jornada'     => 'required',
+            'seccion'     => 'required',
+        ]);
+
+        $curso = CupoMaximo::findOrFail($id);
+        $curso->update($request->all());
+
+        return redirect()->route('cupos_maximos.index')
+            ->with('success', 'Cupo actualizado correctamente');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Elimina el cupo
+    public function destroy($id)
     {
-        //
-    }
+        $curso = CupoMaximo::findOrFail($id);
+        $curso->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('cupos_maximos.index')
+            ->with('success', 'Cupo eliminado correctamente');
     }
 }

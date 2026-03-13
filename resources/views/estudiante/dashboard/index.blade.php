@@ -34,44 +34,31 @@
 <div class="container-fluid px-4">
 
     {{-- Bienvenida --}}
-    <div class="card border-0 shadow-sm mb-4"
-         style="border-radius:12px;background:linear-gradient(135deg,rgba(78,199,210,0.15) 0%,rgba(0,80,143,0.1) 100%);">
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:12px; background:linear-gradient(135deg,rgba(78,199,210,0.15) 0%,rgba(0,80,143,0.1) 100%);">
         <div class="card-body p-4">
-            <div class="row align-items-center g-3">
+            <div class="row align-items-center">
                 <div class="col-auto">
-                    <div style="width:70px;height:70px;background:linear-gradient(135deg,#00508f 0%,#003b73 100%);border-radius:16px;display:flex;align-items:center;justify-content:center;border:3px solid #4ec7d2;">
+                    <div style="width:70px;height:70px;background:#00508f;border-radius:16px;display:flex;align-items:center;justify-content:center;border:3px solid #4ec7d2;">
                         <i class="fas fa-user-graduate" style="font-size:2rem;color:white;"></i>
                     </div>
                 </div>
 
                 <div class="col">
                     <h2 class="mb-1 fw-bold" style="color:#003b73;font-size:1.5rem;">
-                        Hola, {{ $user->name }}
+                        Hola, {{ auth()->user()->name }}
                     </h2>
-                    <p class="text-muted mb-2">Bienvenido a tu portal estudiantil</p>
-
-                    @if($estudiante)
-                        <div class="d-flex flex-wrap gap-2">
-                            <span class="badge" style="background:rgba(78,199,210,0.2);color:#00508f;border:1px solid #4ec7d2;font-size:0.8rem;">
-                                <i class="fas fa-graduation-cap me-1"></i>{{ $estudiante->grado }} — Sección {{ $estudiante->seccion }}
-                            </span>
-                            <span class="badge" style="background:rgba(0,59,115,0.1);color:#003b73;border:1px solid #00508f;font-size:0.8rem;">
-                                <i class="fas fa-id-card me-1"></i>DNI: {{ $estudiante->dni }}
-                            </span>
-                            <span class="badge" style="background:rgba(16,185,129,0.1);color:#059669;border:1px solid #10b981;font-size:0.8rem;">
-                                <i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>{{ ucfirst($estudiante->estado) }}
-                            </span>
-                        </div>
-                    @else
-                        <span class="badge bg-warning text-dark" style="font-size:0.8rem;">
-                            <i class="fas fa-exclamation-triangle me-1"></i>Sin perfil de estudiante vinculado
-                        </span>
-                    @endif
+                    <p class="text-muted mb-0">Bienvenido a tu portal estudiantil</p>
                 </div>
 
-                <div class="col-auto">
-                    <a href="{{ route('estado-solicitud') }}" class="btn btn-sm fw-semibold"
-                       style="background:#00508f;color:white;border-radius:8px;">
+                {{-- BOTONES FORZADOS --}}
+                <div class="col-12 col-md-auto d-flex gap-2 mt-3 mt-md-0">
+                    <a href="{{ route('estudiante.historial') }}" class="btn fw-bold shadow-sm"
+                       style="background:#4ec7d2; color:#003b73; border: 1px solid #4ec7d2; padding: 10px 20px;">
+                        <i class="fas fa-history me-1"></i>Historial Académico
+                    </a>
+
+                    <a href="{{ route('estado-solicitud') }}" class="btn fw-bold shadow-sm"
+                       style="background:#00508f; color:white; padding: 10px 20px;">
                         <i class="fas fa-question-circle me-1"></i>Estado de Solicitud
                     </a>
                 </div>

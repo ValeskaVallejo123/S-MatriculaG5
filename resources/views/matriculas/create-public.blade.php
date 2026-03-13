@@ -298,9 +298,9 @@
                                        value="{{ old('padre_nombre') }}"
                                        placeholder="Ej: Juan Carlos" required>
                                 @error('padre_nombre')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -318,9 +318,9 @@
                                        value="{{ old('padre_apellido') }}"
                                        placeholder="Ej: Pérez García" required>
                                 @error('padre_apellido')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -342,9 +342,9 @@
                                        inputmode="numeric"
                                        required>
                                 @error('padre_dni')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                             <small class="text-muted" style="font-size:.75rem;">
@@ -372,9 +372,9 @@
                                     @endforeach
                                 </select>
                                 @error('padre_parentesco')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -393,9 +393,9 @@
                                        value="{{ old('padre_parentesco_otro') }}"
                                        placeholder="Ej: Tío, Abuelo, Hermano">
                                 @error('padre_parentesco_otro')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -416,9 +416,9 @@
                                        inputmode="tel"
                                        required>
                                 @error('padre_telefono')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -437,9 +437,9 @@
                                        placeholder="padre@ejemplo.com"
                                        autocomplete="email">
                                 @error('padre_email')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                             <small class="text-muted" style="font-size:.75rem;">
@@ -460,9 +460,9 @@
                                           placeholder="Dirección completa"
                                           required>{{ old('padre_direccion') }}</textarea>
                                 @error('padre_direccion')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -498,9 +498,9 @@
                                        value="{{ old('estudiante_nombre') }}"
                                        placeholder="Ej: María José" required>
                                 @error('estudiante_nombre')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -518,9 +518,9 @@
                                        value="{{ old('estudiante_apellido') }}"
                                        placeholder="Ej: López Martínez" required>
                                 @error('estudiante_apellido')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -542,9 +542,9 @@
                                        inputmode="numeric"
                                        required>
                                 @error('estudiante_dni')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                             <small class="text-muted" style="font-size:.75rem;">
@@ -567,9 +567,9 @@
                                        max="{{ date('Y-m-d') }}"
                                        required>
                                 @error('estudiante_fecha_nacimiento')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -588,9 +588,9 @@
                                     <option value="femenino"  {{ old('estudiante_sexo') == 'femenino'  ? 'selected' : '' }}>Femenino</option>
                                 </select>
                                 @error('estudiante_sexo')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -617,9 +617,9 @@
                                     @endforeach
                                 </select>
                                 @error('estudiante_grado')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                             <small class="text-muted" style="font-size:.75rem;">
@@ -660,9 +660,9 @@
                                        min="2020" max="2099"
                                        required>
                                 @error('anio_lectivo')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -694,9 +694,9 @@
                                           rows="3"
                                           placeholder="Notas adicionales sobre la matrícula">{{ old('observaciones') }}</textarea>
                                 @error('observaciones')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -751,9 +751,9 @@
                                        style="display:none;"
                                        required>
                                 @error('foto_perfil')
-                                    <div class="invalid-feedback d-block">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback d-block">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                                 <div id="preview_foto"></div>
                             </div>
@@ -782,9 +782,9 @@
                                        style="display:none;"
                                        required>
                                 @error('calificaciones')
-                                    <div class="invalid-feedback d-block">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback d-block">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                                 <div id="preview_calificaciones"></div>
                             </div>
@@ -813,9 +813,9 @@
                                        style="display:none;"
                                        required>
                                 @error('acta_nacimiento')
-                                    <div class="invalid-feedback d-block">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
+                                <div class="invalid-feedback d-block">
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                </div>
                                 @enderror
                                 <div id="preview_acta"></div>
                             </div>
@@ -845,81 +845,81 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-(function () {
-    'use strict';
+    (function () {
+        'use strict';
 
-    /* ============================================================
-       Marcar campos rellenados con fondo azul
-    ============================================================ */
-    function marcarCampo(el) {
-        const tieneValor = el.tagName === 'SELECT'
-            ? el.value !== ''
-            : el.value.trim() !== '';
-        el.classList.toggle('campo-rellenado', tieneValor);
-    }
-
-    function inicializarMarcadoCampos() {
-        document.querySelectorAll('#formMatricula .form-control, #formMatricula .form-select')
-            .forEach(function (campo) {
-                campo.addEventListener('input',  function () { marcarCampo(this); });
-                campo.addEventListener('change', function () { marcarCampo(this); });
-                campo.addEventListener('blur',   function () { marcarCampo(this); });
-                marcarCampo(campo); // marcar los ya rellenados por old()
-            });
-    }
-
-    /* ============================================================
-       Mostrar / ocultar campo "otro parentesco"
-    ============================================================ */
-    function toggleOtroParentesco() {
-        const select  = document.getElementById('padre_parentesco');
-        const otroDiv = document.getElementById('otro_parentesco_div');
-        const otroInput = document.getElementById('padre_parentesco_otro');
-        if (!select || !otroDiv || !otroInput) return;
-
-        const esOtro = select.value === 'otro';
-        otroDiv.style.display = esOtro ? 'block' : 'none';
-        otroInput.required = esOtro;
-        if (!esOtro) otroInput.value = '';
-    }
-
-    /* ============================================================
-       Archivos: mostrar preview y marcar caja
-
-       CORRECCIÓN: la función limpiarArchivo usaba `box` como
-       variable no declarada. Ahora recibe el boxId correctamente.
-    ============================================================ */
-    function mostrarArchivo(inputEl, previewId, boxId) {
-        const preview = document.getElementById(previewId);
-        const box     = document.getElementById(boxId);
-        if (!preview) return;
-
-        preview.innerHTML = '';
-        if (!inputEl.files || !inputEl.files[0]) {
-            if (box) box.classList.remove('archivo-subido');
-            return;
+        /* ============================================================
+           Marcar campos rellenados con fondo azul
+        ============================================================ */
+        function marcarCampo(el) {
+            const tieneValor = el.tagName === 'SELECT'
+                ? el.value !== ''
+                : el.value.trim() !== '';
+            el.classList.toggle('campo-rellenado', tieneValor);
         }
 
-        const file    = inputEl.files[0];
-        const maxSize = inputEl.id === 'foto_perfil' ? 2 * 1024 * 1024 : 5 * 1024 * 1024;
-
-        if (file.size > maxSize) {
-            const mb = inputEl.id === 'foto_perfil' ? 2 : 5;
-            alert(`El archivo "${file.name}" supera el tamaño máximo permitido (${mb} MB).`);
-            inputEl.value = '';
-            if (box) box.classList.remove('archivo-subido');
-            return;
+        function inicializarMarcadoCampos() {
+            document.querySelectorAll('#formMatricula .form-control, #formMatricula .form-select')
+                .forEach(function (campo) {
+                    campo.addEventListener('input',  function () { marcarCampo(this); });
+                    campo.addEventListener('change', function () { marcarCampo(this); });
+                    campo.addEventListener('blur',   function () { marcarCampo(this); });
+                    marcarCampo(campo); // marcar los ya rellenados por old()
+                });
         }
 
-        if (box) box.classList.add('archivo-subido');
+        /* ============================================================
+           Mostrar / ocultar campo "otro parentesco"
+        ============================================================ */
+        function toggleOtroParentesco() {
+            const select  = document.getElementById('padre_parentesco');
+            const otroDiv = document.getElementById('otro_parentesco_div');
+            const otroInput = document.getElementById('padre_parentesco_otro');
+            if (!select || !otroDiv || !otroInput) return;
 
-        let icono = 'fa-file';
-        if (file.type.includes('pdf'))   icono = 'fa-file-pdf';
-        else if (file.type.includes('image')) icono = 'fa-file-image';
+            const esOtro = select.value === 'otro';
+            otroDiv.style.display = esOtro ? 'block' : 'none';
+            otroInput.required = esOtro;
+            if (!esOtro) otroInput.value = '';
+        }
 
-        const filePreview = document.createElement('div');
-        filePreview.className = 'file-preview';
-        filePreview.innerHTML = `
+        /* ============================================================
+           Archivos: mostrar preview y marcar caja
+
+           CORRECCIÓN: la función limpiarArchivo usaba `box` como
+           variable no declarada. Ahora recibe el boxId correctamente.
+        ============================================================ */
+        function mostrarArchivo(inputEl, previewId, boxId) {
+            const preview = document.getElementById(previewId);
+            const box     = document.getElementById(boxId);
+            if (!preview) return;
+
+            preview.innerHTML = '';
+            if (!inputEl.files || !inputEl.files[0]) {
+                if (box) box.classList.remove('archivo-subido');
+                return;
+            }
+
+            const file    = inputEl.files[0];
+            const maxSize = inputEl.id === 'foto_perfil' ? 2 * 1024 * 1024 : 5 * 1024 * 1024;
+
+            if (file.size > maxSize) {
+                const mb = inputEl.id === 'foto_perfil' ? 2 : 5;
+                alert(`El archivo "${file.name}" supera el tamaño máximo permitido (${mb} MB).`);
+                inputEl.value = '';
+                if (box) box.classList.remove('archivo-subido');
+                return;
+            }
+
+            if (box) box.classList.add('archivo-subido');
+
+            let icono = 'fa-file';
+            if (file.type.includes('pdf'))   icono = 'fa-file-pdf';
+            else if (file.type.includes('image')) icono = 'fa-file-image';
+
+            const filePreview = document.createElement('div');
+            filePreview.className = 'file-preview';
+            filePreview.innerHTML = `
             <div style="display:flex; align-items:center; gap:6px; overflow:hidden; flex:1; min-width:0;">
                 <i class="fas ${icono}" style="color:#4ec7d2; font-size:.9rem; flex-shrink:0;"></i>
                 <span class="file-name">${file.name}</span>
@@ -931,85 +931,85 @@
                     data-box-id="${boxId}">
                 <i class="fas fa-times me-1"></i>Quitar
             </button>`;
-        preview.appendChild(filePreview);
-    }
+            preview.appendChild(filePreview);
+        }
 
-    /* ============================================================
-       CORRECCIÓN: limpiarArchivo — antes usaba `box` sin declarar.
-       Ahora el botón lleva data-* y se delega el evento al documento.
-    ============================================================ */
-    document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.btn-clear');
-        if (!btn) return;
+        /* ============================================================
+           CORRECCIÓN: limpiarArchivo — antes usaba `box` sin declarar.
+           Ahora el botón lleva data-* y se delega el evento al documento.
+        ============================================================ */
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.btn-clear');
+            if (!btn) return;
 
-        const inputEl = document.getElementById(btn.dataset.inputId);
-        const preview = document.getElementById(btn.dataset.previewId);
-        const box     = document.getElementById(btn.dataset.boxId);
+            const inputEl = document.getElementById(btn.dataset.inputId);
+            const preview = document.getElementById(btn.dataset.previewId);
+            const box     = document.getElementById(btn.dataset.boxId);
 
-        if (inputEl) inputEl.value = '';
-        if (preview) preview.innerHTML = '';
-        if (box)     box.classList.remove('archivo-subido');
-    });
+            if (inputEl) inputEl.value = '';
+            if (preview) preview.innerHTML = '';
+            if (box)     box.classList.remove('archivo-subido');
+        });
 
-    /* ============================================================
-       Enlazar inputs de archivo a sus cajas (sin onchange inline)
-    ============================================================ */
-    function enlazarInputsArchivo() {
-        const archivos = [
-            { inputId: 'foto_perfil',   previewId: 'preview_foto',           boxId: 'box_foto' },
-            { inputId: 'calificaciones', previewId: 'preview_calificaciones', boxId: 'box_calificaciones' },
-            { inputId: 'acta_nacimiento', previewId: 'preview_acta',         boxId: 'box_acta' },
-        ];
+        /* ============================================================
+           Enlazar inputs de archivo a sus cajas (sin onchange inline)
+        ============================================================ */
+        function enlazarInputsArchivo() {
+            const archivos = [
+                { inputId: 'foto_perfil',   previewId: 'preview_foto',           boxId: 'box_foto' },
+                { inputId: 'calificaciones', previewId: 'preview_calificaciones', boxId: 'box_calificaciones' },
+                { inputId: 'acta_nacimiento', previewId: 'preview_acta',         boxId: 'box_acta' },
+            ];
 
-        archivos.forEach(function (cfg) {
-            const input = document.getElementById(cfg.inputId);
-            if (input) {
-                input.addEventListener('change', function () {
-                    mostrarArchivo(this, cfg.previewId, cfg.boxId);
-                });
+            archivos.forEach(function (cfg) {
+                const input = document.getElementById(cfg.inputId);
+                if (input) {
+                    input.addEventListener('change', function () {
+                        mostrarArchivo(this, cfg.previewId, cfg.boxId);
+                    });
+                }
+            });
+        }
+
+        /* ============================================================
+           Accesibilidad: activar caja de upload con Enter / Space
+        ============================================================ */
+        document.querySelectorAll('.file-upload-box[tabindex]').forEach(function (box) {
+            box.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    box.click();
+                }
+            });
+        });
+
+        /* ============================================================
+           Prevenir doble envío del formulario
+        ============================================================ */
+        document.getElementById('formMatricula').addEventListener('submit', function () {
+            const btn = document.getElementById('btnEnviar');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Enviando...';
             }
         });
-    }
 
-    /* ============================================================
-       Accesibilidad: activar caja de upload con Enter / Space
-    ============================================================ */
-    document.querySelectorAll('.file-upload-box[tabindex]').forEach(function (box) {
-        box.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                box.click();
+        /* ============================================================
+           Inicialización
+        ============================================================ */
+        document.addEventListener('DOMContentLoaded', function () {
+            toggleOtroParentesco();
+            inicializarMarcadoCampos();
+            enlazarInputsArchivo();
+
+            // Restaurar parentesco "otro" si viene de old()
+            const selectParentesco = document.getElementById('padre_parentesco');
+            if (selectParentesco) {
+                selectParentesco.addEventListener('change', toggleOtroParentesco);
             }
         });
-    });
 
-    /* ============================================================
-       Prevenir doble envío del formulario
-    ============================================================ */
-    document.getElementById('formMatricula').addEventListener('submit', function () {
-        const btn = document.getElementById('btnEnviar');
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Enviando...';
-        }
-    });
-
-    /* ============================================================
-       Inicialización
-    ============================================================ */
-    document.addEventListener('DOMContentLoaded', function () {
-        toggleOtroParentesco();
-        inicializarMarcadoCampos();
-        enlazarInputsArchivo();
-
-        // Restaurar parentesco "otro" si viene de old()
-        const selectParentesco = document.getElementById('padre_parentesco');
-        if (selectParentesco) {
-            selectParentesco.addEventListener('change', toggleOtroParentesco);
-        }
-    });
-
-})();
+    })();
 </script>
 </body>
 </html>

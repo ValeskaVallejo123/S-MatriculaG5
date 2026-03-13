@@ -69,9 +69,13 @@
                     @endif
                 </div>
 
-                <div class="col-auto">
-                    <a href="{{ route('estado-solicitud') }}" class="btn btn-sm fw-semibold"
-                       style="background:#00508f;color:white;border-radius:8px;">
+                <div class="col-auto d-flex flex-column flex-md-row gap-2">
+                    <a href="{{ route('estudiante.historial') }}" class="btn btn-info">
+                        <i class="fas fa-history"></i> Historial Académico
+                    </a>
+
+                    <a href="{{ route('estado-solicitud') }}" class="btn btn-sm fw-semibold shadow-sm"
+                       style="background:#00508f; color:white; border-radius:8px;">
                         <i class="fas fa-question-circle me-1"></i>Estado de Solicitud
                     </a>
                 </div>

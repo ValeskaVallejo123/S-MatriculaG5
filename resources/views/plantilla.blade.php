@@ -1179,7 +1179,7 @@
           Completa el formulario de matrícula en línea y un miembro de nuestro equipo
           se pondrá en contacto contigo para continuar con el proceso.
         </p>
-        <a href="{{ route('matriculas.public.create') }}" class="btn-matricula-principal">
+          <a href="{{ route('portal.matriculas.public.create') }}" class="btn-matricula-principal">
           <i class="fas fa-pen-alt me-2"></i> Iniciar Matrícula en Línea
         </a>
       </div>
@@ -1223,7 +1223,7 @@
   </div>
   <h3>Plan de Estudios</h3>
   <p>Consulta las materias, objetivos pedagógicos y competencias por grado escolar.</p>
-  <a href="{{ route('plan-estudios.index') }}" class="btn-feature">Ver Plan</a>
+          <a href="{{ route('portal.plan-estudios.index') }}" class="btn-feature">Ver Plan</a> class="btn-feature">Ver Plan</a>
   </div>
 
       <div class="feature-card">

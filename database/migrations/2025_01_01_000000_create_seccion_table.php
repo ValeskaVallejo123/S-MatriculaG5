@@ -9,11 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
+    public function up(): void
 {
-   Schema::table('documentos', function (Blueprint $table) {
-        $table->foreignId('estudiante_id')->nullable()->after('id')
-              ->constrained('estudiantes')->onDelete('cascade');
+    Schema::create('secciones', function (Blueprint $table) {
+        $table->id();
+        $table->string('nombre');
+        $table->integer('capacidad')->default(30);
+        $table->timestamps();
     });
 }
 
@@ -22,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('documentos', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('seccion');
     }
 };

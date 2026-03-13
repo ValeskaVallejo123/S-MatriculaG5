@@ -485,13 +485,13 @@
     {{-- Botón para volver --}}
     <div class="flex justify-end">
 
-        <a href="{{ route('admins.index') }}"
+        <a href="{{ route('admin.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #003b73, #00508f);">
 
-        <a href="{{ route('admins.index') }}"
+        <a href="{{ route('admin.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 bg-primary-400 text-white rounded-lg hover:bg-primary-500 transition shadow-lg hover:shadow-xl">
 
-        <a href="{{ route('admins.index') }}"
+        <a href="{{ route('admin.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #003b73, #00508f);">
 
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

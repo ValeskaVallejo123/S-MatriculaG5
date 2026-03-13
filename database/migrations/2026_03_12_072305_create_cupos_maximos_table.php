@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('matriculas', function (Blueprint $table) {
-            $table->foreign('seccion_id')
-                ->references('id')
-                ->on('secciones')
-                ->nullOnDelete();
+
+        Schema::create('cupos_maximos', function (Illuminate\Database\Schema\Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->integer('cupo_maximo');
+            $table->string('jornada');
+            $table->string('seccion');
+            $table->timestamps();
         });
+
     }
 
     /**
@@ -24,9 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-       Schema::table('matriculas', function (Blueprint $table) {
-            $table->dropForeign(['seccion_id']);
-
-        });
+        Schema::dropIfExists('cupos_maximos');
     }
 };

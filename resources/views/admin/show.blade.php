@@ -6,7 +6,7 @@
 @section('content')
 <div class="container" style="max-width: 900px;">
 
-    <a href="{{ route('admins.index') }}" class="btn btn-primary mb-3">
+    <a href="{{ route('admin.index') }}" class="btn btn-primary mb-3">
         <i class="fas fa-arrow-left me-1"></i> Volver a Administradores
     </a>
 
@@ -158,12 +158,12 @@
 
             {{-- Botones de Acción --}}
             <div class="d-flex gap-3 pt-3" style="border-top: 1px solid #e2e8f0;">
-                <a href="{{ route('admins.edit', $admin) }}"
+                <a href="{{ route('admin.edit', $admin) }}"
                    class="btn btn-primary fw-semibold flex-fill" style="border-radius:8px;">
                     <i class="fas fa-edit me-2"></i>Editar
                 </a>
 
-                <a href="{{ route('admins.index') }}"
+                <a href="{{ route('admin.index') }}"
                    class="btn btn-outline-secondary fw-semibold flex-fill" style="border-radius:8px;">
                     <i class="fas fa-arrow-left me-2"></i>Volver
                 </a>
@@ -173,7 +173,7 @@
                         class="btn btn-danger fw-semibold flex-fill"
                         style="border-radius:8px;"
                         onclick="mostrarModalDelete(
-                            '{{ route('admins.destroy', $admin) }}',
+                            '{{ route('admin.destroy', $admin) }}',
                             '¿Está seguro que desea eliminar este administrador? Se perderán todos sus datos de forma permanente.',
                             '{{ $admin->nombre_completo }}'
                         )">

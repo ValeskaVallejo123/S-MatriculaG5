@@ -176,7 +176,7 @@
     </div>
 
     <div class="text-center mt-4 mb-5">
-        <a href="{{ route('admins.index') }}" class="btn btn-secondary px-4 py-2 fw-semibold">
+        <a href="{{ route('admin.index') }}" class="btn btn-secondary px-4 py-2 fw-semibold">
             <i class="bi bi-arrow-left-circle"></i> Volver a los administradores
         </a>
     </div>
