@@ -37,6 +37,8 @@ use App\Http\Controllers\Admin\SolicitudAdminController;
 use App\Http\Controllers\SeccionController;
 use App\Http\Controllers\CupoMaximoController;
 use App\Http\Controllers\PublicoPlanEstudiosController;
+use App\Http\Controllers\CalificacionController;
+use App\Http\Controllers\ProfesorMateriaGradoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -108,7 +110,6 @@ Route::get('/password/solicitar',           [PasswordResetController::class, 'sh
 Route::post('/password/solicitar',          [PasswordResetController::class, 'sendResetLink'])->name('password.enviar');
 Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
 Route::post('/password/restablecer',        [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
-//Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
 
 /*
 |--------------------------------------------------------------------------
@@ -145,8 +146,6 @@ Route::middleware(['auth'])->group(function () {
     /*
     |----------------------------------------------------------------------
     | CALENDARIO
-    | — La vista es accesible para admin y superadmin
-    | — Las operaciones CRUD las valida el controlador (solo superadmin)
     |----------------------------------------------------------------------
     */
     Route::get('/calendario',                     [CalendarioController::class, 'index'])->name('calendario');
@@ -259,10 +258,12 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |----------------------------------------------------------------------
-    | OBSERVACIONES
+    | OBSERVACIONES  ← parámetro explícito para evitar 'observacione'
     |----------------------------------------------------------------------
     */
-    Route::resource('observaciones', ObservacionController::class)->except(['show']);
+    Route::resource('observaciones', ObservacionController::class)
+        ->except(['show'])
+        ->parameters(['observaciones' => 'observacion']);
 
     /*
     |----------------------------------------------------------------------
@@ -291,36 +292,43 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |----------------------------------------------------------------------
-    | ASIGNACIÓN PROFESOR-MATERIA
+    | ASIGNACIÓN PROFESOR-MATERIA (solo materias, sin grado/sección)
     |----------------------------------------------------------------------
     */
     Route::resource('profesor_materia', ProfesorMateriaController::class);
 
     /*
     |----------------------------------------------------------------------
-    | HORARIOS DE GRADO — rutas manuales (2 parámetros)
-    | ORDEN CRÍTICO: más específicas primero, index al final
+    | ASIGNACIÓN PROFESOR-MATERIA-GRADO (completa, para calificaciones)
     |----------------------------------------------------------------------
     */
-    Route::get('horarios_grado/{grado}/{jornada}/pdf',
-        [HorarioGradoController::class, 'exportarPdf']
-    )->name('horarios_grado.pdf');
+    Route::resource('profesor_materia_grado', ProfesorMateriaGradoController::class);
 
-    Route::get('horarios_grado/{grado}/{jornada}/editar',
-        [HorarioGradoController::class, 'edit']
-    )->name('horarios_grado.edit');
+    /*
+    |----------------------------------------------------------------------
+    | CALIFICACIONES — superadmin (CRUD completo)
+    |----------------------------------------------------------------------
+    */
+    Route::resource('calificaciones', CalificacionController::class)
+        ->except(['index', 'create', 'store'])
+        ->middleware('role:super_admin');
 
-    Route::put('horarios_grado/{grado}/{jornada}',
-        [HorarioGradoController::class, 'update']
-    )->name('horarios_grado.update');
+    Route::prefix('calificaciones')->name('calificaciones.')->middleware('role:super_admin')->group(function () {
+        Route::get('/',      [CalificacionController::class, 'indexAdmin'])->name('index');
+        Route::get('/crear', [CalificacionController::class, 'createAdmin'])->name('create');
+        Route::post('/',     [CalificacionController::class, 'storeAdmin'])->name('store');
+    });
 
-    Route::get('horarios_grado/{grado}/{jornada}',
-        [HorarioGradoController::class, 'show']
-    )->name('horarios_grado.show');
-
-    Route::get('horarios_grado',
-        [HorarioGradoController::class, 'index']
-    )->name('horarios_grado.index');
+    /*
+    |----------------------------------------------------------------------
+    | HORARIOS DE GRADO
+    |----------------------------------------------------------------------
+    */
+    Route::get('horarios_grado/{grado}/{jornada}/pdf',    [HorarioGradoController::class, 'exportarPdf'])->name('horarios_grado.pdf');
+    Route::get('horarios_grado/{grado}/{jornada}/editar', [HorarioGradoController::class, 'edit'])->name('horarios_grado.edit');
+    Route::put('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'update'])->name('horarios_grado.update');
+    Route::get('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'show'])->name('horarios_grado.show');
+    Route::get('horarios_grado',                          [HorarioGradoController::class, 'index'])->name('horarios_grado.index');
 
     /*
     |----------------------------------------------------------------------
@@ -415,32 +423,14 @@ Route::middleware(['auth'])->group(function () {
             'destroy' => 'materias.destroy',
         ]);
 
-        /*
-        |------------------------------------------------------------------
-        | HORARIOS DE GRADO (superadmin)
-        |------------------------------------------------------------------
-        */
-        Route::get('horarios_grado/{grado}/{jornada}/pdf',
-            [HorarioGradoController::class, 'exportarPdf']
-        )->name('horarios_grado.pdf');
+        // Horarios de Grado (superadmin)
+        Route::get('horarios_grado/{grado}/{jornada}/pdf',    [HorarioGradoController::class, 'exportarPdf'])->name('horarios_grado.pdf');
+        Route::get('horarios_grado/{grado}/{jornada}/editar', [HorarioGradoController::class, 'edit'])->name('horarios_grado.edit');
+        Route::put('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'update'])->name('horarios_grado.update');
+        Route::get('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'show'])->name('horarios_grado.show');
+        Route::get('horarios_grado',                          [HorarioGradoController::class, 'index'])->name('horarios_grado.index');
 
-        Route::get('horarios_grado/{grado}/{jornada}/editar',
-            [HorarioGradoController::class, 'edit']
-        )->name('horarios_grado.edit');
-
-        Route::put('horarios_grado/{grado}/{jornada}',
-            [HorarioGradoController::class, 'update']
-        )->name('horarios_grado.update');
-
-        Route::get('horarios_grado/{grado}/{jornada}',
-            [HorarioGradoController::class, 'show']
-        )->name('horarios_grado.show');
-
-        Route::get('horarios_grado',
-            [HorarioGradoController::class, 'index']
-        )->name('horarios_grado.index');
-
-        // Profesor-Materia
+        // Profesor-Materia (solo materias)
         Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
             Route::get('/',                [ProfesorMateriaController::class, 'index'])->name('index');
             Route::get('/create',          [ProfesorMateriaController::class, 'create'])->name('create');
@@ -450,11 +440,7 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/{profesor}',   [ProfesorMateriaController::class, 'destroy'])->name('destroy');
         });
 
-        /*
-        |------------------------------------------------------------------
-        | CUPOS MÁXIMOS — solo superadmin
-        |------------------------------------------------------------------
-        */
+        // Cupos Máximos
         Route::resource('cupos_maximos', CupoMaximoController::class)->names([
             'index'   => 'cupos_maximos.index',
             'create'  => 'cupos_maximos.create',
@@ -499,12 +485,23 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('profesor')->name('profesor.')->middleware('role:profesor')->group(function () {
+
         Route::get('/dashboard',      [ProfesorDashboardController::class,       'index'])->name('dashboard');
         Route::get('/mi-horario',     [HorarioController::class,                 'miHorario'])->name('miHorario');
         Route::get('/mis-cursos',     [ProfesorGradosController::class,          'index'])->name('mis-cursos');
         Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'indexProfesor'])->name('notificaciones.index');
         Route::get('/mis-estudiantes/{grado}/{seccion}', [ProfesorEstudianteController::class, 'index'])->name('mis-estudiantes');
-    });
+
+        Route::prefix('calificaciones')->name('calificaciones.')->group(function () {
+            Route::get('/', [CalificacionController::class, 'index'])->name('index');
+            Route::get('/{gradoId}/{seccion}/{materiaId}', [CalificacionController::class, 'listar'])->name('listar');
+            Route::post('/{gradoId}/{seccion}/{materiaId}/guardar', [CalificacionController::class, 'guardarMasivo'])->name('guardar');
+            Route::get('/{calificacion}/editar', [CalificacionController::class, 'edit'])->name('edit');
+            Route::put('/{calificacion}',        [CalificacionController::class, 'update'])->name('update');
+            Route::delete('/{calificacion}',     [CalificacionController::class, 'destroy'])->name('destroy');
+        });
+
+    }); // fin profesor
 
     /*
     |----------------------------------------------------------------------

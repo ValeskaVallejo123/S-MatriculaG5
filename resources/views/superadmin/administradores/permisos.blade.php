@@ -3,6 +3,12 @@
 @section('title', 'Roles y Permisos')
 @section('page-title', 'Roles y Permisos')
 
+@section('topbar-actions')
+    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Administradores
+    </a>
+@endsection
+
 @push('styles')
 <style>
     .rp-tabs {
@@ -149,16 +155,8 @@
     ];
 @endphp
 
-{{-- Header --}}
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-        <h5 class="mb-0 fw-bold" style="color:#003b73">Roles y Permisos</h5>
-        <p class="mb-0 small text-muted mt-1">Configura el nivel de acceso de cada administrador</p>
-    </div>
-    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2">
-        <i class="fas fa-arrow-left" style="font-size:.75rem"></i> Administradores
-    </a>
-</div>
+{{-- Subtítulo --}}
+<p class="mb-4 small text-muted">Configura el nivel de acceso de cada administrador</p>
 
 {{-- Tabs --}}
 <div class="rp-tabs">
@@ -419,8 +417,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const permisos = JSON.parse(item.dataset.permisos || '[]');
         const isSA     = item.dataset.issa === '1';
-
-        document.getElementById('rpForm').action = '{{ route("superadmin.administradores.permisos.update") }}';
 
         rpAdminId.value           = item.dataset.id;
         rpAvatar.textContent      = item.dataset.initial;

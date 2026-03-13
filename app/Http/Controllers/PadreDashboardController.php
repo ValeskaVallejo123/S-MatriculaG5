@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class PadreDashboardController extends Controller
 {
@@ -20,14 +21,12 @@ class PadreDashboardController extends Controller
             abort(403, 'No tienes un perfil de padre/tutor vinculado.');
         }
 
-        // Cargar hijos con sus matrículas aprobadas
         $matriculas = $padre->matriculas()
             ->with('estudiante')
             ->where('estado', 'aprobada')
             ->orderBy('anio_lectivo', 'desc')
             ->get();
 
-        // También cargar matrículas en otros estados para mostrar historial
         $todasMatriculas = $padre->matriculas()
             ->with('estudiante')
             ->orderBy('created_at', 'desc')
@@ -48,7 +47,6 @@ class PadreDashboardController extends Controller
             abort(403);
         }
 
-        // Verificar que este estudiante realmente sea hijo de este padre
         $matricula = $padre->matriculas()
             ->with('estudiante')
             ->where('estudiante_id', $estudianteId)
@@ -58,5 +56,28 @@ class PadreDashboardController extends Controller
         $estudiante = $matricula->estudiante;
 
         return view('padre.hijo', compact('padre', 'estudiante', 'matricula'));
+    }
+
+    /**
+     * Cambiar contraseña del usuario autenticado.
+     */
+    public function cambiarPassword(Request $request)
+    {
+        $request->validate([
+            'password_actual' => 'required',
+            'password_nuevo'  => 'required|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->password_actual, $user->password)) {
+            return back()->with('pw_error', 'La contraseña actual es incorrecta.');
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password_nuevo),
+        ]);
+
+        return back()->with('pw_success', 'Contraseña actualizada correctamente.');
     }
 }

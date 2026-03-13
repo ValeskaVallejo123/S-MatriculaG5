@@ -3,459 +3,403 @@
 @section('title', 'Calendario Académico')
 @section('page-title', 'Calendario Académico')
 
-@php
-    $esSuperAdmin = auth()->user()->user_type === 'super_admin' || auth()->user()->is_super_admin;
-@endphp
-
-@section('topbar-actions')
-    <a href="{{ $esSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}"
-       class="adm-btn-outline">
-        <i class="fas fa-arrow-left"></i> Volver al Dashboard
-    </a>
-@endsection
-
 @push('styles')
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-.adm-wrap { font-family: 'Inter', sans-serif; }
-.adm-btn-outline {
-    display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;
-    border-radius:7px;font-size:.82rem;font-weight:600;background:#fff;
-    color:#00508f;border:1.5px solid #4ec7d2;text-decoration:none;transition:background .15s;
-}
-.adm-btn-outline:hover { background:#e8f8f9;color:#00508f; }
-.adm-card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05); }
-.adm-card-head { background:#003b73;padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem; }
-.adm-card-head-left { display:flex;align-items:center;gap:.6rem; }
-.adm-card-head-left i { color:#4ec7d2;font-size:1rem; }
-.adm-card-head-left span { color:#fff;font-weight:700;font-size:.95rem; }
-.adm-card-body { padding:1.25rem; }
-.legend { display:flex;gap:.5rem;flex-wrap:wrap;margin:0; }
-.legend-item { display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.85); }
-.legend-dot { width:9px;height:9px;border-radius:50%;flex-shrink:0; }
-.cal-hint { display:inline-flex;align-items:center;gap:.4rem;font-size:.73rem;color:#94a3b8;margin-bottom:.85rem;font-style:italic; }
-.cal-hint i { color:#4ec7d2; }
 
-/* FullCalendar */
-.fc { font-family:'Inter',sans-serif;font-size:.82rem; }
-.fc .fc-toolbar-title { font-size:1rem;font-weight:700;color:#0f172a; }
-.fc .fc-button { background:#fff!important;color:#00508f!important;border:1.5px solid #e2e8f0!important;border-radius:7px!important;font-size:.78rem!important;font-weight:600!important;padding:.3rem .7rem!important;box-shadow:none!important;transition:all .15s!important; }
-.fc .fc-button:hover { background:#e8f8f9!important;border-color:#4ec7d2!important; }
-.fc .fc-button-active,
-.fc .fc-button-primary:not(:disabled).fc-button-active { background:linear-gradient(135deg,#4ec7d2,#00508f)!important;color:#fff!important;border-color:#4ec7d2!important; }
-.fc .fc-col-header-cell { background:#f8fafc; }
-.fc .fc-col-header-cell-cushion { color:#64748b;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-decoration:none; }
-.fc .fc-daygrid-day-number { color:#334155;font-size:.78rem;font-weight:500;text-decoration:none; }
-.fc .fc-daygrid-day.fc-day-today { background:#f0f9ff!important; }
-.fc .fc-event { border-radius:5px!important;border:none!important;font-size:.72rem!important;font-weight:600!important;padding:.1rem .35rem!important;cursor:pointer!important; }
-.fc .fc-toolbar { margin-bottom:1rem!important; }
-.fc .fc-scrollgrid { border-radius:8px;overflow:hidden; }
-.can-edit .fc-daygrid-day { cursor:pointer!important;transition:background .12s!important; }
-.can-edit .fc-daygrid-day:hover { background:#eef9fb!important; }
+.adm-wrap { font-family: 'Inter', sans-serif; }
+
+/* Stats */
+.adm-stats {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 1rem; margin-bottom: 1.5rem;
+}
+@media(max-width:768px){ .adm-stats { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:480px){ .adm-stats { grid-template-columns: 1fr; } }
+
+.adm-stat {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.adm-stat-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.adm-stat-icon i { font-size: 1.15rem; color: #fff; }
+.adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
+.adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
+
+/* Card */
+.adm-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 1.25rem;
+}
+.adm-card-head {
+    background: #003b73; padding: .85rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.adm-card-head-left { display: flex; align-items: center; gap: .6rem; }
+.adm-card-head i { color: #4ec7d2; font-size: 1rem; }
+.adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+.adm-card-body { padding: 1.5rem; }
+
+/* Leyenda */
+.legend-wrap { display: flex; gap: .65rem; flex-wrap: wrap; padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9; }
+.legend-item { display: flex; align-items: center; gap: .4rem; font-size: .75rem; color: #334155; font-weight: 500; }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+/* FullCalendar overrides */
+#calendar {
+    --fc-border-color: #f1f5f9;
+    --fc-today-bg-color: rgba(78,199,210,.07);
+    --fc-page-bg-color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: .82rem;
+}
+.fc .fc-toolbar-title { font-size: 1rem; font-weight: 700; color: #0f172a; }
+.fc .fc-button {
+    background: #fff; border: 1.5px solid #e2e8f0; color: #00508f;
+    font-size: .78rem; font-weight: 600; padding: .32rem .7rem; border-radius: 7px;
+    box-shadow: none; transition: all .15s;
+}
+.fc .fc-button:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.fc .fc-button-active, .fc .fc-button-primary:not(:disabled).fc-button-active {
+    background: linear-gradient(135deg,#4ec7d2,#00508f) !important;
+    border-color: transparent !important; color: #fff !important;
+}
+.fc .fc-button-primary:focus { box-shadow: none !important; }
+.fc .fc-col-header-cell { background: #f8fafc; }
+.fc .fc-col-header-cell-cushion { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #64748b; padding: .5rem; }
+.fc .fc-daygrid-day-number { font-size: .8rem; font-weight: 600; color: #334155; padding: .4rem; }
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: #00508f; font-weight: 700; }
+.fc .fc-event { border-radius: 5px; font-size: .72rem; font-weight: 600; padding: 2px 5px; border: none; }
+.fc .fc-toolbar { flex-wrap: wrap; gap: .5rem; }
+.fc .fc-toolbar-chunk { display: flex; align-items: center; gap: .3rem; }
 
 /* Modal */
-.cal-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:9999; }
-.cal-modal-overlay.show { display:flex; }
-.cal-modal { background:#fff;border-radius:12px;width:100%;max-width:490px;margin:1rem;box-shadow:0 10px 40px rgba(0,0,0,.2);overflow:hidden;animation:slideUp .22s ease; }
-@keyframes slideUp { from{transform:translateY(18px);opacity:0;}to{transform:translateY(0);opacity:1;} }
-.cal-modal-head { background:#003b73;padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between; }
-.cal-modal-head span { color:#fff;font-weight:700;font-size:.95rem; }
-.cal-modal-close { background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:1rem;padding:0;line-height:1;transition:color .15s; }
-.cal-modal-close:hover { color:#fff; }
-.cal-modal-body { padding:1.25rem; }
-.cal-modal-footer { padding:.85rem 1.25rem;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap; }
-.tipo-indicator { display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;border-radius:8px;background:#f8fafc;border:1.5px solid #e2e8f0;font-size:.78rem;font-weight:600;color:#334155;margin-bottom:.85rem;transition:border-color .2s; }
-.tipo-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:background .2s; }
-.frm-label { display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:.35rem; }
-.frm-label i { color:#4ec7d2;margin-right:.25rem; }
-.frm-control { width:100%;padding:.42rem .75rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.82rem;color:#0f172a;background:#f8fafc;outline:none;transition:border-color .15s,box-shadow .15s;font-family:'Inter',sans-serif; }
-.frm-control:focus { border-color:#4ec7d2;box-shadow:0 0 0 3px rgba(78,199,210,.12);background:#fff; }
-.frm-row-2 { display:grid;grid-template-columns:1fr 1fr;gap:.75rem; }
-@media(max-width:420px){ .frm-row-2 { grid-template-columns:1fr; } }
-.frm-group { display:flex;flex-direction:column;margin-bottom:.85rem; }
-.frm-group:last-child { margin-bottom:0; }
-.btn-modal-cancel { display:inline-flex;align-items:center;gap:.3rem;padding:.42rem 1rem;border-radius:7px;font-size:.82rem;font-weight:600;background:#fff;color:#64748b;border:1.5px solid #e2e8f0;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif; }
-.btn-modal-cancel:hover { background:#f8fafc;border-color:#94a3b8; }
-.btn-modal-delete { display:inline-flex;align-items:center;gap:.3rem;padding:.42rem 1rem;border-radius:7px;font-size:.82rem;font-weight:600;background:#fff;color:#ef4444;border:1.5px solid #fecaca;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif; }
-.btn-modal-delete:hover { background:#fef2f2;border-color:#ef4444; }
-.btn-modal-save { display:inline-flex;align-items:center;gap:.3rem;padding:.42rem 1.1rem;border-radius:7px;font-size:.82rem;font-weight:600;background:linear-gradient(135deg,#4ec7d2,#00508f);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 10px rgba(0,80,143,.25);transition:opacity .15s;font-family:'Inter',sans-serif; }
-.btn-modal-save:hover { opacity:.88; }
-.btn-modal-save:disabled { opacity:.6;cursor:not-allowed; }
-.cal-toast { position:fixed;bottom:1.5rem;right:1.5rem;z-index:99999;background:#0f172a;color:#fff;border-radius:10px;padding:.65rem 1.1rem;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;transition:all .3s ease;pointer-events:none; }
-.cal-toast.show { transform:translateY(0);opacity:1; }
-.cal-toast.success i { color:#4ec7d2; }
-.cal-toast.error i { color:#ef4444; }
+.modal-content { border-radius: 12px; border: none; overflow: hidden; }
+.modal-header { background: #003b73; padding: 1rem 1.25rem; border-bottom: none; }
+.modal-header .modal-title { color: #fff; font-size: .95rem; font-weight: 700; display: flex; align-items: center; gap: .5rem; }
+.modal-header .btn-close { filter: invert(1) brightness(2); }
+.modal-body { padding: 1.25rem 1.5rem; }
+.modal-footer { background: #f8fafc; border-top: 1px solid #f1f5f9; padding: .85rem 1.5rem; gap: .5rem; }
+
+.form-label { font-size: .78rem; font-weight: 600; color: #334155; margin-bottom: .35rem; }
+.form-control, .form-select {
+    border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: .84rem;
+    padding: .45rem .85rem; color: #0f172a; background: #f8fafc;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.12); background: #fff;
+}
+
+.btn-cancel-modal {
+    padding: .42rem 1rem; border-radius: 7px; border: 1.5px solid #e2e8f0;
+    background: #fff; color: #64748b; font-size: .82rem; font-weight: 600; cursor: pointer;
+}
+.btn-cancel-modal:hover { background: #f1f5f9; }
+.btn-save-modal {
+    padding: .42rem 1rem; border-radius: 7px; border: none;
+    background: linear-gradient(135deg,#4ec7d2,#00508f); color: #fff;
+    font-size: .82rem; font-weight: 600; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,80,143,.2);
+}
+.btn-save-modal:hover { opacity: .88; }
+.btn-del-modal {
+    padding: .42rem 1rem; border-radius: 7px; border: none;
+    background: #fef2f2; color: #ef4444; font-size: .82rem; font-weight: 600; cursor: pointer;
+}
+.btn-del-modal:hover { background: #ef4444; color: #fff; }
 </style>
 @endpush
 
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="adm-wrap">
-    <div class="adm-card">
 
+    {{-- Stats dinámicas (opcionales, si pasas contadores desde el controller) --}}
+    <div class="adm-stats">
+        <div class="adm-stat">
+            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+                <i class="fas fa-chalkboard"></i>
+            </div>
+            <div>
+                <div class="adm-stat-lbl">Clases</div>
+                <div class="adm-stat-num" id="count-clase">—</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#f87171,#dc2626);">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div>
+                <div class="adm-stat-lbl">Exámenes</div>
+                <div class="adm-stat-num" id="count-examen">—</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#9c27b0,#7b1fa2);">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div>
+                <div class="adm-stat-lbl">Matrículas</div>
+                <div class="adm-stat-num" id="count-matricula">—</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div>
+                <div class="adm-stat-lbl">Festivos</div>
+                <div class="adm-stat-num" id="count-festivo">—</div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Calendario --}}
+    <div class="adm-card">
         <div class="adm-card-head">
             <div class="adm-card-head-left">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Calendario Académico</span>
             </div>
-            <div class="legend">
-                <div class="legend-item"><div class="legend-dot" style="background:#3788d8"></div> Clase</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#dc3545"></div> Examen</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#28a745"></div> Festivo</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#ffc107"></div> Evento</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#17a2b8"></div> Vacaciones</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#9c27b0"></div> Prematrícula</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> Matrícula</div>
-            </div>
         </div>
 
-        <div class="adm-card-body {{ $esSuperAdmin ? 'can-edit' : '' }}">
-            @if($esSuperAdmin)
-                <div class="cal-hint">
-                    <i class="fas fa-hand-pointer"></i>
-                    Clic en un día para crear un evento &middot; Clic en un evento para editarlo &middot; Arrastra para mover
-                </div>
-            @endif
-            <div id="calendar"></div>
+        {{-- Leyenda --}}
+        <div class="legend-wrap">
+            <div class="legend-item"><div class="legend-dot" style="background:#3788d8"></div> Clase</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#dc3545"></div> Examen</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#28a745"></div> Festivo</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ffc107"></div> Evento</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#17a2b8"></div> Vacaciones</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#9c27b0"></div> Prematrícula</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> Matrícula</div>
         </div>
 
+        <div class="adm-card-body">
+            <div id='calendar'></div>
+        </div>
     </div>
+
 </div>
 
-<div class="cal-toast" id="calToast">
-    <i class="fas fa-check-circle"></i>
-    <span id="calToastMsg">Evento guardado</span>
-</div>
-
-@if($esSuperAdmin)
-<div class="cal-modal-overlay" id="calModalOverlay">
-    <div class="cal-modal">
-        <div class="cal-modal-head">
-            <span id="modalTitle"><i class="fas fa-calendar-plus me-2"></i>Nuevo Evento</span>
-            <button class="cal-modal-close" onclick="cerrarModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="cal-modal-body">
-            <div class="tipo-indicator" id="tipoIndicator">
-                <div class="tipo-dot" id="tipoDot" style="background:#3788d8"></div>
-                <span id="tipoLabel">Clase</span>
+{{-- Modal Agregar/Editar --}}
+<div class="modal fade" id="eventModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-plus"></i>
+                    <span id="modalTitle">Agregar Evento</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="eventForm" onsubmit="return false;">
-                <input type="hidden" id="eventId">
-                <div class="frm-group">
-                    <label class="frm-label"><i class="fas fa-heading"></i> Título</label>
-                    <input type="text" id="title" class="frm-control" placeholder="Nombre del evento" required autocomplete="off">
-                </div>
-                <div class="frm-group">
-                    <label class="frm-label"><i class="fas fa-align-left"></i> Descripción</label>
-                    <textarea id="description" class="frm-control" rows="2" placeholder="Descripción opcional..."></textarea>
-                </div>
-                <div class="frm-group">
-                    <label class="frm-label"><i class="fas fa-tag"></i> Tipo</label>
-                    <select id="type" class="frm-control" required onchange="actualizarTipoIndicator()">
-                        <option value="clase">📘 Clase</option>
-                        <option value="examen">📝 Examen</option>
-                        <option value="festivo">🎉 Festivo</option>
-                        <option value="evento">📅 Evento</option>
-                        <option value="vacaciones">🏖️ Vacaciones</option>
-                        <option value="prematricula">📋 Prematrícula</option>
-                        <option value="matricula">✏️ Matrícula</option>
-                    </select>
-                </div>
-                <div class="frm-row-2">
-                    <div class="frm-group">
-                        <label class="frm-label"><i class="fas fa-calendar"></i> Fecha inicio</label>
-                        <input type="date" id="start_date" class="frm-control" required>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <input type="hidden" id="eventId">
+                    <div class="mb-3">
+                        <label class="form-label">Título *</label>
+                        <input type="text" class="form-control" id="title" required placeholder="Nombre del evento">
                     </div>
-                    <div class="frm-group">
-                        <label class="frm-label"><i class="fas fa-calendar-check"></i> Fecha fin</label>
-                        <input type="date" id="end_date" class="frm-control" required>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" id="description" rows="2" placeholder="Descripción opcional"></textarea>
                     </div>
-                </div>
-            </form>
-        </div>
-        <div class="cal-modal-footer">
-            <button class="btn-modal-delete" id="deleteBtn" style="display:none;" onclick="eliminarEvento()">
-                <i class="fas fa-trash-alt"></i> Eliminar
-            </button>
-            <div style="display:flex;gap:.5rem;margin-left:auto;">
-                <button class="btn-modal-cancel" onclick="cerrarModal()">
-                    <i class="fas fa-times"></i> Cancelar
+                    <div class="mb-3">
+                        <label class="form-label">Tipo *</label>
+                        <select class="form-select" id="type" required>
+                            <option value="clase">Clase</option>
+                            <option value="examen">Examen</option>
+                            <option value="festivo">Festivo</option>
+                            <option value="evento">Evento</option>
+                            <option value="vacaciones">Vacaciones</option>
+                            <option value="prematricula">Prematrícula</option>
+                            <option value="matricula">Matrícula</option>
+                        </select>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label">Fecha Inicio *</label>
+                            <input type="date" class="form-control" id="start_date" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Fecha Fin *</label>
+                            <input type="date" class="form-control" id="end_date" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-del-modal" id="deleteBtn" style="display:none;">
+                    <i class="fas fa-trash"></i> Eliminar
                 </button>
-                <button class="btn-modal-save" id="saveBtn" onclick="guardarEvento()">
+                <button type="button" class="btn-cancel-modal" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn-save-modal" id="saveBtn">
                     <i class="fas fa-save"></i> Guardar
                 </button>
             </div>
         </div>
     </div>
 </div>
-@endif
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js'></script>
 @endsection
 
 @push('scripts')
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js'></script>
 <script>
-// Usando user_type e is_super_admin de la migración
-const esSuperAdmin = {{ ($esSuperAdmin ? 'true' : 'false') }};
-
 const coloresPorTipo = {
-    'clase':        '#3788d8',
-    'examen':       '#dc3545',
-    'festivo':      '#28a745',
-    'evento':       '#ffc107',
-    'vacaciones':   '#17a2b8',
-    'prematricula': '#9c27b0',
-    'matricula':    '#ff5722',
-};
-
-const nombresPorTipo = {
-    'clase':'Clase','examen':'Examen','festivo':'Festivo',
-    'evento':'Evento','vacaciones':'Vacaciones',
-    'prematricula':'Prematrícula','matricula':'Matrícula',
+    'clase'        : '#3788d8',
+    'examen'       : '#dc3545',
+    'festivo'      : '#28a745',
+    'evento'       : '#ffc107',
+    'vacaciones'   : '#17a2b8',
+    'prematricula' : '#9c27b0',
+    'matricula'    : '#ff5722'
 };
 
 let calendario;
+let modalEvento;
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    modalEvento = new bootstrap.Modal(document.getElementById('eventModal'));
+
     calendario = new FullCalendar.Calendar(document.getElementById('calendar'), {
         locale: 'es',
         initialView: 'dayGridMonth',
         headerToolbar: {
-            left:   'prev,next today',
+            left: 'prev,next today',
             center: 'title',
-            right:  'dayGridMonth,dayGridWeek,listMonth',
+            right: 'dayGridMonth,dayGridWeek,listMonth'
         },
         buttonText: { today:'Hoy', month:'Mes', week:'Semana', list:'Lista' },
-        events:       '/calendario/eventos',
-        editable:     esSuperAdmin,
-        selectable:   esSuperAdmin,
-        selectMirror: false,
+        events: '/calendario/eventos',
+        editable: true,
+        selectable: true,
+        selectMirror: true,
         dayMaxEvents: true,
 
-        // Clic simple en un día → abrir modal con esa fecha
-        dateClick: function (info) {
-            if (!esSuperAdmin) return;
-            abrirModal(null, info.dateStr, info.dateStr);
-        },
+        select: (info) => abrirModal(null, info.startStr, info.endStr),
+        eventClick: (info) => abrirModal(info.event),
+        eventDrop: (info) => actualizarFechasEvento(info.event),
+        eventResize: (info) => actualizarFechasEvento(info.event),
 
-        // Arrastrar rango → abrir modal con fechas
-        select: function (info) {
-            if (!esSuperAdmin) return;
-            const fin = new Date(info.endStr);
-            fin.setDate(fin.getDate() - 1);
-            abrirModal(null, info.startStr, fin.toISOString().split('T')[0]);
-        },
-
-        // Clic en evento existente → editar
-        eventClick: function (info) {
-            if (!esSuperAdmin) return;
-            info.jsEvent.stopPropagation();
-            abrirModal(info.event);
-        },
-
-        eventDrop: function (info) {
-            if (!esSuperAdmin) { info.revert(); return; }
-            actualizarFechasEvento(info.event);
-        },
-
-        eventResize: function (info) {
-            if (!esSuperAdmin) { info.revert(); return; }
-            actualizarFechasEvento(info.event);
-        },
+        // Actualizar contadores al cargar eventos
+        eventsSet: function(events) {
+            const tipos = ['clase','examen','festivo','matricula'];
+            tipos.forEach(t => {
+                const el = document.getElementById('count-' + t);
+                if(el) el.textContent = events.filter(e => e.extendedProps.type === t).length;
+            });
+        }
     });
 
     calendario.render();
+
+    document.getElementById('saveBtn').addEventListener('click', guardarEvento);
+    document.getElementById('deleteBtn').addEventListener('click', eliminarEvento);
 });
 
-function actualizarTipoIndicator() {
-    const tipo  = document.getElementById('type').value;
-    const color = coloresPorTipo[tipo] || '#3788d8';
-    document.getElementById('tipoDot').style.background        = color;
-    document.getElementById('tipoLabel').textContent           = nombresPorTipo[tipo] || tipo;
-    document.getElementById('tipoIndicator').style.borderColor = color + '66';
-}
-
-function abrirModal(evento, fechaInicio, fechaFin) {
+function abrirModal(evento = null, fechaInicio = null, fechaFin = null) {
     document.getElementById('eventForm').reset();
     document.getElementById('eventId').value = '';
 
     if (evento) {
-        document.getElementById('modalTitle').innerHTML =
-            '<i class="fas fa-pen me-2" style="color:#4ec7d2;"></i>Editar Evento';
-        document.getElementById('deleteBtn').style.display = 'flex';
-        document.getElementById('eventId').value     = evento.id;
-        document.getElementById('title').value       = evento.title;
+        document.getElementById('modalTitle').textContent = 'Editar Evento';
+        document.getElementById('deleteBtn').style.display = 'inline-flex';
+        document.getElementById('eventId').value = evento.id;
+        document.getElementById('title').value = evento.title;
         document.getElementById('description').value = evento.extendedProps.description || '';
-        document.getElementById('type').value        = evento.extendedProps.type || 'clase';
-        document.getElementById('start_date').value  = evento.startStr.split('T')[0];
-        document.getElementById('end_date').value    = evento.endStr
-            ? new Date(new Date(evento.endStr) - 86400000).toISOString().split('T')[0]
-            : evento.startStr.split('T')[0];
+        document.getElementById('type').value = evento.extendedProps.type;
+        document.getElementById('start_date').value = evento.startStr;
+        document.getElementById('end_date').value = evento.endStr ? evento.endStr : evento.startStr;
     } else {
-        document.getElementById('modalTitle').innerHTML =
-            '<i class="fas fa-calendar-plus me-2" style="color:#4ec7d2;"></i>Nuevo Evento';
+        document.getElementById('modalTitle').textContent = 'Agregar Evento';
         document.getElementById('deleteBtn').style.display = 'none';
-        document.getElementById('type').value = 'clase';
         if (fechaInicio) document.getElementById('start_date').value = fechaInicio;
-        if (fechaFin)    document.getElementById('end_date').value   = fechaFin;
+        if (fechaFin) {
+            const fin = new Date(fechaFin);
+            fin.setDate(fin.getDate() - 1);
+            document.getElementById('end_date').value = fin.toISOString().split('T')[0];
+        }
     }
-
-    actualizarTipoIndicator();
-    document.getElementById('calModalOverlay').classList.add('show');
-    document.body.style.overflow = 'hidden';
-    setTimeout(function () { document.getElementById('title').focus(); }, 200);
-}
-
-function cerrarModal() {
-    document.getElementById('calModalOverlay').classList.remove('show');
-    document.body.style.overflow = '';
-}
-
-document.getElementById('calModalOverlay')?.addEventListener('click', function (e) {
-    if (e.target === this) cerrarModal();
-});
-document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') cerrarModal();
-});
-
-function mostrarToast(msg, tipo) {
-    tipo = tipo || 'success';
-    const toast = document.getElementById('calToast');
-    document.getElementById('calToastMsg').textContent = msg;
-    toast.className = 'cal-toast ' + tipo;
-    toast.querySelector('i').className = tipo === 'success'
-        ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
-    toast.classList.add('show');
-    setTimeout(function () { toast.classList.remove('show'); }, 3000);
+    modalEvento.show();
 }
 
 async function guardarEvento() {
-    const titulo = document.getElementById('title').value.trim();
-    if (!titulo) { document.getElementById('title').focus(); return; }
-
-    const saveBtn  = document.getElementById('saveBtn');
     const eventoId = document.getElementById('eventId').value;
-    const tipo     = document.getElementById('type').value;
-
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-
+    const tipo = document.getElementById('type').value;
     const datos = {
-        titulo:       titulo,
-        descripcion:  document.getElementById('description').value,
+        titulo: document.getElementById('title').value,
+        descripcion: document.getElementById('description').value,
         fecha_inicio: document.getElementById('start_date').value,
-        fecha_fin:    document.getElementById('end_date').value,
-        tipo:         tipo,
-        color:        coloresPorTipo[tipo],
-        todo_el_dia:  1,
+        fecha_fin: document.getElementById('end_date').value,
+        tipo: tipo,
+        color: coloresPorTipo[tipo],
+        todo_el_dia: 1
     };
-
-    const url    = eventoId ? '/calendario/eventos/' + eventoId : '/calendario/eventos';
+    const url    = eventoId ? `/calendario/eventos/${eventoId}` : '/calendario/eventos';
     const metodo = eventoId ? 'PUT' : 'POST';
-
     try {
         const resp = await fetch(url, {
             method: metodo,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept':       'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             },
-            body: JSON.stringify(datos),
+            body: JSON.stringify(datos)
         });
-
-        const resultado = await resp.json();
-
-        if (resp.ok && resultado.exito) {
-            cerrarModal();
+        const result = await resp.json();
+        if (resp.ok) {
+            modalEvento.hide();
             calendario.refetchEvents();
-            mostrarToast(eventoId ? 'Evento actualizado correctamente' : 'Evento creado correctamente');
         } else {
-            let msg = resultado.mensaje || 'Error de validación';
-            if (resultado.errores) msg = Object.values(resultado.errores).flat().join('\n');
-            mostrarToast(msg, 'error');
+            const msg = result.errores
+                ? Object.values(result.errores).flat().join('\n')
+                : (result.mensaje || 'Error de validación');
+            alert('Atención:\n' + msg);
         }
-    } catch (err) {
-        console.error(err);
-        mostrarToast('Error al guardar el evento.', 'error');
-    } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Guardar';
-    }
+    } catch(e) { console.error(e); alert('Error crítico. Revisa la consola.'); }
 }
 
 async function eliminarEvento() {
-    const eventoId  = document.getElementById('eventId').value;
-    if (!eventoId) return;
-
-    const deleteBtn = document.getElementById('deleteBtn');
-
-    if (deleteBtn.dataset.confirm !== 'true') {
-        deleteBtn.dataset.confirm = 'true';
-        deleteBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ¿Confirmar?';
-        setTimeout(function () {
-            if (deleteBtn.dataset.confirm === 'true') {
-                deleteBtn.dataset.confirm = 'false';
-                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Eliminar';
-            }
-        }, 3000);
-        return;
-    }
-
-    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
+    const eventoId = document.getElementById('eventId').value;
+    if (!confirm('¿Eliminar este evento?')) return;
     try {
-        const resp = await fetch('/calendario/eventos/' + eventoId, {
+        const resp = await fetch(`/calendario/eventos/${eventoId}`, {
             method: 'DELETE',
-            headers: {
-                'Accept':       'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
         });
-
-        if (resp.ok) {
-            cerrarModal();
-            calendario.refetchEvents();
-            mostrarToast('Evento eliminado correctamente');
-        } else {
-            mostrarToast('Error al eliminar el evento.', 'error');
-        }
-    } catch (err) {
-        mostrarToast('Error al eliminar el evento.', 'error');
-    } finally {
-        deleteBtn.dataset.confirm = 'false';
-        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Eliminar';
-    }
+        if (resp.ok) { modalEvento.hide(); calendario.refetchEvents(); }
+    } catch(e) { console.error(e); alert('Error al eliminar el evento.'); }
 }
 
 async function actualizarFechasEvento(evento) {
     const datos = {
-        titulo:       evento.title,
-        descripcion:  evento.extendedProps.description || '',
-        fecha_inicio: evento.startStr.split('T')[0],
-        fecha_fin:    evento.endStr
-            ? new Date(new Date(evento.endStr) - 86400000).toISOString().split('T')[0]
-            : evento.startStr.split('T')[0],
-        tipo:         evento.extendedProps.type || 'evento',
-        color:        evento.backgroundColor,
-        todo_el_dia:  evento.allDay ? 1 : 0,
+        titulo: evento.title,
+        descripcion: evento.extendedProps.description,
+        fecha_inicio: evento.startStr,
+        fecha_fin: evento.endStr || evento.startStr,
+        tipo: evento.extendedProps.type,
+        color: evento.backgroundColor,
+        todo_el_dia: evento.allDay ? 1 : 0
     };
-
     try {
-        await fetch('/calendario/eventos/' + evento.id, {
+        await fetch(`/calendario/eventos/${evento.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept':       'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             },
-            body: JSON.stringify(datos),
+            body: JSON.stringify(datos)
         });
-        mostrarToast('Evento movido correctamente');
-    } catch (err) {
-        console.error(err);
-        calendario.refetchEvents();
-    }
+    } catch(e) { console.error(e); calendario.refetchEvents(); }
 }
 </script>
 @endpush
