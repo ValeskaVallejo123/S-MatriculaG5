@@ -5,45 +5,48 @@
 | IMPORTACIONES DE CONTROLLERS
 |=============================================================================
 */
-use App\Http\Controllers\AccionesImportantesController;
-use App\Http\Controllers\Admin\SolicitudAdminController;
-use App\Http\Controllers\AdminController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\BuscarEstudianteController;
-use App\Http\Controllers\CalendarioController;
-use App\Http\Controllers\CambiarContraseniaController;
-use App\Http\Controllers\CicloController;
-use App\Http\Controllers\ConsultaestudiantexcursoController;
-use App\Http\Controllers\CupoMaximoController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DocumentoController;
-use App\Http\Controllers\EstudianteController;
-use App\Http\Controllers\GradoController;
-use App\Http\Controllers\H20CursoController;
-use App\Http\Controllers\HorarioController;
-use App\Http\Controllers\HorarioGradoController;
-use App\Http\Controllers\MateriaController;
-use App\Http\Controllers\MatriculaController;
-use App\Http\Controllers\NotificacionController;
-use App\Http\Controllers\NotificacionPreferenciaController;
-use App\Http\Controllers\ObservacionController;
-use App\Http\Controllers\PadreController;
-use App\Http\Controllers\PadrePermisoController;
 use App\Http\Controllers\PasswordResetController;
-use App\Http\Controllers\PeriodoAcademicoController;
+use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\BuscarEstudianteController;
 use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\ProfesorDashboardController;
 use App\Http\Controllers\ProfesorEstudianteController;
 use App\Http\Controllers\ProfesorGradosController;
-use App\Http\Controllers\ProfesorMateriaController;
+use App\Http\Controllers\CargaDocenteController;
+use App\Http\Controllers\MatriculaController;
+use App\Http\Controllers\PeriodoAcademicoController;
+use App\Http\Controllers\ObservacionController;
+use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\CambiarContraseniaController;
+use App\Http\Controllers\PadrePermisoController;
+use App\Http\Controllers\PadreController;
+use App\Http\Controllers\PadreDashboardController;
+//use App\Http\Controllers\ProfesorMateriaController;
+use App\Http\Controllers\GradoController;
+use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\HorarioGradoController;
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\NotificacionPreferenciaController;
+use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\AccionesImportantesController;
+use App\Http\Controllers\SuperAdmin\UsuarioController;
+use App\Http\Controllers\CalendarioController;
+use App\Http\Controllers\CicloController;
+use App\Http\Controllers\Admin\SolicitudAdminController;
+use App\Http\Controllers\SeccionController;
+use App\Http\Controllers\CupoMaximoController;
 use App\Http\Controllers\PublicoPlanEstudiosController;
 use App\Http\Controllers\RegistrarCalificacionController;
-use App\Http\Controllers\SeccionController;
-use App\Http\Controllers\SolicitudController;
-use App\Http\Controllers\SuperAdmin\UsuarioController;
-use App\Http\Controllers\SuperAdminController;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ConsultaestudiantexcursoController;
+use App\Http\Controllers\H20CursoController;
 
 /*
 |=============================================================================
@@ -62,7 +65,6 @@ Route::get('/plantilla', fn () => view('plantilla'))->name('plantilla');
 Route::view('/nosotros', 'nosotros')->name('nosotros');
 Route::view('/contacto', 'contacto')->name('contacto');
 
-// Calendario público (sin login)
 Route::get('/calendario-publico',        fn () => view('calendario-publico'))->name('calendario.publico');
 Route::get('/calendario/eventos/public', [CalendarioController::class, 'eventosPublicos'])->name('calendario.eventos.public');
 
@@ -82,7 +84,6 @@ Route::prefix('portal')->name('portal.')->group(function () {
     Route::get('/plan-estudios',         [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
     Route::get('/plan-estudios/{grado}', [PublicoPlanEstudiosController::class, 'show'])->name('plan-estudios.show');
 
-    // Matrícula pública (padres/estudiantes nuevos se inscriben sin cuenta)
     Route::get('/matricula-publica',  [MatriculaController::class, 'create'])->name('matriculas.public.create');
     Route::post('/matricula-publica', [MatriculaController::class, 'store'])->name('matriculas.public.store');
     Route::get('/matricula-exitosa',  [MatriculaController::class, 'success'])->name('matriculas.success');
@@ -117,7 +118,7 @@ Route::get('/password/solicitar',           [PasswordResetController::class, 'sh
 Route::post('/password/solicitar',          [PasswordResetController::class, 'sendResetLink'])->name('password.enviar');
 Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
 Route::post('/password/restablecer',        [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
-Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
+Route::view('/password/recuperar',          'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
 
 /*
 |=============================================================================
@@ -132,6 +133,8 @@ Route::middleware(['auth'])->group(function () {
     |-------------------------------------------------------------------------
     */
     Route::get('/dashboard', function () {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $roleRouteMap = [
             'super_admin' => 'superadmin.dashboard',
             'admin'       => 'admin.dashboard',
@@ -140,7 +143,7 @@ Route::middleware(['auth'])->group(function () {
             'padre'       => 'padre.dashboard',
             'user'        => 'admin.dashboard',
         ];
-        return redirect()->route($roleRouteMap[Auth::user()->role] ?? 'inicio');
+        return redirect()->route($roleRouteMap[$user->user_type] ?? 'inicio');
     })->name('dashboard');
 
     /*
@@ -156,7 +159,7 @@ Route::middleware(['auth'])->group(function () {
     | CALENDARIO
     |-------------------------------------------------------------------------
     */
-    Route::get('/calendario',                     fn () => view('calendario-admin'))->name('calendario');
+    Route::get('/calendario',                     [CalendarioController::class, 'index'])->name('calendario');
     Route::get('/calendario/eventos',             [CalendarioController::class, 'obtenerEventos']);
     Route::post('/calendario/eventos',            [CalendarioController::class, 'store']);
     Route::put('/calendario/eventos/{id}',        [CalendarioController::class, 'actualizar']);
@@ -187,7 +190,9 @@ Route::middleware(['auth'])->group(function () {
     | OBSERVACIONES
     |-------------------------------------------------------------------------
     */
-    Route::resource('observaciones', ObservacionController::class)->except(['show']);
+    Route::resource('observaciones', ObservacionController::class)
+        ->except(['show'])
+        ->parameters(['observaciones' => 'observacion']);
 
     /*
     |-------------------------------------------------------------------------
@@ -205,6 +210,13 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::resource('profesores', ProfesorController::class)
         ->parameters(['profesores' => 'profesor']);
+
+    /*
+    |-------------------------------------------------------------------------
+    | CARGA DOCENTE
+    |-------------------------------------------------------------------------
+    */
+    Route::get('carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
 
     /*
     |-------------------------------------------------------------------------
@@ -304,14 +316,14 @@ Route::middleware(['auth'])->group(function () {
     | ASIGNACIÓN PROFESOR-MATERIA
     |-------------------------------------------------------------------------
     */
-    Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
+    /*Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
         Route::get('/',                [ProfesorMateriaController::class, 'index'])->name('index');
         Route::get('/create',          [ProfesorMateriaController::class, 'create'])->name('create');
         Route::post('/',               [ProfesorMateriaController::class, 'store'])->name('store');
         Route::get('/{profesor}/edit', [ProfesorMateriaController::class, 'edit'])->name('edit');
         Route::put('/{profesor}',      [ProfesorMateriaController::class, 'update'])->name('update');
         Route::delete('/{profesor}',   [ProfesorMateriaController::class, 'destroy'])->name('destroy');
-    });
+    });*/
 
     /*
     |-------------------------------------------------------------------------
@@ -385,8 +397,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('superadmin')->name('superadmin.')->middleware('role:super_admin')->group(function () {
 
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('/perfil',    [SuperAdminController::class, 'perfil'])->name('perfil');
-        Route::put('/perfil',    [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
+
+        // Perfil
+        Route::get('/perfil',          [SuperAdminController::class, 'perfil'])->name('perfil');
+        Route::put('/perfil',          [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
         Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
 
         Route::get('/cambiarcontrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
@@ -395,6 +409,7 @@ Route::middleware(['auth'])->group(function () {
         /*
         |---------------------------------------------------------------------
         | ADMINISTRADORES
+        | ORDEN CRÍTICO: rutas estáticas antes de {administrador}
         |---------------------------------------------------------------------
         */
         Route::get('/administradores/permisos',         [SuperAdminController::class, 'permisosRoles'])->name('administradores.permisos');
@@ -431,6 +446,7 @@ Route::middleware(['auth'])->group(function () {
         /*
         |---------------------------------------------------------------------
         | GRADOS (superadmin)
+        | ORDEN CRÍTICO: rutas específicas antes del resource
         |---------------------------------------------------------------------
         */
         Route::get('grados/crear-masivo',    [GradoController::class, 'crearMasivo'])->name('grados.crear-masivo');
@@ -479,14 +495,29 @@ Route::middleware(['auth'])->group(function () {
         | PROFESOR-MATERIA (superadmin)
         |---------------------------------------------------------------------
         */
-        Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
+        /*Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
             Route::get('/',                [ProfesorMateriaController::class, 'index'])->name('index');
             Route::get('/create',          [ProfesorMateriaController::class, 'create'])->name('create');
             Route::post('/',               [ProfesorMateriaController::class, 'store'])->name('store');
             Route::get('/{profesor}/edit', [ProfesorMateriaController::class, 'edit'])->name('edit');
             Route::put('/{profesor}',      [ProfesorMateriaController::class, 'update'])->name('update');
             Route::delete('/{profesor}',   [ProfesorMateriaController::class, 'destroy'])->name('destroy');
-        });
+        });*/
+
+        /*
+        |---------------------------------------------------------------------
+        | CUPOS MÁXIMOS (superadmin)
+        |---------------------------------------------------------------------
+        */
+        Route::resource('cupos_maximos', CupoMaximoController::class)->names([
+            'index'   => 'cupos_maximos.index',
+            'create'  => 'cupos_maximos.create',
+            'store'   => 'cupos_maximos.store',
+            'show'    => 'cupos_maximos.show',
+            'edit'    => 'cupos_maximos.edit',
+            'update'  => 'cupos_maximos.update',
+            'destroy' => 'cupos_maximos.destroy',
+        ]);
 
     }); // fin superadmin
 
@@ -559,7 +590,9 @@ Route::middleware(['auth'])->group(function () {
     |=========================================================================
     */
     Route::prefix('padre')->name('padre.')->middleware('role:padre')->group(function () {
-        Route::get('/dashboard', fn () => view('padre.dashboard.index'))->name('dashboard');
+        Route::get('/dashboard',           [PadreDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/hijo/{estudianteId}', [PadreDashboardController::class, 'verHijo'])->name('hijo');
+        Route::put('/password',            [PadreDashboardController::class, 'cambiarPassword'])->name('cambiarPassword');
     }); // fin padre
 
 }); // fin middleware auth

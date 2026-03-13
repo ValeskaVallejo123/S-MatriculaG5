@@ -12,28 +12,27 @@ class CalendarioController extends Controller
     /**
      * Muestra todos los eventos en formato JSON simple (index básico).
      */
-   public function index()
-{
-    $eventos = EventoAcademico::all();
+    public function index()
+    {
+        $eventos = EventoAcademico::all();
 
-    return response()->json($eventos->map(function ($evento) {
-        return [
-            'id' => $evento->id,
-            'title' => $evento->titulo,
-            'start' => $evento->fecha_inicio,
-            'end' => $evento->fecha_fin,
-            'color' => $evento->color,
-            'extendedProps' => [
-                'description' => $evento->descripcion,
-                'type' => $evento->tipo
-            ]
-        ];
-    }));
-}
-
+        return response()->json($eventos->map(function ($evento) {
+            return [
+                'id'    => $evento->id,
+                'title' => $evento->titulo,
+                'start' => $evento->fecha_inicio,
+                'end'   => $evento->fecha_fin,
+                'color' => $evento->color,
+                'extendedProps' => [
+                    'description' => $evento->descripcion,
+                    'type'        => $evento->tipo,
+                ],
+            ];
+        }));
+    }
 
     /**
-     * Eventos públicos (sin auth) — usa obtenerEventos() con formato completo.
+     * Alias público para obtenerEventos
      */
     public function eventosPublicos()
     {
@@ -98,21 +97,24 @@ class CalendarioController extends Controller
      */
     public function store(Request $request)
     {
-        $validado = $this->validarEvento($request);
-
-        // Campos adicionales que store necesita y actualizar no
         $request->validate([
-            'todo_el_dia' => 'nullable|boolean',
+            'titulo'       => 'required|string|max:255',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin'    => 'required|date|after_or_equal:fecha_inicio',
+            'tipo'         => 'required|string',
+            'descripcion'  => 'nullable|string',
+            'color'        => 'nullable|string',
+            'todo_el_dia'  => 'nullable|boolean',
         ]);
 
         $evento = EventoAcademico::create([
-            'titulo'      => $validado['titulo'],
-            'descripcion' => $validado['descripcion'] ?? null,
-            'fecha_inicio' => $validado['fecha_inicio'],
-            'fecha_fin'   => $validado['fecha_fin'],
-            'tipo'        => $validado['tipo'],
-            'color'       => $validado['color'],
-            'todo_el_dia' => $request->todo_el_dia ?? 1,
+            'titulo'       => $request->titulo,
+            'descripcion'  => $request->descripcion,
+            'fecha_inicio' => $request->fecha_inicio,
+            'fecha_fin'    => $request->fecha_fin,
+            'tipo'         => $request->tipo,
+            'color'        => $request->color,
+            'todo_el_dia'  => $request->todo_el_dia ?? 1,
         ]);
 
         return response()->json([
@@ -128,30 +130,35 @@ class CalendarioController extends Controller
      */
     public function actualizar(Request $request, $id)
     {
-        // Verificar permisos
-        // En el método actualizar y eliminar, cambia esto:
-if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) { // Usar 'role' y 'super_admin'
-    return response()->json([
-        'exito' => false,
-        'mensaje' => 'No tienes permisos'
-    ], 403);
-}
+        if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) {
+            return response()->json([
+                'exito'   => false,
+                'mensaje' => 'No tienes permisos',
+            ], 403);
+        }
 
         try {
-            $validado = $this->validarEvento($request);
+            $validado = $request->validate([
+                'titulo'       => 'required|string|max:255',
+                'descripcion'  => 'nullable|string',
+                'fecha_inicio' => 'required|date',
+                'fecha_fin'    => 'required|date|after_or_equal:fecha_inicio',
+                'tipo'         => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
+                'color'        => 'required|string',
+                'todo_el_dia'  => 'boolean',
+            ]);
 
-            // Forzar valor booleano
             if ($request->has('todo_el_dia')) {
                 $validado['todo_el_dia'] = $request->boolean('todo_el_dia');
             }
 
-            $evento = EventoAcademico::findOrFail($id);
-            $evento->update($validado);
+            $eventoAcademico = EventoAcademico::findOrFail($id);
+            $eventoAcademico->update($validado);
 
             return response()->json([
-                'exito'  => true,
+                'exito'   => true,
                 'mensaje' => 'Evento actualizado con éxito',
-                'evento'  => $evento,
+                'evento'  => $eventoAcademico,
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -162,7 +169,7 @@ if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) { // Usar 'role' y 
 
         } catch (\Exception $e) {
             return response()->json([
-                'exito'  => false,
+                'exito'   => false,
                 'mensaje' => 'Error al actualizar: ' . $e->getMessage(),
             ], 500);
         }
@@ -175,7 +182,7 @@ if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) { // Usar 'role' y 
     {
         if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) {
             return response()->json([
-                'exito'  => false,
+                'exito'   => false,
                 'mensaje' => 'No tienes permisos',
             ], 403);
         }
@@ -184,13 +191,13 @@ if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) { // Usar 'role' y 
             $evento->delete();
 
             return response()->json([
-                'exito'  => true,
+                'exito'   => true,
                 'mensaje' => 'Evento eliminado con éxito',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                'exito'  => false,
+                'exito'   => false,
                 'mensaje' => 'Error al eliminar: ' . $e->getMessage(),
             ], 500);
         }
