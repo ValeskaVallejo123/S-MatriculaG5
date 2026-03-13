@@ -392,7 +392,7 @@ class MatriculaController extends Controller
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // UPDATE  ← lógica de aprobación integrada aquí
+    // UPDATE
     // ────────────────────────────────────────────────────────────────────────
 
     public function update(Request $request, Matricula $matricula)
@@ -414,7 +414,6 @@ class MatriculaController extends Controller
         $estadoAnterior = $matricula->estado;
         $estadoNuevo    = $request->estado;
 
-        // ── Subir documentos ─────────────────────────────────────────────
         $documentos = [
             'foto_estudiante', 'acta_nacimiento', 'certificado_estudios',
             'constancia_conducta', 'foto_dni_estudiante', 'foto_dni_padre',
@@ -444,7 +443,6 @@ class MatriculaController extends Controller
 
         $matricula->update($datosActualizar);
 
-        // ── Al aprobar por primera vez → crear/activar acceso del padre ──
         if ($estadoNuevo === 'aprobada' && $estadoAnterior !== 'aprobada') {
             $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
         }
@@ -474,61 +472,61 @@ class MatriculaController extends Controller
      * Aprobar matrícula (botón rápido desde index o show).
      */
     public function confirmar(Matricula $matricula)
-{
-    if ($matricula->estado !== 'pendiente') {
-        if (request()->ajax()) {
-            return response()->json([
-                'error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'."
-            ], 422);
+    {
+        if ($matricula->estado !== 'pendiente') {
+            if (request()->ajax()) {
+                return response()->json([
+                    'error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'."
+                ], 422);
+            }
+            return back()->withErrors(['error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'."]);
         }
-        return back()->withErrors(['error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'."]);
+
+        $matricula->update([
+            'estado'             => 'aprobada',
+            'fecha_confirmacion' => now(),
+            'motivo_rechazo'     => null,
+        ]);
+
+        $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Matrícula aprobada correctamente.']);
+        }
+
+        return back()->with('success', 'Matrícula aprobada y acceso creado para el padre/tutor.');
     }
-
-    $matricula->update([
-        'estado'             => 'aprobada',
-        'fecha_confirmacion' => now(),
-        'motivo_rechazo'     => null,
-    ]);
-
-    $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
-
-    if (request()->ajax()) {
-        return response()->json(['success' => true, 'message' => 'Matrícula aprobada correctamente.']);
-    }
-
-    return back()->with('success', 'Matrícula aprobada y acceso creado para el padre/tutor.');
-}
 
     /**
      * Rechazar matrícula.
      */
     public function rechazar(Request $request, Matricula $matricula)
-{
-    $request->validate([
-        'motivo_rechazo' => 'required|string|min:10|max:500',
-    ]);
+    {
+        $request->validate([
+            'motivo_rechazo' => 'required|string|min:10|max:500',
+        ]);
 
-    if ($matricula->estado !== 'pendiente') {
-        if ($request->ajax()) {
-            return response()->json([
-                'error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'."
-            ], 422);
+        if ($matricula->estado !== 'pendiente') {
+            if ($request->ajax()) {
+                return response()->json([
+                    'error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'."
+                ], 422);
+            }
+            return back()->withErrors(['error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'."]);
         }
-        return back()->withErrors(['error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'."]);
+
+        $matricula->update([
+            'estado'             => 'rechazada',
+            'motivo_rechazo'     => $request->motivo_rechazo,
+            'fecha_confirmacion' => now(),
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Matrícula rechazada correctamente.']);
+        }
+
+        return back()->with('success', 'Matrícula rechazada correctamente.');
     }
-
-    $matricula->update([
-        'estado'             => 'rechazada',
-        'motivo_rechazo'     => $request->motivo_rechazo,
-        'fecha_confirmacion' => now(),
-    ]);
-
-    if ($request->ajax()) {
-        return response()->json(['success' => true, 'message' => 'Matrícula rechazada correctamente.']);
-    }
-
-    return back()->with('success', 'Matrícula rechazada correctamente.');
-}
 
     /**
      * Cancelar matrícula.
@@ -544,6 +542,16 @@ class MatriculaController extends Controller
         $matricula->update(['estado' => 'cancelada']);
 
         return back()->with('success', 'Matrícula cancelada correctamente.');
+    }
+
+    /**
+     * Aprobar rápido (patch desde index).
+     */
+    public function aprobar(Matricula $matricula)
+    {
+        $matricula->update(['estado' => 'aprobada']);
+
+        return back()->with('success', 'Matrícula aprobada correctamente.');
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -612,11 +620,5 @@ class MatriculaController extends Controller
         // ── Activar padre y estudiante ────────────────────────────────────
         $padre->update(['estado' => 'activo']);
         $estudiante->update(['estado' => 'activo']);
-    }
-    public function aprobar(Matricula $matricula)
-    {
-      $matricula->update(['estado' => 'aprobada']);
-
-      return back()->with('success', 'Matrícula aprobada correctamente.');
     }
 }

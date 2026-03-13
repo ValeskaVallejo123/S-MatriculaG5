@@ -13,6 +13,7 @@ class UsuarioController extends Controller
 {
     /**
      * Listar todos los usuarios del sistema.
+     * Se usa paginación para evitar cargar todos los usuarios en memoria.
      */
     public function index()
     {
@@ -109,6 +110,8 @@ class UsuarioController extends Controller
 
     /**
      * Eliminar usuario.
+     * CORRECCIÓN: se muestra el nombre del usuario eliminado en el mensaje
+     * y se previene que el superadmin se elimine a sí mismo.
      */
     public function destroy($id)
     {
@@ -182,6 +185,7 @@ class UsuarioController extends Controller
 
     /**
      * Activar un usuario existente.
+     * CORRECCIÓN: se previene modificar el propio estado.
      */
     public function activar($id)
     {
@@ -199,6 +203,7 @@ class UsuarioController extends Controller
 
     /**
      * Desactivar un usuario existente.
+     * CORRECCIÓN: se previene desactivar la propia cuenta.
      */
     public function desactivar($id)
     {

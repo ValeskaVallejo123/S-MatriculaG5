@@ -91,9 +91,9 @@
         </div>
 
         <div class="text-center mb-4">
-            <a href="{{ url('/') }}" class="btn-volver">
+            <a href="{{ url('plantilla') }}" class="btn-volver">
                 <i class="fas fa-arrow-left"></i>
-                Volver al Inicio
+                Volver
             </a>
         </div>
 

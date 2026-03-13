@@ -68,6 +68,7 @@
         @endif
 
         {{-- Verificar si tiene permiso para ver profesores --}}
+
         @if(auth()->user()->tienePermiso('ver_profesores'))
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius:10px;border-left:4px solid #00508f !important;">
@@ -89,6 +90,7 @@
 
         {{-- Verificar si tiene alguno de varios permisos --}}
 
+
         {{-- Verificar si tiene alguno de varios permisos --}}
 
         @if(auth()->user()->tieneAlgunPermiso(['ver_reportes', 'generar_reportes']))
@@ -109,9 +111,6 @@
             </div>
         </div>
         @endif
-
-
-        {{-- Verificar si tiene un rol específico --}}
 
         {{-- Verificar si tiene un rol específico --}}
 
@@ -136,6 +135,9 @@
 
     </div>
     {{-- Mostrar permisos del usuario actual (para depuración) --}}
+
+    {{-- Panel de depuración (solo en modo debug) --}}
+
 
     {{-- Panel de depuración (solo en modo debug) --}}
 
@@ -180,6 +182,7 @@
 
 </div>
 @endsection
+
 
 {{--
 EJEMPLOS DE USO EN OTROS CONTEXTOS:

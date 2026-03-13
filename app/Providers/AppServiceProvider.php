@@ -8,10 +8,7 @@ use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function boot()
     {
         // Deshabilitar foreign key constraints al eliminar tablas
         if (config('database.default') === 'mysql') {

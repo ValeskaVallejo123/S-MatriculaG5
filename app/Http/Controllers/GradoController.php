@@ -24,10 +24,6 @@ class GradoController extends Controller
         'Educación Cívica/Valores',
     ];
 
-    /**
-     * Busca los IDs de las materias por defecto de Primaria y las asigna al grado.
-     * Solo asigna las que existan en la BD y que el grado aún no tenga asignadas.
-     */
     private function asignarMateriasPorDefecto(Grado $grado): void
     {
         $ids = Materia::whereIn('nombre', self::MATERIAS_DEFAULT_PRIMARIA)
@@ -56,7 +52,7 @@ class GradoController extends Controller
         $grados = Grado::with('materias')
             ->orderBy('nivel')
             ->orderBy('numero')
-            ->paginate(15);
+            ->paginate(request('per_page', 15));
 
         return view('grados.index', compact('grados'));
     }
@@ -75,9 +71,9 @@ class GradoController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'nivel'        => 'required|in:Primaria,Básica,Secundaria',
+            'nivel'        => 'required|in:primaria,secundaria',   // ← minúsculas
             'numero'       => 'required|integer|min:1|max:12',
-            'seccion'      => 'required|string|max:1',
+            'seccion'      => 'required|in:A,B,C,D',              // ← enum de la BD
             'anio_lectivo' => 'required|integer|min:2020|max:2100',
             'activo'       => 'nullable|boolean',
         ]);
@@ -103,8 +99,8 @@ class GradoController extends Controller
             'activo'       => $request->boolean('activo', true),
         ]);
 
-        // Asignar materias por defecto solo para Primaria
-        if ($grado->nivel === 'Primaria') {
+        // Solo Primaria recibe materias por defecto
+        if ($grado->nivel === 'primaria') {                        // ← minúsculas
             $this->asignarMateriasPorDefecto($grado);
         }
 
@@ -117,11 +113,10 @@ class GradoController extends Controller
      * Mostrar detalle de un grado
      */
     public function show(Grado $grado)
-    {
-        $grado->load('materias.grados');
-
-        return view('grados.show', compact('grado'));
-    }
+{
+    $grado->load('materias'); // ← sin .grados
+    return view('grados.show', compact('grado'));
+}
 
     /**
      * Mostrar formulario de edición
@@ -137,9 +132,9 @@ class GradoController extends Controller
     public function update(Request $request, Grado $grado): RedirectResponse
     {
         $validated = $request->validate([
-            'nivel'        => 'required|in:Primaria,Básica,Secundaria',
+            'nivel'        => 'required|in:primaria,secundaria',   // ← minúsculas
             'numero'       => 'required|integer|min:1|max:12',
-            'seccion'      => 'required|string|max:1',
+            'seccion'      => 'required|in:A,B,C,D',              // ← enum de la BD
             'anio_lectivo' => 'required|integer|min:2020|max:2100',
             'activo'       => 'nullable|boolean',
         ]);
@@ -234,6 +229,7 @@ $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')
             'activo'           => 'nullable|boolean',
         ]);
 
+        // Básica → secundaria para alinearse con el ENUM de la BD
         $gradosData = [
             ['nombre' => 'Primer Grado',  'nivel' => 'Primaria', 'numero' => 1],
             ['nombre' => 'Segundo Grado', 'nivel' => 'Primaria', 'numero' => 2],
@@ -259,15 +255,11 @@ $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')
                         'anio_lectivo' => 2026,
                     ],
                     [
-                        'nombre'           => $gradoData['nombre'],
-                        'capacidad_maxima' => $validated['capacidad_maxima'],
-                        'activo'           => $request->boolean('activo', true),
-                        'descripcion'      => $gradoData['nombre'] . ' - Sección ' . $seccion,
+                        'activo' => $request->boolean('activo', true),
                     ]
                 );
 
-                // Asignar materias por defecto solo a grados de Primaria recién creados
-                if ($gradoData['nivel'] === 'Primaria' && $grado->wasRecentlyCreated) {
+                if ($gradoData['nivel'] === 'primaria' && $grado->wasRecentlyCreated) {  // ← minúsculas
                     $this->asignarMateriasPorDefecto($grado);
                 }
 

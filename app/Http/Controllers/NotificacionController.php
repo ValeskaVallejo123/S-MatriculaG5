@@ -127,8 +127,8 @@ class NotificacionController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        if (!$user->isSuperAdmin() && !$user->isAdmin()) {
-            abort(403, 'Solo administradores pueden realizar esta acción');
-        }
+    if (!$user || (!$user->isSuperAdmin() && !$user->isAdmin())) {
+        abort(403, 'Solo administradores pueden realizar esta acción');
     }
+}
 }
