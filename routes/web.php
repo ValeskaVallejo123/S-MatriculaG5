@@ -20,7 +20,8 @@ use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\CambiarContraseniaController;
 use App\Http\Controllers\PadrePermisoController;
 use App\Http\Controllers\PadreController;
-use App\Http\Controllers\ProfesorMateriaController;
+//use App\Http\Controllers\PadreDashboardController;   // ← necesario para el rol padre
+use App\Http\Controllers\ProfesorMateriaController;  // ← una sola vez, sin comentar
 use App\Http\Controllers\ProfesorGradosController;
 use App\Http\Controllers\ProfesorEstudianteController;
 use App\Http\Controllers\GradoController;
@@ -295,7 +296,7 @@ Route::middleware(['auth'])->group(function () {
     | ASIGNACIÓN PROFESOR-MATERIA (solo materias, sin grado/sección)
     |----------------------------------------------------------------------
     */
-    Route::resource('profesor_materia', ProfesorMateriaController::class);
+    //Route::resource('profesor_materia', ProfesorMateriaController::class);
 
     /*
     |----------------------------------------------------------------------

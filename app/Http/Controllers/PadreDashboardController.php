@@ -5,15 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User; // ← Asegúrate de importar tu modelo User
 
 class PadreDashboardController extends Controller
 {
-    /**
-     * Dashboard principal del padre/tutor.
-     * Carga todos sus hijos vinculados con sus matrículas aprobadas.
-     */
     public function index()
     {
+        /** @var User $user */
         $user  = Auth::user();
         $padre = $user->padre;
 
@@ -35,11 +33,9 @@ class PadreDashboardController extends Controller
         return view('padre.dashboard', compact('padre', 'matriculas', 'todasMatriculas'));
     }
 
-    /**
-     * Vista de detalle de un hijo específico.
-     */
     public function verHijo($estudianteId)
     {
+        /** @var User $user */
         $user  = Auth::user();
         $padre = $user->padre;
 
@@ -58,9 +54,6 @@ class PadreDashboardController extends Controller
         return view('padre.hijo', compact('padre', 'estudiante', 'matricula'));
     }
 
-    /**
-     * Cambiar contraseña del usuario autenticado.
-     */
     public function cambiarPassword(Request $request)
     {
         $request->validate([
@@ -68,7 +61,8 @@ class PadreDashboardController extends Controller
             'password_nuevo'  => 'required|min:8|confirmed',
         ]);
 
-        $user = auth()->user();
+        /** @var User $user */  // ← Este comentario elimina el "undefined method" del IDE
+        $user = Auth::user();   // ← Unificado con Auth facade
 
         if (!Hash::check($request->password_actual, $user->password)) {
             return back()->with('pw_error', 'La contraseña actual es incorrecta.');
