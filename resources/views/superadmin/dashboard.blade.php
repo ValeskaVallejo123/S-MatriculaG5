@@ -5,6 +5,12 @@
 
 @section('topbar-actions')
     <div class="d-flex align-items-center gap-3">
+
+            {{-- BOTÓN DE MODO OSCURO INTEGRADO --}}
+            <button id="darkModeToggle" class="btn btn-sm shadow-sm fw-bold d-flex align-items-center gap-2"
+                    style="border-radius: 50px; background: #003b73; color: white; padding: 5px 15px; border: none;">
+                <i class="fas fa-moon"></i> <span id="modeText">Modo Oscuro</span>
+            </button>
         @php
             $user = auth()->user();
             $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
@@ -470,250 +476,269 @@
 
 
 @push('styles')
-<style>
-:root {
-    --primary-color: #00508f;
-    --secondary-color: #4ec7d2;
-    --accent-color: #fbbf24;
-    --success-color: #10b981;
-    --danger-color: #ef4444;
-    --warning-color: #f59e0b;
-    --light-bg: #f8fafc;
-    --border-color: #e2e8f0;
-}
+    <style>
+        :root {
+            --primary-color: #00508f;
+            --secondary-color: #4ec7d2;
+            --accent-color: #fbbf24;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --text-main: #003b73;
+            --text-muted: #64748b;
+        }
 
-/* ── Welcome ── */
-.welcome-card {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    border-radius: 16px; padding: 2rem; color: white;
-    box-shadow: 0 4px 6px rgba(0,80,143,0.1);
-}
-.welcome-title    { font-size: 1.75rem; font-weight: 700; margin-bottom: .5rem; color: white; }
-.welcome-subtitle { font-size: 1rem; opacity: .9; }
+        /* ── ESTADO MODO OSCURO ── */
+        body.dark-mode {
+            --light-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-main: #4ec7d2;
+            --text-muted: #94a3b8;
+            background-color: #0f172a !important;
+            color: #f1f5f9;
+        }
 
-/* ── Stat cards ── */
-.stat-card {
-    background: white; border-radius: 12px; padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,.05); border: 1px solid var(--border-color);
-    transition: all .3s ease; height: 100%;
-}
-.stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,80,143,.1); }
-.stat-icon {
-    width: 60px; height: 60px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; margin-bottom: 1rem;
-}
-.stat-card-students  .stat-icon { background: rgba(78,199,210,.1);  color: var(--secondary-color); }
-.stat-card-teachers  .stat-icon { background: rgba(0,80,143,.1);    color: var(--primary-color); }
-.stat-card-enrollments .stat-icon { background: rgba(251,191,36,.1); color: var(--accent-color); }
-.stat-card-users     .stat-icon { background: rgba(239,68,68,.1);   color: var(--danger-color); }
-.stat-label {
-    font-size: .875rem; color: #64748b; font-weight: 600;
-    text-transform: uppercase; letter-spacing: .5px; margin-bottom: .5rem;
-}
-.stat-value  { font-size: 2rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem; }
-.stat-footer { padding-top: 1rem; border-top: 1px solid var(--border-color); }
-.stat-badge {
-    display: inline-flex; align-items: center; gap: .5rem;
-    padding: .375rem .75rem; border-radius: 6px; font-size: .813rem; font-weight: 500;
-}
-.stat-badge-success { background: rgba(16,185,129,.1);  color: var(--success-color); }
-.stat-badge-info    { background: rgba(0,80,143,.1);    color: var(--primary-color); }
-.stat-badge-warning { background: rgba(251,191,36,.1);  color: var(--accent-color); }
-.stat-badge-danger  { background: rgba(239,68,68,.1);   color: var(--danger-color); }
+        body { background-color: var(--light-bg); transition: all 0.3s ease; }
 
-/* ── Matrículas pendientes ── */
-.border-warning-custom { border: 2px solid #ffc107 !important; border-radius: 12px; }
-.matriculas-pendientes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.25rem;
-}
-.matricula-card-compact {
-    background: white; border: 2px solid #e2e8f0; border-radius: 12px;
-    overflow: hidden; transition: all .3s ease;
-    display: flex; flex-direction: column;
-}
-.matricula-card-compact:hover {
-    border-color: #4ec7d2; box-shadow: 0 8px 20px rgba(0,80,143,.15);
-    transform: translateY(-4px);
-}
-.matricula-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    padding: .875rem 1rem;
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 2px solid #e2e8f0; gap: .5rem; flex-wrap: wrap;
-}
-.codigo-badge {
-    background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
-    color: white; padding: .4rem .75rem; border-radius: 6px;
-    font-size: .813rem; font-weight: 700;
-    display: inline-flex; align-items: center; letter-spacing: .3px;
-}
-.estado-badge {
-    background: #ffc107; color: #000;
-    padding: .4rem .75rem; border-radius: 6px;
-    font-size: .75rem; font-weight: 600;
-    display: inline-flex; align-items: center;
-}
-.matricula-content {
-    padding: 1.25rem; flex: 1;
-    display: flex; flex-direction: column; gap: 1rem;
-}
-.info-block { display: flex; gap: .875rem; align-items: flex-start; }
-.info-icon {
-    width: 42px; height: 42px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; font-size: 1.1rem; color: white;
-}
-.info-text  { flex: 1; display: flex; flex-direction: column; gap: .125rem; min-width: 0; }
-.info-label {
-    font-size: .7rem; color: #64748b; font-weight: 600;
-    text-transform: uppercase; letter-spacing: .5px;
-}
-.info-value {
-    font-size: .938rem; color: #003b73; font-weight: 700;
-    line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.info-detail { font-size: .75rem; color: #64748b; }
-.info-row {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: .75rem; padding-top: .75rem; border-top: 1px solid #e2e8f0; flex-wrap: wrap;
-}
-.info-item { display: flex; align-items: center; gap: .25rem; font-size: .813rem; }
-.matricula-footer { padding: 0 1rem 1rem 1rem; }
-.matricula-footer .btn {
-    font-size: .875rem; font-weight: 600; padding: .625rem 1rem;
-    border-radius: 8px; transition: all .3s ease;
-}
-.matricula-footer .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,80,143,.3);
-}
+        /* ── Welcome ── */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 16px; padding: 2rem; color: white;
+            box-shadow: 0 4px 6px rgba(0,80,143,0.1);
+        }
+        .welcome-title    { font-size: 1.75rem; font-weight: 700; margin-bottom: .5rem; color: white; }
+        .welcome-subtitle { font-size: 1rem; opacity: .9; }
 
-/* ── Section title ── */
-.section-title {
-    font-size: 1.25rem; font-weight: 700; color: var(--primary-color);
-    margin-bottom: 0; padding-bottom: .75rem; border-bottom: 2px solid var(--border-color);
-}
+        /* ── Stat cards ── */
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px; padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05); border: 1px solid var(--border-color);
+            transition: all .3s ease; height: 100%;
+        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,80,143,.1); }
+        .stat-icon {
+            width: 60px; height: 60px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 1rem;
+        }
+        .stat-card-students  .stat-icon { background: rgba(78,199,210,.1);  color: var(--secondary-color); }
+        .stat-card-teachers  .stat-icon { background: rgba(0,80,143,.1);    color: var(--primary-color); }
+        .stat-card-enrollments .stat-icon { background: rgba(251,191,36,.1); color: var(--accent-color); }
+        .stat-card-users     .stat-icon { background: rgba(239,68,68,.1);   color: var(--danger-color); }
 
-/* ── Action cards ── */
-.action-card {
-    background: white; border-radius: 12px; border: 1px solid var(--border-color);
-    overflow: hidden; transition: all .3s ease; height: 100%;
-}
-.action-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0,80,143,.1);
-    border-color: var(--primary-color);
-}
-.action-card-header {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 1.5rem; background: var(--light-bg);
-    border-bottom: 1px solid var(--border-color);
-}
-.action-icon {
-    width: 48px; height: 48px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.25rem; color: white;
-}
-.bg-students    { background: var(--secondary-color); }
-.bg-teachers    { background: var(--primary-color); }
-.bg-parents     { background: #6366f1; }
-.bg-enrollments { background: var(--accent-color); }
-.bg-academic    { background: var(--success-color); }
-.bg-admin       { background: var(--danger-color); }
-.action-title   { font-size: 1rem; font-weight: 700; color: var(--primary-color); margin-bottom: .25rem; }
-.action-subtitle { font-size: .813rem; color: #64748b; margin-bottom: 0; }
-.action-card-body { padding: 1.5rem; }
+        .stat-label {
+            font-size: .875rem; color: var(--text-muted); font-weight: 600;
+            text-transform: uppercase; letter-spacing: .5px; margin-bottom: .5rem;
+        }
+        .stat-value  { font-size: 2rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem; }
+        .stat-footer { padding-top: 1rem; border-top: 1px solid var(--border-color); }
 
-/* ── Botones ── */
-.btn { font-weight: 500; border-radius: 8px; padding: .5rem 1rem; transition: all .3s ease; }
-.btn-primary { background: var(--primary-color); border-color: var(--primary-color); }
-.btn-primary:hover {
-    background: #003b73; border-color: #003b73;
-    transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,80,143,.2);
-}
-.btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); }
-.btn-outline-primary:hover { background: var(--primary-color); border-color: var(--primary-color); }
+        .stat-badge {
+            display: inline-flex; align-items: center; gap: .5rem;
+            padding: .375rem .75rem; border-radius: 6px; font-size: .813rem; font-weight: 500;
+        }
+        .stat-badge-success { background: rgba(16,185,129,.1);  color: var(--success-color); }
+        .stat-badge-info    { background: rgba(0,80,143,.1);    color: var(--primary-color); }
+        .stat-badge-warning { background: rgba(251,191,36,.1);  color: var(--accent-color); }
+        .stat-badge-danger  { background: rgba(239,68,68,.1);   color: var(--danger-color); }
 
-/* ── Responsive ── */
-@media (max-width: 1200px) {
-    .matriculas-pendientes-grid { grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1rem; }
-}
-@media (max-width: 768px) {
-    .welcome-card { padding: 1.5rem; }
-    .welcome-title { font-size: 1.5rem; }
-    .stat-value { font-size: 1.75rem; }
-    .matriculas-pendientes-grid { grid-template-columns: 1fr; gap: 1rem; }
-}
-</style>
+        /* ── Matrículas pendientes ── */
+        .border-warning-custom { border: 2px solid #ffc107 !important; border-radius: 12px; }
+        .matriculas-pendientes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+        .matricula-card-compact {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color); border-radius: 12px;
+            overflow: hidden; transition: all .3s ease;
+            display: flex; flex-direction: column;
+        }
+        .matricula-card-compact:hover {
+            border-color: var(--secondary-color); box-shadow: 0 8px 20px rgba(0,80,143,.15);
+            transform: translateY(-4px);
+        }
+        .matricula-header {
+            background: rgba(0,0,0,0.03);
+            padding: .875rem 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--border-color); gap: .5rem; flex-wrap: wrap;
+        }
+        .codigo-badge {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            color: white; padding: .4rem .75rem; border-radius: 6px;
+            font-size: .813rem; font-weight: 700;
+            display: inline-flex; align-items: center; letter-spacing: .3px;
+        }
+        .estado-badge {
+            background: #ffc107; color: #000;
+            padding: .4rem .75rem; border-radius: 6px;
+            font-size: .75rem; font-weight: 600;
+            display: inline-flex; align-items: center;
+        }
+        .matricula-content {
+            padding: 1.25rem; flex: 1;
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+        .info-block { display: flex; gap: .875rem; align-items: flex-start; }
+        .info-icon {
+            width: 42px; height: 42px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 1.1rem; color: white;
+        }
+        .info-text  { flex: 1; display: flex; flex-direction: column; gap: .125rem; min-width: 0; }
+        .info-label {
+            font-size: .7rem; color: var(--text-muted); font-weight: 600;
+            text-transform: uppercase; letter-spacing: .5px;
+        }
+        .info-value {
+            font-size: .938rem; color: var(--text-main); font-weight: 700;
+            line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .info-detail { font-size: .75rem; color: var(--text-muted); }
+        .info-row {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: .75rem; padding-top: .75rem; border-top: 1px solid var(--border-color); flex-wrap: wrap;
+        }
+        .info-item { display: flex; align-items: center; gap: .25rem; font-size: .813rem; color: var(--text-muted); }
+        .matricula-footer { padding: 0 1rem 1rem 1rem; }
+
+        /* ── Section title ── */
+        .section-title {
+            font-size: 1.25rem; font-weight: 700; color: var(--primary-color);
+            margin-bottom: 0; padding-bottom: .75rem; border-bottom: 2px solid var(--border-color);
+        }
+
+        /* ── Action cards ── */
+        .action-card {
+            background: var(--card-bg);
+            border-radius: 12px; border: 1px solid var(--border-color);
+            overflow: hidden; transition: all .3s ease; height: 100%;
+        }
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,80,143,.1);
+            border-color: var(--primary-color);
+        }
+        .action-card-header {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1.5rem; background: rgba(0,0,0,0.02);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .action-icon {
+            width: 48px; height: 48px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; color: white;
+        }
+        .bg-students    { background: var(--secondary-color); }
+        .bg-teachers    { background: var(--primary-color); }
+        .bg-parents     { background: #6366f1; }
+        .bg-enrollments { background: var(--accent-color); }
+        .bg-academic    { background: var(--success-color); }
+        .bg-admin       { background: var(--danger-color); }
+
+        .action-title   { font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: .25rem; }
+        .action-subtitle { font-size: .813rem; color: var(--text-muted); margin-bottom: 0; }
+        .action-card-body { padding: 1.5rem; }
+
+        /* ── Botones ── */
+        .btn { font-weight: 500; border-radius: 8px; padding: .5rem 1rem; transition: all .3s ease; }
+        .btn-primary { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+        .btn-primary:hover {
+            background: #003b73; border-color: #003b73;
+            transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,80,143,.2);
+            color: white;
+        }
+
+        /* ── Dark Mode Overrides Especiales ── */
+        body.dark-mode .stat-value { color: var(--secondary-color) !important; }
+        body.dark-mode .section-title { color: var(--secondary-color) !important; border-bottom-color: var(--border-color); }
+        body.dark-mode .action-card-header { background: rgba(255,255,255,0.03); }
+        body.dark-mode .matricula-header { background: rgba(255,255,255,0.05); }
+
+        /* ── Responsive ── */
+        @media (max-width: 1200px) {
+            .matriculas-pendientes-grid { grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1rem; }
+        }
+        @media (max-width: 768px) {
+            .welcome-card { padding: 1.5rem; }
+            .welcome-title { font-size: 1.5rem; }
+            .stat-value { font-size: 1.75rem; }
+            .matriculas-pendientes-grid { grid-template-columns: 1fr; gap: 1rem; }
+        }
+    </style>
 @endpush
 
 
 @push('scripts')
-<script>
-(function () {
-    'use strict';
+    <script>
+        (function () {
+            'use strict';
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
-    /* ── Spinner reutilizable ── */
-    function spinnerHtml(msg) {
-        return `
+            /* ── Spinner reutilizable ── */
+            function spinnerHtml(msg) {
+                return `
             <div class="text-center py-5">
                 <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status">
                     <span class="visually-hidden">${msg}</span>
                 </div>
                 <p class="mt-3 text-muted fw-medium">${msg}</p>
             </div>`;
-    }
+            }
 
-    /* ── Ver detalles de matrícula ── */
-    document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.btn-ver-detalles');
-        if (!btn) return;
-        e.preventDefault();
-        abrirModalDetalles(
-            btn.dataset.matriculaId,
-            btn.dataset.url,
-            btn.dataset.confirmarUrl,
-            btn.dataset.rechazarUrl
-        );
-    });
+            /* ── Ver detalles de matrícula ── */
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('.btn-ver-detalles');
+                if (!btn) return;
+                e.preventDefault();
+                abrirModalDetalles(
+                    btn.dataset.matriculaId,
+                    btn.dataset.url,
+                    btn.dataset.confirmarUrl,
+                    btn.dataset.rechazarUrl
+                );
+            });
 
-    function abrirModalDetalles(matriculaId, detallesUrl, confirmarUrl, rechazarUrl) {
-        const modalEl   = document.getElementById('modalDetallesMatricula');
-        const contenido = document.getElementById('contenidoDetallesMatricula');
-        if (!modalEl || !contenido) return;
+            function abrirModalDetalles(matriculaId, detallesUrl, confirmarUrl, rechazarUrl) {
+                const modalEl   = document.getElementById('modalDetallesMatricula');
+                const contenido = document.getElementById('contenidoDetallesMatricula');
+                if (!modalEl || !contenido) return;
 
-        const modal = bootstrap.Modal.getOrCreate(modalEl);
-        contenido.innerHTML = spinnerHtml('Cargando información de la matrícula...');
-        modal.show();
+                const modal = bootstrap.Modal.getOrCreate(modalEl);
+                contenido.innerHTML = spinnerHtml('Cargando información de la matrícula...');
+                modal.show();
 
-        fetch(detallesUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(function (res) {
-                if (!res.ok) throw new Error('Error HTTP ' + res.status);
-                return res.json();
-            })
-            .then(function (data) {
-                contenido.innerHTML = construirHtmlDetalles(data, matriculaId, confirmarUrl, rechazarUrl);
-            })
-            .catch(function (err) {
-                contenido.innerHTML = `
+                fetch(detallesUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('Error HTTP ' + res.status);
+                        return res.json();
+                    })
+                    .then(function (data) {
+                        contenido.innerHTML = construirHtmlDetalles(data, matriculaId, confirmarUrl, rechazarUrl);
+                    })
+                    .catch(function (err) {
+                        contenido.innerHTML = `
                     <div class="alert alert-danger">
                         <h6><i class="fas fa-exclamation-circle me-2"></i>Error al cargar los detalles</h6>
                         <p class="mb-0">${err.message}</p>
                     </div>`;
-            });
-    }
+                    });
+            }
 
-    function construirHtmlDetalles(data, matriculaId, confirmarUrl, rechazarUrl) {
-        const est = data.estudiante ?? {};
-        const pad = data.padre      ?? {};
-        const mat = data.matricula  ?? {};
+            function construirHtmlDetalles(data, matriculaId, confirmarUrl, rechazarUrl) {
+                const est = data.estudiante ?? {};
+                const pad = data.padre      ?? {};
+                const mat = data.matricula  ?? {};
 
-        return `
+                return `
         <div class="row g-4">
             <div class="col-12">
                 <div class="alert alert-primary border-0 mb-0">
@@ -814,92 +839,127 @@
                 </div>
             </div>
         </div>`;
-    }
-
-    /* ── Rechazar desde modal de detalles ── */
-    document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.btn-rechazar-desde-modal');
-        if (!btn) return;
-        e.preventDefault();
-
-        const matriculaId = btn.dataset.matriculaId;
-        const rechazarUrl = btn.dataset.rechazarUrl;
-
-        const modalDetalles = bootstrap.Modal.getInstance(
-            document.getElementById('modalDetallesMatricula')
-        );
-        if (modalDetalles) modalDetalles.hide();
-
-        setTimeout(function () {
-            mostrarModalRechazo(matriculaId, rechazarUrl);
-        }, 350);
-    });
-
-    /* ── Modal de rechazo ── */
-    let abortController = null;
-
-    function mostrarModalRechazo(matriculaId, rechazarUrl) {
-        const form     = document.getElementById('formRechazoMatricula');
-        const textarea = document.getElementById('motivo_rechazo_matricula');
-        const modalEl  = document.getElementById('modalRechazoMatricula');
-        if (!form || !textarea || !modalEl) return;
-
-        form.action    = rechazarUrl;
-        textarea.value = '';
-        textarea.classList.remove('is-invalid');
-
-        // Limpiar listener anterior
-        if (abortController) abortController.abort();
-        abortController = new AbortController();
-
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const motivo = textarea.value.trim();
-            if (motivo.length < 10) {
-                textarea.classList.add('is-invalid');
-                textarea.focus();
-                return;
             }
-            textarea.classList.remove('is-invalid');
 
-            if (!confirm('¿Está seguro de que desea rechazar esta matrícula?')) return;
+            /* ── Rechazar desde modal de detalles ── */
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('.btn-rechazar-desde-modal');
+                if (!btn) return;
+                e.preventDefault();
 
-            const btnSubmit = form.querySelector('[type="submit"]');
-            btnSubmit.disabled = true;
-            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+                const matriculaId = btn.dataset.matriculaId;
+                const rechazarUrl = btn.dataset.rechazarUrl;
 
-            fetch(rechazarUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: new URLSearchParams({ '_token': csrfToken, 'motivo_rechazo': motivo })
-            })
-            .then(function (res) {
-                if (!res.ok) throw new Error('Error en el servidor (' + res.status + ')');
-                return res;
-            })
-            .then(function () {
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-                setTimeout(function () { location.reload(); }, 300);
-            })
-            .catch(function (err) {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = '<i class="fas fa-ban me-1"></i>Confirmar Rechazo';
-                alert('Error: ' + err.message);
+                const modalDetalles = bootstrap.Modal.getInstance(
+                    document.getElementById('modalDetallesMatricula')
+                );
+                if (modalDetalles) modalDetalles.hide();
+
+                setTimeout(function () {
+                    mostrarModalRechazo(matriculaId, rechazarUrl);
+                }, 350);
             });
 
-        }, { signal: abortController.signal });
+            /* ── Modal de rechazo ── */
+            let abortController = null;
 
-        bootstrap.Modal.getOrCreate(modalEl).show();
-    }
+            function mostrarModalRechazo(matriculaId, rechazarUrl) {
+                const form     = document.getElementById('formRechazoMatricula');
+                const textarea = document.getElementById('motivo_rechazo_matricula');
+                const modalEl  = document.getElementById('modalRechazoMatricula');
+                if (!form || !textarea || !modalEl) return;
 
-})();
-</script>
+                form.action    = rechazarUrl;
+                textarea.value = '';
+                textarea.classList.remove('is-invalid');
+
+                // Limpiar listener anterior
+                if (abortController) abortController.abort();
+                abortController = new AbortController();
+
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const motivo = textarea.value.trim();
+                    if (motivo.length < 10) {
+                        textarea.classList.add('is-invalid');
+                        textarea.focus();
+                        return;
+                    }
+                    textarea.classList.remove('is-invalid');
+
+                    if (!confirm('¿Está seguro de que desea rechazar esta matrícula?')) return;
+
+                    const btnSubmit = form.querySelector('[type="submit"]');
+                    btnSubmit.disabled = true;
+                    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+
+                    fetch(rechazarUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: new URLSearchParams({ '_token': csrfToken, 'motivo_rechazo': motivo })
+                    })
+                        .then(function (res) {
+                            if (!res.ok) throw new Error('Error en el servidor (' + res.status + ')');
+                            return res;
+                        })
+                        .then(function () {
+                            const modal = bootstrap.Modal.getInstance(modalEl);
+                            if (modal) modal.hide();
+                            setTimeout(function () { location.reload(); }, 300);
+                        })
+                        .catch(function (err) {
+                            btnSubmit.disabled = false;
+                            btnSubmit.innerHTML = '<i class="fas fa-ban me-1"></i>Confirmar Rechazo';
+                            alert('Error: ' + err.message);
+                        });
+
+                }, { signal: abortController.signal });
+
+                bootstrap.Modal.getOrCreate(modalEl).show();
+            }
+
+            /* ── NUEVA ACTUALIZACIÓN: Lógica de Modo Oscuro ── */
+            const btnDark = document.getElementById('darkModeToggle');
+            if (btnDark) {
+                const modeText = document.getElementById('modeText');
+                const iconDark = btnDark.querySelector('i');
+
+                const actualizarInterfaz = (isDark) => {
+                    if (isDark) {
+                        document.body.classList.add('dark-mode');
+                        if (modeText) modeText.innerText = "Modo Claro";
+                        if (iconDark) iconDark.classList.replace('fa-moon', 'fa-sun');
+                        btnDark.style.background = "#fbbf24";
+                        btnDark.style.color = "#000";
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        if (modeText) modeText.innerText = "Modo Oscuro";
+                        if (iconDark) iconDark.classList.replace('fa-sun', 'fa-moon');
+                        btnDark.style.background = "#003b73";
+                        btnDark.style.color = "#fff";
+                    }
+                };
+
+                // Cargar preferencia guardada
+                const themeSaved = localStorage.getItem('theme');
+                if (themeSaved === 'dark') {
+                    actualizarInterfaz(true);
+                }
+
+                btnDark.addEventListener('click', function () {
+                    const isDark = document.body.classList.toggle('dark-mode');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                    actualizarInterfaz(isDark);
+                });
+            }
+
+        })();
+    </script>
 @endpush
 
 @endsection

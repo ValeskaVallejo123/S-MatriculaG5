@@ -582,7 +582,7 @@
         <h2>Iniciar Sesión</h2>
         <p>Ingresa tus credenciales para acceder</p>
       </div>
-       
+
       @if (session('status'))
         <div class="alert alert-success">
           <i class="fas fa-check-circle"></i>
@@ -643,7 +643,7 @@
               ¿Olvidaste tu contraseña?
             </a>
           @else
-            <a href="{{ url('/recuperar-contrasena') }}" class="forgot-password">
+                <a href="{{ route('password.recuperar') }}" class="forgot-password">
               ¿Olvidaste tu contraseña?
             </a>
           @endif

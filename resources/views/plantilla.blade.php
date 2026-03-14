@@ -1198,6 +1198,17 @@
 
     <div class="features-grid">
 
+        <div class="feature-card">
+            <div class="feature-icon" style="background: #e7f1ff; color: #007bff;">
+                <i class="fas fa-file-pdf"></i>
+            </div>
+            <h3>Manual del Sistema</h3>
+            <p>Descarga nuestra guía completa en PDF para aprender a usar el portal y realizar tu matrícula sin errores.</p>
+            <a href="{{ asset('manuales/guia_matricula.pdf') }}" class="btn-feature" download>
+                <i class="fas fa-download me-2"></i> Descargar Guía
+            </a>
+        </div>
+
       <!-- Fila 1: 3 tarjetas -->
       <div class="feature-card">
         <div class="feature-icon">

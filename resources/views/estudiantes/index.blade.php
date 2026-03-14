@@ -422,6 +422,15 @@
 
     {{-- ── TABLA ── --}}
     <div class="est-card">
+        @if(session('info'))
+            <div style="margin: 1rem; padding: 1rem; background: #fff4e5; border-left: 5px solid #f59e0b; border-radius: 8px; color: #854d0e; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div>
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <b>Aviso:</b> {{ session('info') }}
+                </div>
+                <button type="button" onclick="this.parentElement.style.display='none';" style="background:none; border:none; color:#854d0e; cursor:pointer; font-size:1.2rem;">&times;</button>
+            </div>
+        @endif
         <div class="est-card-head">
             <i class="fas fa-list-ul"></i>
             <span>Lista de Estudiantes</span>
@@ -496,6 +505,12 @@
                         {{-- Acciones --}}
                         <td class="tc">
                             <div style="display:inline-flex;gap:.35rem;align-items:center;">
+                                <a href="{{ route('superadmin.estudiantes.historial.show', $estudiante->id) }}"
+                                   class="act-btn"
+                                   style="background: #e7f1ff; color: #007bff;"
+                                   title="Ver Historial Académico">
+                                    <i class="fas fa-history"></i>
+                                </a>
                                 <a href="{{ route('estudiantes.show', $estudiante->id) }}"
                                    class="act-btn act-view" title="Ver detalle">
                                     <i class="fas fa-eye"></i>

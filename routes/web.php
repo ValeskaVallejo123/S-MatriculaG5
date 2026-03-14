@@ -135,9 +135,7 @@ Route::get('/password/solicitar',           [PasswordResetController::class, 'sh
 Route::post('/password/solicitar',          [PasswordResetController::class, 'sendResetLink'])->name('password.enviar');
 Route::get('/password/restablecer/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.restablecer');
 Route::post('/password/restablecer',        [PasswordResetController::class, 'resetPassword'])->name('password.actualizar');
-Route::view('/password/recuperar', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');
-
-/*
+Route::view('/recuperar-contrasena', 'recuperarcontrasenia.recuperar_contrasenia')->name('password.recuperar');/*
 |--------------------------------------------------------------------------
 | RUTAS PRIVADAS (AUTH)
 |--------------------------------------------------------------------------
@@ -385,6 +383,17 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('superadmin')->name('superadmin.')->middleware('role:super_admin')->group(function () {
 
+// Ruta para VER el historial (Show)
+        Route::get('estudiantes/{id}/historial', [App\Http\Controllers\HistorialController::class, 'showHistorial'])
+            ->name('estudiantes.historial.show');
+
+// Ruta para EDITAR el historial (Edit)
+        Route::get('estudiantes/{id}/historial/edit', [App\Http\Controllers\HistorialController::class, 'editHistorial'])
+            ->name('estudiantes.historial.edit');
+
+// Ruta para GUARDAR los cambios (Update)
+        Route::put('estudiantes/{id}/historial', [App\Http\Controllers\HistorialController::class, 'updateHistorial'])
+            ->name('estudiantes.historial.update');
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
 
         // Perfil

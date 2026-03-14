@@ -138,6 +138,34 @@
         </div>
     </div>
 
+    {{-- BOTONES DE ACCIÓN PARA EL ADMINISTRADOR --}}
+    @if(auth()->user()->id_rol == 1) {{-- Solo se muestra al Super Administrador --}}
+    <div class="no-print" style="margin-top: 2rem; padding: 1.5rem; background: #fff4e5; border: 1px solid #ffe3bc; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h4 style="margin: 0; color: #854d0e; font-size: 0.9rem; font-weight: 800;">
+                <i class="fas fa-user-shield me-2"></i> PANEL DE CONTROL ADMINISTRATIVO
+            </h4>
+            <p style="margin: 0.3rem 0 0 0; color: #a16207; font-size: 0.75rem;">
+                Como Super Administrador, puedes modificar los registros de este historial.
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            {{-- Botón Volver --}}
+            <a href="{{ route('estudiantes.index') }}"
+               style="text-decoration: none; background: #64748b; color: white; padding: 0.7rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-arrow-left"></i> VOLVER
+            </a>
+
+            {{-- Botón Editar --}}
+            <a href="{{ route('superadmin.estudiantes.historial.edit', $estudiante->id) }}"
+               style="text-decoration: none; background: #f59e0b; color: white; padding: 0.7rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+                <i class="fas fa-edit"></i> EDITAR
+            </a>
+        </div>
+    </div>
+    @endif
+
     <style>
         @media print {
             .no-print, .navbar, .sidebar, .main-footer { display: none !important; }
