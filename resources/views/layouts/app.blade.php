@@ -407,10 +407,17 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="#" class="menu-link disabled-link" title="Próximamente disponible">
-                <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
-            </a>
-        </li>
+    @if($isSuperAdmin)
+        <a href="{{ route('carga-docente.index') }}"
+           class="menu-link {{ request()->routeIs('carga-docente.*') ? 'active' : '' }}">
+            <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
+        </a>
+    @else
+        <a href="#" class="menu-link disabled-link" title="Sin acceso">
+            <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
+        </a>
+    @endif
+</li>
         <li class="menu-item">
             <a href="{{ route('secciones.index') }}"
                class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
@@ -418,11 +425,11 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('cupos_maximos.index') }}"
-               class="menu-link {{ request()->routeIs('cupos_maximos.*') ? 'active' : '' }}">
-                <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
-            </a>
-        </li>
+    <a href="{{ route('superadmin.cupos_maximos.index') }}"
+       class="menu-link {{ request()->routeIs('superadmin.cupos_maximos.*') ? 'active' : '' }}">
+        <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
+    </a>
+</li>
 
         <li class="menu-section-title">CALENDARIO</li>
         <li class="menu-item">

@@ -3,12 +3,14 @@
 @section('title', 'Detalles del Administrador')
 @section('page-title', 'Detalles del Administrador')
 
-@section('content')
-<div class="container" style="max-width: 900px;">
-
-    <a href="{{ route('admin.index') }}" class="btn btn-primary mb-3">
-        <i class="fas fa-arrow-left me-1"></i> Volver a Administradores
+@section('topbar-actions')
+    <a href="{{ route('admins.index') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Administradores
     </a>
+@endsection
+
+@section('content')
+<div class="w-100">
 
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
 
@@ -46,25 +48,25 @@
                 <i class="fas fa-user me-2" style="color:#4ec7d2;"></i>Información Personal
             </h6>
             <div class="row g-3 mb-4">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="p-3 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
                         <p class="text-muted mb-1" style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Nombre</p>
                         <p class="fw-semibold mb-0" style="color:#003b73;">{{ $admin->nombre ?? 'N/A' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="p-3 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
                         <p class="text-muted mb-1" style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Apellido</p>
                         <p class="fw-semibold mb-0" style="color:#003b73;">{{ $admin->apellido ?? 'N/A' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="p-3 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
                         <p class="text-muted mb-1" style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Identificación</p>
                         <p class="fw-semibold mb-0" style="color:#003b73;">{{ $admin->identificacion ?? 'N/A' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="p-3 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
                         <p class="text-muted mb-1" style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Fecha de Nacimiento</p>
                         <p class="fw-semibold mb-0" style="color:#003b73;">
@@ -79,19 +81,19 @@
                 <i class="fas fa-address-book me-2" style="color:#4ec7d2;"></i>Información de Contacto
             </h6>
             <div class="row g-3 mb-4">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="p-3 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
                         <p class="text-muted mb-1" style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Correo Electrónico</p>
                         <p class="fw-semibold mb-0" style="color:#003b73;word-break:break-all;">{{ $admin->correo ?? 'N/A' }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="p-3 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
                         <p class="text-muted mb-1" style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Teléfono</p>
                         <p class="fw-semibold mb-0" style="color:#003b73;">{{ $admin->telefono ?? 'N/A' }}</p>
                     </div>
                 </div>
-                <div class="col-12">
+                <div class="col-md-4">
                     <div class="p-3 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
                         <p class="text-muted mb-1" style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Dirección</p>
                         <p class="fw-semibold mb-0" style="color:#003b73;">{{ $admin->direccion ?? 'N/A' }}</p>
@@ -108,7 +110,7 @@
                 <div class="card-body p-3">
                     <div class="row g-2">
                         @foreach($admin->permisos as $permiso)
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="d-flex align-items-center gap-2 p-2 rounded"
                                      style="background:white; border:1px solid #e2e8f0;">
                                     <i class="fas fa-check-circle text-success" style="font-size:0.8rem;"></i>
@@ -158,22 +160,21 @@
 
             {{-- Botones de Acción --}}
             <div class="d-flex gap-3 pt-3" style="border-top: 1px solid #e2e8f0;">
-                <a href="{{ route('admin.edit', $admin) }}"
+                <a href="{{ route('admins.edit', $admin) }}"
                    class="btn btn-primary fw-semibold flex-fill" style="border-radius:8px;">
                     <i class="fas fa-edit me-2"></i>Editar
                 </a>
 
-                <a href="{{ route('admin.index') }}"
+                <a href="{{ route('admins.index') }}"
                    class="btn btn-outline-secondary fw-semibold flex-fill" style="border-radius:8px;">
                     <i class="fas fa-arrow-left me-2"></i>Volver
                 </a>
 
-                {{-- Eliminar — usa mostrarModalDelete() del layout --}}
                 <button type="button"
                         class="btn btn-danger fw-semibold flex-fill"
                         style="border-radius:8px;"
                         onclick="mostrarModalDelete(
-                            '{{ route('admin.destroy', $admin) }}',
+                            '{{ route('admins.destroy', $admin) }}',
                             '¿Está seguro que desea eliminar este administrador? Se perderán todos sus datos de forma permanente.',
                             '{{ $admin->nombre_completo }}'
                         )">
