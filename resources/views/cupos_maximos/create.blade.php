@@ -1,211 +1,206 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar Curso - Escuela Gabriela Mistral</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #e6f0ff;
+        }
 
-@section('title', 'Registrar Cupo')
-@section('page-title', 'Cupos Máximos')
+        /* Eliminada la siguiente línea, ahora hereda Poppins (letra de molde): */
+        /* .navbar-brand {
+            font-family: 'Pacifico', cursive;
+        } */
 
-@section('topbar-actions')
-    <a href="{{ route('superadmin.cupos_maximos.index') }}" class="adm-btn-outline">
-        <i class="fas fa-arrow-left"></i> Volver al listado
-    </a>
-@endsection
+        .form-container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 40px auto;
+        }
 
-@push('styles')
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .btn-yellow {
+            background-color: #ffb703;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+        }
 
-.adm-wrap { font-family: 'Inter', sans-serif; }
+        .btn-yellow:hover {
+            background-color: #f4a100;
+            color: white;
+        }
 
-.adm-btn-outline {
-    display: inline-flex; align-items: center; gap: .4rem;
-    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: #fff; color: #00508f; border: 1.5px solid #4ec7d2;
-    text-decoration: none; transition: background .15s;
-}
-.adm-btn-outline:hover { background: #e8f8f9; color: #00508f; }
+        .btn-red {
+            background-color: #d90429;
+            border: none;
+            color: #fff;
+        }
 
-.adm-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
-}
-.adm-card-head {
-    background: #003b73; padding: .85rem 1.25rem;
-    display: flex; align-items: center; gap: .6rem;
-}
-.adm-card-head i { color: #4ec7d2; font-size: 1rem; }
-.adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
-.adm-card-body { padding: 1.5rem 1.25rem; }
+        .btn-red:hover {
+            background-color: #a1031f;
+            color: #fff;
+        }
 
-.frm-label {
-    display: block; font-size: .75rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .05em;
-    color: #64748b; margin-bottom: .4rem;
-}
-.frm-label i { color: #4ec7d2; margin-right: .3rem; }
+        .btn-blue {
+            background-color: #4361ee;
+            border: none;
+            color: #fff;
+        }
 
-.frm-control {
-    width: 100%; padding: .45rem .75rem;
-    border: 1.5px solid #e2e8f0; border-radius: 8px;
-    font-size: .82rem; color: #0f172a;
-    background: #f8fafc; outline: none;
-    transition: border-color .15s, box-shadow .15s;
-    font-family: 'Inter', sans-serif;
-}
-.frm-control:focus {
-    border-color: #4ec7d2;
-    box-shadow: 0 0 0 3px rgba(78,199,210,.12);
-    background: #fff;
-}
-.frm-hint { font-size: .72rem; color: #94a3b8; margin-top: .3rem; }
-.frm-divider { border: none; border-top: 1px solid #f1f5f9; margin: 1.25rem 0; }
+        .btn-blue:hover {
+            background-color: #1a42d2;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
 
-.frm-actions {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: .75rem; flex-wrap: wrap;
-}
-
-.btn-cancel {
-    display: inline-flex; align-items: center; gap: .35rem;
-    padding: .45rem 1.1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: #fff; color: #64748b; border: 1.5px solid #e2e8f0;
-    text-decoration: none; cursor: pointer; transition: all .15s;
-    font-family: 'Inter', sans-serif;
-}
-.btn-cancel:hover { border-color: #94a3b8; color: #334155; background: #f8fafc; }
-
-.btn-clear {
-    display: inline-flex; align-items: center; gap: .35rem;
-    padding: .45rem 1.1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: #fff; color: #64748b; border: 1.5px solid #e2e8f0;
-    cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif;
-}
-.btn-clear:hover { border-color: #94a3b8; color: #334155; background: #f8fafc; }
-
-.btn-save {
-    display: inline-flex; align-items: center; gap: .35rem;
-    padding: .45rem 1.25rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: linear-gradient(135deg, #4ec7d2, #00508f);
-    color: #fff; border: none; cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,80,143,.25);
-    transition: opacity .15s; font-family: 'Inter', sans-serif;
-}
-.btn-save:hover { opacity: .88; }
-
-.frm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-@media(max-width:540px){ .frm-row { grid-template-columns: 1fr; } }
-.frm-group { display: flex; flex-direction: column; }
-</style>
-@endpush
-
-@section('content')
-<div class="adm-wrap">
-
-    <div class="adm-card">
-        <div class="adm-card-head">
-            <i class="fas fa-plus-circle"></i>
-            <span>Registrar Nuevo Cupo</span>
-        </div>
-        <div class="adm-card-body">
-
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert"
-                     style="border-left:4px solid #ef4444;border-radius:8px;font-size:.82rem;">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    <strong>Corrige los siguientes errores:</strong>
-                    <ul class="mb-0 mt-1 ps-3">
-                        @foreach (collect($errors->all())->unique() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #0A1F44;">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url('/') }}" style="color: #ffb703;">
+            Escuela Gabriela Mistral
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Cupos Máximos
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('cupos_maximos.create') }}">Registrar cupo</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('cupos_maximos.index') }}">Listado de cupos</a>
+                        </li>
                     </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-            <form id="cursoForm" method="POST" action="{{ route('superadmin.cupos_maximos.store') }}">
-                @csrf
+<div class="container">
+    <div class="form-container">
+        <h4 class="text-center mb-4 fw-bold">Registrar nuevos cupos</h4>
 
-                {{-- Nombre --}}
-                <div class="frm-group mb-3">
-                    <label for="nombre" class="frm-label">
-                        <i class="fas fa-book-open"></i> Nombre del curso
-                    </label>
-                    <select name="nombre" id="nombre" class="frm-control" required>
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                <ul class="mb-0">
+                    @foreach (collect($errors->all())->unique() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        @endif
+
+        <form id="cursoForm" method="POST" action="{{ route('cupos_maximos.store') }}">
+            @csrf
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nombre" class="form-label fw-bold">Nombre del curso:</label>
+                    <select name="nombre" id="nombre" class="form-select form-select-sm" required>
                         <option value="">Seleccione un curso...</option>
-                        @foreach(['1ro Primaria','2do Primaria','3ro Primaria','4to Primaria','5to Primaria','6to Primaria','1ro Secundaria','2do Secundaria','3ro Secundaria'] as $grado)
-                            <option value="{{ $grado }}" {{ old('nombre') == $grado ? 'selected' : '' }}>
-                                {{ $grado }}
-                            </option>
-                        @endforeach
+                        <option value="1ro Primaria" {{ old('nombre') == '1ro Primaria' ? 'selected' : '' }}>1ro Primaria</option>
+                        <option value="2do Primaria" {{ old('nombre') == '2do Primaria' ? 'selected' : '' }}>2do Primaria</option>
+                        <option value="3ro Primaria" {{ old('nombre') == '3ro Primaria' ? 'selected' : '' }}>3ro Primaria</option>
+                        <option value="4to Primaria" {{ old('nombre') == '4to Primaria' ? 'selected' : '' }}>4to Primaria</option>
+                        <option value="5to Primaria" {{ old('nombre') == '5to Primaria' ? 'selected' : '' }}>5to Primaria</option>
+                        <option value="6to Primaria" {{ old('nombre') == '6to Primaria' ? 'selected' : '' }}>6to Primaria</option>
+                        <option value="1ro Secundaria" {{ old('nombre') == '1ro Secundaria' ? 'selected' : '' }}>1ro Secundaria</option>
+                        <option value="2do Secundaria" {{ old('nombre') == '2do Secundaria' ? 'selected' : '' }}>2do Secundaria</option>
+                        <option value="3ro Secundaria" {{ old('nombre') == '3ro Secundaria' ? 'selected' : '' }}>3ro Secundaria</option>
                     </select>
                 </div>
 
-                {{-- Cupo --}}
-                <div class="frm-group mb-3">
-                    <label for="cupo_maximo" class="frm-label">
-                        <i class="fas fa-users"></i> Cupo de estudiantes
-                    </label>
-                    <input type="number" name="cupo_maximo" id="cupo_maximo" class="frm-control"
-                           value="{{ old('cupo_maximo') }}" min="1" max="35"
-                           placeholder="Ej: 30" required>
-                    <p class="frm-hint">Máximo 35 estudiantes por sección.</p>
+                <div class="col-md-6">
+                    <label for="cupo_maximo" class="form-label fw-bold">Cupo de estudiantes:</label>
+                    <input type="number" name="cupo_maximo" class="form-control form-control-sm" required
+                           value="{{ old('cupo_maximo') }}">
+                    <small class="form-text text-muted">Ingrese un número de estudiantes (máximo 35)</small>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="jornada" class="form-label fw-bold">Jornada:</label>
+                    <select name="jornada" id="jornada" class="form-select form-select-sm" required>
+                        <option value="">Seleccione una jornada</option>
+                        <option value="Matutina" {{ old('jornada') == 'Matutina' ? 'selected' : '' }}>Matutina</option>
+                        <option value="Vespertina" {{ old('jornada') == 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
+                    </select>
                 </div>
 
-                {{-- Jornada y Sección --}}
-                <div class="frm-row mb-3">
-                    <div class="frm-group">
-                        <label for="jornada" class="frm-label">
-                            <i class="fas fa-clock"></i> Jornada
-                        </label>
-                        <select name="jornada" id="jornada" class="frm-control" required>
-                            <option value="">Seleccione...</option>
-                            <option value="Matutina"   {{ old('jornada') == 'Matutina'   ? 'selected' : '' }}>Matutina</option>
-                            <option value="Vespertina" {{ old('jornada') == 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
-                        </select>
-                    </div>
-                    <div class="frm-group">
-                        <label for="seccion" class="frm-label">
-                            <i class="fas fa-tag"></i> Sección
-                        </label>
-                        <select name="seccion" id="seccion" class="frm-control" required>
-                            <option value="">Seleccione...</option>
-                            @foreach(['A','B','C','D'] as $sec)
-                                <option value="{{ $sec }}" {{ old('seccion') == $sec ? 'selected' : '' }}>
-                                    {{ $sec }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="col-md-6">
+                    <label for="seccion" class="form-label fw-bold">Sección:</label>
+                    <select name="seccion" id="seccion" class="form-select form-select-sm" required>
+                        <option value="">Seleccione una sección...</option>
+                        <option value="A" {{ old('seccion') == 'A' ? 'selected' : '' }}>A</option>
+                        <option value="B" {{ old('seccion') == 'B' ? 'selected' : '' }}>B</option>
+                        <option value="C" {{ old('seccion') == 'C' ? 'selected' : '' }}>C</option>
+                        <option value="D" {{ old('seccion') == 'D' ? 'selected' : '' }}>D</option>
+                    </select>
                 </div>
+            </div>
 
-                <hr class="frm-divider">
-
-                {{-- Botones --}}
-                <div class="frm-actions">
-                    <a href="{{ route('superadmin.cupos_maximos.index') }}" class="btn-cancel">
-                        <i class="fas fa-times"></i> Cancelar
-                    </a>
-                    <button type="button" id="btnLimpiar" class="btn-clear">
-                        <i class="fas fa-eraser"></i> Limpiar
-                    </button>
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-save"></i> Guardar cupo
-                    </button>
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ route('cupos_maximos.index') }}" class="btn btn-red me-2">Cancelar</a>
+                <div>
+                    <button type="button" class="btn btn-yellow" id="btnLimpiar">Limpiar</button>
+                    <button type="submit" class="btn btn-blue">Guardar curso</button>
                 </div>
-
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 
+    <div class="text-center mt-4 mb-5">
+        <a href="{{ route('admins.index') }}" class="btn btn-secondary px-4 py-2 fw-semibold">
+            <i class="bi bi-arrow-left-circle"></i> Volver a los administradores
+        </a>
+    </div>
 </div>
-@endsection
 
-@push('scripts')
 <script>
     document.getElementById('btnLimpiar').addEventListener('click', function () {
         const form = document.getElementById('cursoForm');
-        form.querySelectorAll('input').forEach(i => i.value = '');
-        form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-        document.querySelectorAll('.alert').forEach(a => a.remove());
+
+        // Limpiar campos de texto y número
+        form.querySelectorAll('input').forEach(input => input.value = '');
+
+        // Resetear selects a la opción por defecto (primer opción)
+        form.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+        // Eliminar alertas
+        document.querySelectorAll('.alert').forEach(alert => alert.remove());
+
+        // Reiniciar clases de validación
         form.querySelectorAll('input, select').forEach(el => el.classList.remove('is-invalid'));
     });
 </script>
-@endpush
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

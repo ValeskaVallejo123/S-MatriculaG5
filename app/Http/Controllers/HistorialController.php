@@ -10,28 +10,38 @@ class HistorialController extends Controller
     /**
      * Muestra el historial académico (Vista SHOW)
      */
-    public function showHistorial($id)
+    public function showHistorial($id = null)
     {
         $user = auth()->user();
 
-        // Seguridad: El estudiante solo ve lo suyo, el SuperAdmin (rol 1) ve todo
-        if ($user->id_rol == 3 && $user->id != $id) {
-            abort(403, 'Solo puedes consultar tu propio historial académico.');
+        // 1. FORZAR LA BUSQUEDA POR USUARIO LOGUEADO
+        // Si el usuario es un estudiante, ignoramos cualquier ID y buscamos por su user_id
+        if ($user->id_rol == 3 || $user->id_rol == '3') {
+            $estudiante = \App\Models\Estudiante::where('user_id', $user->id)->first();
+
+            // Si no lo encuentra por user_id, mandamos un error claro
+            if (!$estudiante) {
+                return "Error: El usuario " . $user->name . " (ID: " . $user->id . ") no tiene un perfil de estudiante vinculado en la tabla 'estudiantes'.";
+            }
+        } else {
+            // Si es Admin, usa el ID de la URL
+            $estudiante = \App\Models\Estudiante::findOrFail($id);
         }
 
-        $estudiante = Estudiante::with([
+        // 2. Carga de relaciones
+        $estudiante->load([
             'calificaciones.materia',
             'calificaciones.periodo',
             'matriculas.seccion'
-        ])->findOrFail($id);
+        ]);
 
+        // 3. Cálculos para la vista
         $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
-
         $historialAgrupado = $estudiante->calificaciones->groupBy(function($nota) {
             return $nota->periodo->anio_lectivo ?? 'Ciclo Actual';
         });
 
-        // NOTA: Para el SuperAdmin podrías usar una vista diferente o la misma con botones extra
+        // 4. Retorno a la vista
         return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'));
     }
 

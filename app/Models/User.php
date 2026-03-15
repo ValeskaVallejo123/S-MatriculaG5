@@ -393,4 +393,10 @@ class User extends Authenticatable
 
         return array_values(array_unique(array_filter($lista)));
     }
+
+    public function estudiante()
+    {
+        // Esto asume que tienes un campo email en ambas tablas para vincularlos
+        return $this->hasOne(Estudiante::class, 'email', 'email');
+    }
 }

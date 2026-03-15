@@ -296,26 +296,26 @@ class EstudianteController extends Controller
 
     public function historial()
     {
-        // 1. Obtenemos el ID del usuario autenticado
         $user = auth()->user();
 
-        // 2. Buscamos al estudiante asociado a ese usuario
-        // Usamos 'with' para que las relaciones se carguen automáticamente como pediste
+        // Buscamos al estudiante que tenga vinculado el ID del usuario que inició sesión
         $estudiante = \App\Models\Estudiante::with([
             'calificaciones.materia',
             'calificaciones.periodo'
-        ])->where('user_id', $user->id)->firstOrFail();
+        ])->where('user_id', $user->id) // <--- Esta es la clave: buscar por ID, no por nombre
+        ->first();
 
-        // 3. Calculamos el promedio general (usando la nota_final de tus migraciones)
+        // Si no lo encuentra por ID, intentamos por el email exacto como respaldo
+        if (!$estudiante) {
+            $estudiante = \App\Models\Estudiante::where('email', $user->email)->firstOrFail();
+        }
+
         $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
 
-        // 4. Creamos la variable que le falta a tu vista ($historialAgrupado)
-        // Agrupamos las notas por el año lectivo del periodo académico
         $historialAgrupado = $estudiante->calificaciones->groupBy(function($nota) {
             return $nota->periodo->anio_lectivo ?? 'Ciclo Actual';
         });
 
-        // 5. Enviamos TODO a la vista
         return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'));
     }
 }

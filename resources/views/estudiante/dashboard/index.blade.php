@@ -34,8 +34,8 @@
             box-shadow: 0 6px 16px rgba(0,59,115,0.15) !important;
         }
 
-        .dark-mode .info-card h3, .dark-mode .info-card p { color: var(--text-main) !important; }
-        .dark-mode .text-muted { color: var(--text-muted) !important; }
+        body.dark-mode .info-card h3, body.dark-mode .info-card p { color: var(--text-main) !important; }
+        body.dark-mode .text-muted { color: var(--text-muted) !important; }
 
         .notif-item {
             border-left: 4px solid #4ec7d2;
@@ -46,22 +46,19 @@
             border-left-color: var(--border-color);
             background: rgba(0,0,0,0.02) !important;
         }
-        .dark-mode .notif-item.leida { background: rgba(255,255,255,0.05) !important; }
+        body.dark-mode .notif-item.leida { background: rgba(255,255,255,0.05) !important; }
         .notif-item:hover { background: rgba(78,199,210,0.05); }
 
-        /* Estilo para el botón de modo oscuro */
-        #darkModeToggle {
-            transition: transform 0.2s active;
-        }
+        #darkModeToggle { transition: transform 0.2s ease; }
         #darkModeToggle:active { transform: scale(0.95); }
     </style>
 @endpush
 
 @section('content')
     @php
-        $user       = auth()->user();
+        $user = auth()->user();
         $estudiante = $user->estudiante;
-        $noLeidas   = $user->total_notificaciones_no_leidas;
+        $noLeidas = $user->total_notificaciones_no_leidas ?? 0;
         $notificaciones = $user->notificacionesPermitidas()->take(5)->get();
     @endphp
 
@@ -70,7 +67,7 @@
         {{-- Botón Switch Modo Oscuro --}}
         <div class="d-flex justify-content-end mb-3">
             <button id="darkModeToggle" class="btn shadow-sm fw-bold d-flex align-items-center gap-2"
-                    style="border-radius: 50px; background: #003b73; color: white; padding: 8px 20px;">
+                    style="border-radius: 50px; background: #003b73; color: white; padding: 8px 20px; border:none;">
                 <i class="fas fa-moon"></i> <span id="modeText">Modo Oscuro</span>
             </button>
         </div>
@@ -110,10 +107,9 @@
 
         {{-- Tarjetas resumen --}}
         <div class="row g-3 mb-4">
-            {{-- Mi Horario --}}
             <div class="col-md-3">
                 <a href="{{ route('estudiante.miHorario') }}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm h-100 info-card" style="border-radius:10px;border-left:4px solid #003b73 !important;">
+                    <div class="card border-0 shadow-sm h-100 info-card" style="border-left:4px solid #003b73 !important;">
                         <div class="card-body d-flex align-items-center gap-3">
                             <div style="width:50px;height:50px;background:rgba(0,59,115,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                                 <i class="fas fa-calendar-alt fa-lg" style="color:#003b73;"></i>
@@ -122,16 +118,14 @@
                                 <p class="text-muted mb-0 small">Mi Horario</p>
                                 <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalHoras ?? '—' }}</h3>
                             </div>
-                            <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                         </div>
                     </div>
                 </a>
             </div>
 
-            {{-- Calificaciones --}}
             <div class="col-md-3">
                 <a href="{{ route('estudiante.calificaciones') }}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm h-100 info-card" style="border-radius:10px;border-left:4px solid #00508f !important;">
+                    <div class="card border-0 shadow-sm h-100 info-card" style="border-left:4px solid #00508f !important;">
                         <div class="card-body d-flex align-items-center gap-3">
                             <div style="width:50px;height:50px;background:rgba(0,80,143,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                                 <i class="fas fa-clipboard-check fa-lg" style="color:#00508f;"></i>
@@ -140,16 +134,14 @@
                                 <p class="text-muted mb-0 small">Calificaciones</p>
                                 <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalCalificaciones ?? '—' }}</h3>
                             </div>
-                            <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                         </div>
                     </div>
                 </a>
             </div>
 
-            {{-- Mi Matrícula --}}
             <div class="col-md-3">
                 <a href="{{ route('estado-solicitud') }}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm h-100 info-card" style="border-radius:10px;border-left:4px solid #4ec7d2 !important;">
+                    <div class="card border-0 shadow-sm h-100 info-card" style="border-left:4px solid #4ec7d2 !important;">
                         <div class="card-body d-flex align-items-center gap-3">
                             <div style="width:50px;height:50px;background:rgba(78,199,210,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                                 <i class="fas fa-file-signature fa-lg" style="color:#4ec7d2;"></i>
@@ -158,16 +150,14 @@
                                 <p class="text-muted mb-0 small">Mi Matrícula</p>
                                 <h3 class="mb-0 fw-bold" style="color:#003b73;">Estado</h3>
                             </div>
-                            <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                         </div>
                     </div>
                 </a>
             </div>
 
-            {{-- Notificaciones --}}
             <div class="col-md-3">
                 <a href="{{ route('notificaciones.index') }}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm h-100 info-card" style="border-radius:10px;border-left:4px solid #f59e0b !important;">
+                    <div class="card border-0 shadow-sm h-100 info-card" style="border-left:4px solid #f59e0b !important;">
                         <div class="card-body d-flex align-items-center gap-3">
                             <div style="width:50px;height:50px;background:rgba(245,158,11,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                                 <i class="fas fa-bell fa-lg" style="color:#f59e0b;"></i>
@@ -181,7 +171,6 @@
                                     @endif
                                 </h3>
                             </div>
-                            <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                         </div>
                     </div>
                 </a>
@@ -189,7 +178,6 @@
         </div>
 
         <div class="row g-4">
-            {{-- Notificaciones recientes --}}
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
                     <div class="card-header border-0 py-3 px-4"
@@ -209,18 +197,9 @@
                             <div class="d-flex flex-column gap-2">
                                 @foreach($notificaciones as $notif)
                                     <div class="notif-item p-3 {{ $notif->leida ? 'leida' : '' }}">
-                                        <div class="d-flex justify-content-between align-items-start gap-2">
-                                            <div class="flex-grow-1">
-                                                <div class="d-flex align-items-center gap-2 mb-1">
-                                                    <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">{{ $notif->titulo }}</span>
-                                                    @if(!$notif->leida)
-                                                        <span class="badge" style="background:rgba(78,199,210,0.2);color:#00508f;font-size:0.65rem;">Nueva</span>
-                                                    @endif
-                                                </div>
-                                                <p class="text-muted mb-1" style="font-size:0.82rem;">{{ $notif->mensaje }}</p>
-                                                <small class="text-muted" style="font-size:0.75rem;"><i class="fas fa-clock me-1"></i>{{ $notif->created_at->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
+                                        <h6 class="fw-semibold mb-1" style="color:#003b73;">{{ $notif->titulo }}</h6>
+                                        <p class="text-muted mb-1" style="font-size:0.82rem;">{{ $notif->mensaje }}</p>
+                                        <small class="text-muted" style="font-size:0.75rem;"><i class="fas fa-clock me-1"></i>{{ $notif->created_at->diffForHumans() }}</small>
                                     </div>
                                 @endforeach
                             </div>
@@ -229,7 +208,6 @@
                 </div>
             </div>
 
-            {{-- Accesos rápidos --}}
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
                     <div class="card-header border-0 py-3 px-4"
@@ -238,16 +216,13 @@
                     </div>
                     <div class="card-body p-3 d-flex flex-column gap-2">
                         <a href="{{ route('estudiante.miHorario') }}" class="btn text-start fw-semibold" style="background:rgba(0,80,143,0.08);color:#003b73;border:1px solid #00508f;border-radius:8px;">
-                            <i class="fas fa-calendar-alt me-2" style="color:#00508f;"></i>Mi Horario de Clases
+                            <i class="fas fa-calendar-alt me-2"></i>Mi Horario de Clases
                         </a>
                         <a href="{{ route('estudiante.calificaciones') }}" class="btn text-start fw-semibold" style="background:rgba(78,199,210,0.08);color:#003b73;border:1px solid #4ec7d2;border-radius:8px;">
-                            <i class="fas fa-clipboard-check me-2" style="color:#4ec7d2;"></i>Mis Calificaciones
-                        </a>
-                        <a href="{{ route('estado-solicitud') }}" class="btn text-start fw-semibold" style="background:rgba(78,199,210,0.08);color:#003b73;border:1px solid #4ec7d2;border-radius:8px;">
-                            <i class="fas fa-file-signature me-2" style="color:#4ec7d2;"></i>Estado de mi Matrícula
+                            <i class="fas fa-clipboard-check me-2"></i>Mis Calificaciones
                         </a>
                         <a href="{{ route('cambiarcontrasenia.edit') }}" class="btn text-start fw-semibold" style="background:rgba(0,59,115,0.06);color:#003b73;border:1px solid #003b73;border-radius:8px;">
-                            <i class="fas fa-key me-2" style="color:#003b73;"></i>Cambiar Contraseña
+                            <i class="fas fa-key me-2"></i>Cambiar Contraseña
                         </a>
                     </div>
                 </div>
@@ -255,44 +230,38 @@
         </div>
     </div>
 
-    {{-- Script para Modo Oscuro --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const btn = document.getElementById('darkModeToggle');
+            if(!btn) return;
+
             const modeText = document.getElementById('modeText');
             const icon = btn.querySelector('i');
             const body = document.body;
 
-            // Comprobar preferencia guardada
-            if (localStorage.getItem('theme') === 'dark') {
-                enableDarkMode();
-            }
-
-            btn.addEventListener('click', () => {
-                if (body.classList.contains('dark-mode')) {
-                    disableDarkMode();
-                } else {
-                    enableDarkMode();
-                }
-            });
-
-            function enableDarkMode() {
+            const enableDarkMode = () => {
                 body.classList.add('dark-mode');
-                icon.classList.replace('fa-moon', 'fa-sun');
-                modeText.innerText = "Modo Claro";
+                if(icon) icon.classList.replace('fa-moon', 'fa-sun');
+                if(modeText) modeText.innerText = "Modo Claro";
                 btn.style.background = "#ffc107";
                 btn.style.color = "#000";
                 localStorage.setItem('theme', 'dark');
-            }
+            };
 
-            function disableDarkMode() {
+            const disableDarkMode = () => {
                 body.classList.remove('dark-mode');
-                icon.classList.replace('fa-sun', 'fa-moon');
-                modeText.innerText = "Modo Oscuro";
+                if(icon) icon.classList.replace('fa-sun', 'fa-moon');
+                if(modeText) modeText.innerText = "Modo Oscuro";
                 btn.style.background = "#003b73";
                 btn.style.color = "#fff";
                 localStorage.setItem('theme', 'light');
-            }
+            };
+
+            if (localStorage.getItem('theme') === 'dark') enableDarkMode();
+
+            btn.addEventListener('click', () => {
+                body.classList.contains('dark-mode') ? disableDarkMode() : enableDarkMode();
+            });
         });
     </script>
 @endsection
