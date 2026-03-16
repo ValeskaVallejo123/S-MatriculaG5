@@ -21,12 +21,12 @@ class Grado extends Model
         'activo' => 'boolean',
     ];
 
-    // Relación con materias
+    // Relación con materias a través de profesor_materia_grados
     public function materias()
     {
-        return $this->belongsToMany(Materia::class, 'grado_materia')
-            ->withPivot('profesor_id', 'horas_semanales')
-            ->withTimestamps();
+        return $this->belongsToMany(Materia::class, 'profesor_materia_grados')
+                    ->withPivot('profesor_id', 'seccion')
+                    ->withTimestamps();
     }
 
     // Accesor para nombre completo del grado
@@ -49,13 +49,14 @@ class Grado extends Model
     {
         return $query->where('nivel', 'secundaria');
     }
+
     public function profesores()
     {
         return $this->hasMany(ProfesorGradoSeccion::class, 'grado_id');
     }
+
     public function profesoresMaterias()
     {
         return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
     }
-
 }

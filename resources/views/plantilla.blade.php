@@ -1195,9 +1195,9 @@
       <h2>Nuestro Sistema</h2>
       <p>Plataforma completa para la gestión educativa moderna</p>
     </div>
-    
+
     <div class="features-grid">
-      
+
       <!-- Fila 1: 3 tarjetas -->
       <div class="feature-card">
         <div class="feature-icon">
@@ -1350,6 +1350,10 @@
   </div>
 </footer>
 
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <!-- ========== STATS SECTION ========== -->
   <section class="stats-section" id="nosotros">
     <div class="container">
@@ -1373,6 +1377,7 @@
       </div>
     </div>
   </section>
+
 
 <script>
   // Scroll suave

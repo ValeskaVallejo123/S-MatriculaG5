@@ -484,18 +484,16 @@
 
     {{-- Botón para volver --}}
     <div class="flex justify-end">
-<<<<<<< HEAD
-<<<<<<< HEAD
+
         <a href="{{ route('admins.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #003b73, #00508f);">
-=======
+
         <a href="{{ route('admins.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 bg-primary-400 text-white rounded-lg hover:bg-primary-500 transition shadow-lg hover:shadow-xl">
->>>>>>> cesia-dev
-=======
-        <a href="{{ route('admins.index') }}" 
+
+        <a href="{{ route('admins.index') }}"
            class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition shadow-lg hover:shadow-xl" style="background: linear-gradient(135deg, #003b73, #00508f);">
->>>>>>> dev/valeska
+
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
             </svg>

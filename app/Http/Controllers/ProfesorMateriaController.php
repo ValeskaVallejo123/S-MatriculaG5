@@ -2,107 +2,134 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Profesor;
-use App\Models\Materia;
 use App\Models\Grado;
-use App\Models\ProfesorMateriaGrado; // Tu modelo de la última consulta
+use App\Models\Materia;
+use App\Models\Profesor;
+use App\Models\ProfesorMateriaGrado;
 use Illuminate\Http\Request;
 
-
-class ProfesorMateriaController extends Controller
+class ProfesorMateriaGradoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'role:admin,super_admin']);
+        $this->middleware(['auth']);
     }
 
-    /**
-     * Muestra la lista de asignaciones usando tu modelo personalizado.
-     */
+    /** Lista todas las asignaciones agrupadas por profesor */
     public function index()
     {
-        // Cargamos los profesores con sus relaciones a través de tu modelo intermedio
-        $asignaciones = Profesor::with(['materiasGrupos.materia', 'materiasGrupos.grado'])
-            ->orderBy('nombre')
-            ->paginate(15);
+        $asignaciones = ProfesorMateriaGrado::with(['profesor', 'materia', 'grado'])
+            ->orderBy('profesor_id')
+            ->orderBy('grado_id')
+            ->orderBy('seccion')
+            ->get()
+            ->groupBy('profesor_id');
 
-        return view('profesor_materia.index', compact('asignaciones'));
+        $totalAsignaciones = ProfesorMateriaGrado::count();
+        $totalProfesores   = ProfesorMateriaGrado::distinct('profesor_id')->count();
+
+        return view('profesor_materia_grado.index', compact(
+            'asignaciones', 'totalAsignaciones', 'totalProfesores'
+        ));
     }
 
-    /**
-     * Carga los datos para que el selector (Select) NO esté vacío.
-     */
+    /** Formulario para crear nueva asignación */
     public function create()
     {
-        // 1. Cargamos profesores (temporalmente quitamos el filtro de 'activo' para probar)
         $profesores = Profesor::orderBy('nombre')->get();
+        $materias   = Materia::orderBy('nombre')->get();
+        $grados     = Grado::orderBy('nombre')->get();
+        $secciones  = ['A', 'B', 'C', 'D'];
 
-        // 2. Cargamos materias y grados
-        $materias = Materia::orderBy('nombre')->get();
-        $grados = Grado::orderBy('numero')->get();
-
-        // Debug rápido: Si al cargar la página ves una lista negra, es que hay datos.
-        // Si ves [], la tabla en la base de datos está vacía.
-        // dd($profesores);
-
-        return view('profesor_materia.create', compact('profesores', 'materias', 'grados'));
+        return view('profesor_materia_grado.create', compact(
+            'profesores', 'materias', 'grados', 'secciones'
+        ));
     }
 
-    /**
-     * Guarda usando tu modelo ProfesorMateriaGrado.
-     */
+    /** Guardar nueva asignación */
     public function store(Request $request)
     {
         $request->validate([
             'profesor_id' => 'required|exists:profesores,id',
-            'materia_ids' => 'required|array|min:1',
+            'materia_id'  => 'required|exists:materias,id',
             'grado_id'    => 'required|exists:grados,id',
-            'seccion'     => 'required|string|max:2',
+            'seccion'     => 'required|string|max:5',
         ]);
 
-        foreach ($request->materia_ids as $materiaId) {
-            // Usamos el método yaAsignado que tienes en tu modelo para evitar duplicados
-            if (!ProfesorMateriaGrado::yaAsignado($request->profesor_id, $materiaId, $request->grado_id, $request->seccion)) {
-                ProfesorMateriaGrado::create([
-                    'profesor_id' => $request->profesor_id,
-                    'materia_id'  => $materiaId,
-                    'grado_id'    => $request->grado_id,
-                    'seccion'     => $request->seccion,
-                ]);
-            }
+        // Verificar duplicado
+        if (ProfesorMateriaGrado::yaAsignado(
+            $request->profesor_id,
+            $request->materia_id,
+            $request->grado_id,
+            $request->seccion
+        )) {
+            return back()
+                ->withInput()
+                ->withErrors(['duplicado' => 'Ya existe esa asignación (mismo profesor, materia, grado y sección).']);
         }
 
-        return redirect()->route('profesor_materia.index')
-            ->with('success', 'Asignaciones creadas correctamente.');
+        ProfesorMateriaGrado::create($request->only([
+            'profesor_id', 'materia_id', 'grado_id', 'seccion'
+        ]));
+
+        return redirect()
+            ->route('profesor_materia_grado.index')
+            ->with('success', 'Asignación creada correctamente.');
     }
 
-    /**
-     * Asignación desde la vista de GRADOS (La de tu imagen).
-     */
-    public function guardarAsignacion(Request $request, Grado $grado)
+    /** Formulario de edición */
+    public function edit(ProfesorMateriaGrado $profesor_materia_grado)
+    {
+        $profesores = Profesor::orderBy('nombre')->get();
+        $materias   = Materia::orderBy('nombre')->get();
+        $grados     = Grado::orderBy('nombre')->get();
+        $secciones  = ['A', 'B', 'C', 'D'];
+
+        return view('profesor_materia_grado.edit', compact(
+            'profesor_materia_grado', 'profesores', 'materias', 'grados', 'secciones'
+        ));
+    }
+
+    /** Actualizar asignación */
+    public function update(Request $request, ProfesorMateriaGrado $profesor_materia_grado)
     {
         $request->validate([
-            'materias'   => 'required|array',
-            'profesores' => 'nullable|array',
-            'seccion'    => 'required|string',
+            'profesor_id' => 'required|exists:profesores,id',
+            'materia_id'  => 'required|exists:materias,id',
+            'grado_id'    => 'required|exists:grados,id',
+            'seccion'     => 'required|string|max:5',
         ]);
 
-        foreach ($request->materias as $materiaId) {
-            $profesorId = $request->input("profesores.$materiaId");
+        // Verificar duplicado (excluyendo el actual)
+        $existe = ProfesorMateriaGrado::where('profesor_id', $request->profesor_id)
+            ->where('materia_id',  $request->materia_id)
+            ->where('grado_id',    $request->grado_id)
+            ->where('seccion',     $request->seccion)
+            ->where('id', '!=',    $profesor_materia_grado->id)
+            ->exists();
 
-            if ($profesorId) {
-                // Actualizamos o creamos la asignación en tu tabla profesor_materia_grados
-                ProfesorMateriaGrado::updateOrCreate(
-                    [
-                        'materia_id' => $materiaId,
-                        'grado_id'   => $grado->id,
-                        'seccion'    => $request->seccion,
-                    ],
-                    ['profesor_id' => $profesorId]
-                );
-            }
+        if ($existe) {
+            return back()
+                ->withInput()
+                ->withErrors(['duplicado' => 'Ya existe esa asignación.']);
         }
 
-        return redirect()->back()->with('success', 'Profesores asignados con éxito.');
+        $profesor_materia_grado->update($request->only([
+            'profesor_id', 'materia_id', 'grado_id', 'seccion'
+        ]));
+
+        return redirect()
+            ->route('profesor_materia_grado.index')
+            ->with('success', 'Asignación actualizada correctamente.');
+    }
+
+    /** Eliminar asignación */
+    public function destroy(ProfesorMateriaGrado $profesor_materia_grado)
+    {
+        $profesor_materia_grado->delete();
+
+        return redirect()
+            ->route('profesor_materia_grado.index')
+            ->with('success', 'Asignación eliminada.');
     }
 }

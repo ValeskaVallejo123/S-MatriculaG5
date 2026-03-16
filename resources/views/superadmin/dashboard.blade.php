@@ -10,7 +10,7 @@
             $isSuperAdmin = $user->is_super_admin == 1 || $user->role === 'super_admin';
             $displayRole = $isSuperAdmin ? 'Super Administrador' : ucfirst($user->role ?? 'Usuario');
         @endphp
-        <span class="badge bg-primary" style="padding: 0.5rem 1rem; font-weight: 500;">
+        <span class="badge bg-primary" style="padding: .85rem .75rem; font-weight: 800;">
             <i class="fas fa-user-shield me-1"></i> {{ $displayRole }}
         </span>
     </div>
@@ -26,7 +26,7 @@
         <div class="col-12">
             <div class="welcome-card">
                 <div class="row align-items-center">
-                    <div class="col-lg-8">
+                    <div class="col-12">
                         <h2 class="welcome-title">
                             <i class="fas fa-school me-2"></i>
                             Bienvenido, {{ auth()->user()->name }}
@@ -40,11 +40,9 @@
 
     {{-- =========================================================
          Estadísticas Principales
-         CORRECCIÓN: Las variables deben venir del controlador.
-         Se usan $totalEstudiantes, $totalProfesores, etc.
-         si no existen, se hace fallback seguro con ?? 0
     ========================================================== --}}
     <div class="row g-4 mb-4">
+
         {{-- Estudiantes --}}
         <div class="col-xl-3 col-md-6">
             <div class="stat-card stat-card-students">
@@ -100,7 +98,7 @@
             <div class="stat-card stat-card-users">
                 <div class="stat-icon"><i class="fas fa-users-cog"></i></div>
                 <div class="stat-content">
-                    <h6 class="stat-label">Usuarios del Sistema</h6>
+                    <h6 class="stat-label">Lista de Usuarios del Sistema</h6>
                     <h2 class="stat-value">{{ $totalUsuarios ?? \App\Models\User::count() }}</h2>
                     <div class="stat-footer">
                         <span class="stat-badge stat-badge-danger">
@@ -111,6 +109,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     {{-- =========================================================
@@ -314,7 +313,7 @@
             </div>
         </div>
 
-        {{-- Plan Académico (Grados y Materias) --}}
+        {{-- Plan Académico --}}
         <div class="col-lg-4 col-md-6">
             <div class="action-card">
                 <div class="action-card-header">
@@ -335,7 +334,7 @@
             </div>
         </div>
 
-        {{-- Administración (Usuarios) --}}
+        {{-- Administración --}}
         <div class="col-lg-4 col-md-6">
             <div class="action-card">
                 <div class="action-card-header">
@@ -419,8 +418,6 @@
                         data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            {{-- CORRECCIÓN: El form NO tiene action ni method dinámico aquí;
-                 se asigna desde JS antes de mostrar el modal. --}}
             <form id="formRechazoMatricula" method="POST" action="#">
                 @csrf
                 <div class="modal-body p-4">
@@ -490,165 +487,164 @@
     border-radius: 16px; padding: 2rem; color: white;
     box-shadow: 0 4px 6px rgba(0,80,143,0.1);
 }
-.welcome-title  { font-size:1.75rem; font-weight:700; margin-bottom:.5rem; color:white; }
-.welcome-subtitle { font-size:1rem; opacity:.9; }
+.welcome-title    { font-size: 1.75rem; font-weight: 700; margin-bottom: .5rem; color: white; }
+.welcome-subtitle { font-size: 1rem; opacity: .9; }
 
 /* ── Stat cards ── */
 .stat-card {
-    background:white; border-radius:12px; padding:1.5rem;
-    box-shadow:0 2px 4px rgba(0,0,0,.05); border:1px solid var(--border-color);
-    transition:all .3s ease; height:100%;
+    background: white; border-radius: 12px; padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05); border: 1px solid var(--border-color);
+    transition: all .3s ease; height: 100%;
 }
-.stat-card:hover { transform:translateY(-4px); box-shadow:0 8px 16px rgba(0,80,143,.1); }
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,80,143,.1); }
 .stat-icon {
-    width:60px; height:60px; border-radius:12px;
-    display:flex; align-items:center; justify-content:center;
-    font-size:1.5rem; margin-bottom:1rem;
+    width: 60px; height: 60px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 1rem;
 }
-.stat-card-students  .stat-icon { background:rgba(78,199,210,.1);  color:var(--secondary-color); }
-.stat-card-teachers  .stat-icon { background:rgba(0,80,143,.1);    color:var(--primary-color); }
-.stat-card-enrollments .stat-icon { background:rgba(251,191,36,.1); color:var(--accent-color); }
-.stat-card-users     .stat-icon { background:rgba(239,68,68,.1);   color:var(--danger-color); }
+.stat-card-students  .stat-icon { background: rgba(78,199,210,.1);  color: var(--secondary-color); }
+.stat-card-teachers  .stat-icon { background: rgba(0,80,143,.1);    color: var(--primary-color); }
+.stat-card-enrollments .stat-icon { background: rgba(251,191,36,.1); color: var(--accent-color); }
+.stat-card-users     .stat-icon { background: rgba(239,68,68,.1);   color: var(--danger-color); }
 .stat-label {
-    font-size:.875rem; color:#64748b; font-weight:600;
-    text-transform:uppercase; letter-spacing:.5px; margin-bottom:.5rem;
+    font-size: .875rem; color: #64748b; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: .5rem;
 }
-.stat-value  { font-size:2rem; font-weight:700; color:var(--primary-color); margin-bottom:1rem; }
-.stat-footer { padding-top:1rem; border-top:1px solid var(--border-color); }
-.stat-badge  {
-    display:inline-flex; align-items:center; gap:.5rem;
-    padding:.375rem .75rem; border-radius:6px; font-size:.813rem; font-weight:500;
+.stat-value  { font-size: 2rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem; }
+.stat-footer { padding-top: 1rem; border-top: 1px solid var(--border-color); }
+.stat-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .375rem .75rem; border-radius: 6px; font-size: .813rem; font-weight: 500;
 }
-.stat-badge-success { background:rgba(16,185,129,.1);  color:var(--success-color); }
-.stat-badge-info    { background:rgba(0,80,143,.1);    color:var(--primary-color); }
-.stat-badge-warning { background:rgba(251,191,36,.1);  color:var(--accent-color); }
-.stat-badge-danger  { background:rgba(239,68,68,.1);   color:var(--danger-color); }
+.stat-badge-success { background: rgba(16,185,129,.1);  color: var(--success-color); }
+.stat-badge-info    { background: rgba(0,80,143,.1);    color: var(--primary-color); }
+.stat-badge-warning { background: rgba(251,191,36,.1);  color: var(--accent-color); }
+.stat-badge-danger  { background: rgba(239,68,68,.1);   color: var(--danger-color); }
 
 /* ── Matrículas pendientes ── */
-.border-warning-custom { border:2px solid #ffc107 !important; border-radius:12px; }
-
+.border-warning-custom { border: 2px solid #ffc107 !important; border-radius: 12px; }
 .matriculas-pendientes-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(320px,1fr));
-    gap:1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
 }
 .matricula-card-compact {
-    background:white; border:2px solid #e2e8f0; border-radius:12px;
-    overflow:hidden; transition:all .3s ease;
-    display:flex; flex-direction:column;
+    background: white; border: 2px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; transition: all .3s ease;
+    display: flex; flex-direction: column;
 }
 .matricula-card-compact:hover {
-    border-color:#4ec7d2; box-shadow:0 8px 20px rgba(0,80,143,.15);
-    transform:translateY(-4px);
+    border-color: #4ec7d2; box-shadow: 0 8px 20px rgba(0,80,143,.15);
+    transform: translateY(-4px);
 }
 .matricula-header {
-    background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);
-    padding:.875rem 1rem;
-    display:flex; justify-content:space-between; align-items:center;
-    border-bottom:2px solid #e2e8f0; gap:.5rem; flex-wrap:wrap;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: .875rem 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid #e2e8f0; gap: .5rem; flex-wrap: wrap;
 }
 .codigo-badge {
-    background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
-    color:white; padding:.4rem .75rem; border-radius:6px;
-    font-size:.813rem; font-weight:700;
-    display:inline-flex; align-items:center; letter-spacing:.3px;
+    background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
+    color: white; padding: .4rem .75rem; border-radius: 6px;
+    font-size: .813rem; font-weight: 700;
+    display: inline-flex; align-items: center; letter-spacing: .3px;
 }
 .estado-badge {
-    background:#ffc107; color:#000;
-    padding:.4rem .75rem; border-radius:6px;
-    font-size:.75rem; font-weight:600;
-    display:inline-flex; align-items:center;
+    background: #ffc107; color: #000;
+    padding: .4rem .75rem; border-radius: 6px;
+    font-size: .75rem; font-weight: 600;
+    display: inline-flex; align-items: center;
 }
 .matricula-content {
-    padding:1.25rem; flex:1;
-    display:flex; flex-direction:column; gap:1rem;
+    padding: 1.25rem; flex: 1;
+    display: flex; flex-direction: column; gap: 1rem;
 }
-.info-block { display:flex; gap:.875rem; align-items:flex-start; }
+.info-block { display: flex; gap: .875rem; align-items: flex-start; }
 .info-icon {
-    width:42px; height:42px; border-radius:10px;
-    display:flex; align-items:center; justify-content:center;
-    flex-shrink:0; font-size:1.1rem; color:white;
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 1.1rem; color: white;
 }
-.info-text { flex:1; display:flex; flex-direction:column; gap:.125rem; min-width:0; }
+.info-text  { flex: 1; display: flex; flex-direction: column; gap: .125rem; min-width: 0; }
 .info-label {
-    font-size:.7rem; color:#64748b; font-weight:600;
-    text-transform:uppercase; letter-spacing:.5px;
+    font-size: .7rem; color: #64748b; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .5px;
 }
 .info-value {
-    font-size:.938rem; color:#003b73; font-weight:700;
-    line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-size: .938rem; color: #003b73; font-weight: 700;
+    line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.info-detail { font-size:.75rem; color:#64748b; }
+.info-detail { font-size: .75rem; color: #64748b; }
 .info-row {
-    display:flex; justify-content:space-between; align-items:center;
-    gap:.75rem; padding-top:.75rem; border-top:1px solid #e2e8f0; flex-wrap:wrap;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: .75rem; padding-top: .75rem; border-top: 1px solid #e2e8f0; flex-wrap: wrap;
 }
-.info-item { display:flex; align-items:center; gap:.25rem; font-size:.813rem; }
-.matricula-footer { padding:0 1rem 1rem 1rem; }
+.info-item { display: flex; align-items: center; gap: .25rem; font-size: .813rem; }
+.matricula-footer { padding: 0 1rem 1rem 1rem; }
 .matricula-footer .btn {
-    font-size:.875rem; font-weight:600; padding:.625rem 1rem;
-    border-radius:8px; transition:all .3s ease;
+    font-size: .875rem; font-weight: 600; padding: .625rem 1rem;
+    border-radius: 8px; transition: all .3s ease;
 }
 .matricula-footer .btn:hover {
-    transform:translateY(-2px);
-    box-shadow:0 4px 12px rgba(0,80,143,.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,80,143,.3);
 }
 
 /* ── Section title ── */
 .section-title {
-    font-size:1.25rem; font-weight:700; color:var(--primary-color);
-    margin-bottom:0; padding-bottom:.75rem; border-bottom:2px solid var(--border-color);
+    font-size: 1.25rem; font-weight: 700; color: var(--primary-color);
+    margin-bottom: 0; padding-bottom: .75rem; border-bottom: 2px solid var(--border-color);
 }
 
 /* ── Action cards ── */
 .action-card {
-    background:white; border-radius:12px; border:1px solid var(--border-color);
-    overflow:hidden; transition:all .3s ease; height:100%;
+    background: white; border-radius: 12px; border: 1px solid var(--border-color);
+    overflow: hidden; transition: all .3s ease; height: 100%;
 }
 .action-card:hover {
-    transform:translateY(-4px);
-    box-shadow:0 8px 16px rgba(0,80,143,.1);
-    border-color:var(--primary-color);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,80,143,.1);
+    border-color: var(--primary-color);
 }
 .action-card-header {
-    display:flex; align-items:center; gap:1rem;
-    padding:1.5rem; background:var(--light-bg);
-    border-bottom:1px solid var(--border-color);
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1.5rem; background: var(--light-bg);
+    border-bottom: 1px solid var(--border-color);
 }
 .action-icon {
-    width:48px; height:48px; border-radius:10px;
-    display:flex; align-items:center; justify-content:center;
-    font-size:1.25rem; color:white;
+    width: 48px; height: 48px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; color: white;
 }
-.bg-students    { background:var(--secondary-color); }
-.bg-teachers    { background:var(--primary-color); }
-.bg-parents     { background:#6366f1; }
-.bg-enrollments { background:var(--accent-color); }
-.bg-academic    { background:var(--success-color); }
-.bg-admin       { background:var(--danger-color); }
-.action-title   { font-size:1rem; font-weight:700; color:var(--primary-color); margin-bottom:.25rem; }
-.action-subtitle { font-size:.813rem; color:#64748b; margin-bottom:0; }
-.action-card-body { padding:1.5rem; }
+.bg-students    { background: var(--secondary-color); }
+.bg-teachers    { background: var(--primary-color); }
+.bg-parents     { background: #6366f1; }
+.bg-enrollments { background: var(--accent-color); }
+.bg-academic    { background: var(--success-color); }
+.bg-admin       { background: var(--danger-color); }
+.action-title   { font-size: 1rem; font-weight: 700; color: var(--primary-color); margin-bottom: .25rem; }
+.action-subtitle { font-size: .813rem; color: #64748b; margin-bottom: 0; }
+.action-card-body { padding: 1.5rem; }
 
-/* ── Botones globales ── */
-.btn { font-weight:500; border-radius:8px; padding:.5rem 1rem; transition:all .3s ease; }
-.btn-primary { background:var(--primary-color); border-color:var(--primary-color); }
+/* ── Botones ── */
+.btn { font-weight: 500; border-radius: 8px; padding: .5rem 1rem; transition: all .3s ease; }
+.btn-primary { background: var(--primary-color); border-color: var(--primary-color); }
 .btn-primary:hover {
-    background:#003b73; border-color:#003b73;
-    transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,80,143,.2);
+    background: #003b73; border-color: #003b73;
+    transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,80,143,.2);
 }
-.btn-outline-primary { color:var(--primary-color); border-color:var(--primary-color); }
-.btn-outline-primary:hover { background:var(--primary-color); border-color:var(--primary-color); }
+.btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); }
+.btn-outline-primary:hover { background: var(--primary-color); border-color: var(--primary-color); }
 
 /* ── Responsive ── */
-@media (max-width:1200px) {
-    .matriculas-pendientes-grid { grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+@media (max-width: 1200px) {
+    .matriculas-pendientes-grid { grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1rem; }
 }
-@media (max-width:768px) {
-    .welcome-card { padding:1.5rem; }
-    .welcome-title { font-size:1.5rem; }
-    .stat-value { font-size:1.75rem; }
-    .matriculas-pendientes-grid { grid-template-columns:1fr; gap:1rem; }
+@media (max-width: 768px) {
+    .welcome-card { padding: 1.5rem; }
+    .welcome-title { font-size: 1.5rem; }
+    .stat-value { font-size: 1.75rem; }
+    .matriculas-pendientes-grid { grid-template-columns: 1fr; gap: 1rem; }
 }
 </style>
 @endpush
@@ -661,10 +657,8 @@
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
 
-    /* ============================================================
-       Spinner reutilizable
-    ============================================================ */
-    function spinnerHtml(msg = 'Cargando...') {
+    /* ── Spinner reutilizable ── */
+    function spinnerHtml(msg) {
         return `
             <div class="text-center py-5">
                 <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status">
@@ -674,24 +668,21 @@
             </div>`;
     }
 
-    /* ============================================================
-       Ver detalles de matrícula
-    ============================================================ */
+    /* ── Ver detalles de matrícula ── */
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-ver-detalles');
         if (!btn) return;
         e.preventDefault();
-
-        const matriculaId     = btn.dataset.matriculaId;
-        const detallesUrl     = btn.dataset.url;
-        const confirmarUrl    = btn.dataset.confirmarUrl;
-        const rechazarUrl     = btn.dataset.rechazarUrl;
-
-        abrirModalDetalles(matriculaId, detallesUrl, confirmarUrl, rechazarUrl);
+        abrirModalDetalles(
+            btn.dataset.matriculaId,
+            btn.dataset.url,
+            btn.dataset.confirmarUrl,
+            btn.dataset.rechazarUrl
+        );
     });
 
     function abrirModalDetalles(matriculaId, detallesUrl, confirmarUrl, rechazarUrl) {
-        const modalEl  = document.getElementById('modalDetallesMatricula');
+        const modalEl   = document.getElementById('modalDetallesMatricula');
         const contenido = document.getElementById('contenidoDetallesMatricula');
         if (!modalEl || !contenido) return;
 
@@ -699,33 +690,30 @@
         contenido.innerHTML = spinnerHtml('Cargando información de la matrícula...');
         modal.show();
 
-        fetch(detallesUrl, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(function (response) {
-            if (!response.ok) throw new Error('Error HTTP ' + response.status);
-            return response.json();
-        })
-        .then(function (data) {
-            contenido.innerHTML = construirHtmlDetalles(data, matriculaId, confirmarUrl, rechazarUrl);
-        })
-        .catch(function (err) {
-            contenido.innerHTML = `
-                <div class="alert alert-danger">
-                    <h6><i class="fas fa-exclamation-circle me-2"></i>Error al cargar los detalles</h6>
-                    <p class="mb-0">${err.message}</p>
-                </div>`;
-        });
+        fetch(detallesUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (res) {
+                if (!res.ok) throw new Error('Error HTTP ' + res.status);
+                return res.json();
+            })
+            .then(function (data) {
+                contenido.innerHTML = construirHtmlDetalles(data, matriculaId, confirmarUrl, rechazarUrl);
+            })
+            .catch(function (err) {
+                contenido.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-exclamation-circle me-2"></i>Error al cargar los detalles</h6>
+                        <p class="mb-0">${err.message}</p>
+                    </div>`;
+            });
     }
 
     function construirHtmlDetalles(data, matriculaId, confirmarUrl, rechazarUrl) {
-        const est = data.estudiante  ?? {};
-        const pad = data.padre       ?? {};
-        const mat = data.matricula   ?? {};
+        const est = data.estudiante ?? {};
+        const pad = data.padre      ?? {};
+        const mat = data.matricula  ?? {};
 
         return `
         <div class="row g-4">
-
             <div class="col-12">
                 <div class="alert alert-primary border-0 mb-0">
                     <strong>Código de Matrícula:</strong>
@@ -733,7 +721,6 @@
                 </div>
             </div>
 
-            <!-- Estudiante -->
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-light">
@@ -766,7 +753,6 @@
                 </div>
             </div>
 
-            <!-- Padre -->
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-light">
@@ -799,7 +785,6 @@
                 </div>
             </div>
 
-            <!-- Acciones -->
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
@@ -827,54 +812,42 @@
                     </div>
                 </div>
             </div>
-
         </div>`;
     }
 
-    /* ============================================================
-       Rechazar matrícula desde el modal de detalles
-    ============================================================ */
+    /* ── Rechazar desde modal de detalles ── */
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-rechazar-desde-modal');
         if (!btn) return;
         e.preventDefault();
 
-        const matriculaId  = btn.dataset.matriculaId;
-        const rechazarUrl  = btn.dataset.rechazarUrl;
+        const matriculaId = btn.dataset.matriculaId;
+        const rechazarUrl = btn.dataset.rechazarUrl;
 
-        // Cerrar modal de detalles primero
         const modalDetalles = bootstrap.Modal.getInstance(
             document.getElementById('modalDetallesMatricula')
         );
-        if (modalDetalles) {
-            modalDetalles.hide();
-        }
+        if (modalDetalles) modalDetalles.hide();
 
-        // Pequeño delay para que Bootstrap termine la animación
         setTimeout(function () {
             mostrarModalRechazo(matriculaId, rechazarUrl);
         }, 350);
     });
 
-    /* ============================================================
-       Modal de rechazo
-       CORRECCIÓN: No se clona el form. Se reasigna la URL y se
-       maneja el submit con un listener limpio usando AbortController.
-    ============================================================ */
-    let abortController = null; // para limpiar el listener anterior
+    /* ── Modal de rechazo ── */
+    let abortController = null;
 
     function mostrarModalRechazo(matriculaId, rechazarUrl) {
         const form     = document.getElementById('formRechazoMatricula');
         const textarea = document.getElementById('motivo_rechazo_matricula');
         const modalEl  = document.getElementById('modalRechazoMatricula');
-
         if (!form || !textarea || !modalEl) return;
 
-        // Actualizar acción del form y limpiar textarea
-        form.action     = rechazarUrl;
-        textarea.value  = '';
+        form.action    = rechazarUrl;
+        textarea.value = '';
+        textarea.classList.remove('is-invalid');
 
-        // Limpiar listener de submit anterior
+        // Limpiar listener anterior
         if (abortController) abortController.abort();
         abortController = new AbortController();
 
@@ -891,7 +864,6 @@
 
             if (!confirm('¿Está seguro de que desea rechazar esta matrícula?')) return;
 
-            // Deshabilitar botón para evitar doble envío
             const btnSubmit = form.querySelector('[type="submit"]');
             btnSubmit.disabled = true;
             btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
@@ -903,19 +875,15 @@
                     'X-CSRF-TOKEN': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: new URLSearchParams({
-                    '_token': csrfToken,
-                    'motivo_rechazo': motivo
-                })
+                body: new URLSearchParams({ '_token': csrfToken, 'motivo_rechazo': motivo })
             })
-            .then(function (response) {
-                if (!response.ok) throw new Error('Error en el servidor (' + response.status + ')');
-                return response;
+            .then(function (res) {
+                if (!res.ok) throw new Error('Error en el servidor (' + res.status + ')');
+                return res;
             })
             .then(function () {
                 const modal = bootstrap.Modal.getInstance(modalEl);
                 if (modal) modal.hide();
-                // Pequeño delay antes de recargar para que el modal se cierre bien
                 setTimeout(function () { location.reload(); }, 300);
             })
             .catch(function (err) {
@@ -926,7 +894,6 @@
 
         }, { signal: abortController.signal });
 
-        // Mostrar modal
         bootstrap.Modal.getOrCreate(modalEl).show();
     }
 

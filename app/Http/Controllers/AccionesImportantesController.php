@@ -8,18 +8,6 @@ use App\Models\RegistrarCalificacion;
 
 class AccionesImportantesController extends Controller
 {
-    /**
-     * Constructor del controlador
-     * Aplica middleware para proteger el acceso a usuarios autenticados
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Mostrar información importante en el dashboard
-     */
     public function index()
     {
         // Últimas 5 matrículas con relación estudiante
@@ -35,9 +23,9 @@ class AccionesImportantesController extends Controller
             ->take(5)
             ->get();
 
-        // Últimas 5 calificaciones con relaciones estudiante, materia y curso
-        $calificacionesRecientes = RegistrarCalificacion::with(['estudiante', 'materia', 'curso'])
-            ->orderBy('fecha', 'desc') // asegúrate de que la columna fecha exista
+        // Últimas calificaciones
+        $calificacionesRecientes = RegistrarCalificacion::with(['estudiante', 'materia', 'grado'])
+            ->latest()
             ->take(5)
             ->get();
 
@@ -47,5 +35,7 @@ class AccionesImportantesController extends Controller
             'solicitudesPendientes',
             'calificacionesRecientes'
         ));
+
     }
 }
+

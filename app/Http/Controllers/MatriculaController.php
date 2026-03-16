@@ -8,15 +8,17 @@ use App\Models\Estudiante;
 use App\Models\User;
 use App\Models\Rol;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 
 class MatriculaController extends Controller
 {
-    // ── Grados disponibles (definidos una sola vez) ──────────────────────────
-    // CORRECCIÓN: el original los repetía en create() y edit() por separado.
+    // ── Grados disponibles ───────────────────────────────────────────────────
     private const GRADOS = [
         '1er Grado', '2do Grado', '3er Grado',
         '4to Grado', '5to Grado', '6to Grado',
@@ -40,9 +42,9 @@ class MatriculaController extends Controller
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
             $query->whereHas('estudiante', function ($q) use ($buscar) {
-                $q->where('nombre1',   'like', "%{$buscar}%")
-                  ->orWhere('apellido1', 'like', "%{$buscar}%")
-                  ->orWhere('dni',       'like', "%{$buscar}%");
+                $q->where('nombre1',    'like', "%{$buscar}%")
+                  ->orWhere('apellido1','like', "%{$buscar}%")
+                  ->orWhere('dni',      'like', "%{$buscar}%");
             });
         }
 
@@ -62,9 +64,6 @@ class MatriculaController extends Controller
 
         $matriculas = $query->latest()->paginate(15);
 
-        // CORRECCIÓN: las estadísticas se calculan sobre TODA la tabla,
-        // no sobre la página actual, así que son correctas. Se agrupan
-        // en una sola consulta para evitar 3 queries separadas.
         $estadisticas = Matricula::selectRaw("
             SUM(estado = 'aprobada')  as aprobadas,
             SUM(estado = 'pendiente') as pendientes,
@@ -84,27 +83,26 @@ class MatriculaController extends Controller
     // CREATE
     // ────────────────────────────────────────────────────────────────────────
 
-    public function create(Request $request)
+    public function create()
     {
-        // CORRECCIÓN: el original cargaba Estudiante::all() y Padre::all()
-        // que en producción puede ser miles de registros. Solo se necesitan
-        // si la vista tiene selects de esos modelos; se mantiene pero se
-        // advierte que deberían cargarse con búsqueda AJAX en producción.
-        $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $padres      = Padre::orderBy('nombre')->get();
-        $grados      = self::GRADOS;
-        $parentescos = self::PARENTESCOS;
+        $grados = [
+            'Primero', 'Segundo', 'Tercero',
+            'Cuarto',  'Quinto',  'Sexto',
+        ];
 
-        // Ruta pública → vista sin sidebar
-        if ($request->routeIs('matriculas.public.create')) {
-            return view('matriculas.create-public', compact(
-                'estudiantes', 'padres', 'parentescos', 'grados'
-            ));
-        }
+        $secciones = ['A', 'B', 'C', 'D'];
 
-        return view('matriculas.create', compact(
-            'estudiantes', 'padres', 'parentescos', 'grados'
-        ));
+        $parentescos = [
+            'padre'   => 'Padre',
+            'madre'   => 'Madre',
+            'abuelo'  => 'Abuelo/a',
+            'hermano' => 'Hermano/a',
+            'tio'     => 'Tío/a',
+            'tutor'   => 'Tutor/a',
+            'otro'    => 'Otro',
+        ];
+
+        return view('matriculas.create', compact('grados', 'secciones', 'parentescos'));
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -117,38 +115,33 @@ class MatriculaController extends Controller
 
         $validated = $request->validate([
             // Padre/Tutor
-            'padre_nombre'             => 'required|string|min:2|max:50',
-            'padre_apellido'           => 'required|string|min:2|max:50',
-            'padre_dni'                => 'required|string|max:13',
-            'padre_parentesco'         => 'required|in:padre,madre,otro',
-            'padre_parentesco_otro'    => 'nullable|required_if:padre_parentesco,otro|string|max:50',
-            'padre_email'              => 'nullable|email|max:100|unique:users,email',
-            'padre_telefono'           => 'required|string|min:8|max:15',
-            'padre_direccion'          => 'required|string|max:255',
+            'padre_nombre'                => 'required|string|min:2|max:50',
+            'padre_apellido'              => 'required|string|min:2|max:50',
+            'padre_dni'                   => 'required|string|max:13',
+            'padre_parentesco'            => 'required|in:padre,madre,otro',
+            'padre_parentesco_otro'       => 'nullable|required_if:padre_parentesco,otro|string|max:50',
+            'padre_email'                 => 'nullable|email|max:100|unique:users,email',
+            'padre_telefono'              => 'required|string|min:8|max:15',
+            'padre_direccion'             => 'required|string|max:255',
             // Estudiante
-            'estudiante_nombre'        => 'required|string|min:2|max:100',
-            'estudiante_apellido'      => 'required|string|min:2|max:100',
-            'estudiante_dni'           => 'required|string|max:13|unique:estudiantes,dni',
+            'estudiante_nombre'           => 'required|string|min:2|max:100',
+            'estudiante_apellido'         => 'required|string|min:2|max:100',
+            'estudiante_dni'              => 'required|string|max:13|unique:estudiantes,dni',
             'estudiante_fecha_nacimiento' => 'required|date|before:today',
-            'estudiante_sexo'          => 'required|in:masculino,femenino',
-            'estudiante_email'         => 'nullable|email|max:100',
-            'estudiante_telefono'      => 'nullable|string|max:15',
-            'estudiante_direccion'     => 'nullable|string|max:255',
-            'estudiante_grado'         => 'required|string|max:20',
+            'estudiante_sexo'             => 'required|in:masculino,femenino',
+            'estudiante_email'            => 'nullable|email|max:100',
+            'estudiante_telefono'         => 'nullable|string|max:15',
+            'estudiante_direccion'        => 'nullable|string|max:255',
+            'estudiante_grado'            => 'required|string|max:20',
             // Matrícula
-            'anio_lectivo'             => 'required|digits:4|integer|min:2020|max:2100',
-            'estado'                   => 'nullable|in:pendiente,aprobada,rechazada,cancelada',
-            'observaciones'            => 'nullable|string|max:500',
+            'anio_lectivo'                => 'required|digits:4|integer|min:2020|max:2100',
+            'estado'                      => 'nullable|in:pendiente,aprobada,rechazada,cancelada',
+            'observaciones'               => 'nullable|string|max:500',
             // Documentos
-            'foto_perfil'              => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'calificaciones'           => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'acta_nacimiento'          => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'foto_perfil'                 => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'calificaciones'              => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'acta_nacimiento'             => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
-
-        // CORRECCIÓN: el original verificaba el DNI del estudiante dentro
-        // del try/catch con una query manual, pero ya se puede hacer con
-        // la regla unique en la validación de arriba. Se eliminó la
-        // verificación duplicada que llamaba DB::rollBack() innecesariamente.
 
         try {
             DB::beginTransaction();
@@ -156,7 +149,6 @@ class MatriculaController extends Controller
             // ── Padre ────────────────────────────────────────────────────
             $padre = Padre::where('dni', $validated['padre_dni'])->first();
 
-            // Solo en matrícula admin: bloquear si ya existe el padre
             if ($padre && !$esPublico) {
                 DB::rollBack();
                 return back()->withInput()->withErrors([
@@ -179,36 +171,41 @@ class MatriculaController extends Controller
                 ]);
             }
 
-            // ── Usuario padre (solo matrícula pública con email) ─────────
+            // ── Usuario padre (matrícula pública con email) ──────────────
+            // NOTA: el usuario se crea INACTIVO aquí.
+            // Se activará automáticamente cuando el admin apruebe la matrícula.
             if ($esPublico && !empty($validated['padre_email'])) {
                 $usuarioExistente = User::where('email', $validated['padre_email'])->first();
 
                 if ($usuarioExistente) {
                     DB::table('users')
                         ->where('id', $usuarioExistente->id)
-                        ->update(['user_type' => 'padre', 'activo' => 1, 'id_rol' => 5]);
+                        ->update(['user_type' => 'padre', 'activo' => 0, 'id_rol' => 5]);
+
+                    if (!$padre->user_id) {
+                        $padre->update(['user_id' => $usuarioExistente->id]);
+                    }
                 } else {
                     $rolPadre = Rol::firstOrCreate(
                         ['nombre' => 'Padre'],
                         ['descripcion' => 'Rol para padres de familia']
                     );
 
-                    User::create([
+                    $nuevoUser = User::create([
                         'name'              => $validated['padre_nombre'] . ' ' . $validated['padre_apellido'],
                         'email'             => $validated['padre_email'],
-                        // CORRECCIÓN: usar el DNI como contraseña inicial es débil
-                        // pero aceptable si se fuerza cambio en primer login.
-                        // Se documenta explícitamente.
                         'password'          => Hash::make($validated['padre_dni']),
                         'id_rol'            => $rolPadre->id,
                         'user_type'         => 'padre',
-                        'activo'            => 1,
+                        'activo'            => 0, // inactivo hasta aprobación
                         'email_verified_at' => now(),
                         'permissions'       => json_encode([
                             'ver_calificaciones' => true,
                             'ver_asistencias'    => true,
                         ]),
                     ]);
+
+                    $padre->update(['user_id' => $nuevoUser->id]);
                 }
             }
 
@@ -236,43 +233,37 @@ class MatriculaController extends Controller
             ]);
 
             // ── Código de matrícula ──────────────────────────────────────
-            // CORRECCIÓN: el original contaba por año de created_at, lo que
-            // generaba códigos incorrectos si se crea en diciembre para el
-            // año lectivo siguiente. Se cuenta por anio_lectivo.
             $conteo          = Matricula::where('anio_lectivo', $validated['anio_lectivo'])->count();
             $codigoMatricula = 'MAT-' . $validated['anio_lectivo'] . '-' . str_pad($conteo + 1, 4, '0', STR_PAD_LEFT);
 
             // ── Matrícula ────────────────────────────────────────────────
+            $estadoInicial = $esPublico ? 'pendiente' : ($validated['estado'] ?? 'pendiente');
+
             $matricula = Matricula::create([
-                'padre_id'        => $padre->id,
-                'estudiante_id'   => $estudiante->id,
-                'codigo_matricula'=> $codigoMatricula,
-                'anio_lectivo'    => $validated['anio_lectivo'],
-                'fecha_matricula' => now()->format('Y-m-d'),
-                'estado'          => $esPublico ? 'pendiente' : ($validated['estado'] ?? 'pendiente'),
-                'observaciones'   => $esPublico
+                'padre_id'         => $padre->id,
+                'estudiante_id'    => $estudiante->id,
+                'codigo_matricula' => $codigoMatricula,
+                'anio_lectivo'     => $validated['anio_lectivo'],
+                'fecha_matricula'  => now()->format('Y-m-d'),
+                'estado'           => $estadoInicial,
+                'observaciones'    => $esPublico
                     ? 'Matrícula registrada desde el portal público'
                     : ($validated['observaciones'] ?? null),
             ]);
 
             // ── Documentos ───────────────────────────────────────────────
-            // CORRECCIÓN: el original guardaba rutas en $documentosRutas
-            // pero el update estaba comentado — los archivos se subían al
-            // storage pero las rutas NUNCA se guardaban en la BD.
-            // Se descomenta y corrige la actualización.
             $documentosRutas = [];
-
             $archivosDoc = [
-                'foto_perfil'    => 'documentos_matriculas/fotos',
-                'calificaciones' => 'documentos_matriculas/calificaciones',
-                'acta_nacimiento'=> 'documentos_matriculas/actas',
+                'foto_perfil'     => 'documentos_matriculas/fotos',
+                'calificaciones'  => 'documentos_matriculas/calificaciones',
+                'acta_nacimiento' => 'documentos_matriculas/actas',
             ];
 
             foreach ($archivosDoc as $campo => $carpeta) {
                 if ($request->hasFile($campo)) {
-                    $archivo     = $request->file($campo);
-                    $nombreArch  = $campo . '_' . $estudiante->id . '_' . time()
-                                 . '.' . $archivo->getClientOriginalExtension();
+                    $archivo    = $request->file($campo);
+                    $nombreArch = $campo . '_' . $estudiante->id . '_' . time()
+                                . '.' . $archivo->getClientOriginalExtension();
                     $documentosRutas[$campo] = $archivo->storeAs($carpeta, $nombreArch, 'public');
                 }
             }
@@ -281,15 +272,21 @@ class MatriculaController extends Controller
                 $matricula->update($documentosRutas);
             }
 
+            // ── Si se crea directamente como aprobada (desde admin) ──────
+            if ($estadoInicial === 'aprobada') {
+                $matricula->update(['fecha_confirmacion' => now()]);
+                $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
+            }
+
             DB::commit();
 
             if ($esPublico) {
                 return redirect()->route('matriculas.success')
-                    ->with('success',  '¡Matrícula registrada exitosamente!')
-                    ->with('codigo',   $codigoMatricula)
-                    ->with('email',    $validated['padre_email'] ?? null)
-                    ->with('identidad',$validated['padre_dni'])
-                    ->with('estado',   'pendiente');
+                    ->with('success',   '¡Matrícula registrada exitosamente!')
+                    ->with('codigo',    $codigoMatricula)
+                    ->with('email',     $validated['padre_email'] ?? null)
+                    ->with('identidad', $validated['padre_dni'])
+                    ->with('estado',    'pendiente');
             }
 
             return redirect()->route('matriculas.index')
@@ -309,9 +306,6 @@ class MatriculaController extends Controller
 
     public function success()
     {
-        // CORRECCIÓN: si el usuario entra directamente a /matriculas/exito
-        // sin haber completado una matrícula, no hay datos en sesión.
-        // Se redirige al portal en ese caso.
         if (!session('codigo')) {
             return redirect()->route('matricula-publica')
                 ->with('error', 'No hay ninguna matrícula reciente para mostrar.');
@@ -328,8 +322,6 @@ class MatriculaController extends Controller
     {
         $matricula->load(['estudiante', 'padre']);
 
-        // CORRECCIÓN: el original no verificaba si estudiante o padre eran null,
-        // lo que lanzaba un error 500 si la relación estaba rota.
         if (!$matricula->estudiante || !$matricula->padre) {
             return response()->json([
                 'error' => 'Esta matrícula tiene datos incompletos.',
@@ -362,11 +354,11 @@ class MatriculaController extends Controller
                 'direccion'       => $pad->direccion,
             ],
             'matricula' => [
-                'codigo'           => $matricula->codigo_matricula,
-                'anio_lectivo'     => $matricula->anio_lectivo,
-                'fecha_matricula'  => Carbon::parse($matricula->fecha_matricula)->format('d/m/Y'),
-                'estado'           => $matricula->estado,
-                'observaciones'    => $matricula->observaciones,
+                'codigo'          => $matricula->codigo_matricula,
+                'anio_lectivo'    => $matricula->anio_lectivo,
+                'fecha_matricula' => Carbon::parse($matricula->fecha_matricula)->format('d/m/Y'),
+                'estado'          => $matricula->estado,
+                'observaciones'   => $matricula->observaciones,
             ],
         ]);
     }
@@ -377,7 +369,7 @@ class MatriculaController extends Controller
 
     public function show(Matricula $matricula)
     {
-        $matricula->load(['padre', 'estudiante']);
+        $matricula->load(['padre', 'padre.user', 'estudiante']);
         return view('matriculas.show', compact('matricula'));
     }
 
@@ -405,20 +397,58 @@ class MatriculaController extends Controller
 
     public function update(Request $request, Matricula $matricula)
     {
-        $validated = $request->validate([
-            'anio_lectivo'    => 'required|digits:4|integer|min:2020|max:2100',
-            'fecha_matricula' => 'required|date',
-            'estado'          => 'required|in:pendiente,aprobada,rechazada,cancelada',
-            'motivo_rechazo'  => 'nullable|string|max:500',
-            'observaciones'   => 'nullable|string|max:1000',
+        $request->validate([
+            'anio_lectivo'         => 'required|digits:4|integer|min:2020|max:2100',
+            'fecha_matricula'      => 'required|date',
+            'estado'               => 'required|in:pendiente,aprobada,rechazada,cancelada',
+            'motivo_rechazo'       => 'nullable|string|max:500',
+            'observaciones'        => 'nullable|string|max:1000',
+            'foto_estudiante'      => 'nullable|image|max:2048',
+            'acta_nacimiento'      => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
+            'certificado_estudios' => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
+            'constancia_conducta'  => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
+            'foto_dni_estudiante'  => 'nullable|image|max:2048',
+            'foto_dni_padre'       => 'nullable|image|max:2048',
         ]);
 
-        // CORRECCIÓN: el original envolvía un simple update() en
-        // DB::beginTransaction() sin necesidad. Un update de un solo
-        // modelo no necesita transacción.
-        $matricula->update($validated);
+        $estadoAnterior = $matricula->estado;
+        $estadoNuevo    = $request->estado;
 
-        return redirect()->route('matriculas.show', $matricula->id)
+        $documentos = [
+            'foto_estudiante', 'acta_nacimiento', 'certificado_estudios',
+            'constancia_conducta', 'foto_dni_estudiante', 'foto_dni_padre',
+        ];
+
+        $datosActualizar = [
+            'anio_lectivo'       => $request->anio_lectivo,
+            'fecha_matricula'    => $request->fecha_matricula,
+            'estado'             => $estadoNuevo,
+            'observaciones'      => $request->observaciones,
+            'motivo_rechazo'     => $estadoNuevo === 'rechazada'
+                ? $request->motivo_rechazo
+                : null,
+            'fecha_confirmacion' => in_array($estadoNuevo, ['aprobada', 'rechazada']) && $estadoAnterior === 'pendiente'
+                ? now()
+                : $matricula->fecha_confirmacion,
+        ];
+
+        foreach ($documentos as $campo) {
+            if ($request->hasFile($campo)) {
+                if ($matricula->$campo) {
+                    Storage::disk('public')->delete($matricula->$campo);
+                }
+                $datosActualizar[$campo] = $request->file($campo)->store('matriculas', 'public');
+            }
+        }
+
+        $matricula->update($datosActualizar);
+
+        if ($estadoNuevo === 'aprobada' && $estadoAnterior !== 'aprobada') {
+            $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
+        }
+
+        return redirect()
+            ->route('matriculas.show', $matricula->id)
             ->with('success', 'Matrícula actualizada correctamente.');
     }
 
@@ -428,8 +458,6 @@ class MatriculaController extends Controller
 
     public function destroy(Matricula $matricula)
     {
-        // CORRECCIÓN: mismo problema, transacción innecesaria para
-        // un solo delete. Se simplificó.
         $matricula->delete();
 
         return redirect()->route('matriculas.index')
@@ -441,21 +469,32 @@ class MatriculaController extends Controller
     // ────────────────────────────────────────────────────────────────────────
 
     /**
-     * Aprobar matrícula.
-     * CORRECCIÓN: el original solo permitía aprobar si estado era 'pendiente'.
-     * Se mantiene esa restricción pero se agrega mensaje más claro.
+     * Aprobar matrícula (botón rápido desde index o show).
      */
     public function confirmar(Matricula $matricula)
     {
         if ($matricula->estado !== 'pendiente') {
-            return back()->withErrors([
-                'error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'.",
-            ]);
+            if (request()->ajax()) {
+                return response()->json([
+                    'error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'."
+                ], 422);
+            }
+            return back()->withErrors(['error' => "No se puede aprobar una matrícula con estado '{$matricula->estado}'."]);
         }
 
-        $matricula->update(['estado' => 'aprobada']);
+        $matricula->update([
+            'estado'             => 'aprobada',
+            'fecha_confirmacion' => now(),
+            'motivo_rechazo'     => null,
+        ]);
 
-        return back()->with('success', 'Matrícula aprobada correctamente.');
+        $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Matrícula aprobada correctamente.']);
+        }
+
+        return back()->with('success', 'Matrícula aprobada y acceso creado para el padre/tutor.');
     }
 
     /**
@@ -464,29 +503,35 @@ class MatriculaController extends Controller
     public function rechazar(Request $request, Matricula $matricula)
     {
         $request->validate([
-            'motivo_rechazo' => 'required|string|max:500',
+            'motivo_rechazo' => 'required|string|min:10|max:500',
         ]);
 
         if ($matricula->estado !== 'pendiente') {
-            return back()->withErrors([
-                'error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'.",
-            ]);
+            if ($request->ajax()) {
+                return response()->json([
+                    'error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'."
+                ], 422);
+            }
+            return back()->withErrors(['error' => "No se puede rechazar una matrícula con estado '{$matricula->estado}'."]);
         }
 
         $matricula->update([
-            'estado'         => 'rechazada',
-            'motivo_rechazo' => $request->motivo_rechazo,
+            'estado'             => 'rechazada',
+            'motivo_rechazo'     => $request->motivo_rechazo,
+            'fecha_confirmacion' => now(),
         ]);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Matrícula rechazada correctamente.']);
+        }
 
         return back()->with('success', 'Matrícula rechazada correctamente.');
     }
 
     /**
      * Cancelar matrícula.
-     * CORRECCIÓN: el original no verificaba el estado actual antes de cancelar,
-     * permitiendo cancelar matrículas ya rechazadas o ya canceladas.
      */
-    public function cancelar(Matricula $matricula)
+    public function cancelar(Matricula $matricula): RedirectResponse
     {
         if (in_array($matricula->estado, ['cancelada', 'rechazada'])) {
             return back()->withErrors([
@@ -497,5 +542,83 @@ class MatriculaController extends Controller
         $matricula->update(['estado' => 'cancelada']);
 
         return back()->with('success', 'Matrícula cancelada correctamente.');
+    }
+
+    /**
+     * Aprobar rápido (patch desde index).
+     */
+    public function aprobar(Matricula $matricula)
+    {
+        $matricula->update(['estado' => 'aprobada']);
+
+        return back()->with('success', 'Matrícula aprobada correctamente.');
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // APROBACIÓN — crear/activar usuario del padre
+    // ────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Cuando una matrícula se aprueba por primera vez:
+     *  1. Si el padre no tiene user_id → se crea un User con rol "padre"
+     *  2. Si ya tiene user_id          → solo se activa el usuario
+     *  3. Se activa el padre   (estado = activo)
+     *  4. Se activa el estudiante (estado = activo)
+     *
+     * Contraseña inicial = DNI del padre.
+     */
+    private function procesarAprobacion(Matricula $matricula): void
+    {
+        $padre      = $matricula->padre;
+        $estudiante = $matricula->estudiante;
+
+        if (!$padre || !$estudiante) {
+            return;
+        }
+
+        // ── Crear o activar usuario del padre ─────────────────────────────
+        if (!$padre->user_id) {
+
+            $rolPadre = Rol::where('nombre', 'like', '%adre%')   // Padre
+                           ->orWhere('nombre', 'like', '%utor%')  // Tutor
+                           ->first();
+
+            // Usar correo del padre si está disponible y no está en uso
+            if ($padre->correo && !User::where('email', $padre->correo)->exists()) {
+                $email = $padre->correo;
+            } else {
+                // Generar email automático con unicidad garantizada
+                $base  = Str::slug($padre->nombre . '.' . $padre->apellido) . '.' . $padre->id;
+                $email = $base . '@escuela.edu';
+
+                if (User::where('email', $email)->exists()) {
+                    $email = 'padre.' . $padre->id . '.' . time() . '@escuela.edu';
+                }
+            }
+
+            $user = User::create([
+                'name'              => $padre->nombre . ' ' . $padre->apellido,
+                'email'             => $email,
+                'password'          => Hash::make($padre->dni), // contraseña = DNI
+                'user_type'         => 'padre',
+                'id_rol'            => $rolPadre?->id ?? 5,
+                'activo'            => true,
+                'email_verified_at' => now(),
+                'permissions'       => json_encode([
+                    'ver_calificaciones' => true,
+                    'ver_asistencias'    => true,
+                ]),
+            ]);
+
+            $padre->update(['user_id' => $user->id]);
+
+        } else {
+            // Ya tiene usuario → solo activarlo
+            User::where('id', $padre->user_id)->update(['activo' => true]);
+        }
+
+        // ── Activar padre y estudiante ────────────────────────────────────
+        $padre->update(['estado' => 'activo']);
+        $estudiante->update(['estado' => 'activo']);
     }
 }

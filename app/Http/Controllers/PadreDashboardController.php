@@ -2,66 +2,76 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Estudiante;
-use App\Models\Padre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User; // ← Asegúrate de importar tu modelo User
 
 class PadreDashboardController extends Controller
 {
     public function index()
     {
-        // Usuario logueado
-        $usuario = Auth::user();
-
-        // Obtener el registro de "Padre" asociado a este usuario
-        $padre = Padre::where('user_id', $usuario->id)->first();
+        /** @var User $user */
+        $user  = Auth::user();
+        $padre = $user->padre;
 
         if (!$padre) {
-            // En caso de que el usuario no tenga un perfil de padre
-            return redirect()->route('home')->with('error', 'No se encontró un perfil de padre asociado.');
+            abort(403, 'No tienes un perfil de padre/tutor vinculado.');
         }
 
-        // Obtener hijos reales del padre (asumiendo que Estudiante tiene padre_id)
-        $misHijos = Estudiante::where('padre_id', $padre->id)
-            ->where('estado', 'activo')
+        $matriculas = $padre->matriculas()
+            ->with('estudiante')
+            ->where('estado', 'aprobada')
+            ->orderBy('anio_lectivo', 'desc')
             ->get();
 
-        $totalHijos = $misHijos->count();
+        $todasMatriculas = $padre->matriculas()
+            ->with('estudiante')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        // Estos valores quedan como "placeholder" hasta tener lógica real
-        $citasPendientes = 0;
-        $pagosVencidos = 0;
+        return view('padre.dashboard', compact('padre', 'matriculas', 'todasMatriculas'));
+    }
 
-        // Resumen por hijo (placeholder hasta tener calificaciones reales)
-        $resumenHijos = [];
-        foreach ($misHijos as $hijo) {
-            $resumenHijos[] = [
-                'nombre' => $hijo->nombre_completo,
-                'grado' => $hijo->grado,
-                'seccion' => $hijo->seccion,
-                'promedio' => null,
-                'asistencia' => null,
-                'comportamiento' => null,
-            ];
+    public function verHijo($estudianteId)
+    {
+        /** @var User $user */
+        $user  = Auth::user();
+        $padre = $user->padre;
+
+        if (!$padre) {
+            abort(403);
         }
 
-        // Próximos eventos (placeholder)
-        $proximosEventos = [];
+        $matricula = $padre->matriculas()
+            ->with('estudiante')
+            ->where('estudiante_id', $estudianteId)
+            ->where('estado', 'aprobada')
+            ->firstOrFail();
 
-        // Notificaciones (placeholder)
-        $notificaciones = [];
+        $estudiante = $matricula->estudiante;
 
-        return view('padre.dashboard.index', compact(
-            'usuario',
-            'padre',
-            'misHijos',
-            'totalHijos',
-            'citasPendientes',
-            'pagosVencidos',
-            'resumenHijos',
-            'proximosEventos',
-            'notificaciones'
-        ));
+        return view('padre.hijo', compact('padre', 'estudiante', 'matricula'));
+    }
+
+    public function cambiarPassword(Request $request)
+    {
+        $request->validate([
+            'password_actual' => 'required',
+            'password_nuevo'  => 'required|min:8|confirmed',
+        ]);
+
+        /** @var User $user */  // ← Este comentario elimina el "undefined method" del IDE
+        $user = Auth::user();   // ← Unificado con Auth facade
+
+        if (!Hash::check($request->password_actual, $user->password)) {
+            return back()->with('pw_error', 'La contraseña actual es incorrecta.');
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password_nuevo),
+        ]);
+
+        return back()->with('pw_success', 'Contraseña actualizada correctamente.');
     }
 }

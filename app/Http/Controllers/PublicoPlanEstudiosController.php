@@ -12,5 +12,10 @@ class PublicoPlanEstudiosController extends Controller
 
     return view('plan-estudios', compact('grados'));
 }
+public function show(Grado $grado)
+    {
+        $grado->load('materias');
+        return view('plan-estudios-detalle', compact('grado'));
+    }
 
 }

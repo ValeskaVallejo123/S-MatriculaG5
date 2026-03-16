@@ -15,8 +15,8 @@ class Materia extends Model
         'nombre',
         'codigo',
         'descripcion',
-        'nivel',   // primaria | secundaria
-        'area',    // matemáticas, español, ciencias...
+        'nivel',
+        'area',
         'activo',
     ];
 
@@ -33,8 +33,8 @@ class Materia extends Model
     // Una materia pertenece a muchos grados
     public function grados()
     {
-        return $this->belongsToMany(Grado::class, 'grado_materia')
-                    ->withPivot('profesor_id', 'horas_semanales')
+        return $this->belongsToMany(Grado::class, 'profesor_materia_grados')
+                    ->withPivot('profesor_id', 'seccion')
                     ->withTimestamps();
     }
 
@@ -52,7 +52,7 @@ class Materia extends Model
         return $this->hasMany(Horario::class);
     }
 
-    // Calificaciones (materia -> muchas notas)
+    // Calificaciones
     public function calificaciones()
     {
         return $this->hasMany(Calificacion::class, 'materia_id');

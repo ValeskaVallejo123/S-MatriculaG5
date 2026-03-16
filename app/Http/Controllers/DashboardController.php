@@ -8,7 +8,6 @@ use App\Models\Curso;
 use App\Models\Matricula;
 use App\Models\PeriodoAcademico;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -54,9 +53,9 @@ class DashboardController extends Controller
     {
         try {
             // Estadísticas
-            $totalEstudiantes = Estudiante::where('activo', 1)->count();
+            $totalEstudiantes = Estudiante::where('estado', 'activo')->count();
             $estudiantesActivos = Estudiante::where('estado', 'activo')->count();
-            $totalProfesores = Profesor::where('activo', 1)->count();
+            $totalProfesores = Profesor::where('estado', 'activo')->count();
             $profesoresActivos = Profesor::where('estado', 'activo')->count();
             $totalCursos = Curso::count();
             $totalMatriculas = Matricula::count();

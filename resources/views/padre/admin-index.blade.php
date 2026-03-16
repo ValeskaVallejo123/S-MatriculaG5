@@ -5,7 +5,7 @@
 
 @section('topbar-actions')
     <a href="{{ route('padres.create') }}" class="adm-btn-solid">
-        <i class="fas fa-plus"></i> Nuevo Padre/Tutor
+        <i class="fas fa-plus"></i> Agregar Nuevo Padre/Tutor
     </a>
 @endsection
 
@@ -16,8 +16,13 @@
 .pad-wrap { font-family: 'Inter', sans-serif; }
 
 .adm-btn-solid {
-    display: inline-flex; align-items: center; gap: .4rem;
-    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .6rem .75rem;
+    border-radius: 7px;
+    font-size: .83rem;
+    font-weight: 600;
     background: linear-gradient(135deg, #4ec7d2, #00508f);
     color: #fff; border: none; text-decoration: none; transition: opacity .15s;
 }

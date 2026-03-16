@@ -14,17 +14,46 @@ class HorarioGrado extends Model
         'horario',
     ];
 
-    protected $casts = [
-        'horario' => 'array',
-    ];
+    // ← SIN el cast 'horario' => 'array' porque el accessor lo reemplaza
+    protected $casts = [];
 
     public function grado()
     {
         return $this->belongsTo(\App\Models\Grado::class);
     }
 
-    
-    // Generar estructura según jornada
+    // ── Accessor: obtiene el horario ordenado por días ──
+    public function getHorarioAttribute($value)
+    {
+        $data = json_decode($value, true);
+        if (!$data) return $data;
+
+        $ordenDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        $ordenado  = [];
+
+        foreach ($ordenDias as $dia) {
+            if (isset($data[$dia])) {
+                $ordenado[$dia] = $data[$dia];
+            }
+        }
+
+        // Agregar días que no estén en el orden definido (por si acaso)
+        foreach ($data as $dia => $horas) {
+            if (!isset($ordenado[$dia])) {
+                $ordenado[$dia] = $horas;
+            }
+        }
+
+        return $ordenado;
+    }
+
+    // ── Mutator: guarda el horario como JSON ──
+    public function setHorarioAttribute($value)
+    {
+        $this->attributes['horario'] = is_array($value) ? json_encode($value) : $value;
+    }
+
+    // ── Generar estructura según jornada ──
     public static function estructuraPorJornada(string $jornada)
     {
         if ($jornada === 'matutina') {
@@ -44,7 +73,7 @@ class HorarioGrado extends Model
             ];
         }
 
-        $dias = ['Lunes','Martes','Miércoles','Jueves','Viernes'];
+        $dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
         $estructura = [];
         foreach ($dias as $dia) {

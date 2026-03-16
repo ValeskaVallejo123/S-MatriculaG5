@@ -54,7 +54,6 @@
             </div>
         </div>
         @endif
-
         {{-- Verificar si tiene permiso para crear estudiantes --}}
         @if(auth()->user()->tienePermiso('crear_estudiantes'))
         <div class="col-md-4">
@@ -69,6 +68,7 @@
         @endif
 
         {{-- Verificar si tiene permiso para ver profesores --}}
+
         @if(auth()->user()->tienePermiso('ver_profesores'))
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius:10px;border-left:4px solid #00508f !important;">
@@ -89,6 +89,10 @@
         @endif
 
         {{-- Verificar si tiene alguno de varios permisos --}}
+
+
+        {{-- Verificar si tiene alguno de varios permisos --}}
+
         @if(auth()->user()->tieneAlgunPermiso(['ver_reportes', 'generar_reportes']))
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius:10px;border-left:4px solid #4ec7d2 !important;">
@@ -109,6 +113,7 @@
         @endif
 
         {{-- Verificar si tiene un rol específico --}}
+
         @if(auth()->user()->tieneRol('Super Administrador'))
         <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius:10px;border-left:4px solid #dc3545 !important;">
@@ -129,8 +134,15 @@
         @endif
 
     </div>
+    {{-- Mostrar permisos del usuario actual (para depuración) --}}
+
+    {{-- Panel de depuración (solo en modo debug) --}}
+
+
+    {{-- Panel de depuración (solo en modo debug) --}}
 
     {{-- Mostrar permisos del usuario actual (para depuración) --}}
+
     @if(config('app.debug'))
     <div class="card border-0 shadow-sm" style="border-radius:12px;border:1px dashed #fbbf24 !important;">
         <div class="card-header border-0 py-3 px-4" style="background:rgba(251,191,36,0.1);border-radius:12px 12px 0 0;">
@@ -171,6 +183,7 @@
 </div>
 @endsection
 
+
 {{--
 EJEMPLOS DE USO EN OTROS CONTEXTOS:
 
@@ -210,3 +223,4 @@ EJEMPLOS DE USO EN OTROS CONTEXTOS:
 </section>
 @endif
 --}}
+

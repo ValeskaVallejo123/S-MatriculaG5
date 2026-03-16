@@ -19,10 +19,13 @@ class Kernel extends HttpKernel
 
     protected $middlewareGroups = [
         'web' => [
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,        // ← ¿está?
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            //\Illuminate\Auth\Middleware\AuthenticateSession::class,     // ← ¿está?
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+             \App\Http\Middleware\TrackNavigationHistory::class,
         ],
 
         'api' => [

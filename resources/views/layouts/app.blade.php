@@ -12,9 +12,29 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #f5f7fa; overflow-x: hidden; }
 
-        /* ── SIDEBAR ── */
+        /*
+        ╔══════════════════════════════════════════════════════════════╗
+        ║  🔤 TAMAÑO DE LETRA GLOBAL — afecta TODO el sitio            ║
+        ║  Cambia el número para hacer todo más grande o pequeño.      ║
+        ║  • 14px → más compacto                                       ║
+        ║  • 16px → estándar                                           ║
+        ║  • 17px → valor actual                                       ║
+        ║  • 18px → más grande                                         ║
+        ╚══════════════════════════════════════════════════════════════╝
+        */
+        html { font-size: 17px; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            overflow-x: hidden;
+            font-size: 1rem;
+        }
+
+        /* ══════════════════════════════════════════════
+           SIDEBAR
+        ══════════════════════════════════════════════ */
         .sidebar {
             position: fixed; top: 0; left: 0;
             height: 100vh; width: 280px;
@@ -40,7 +60,11 @@
         .logo-text h4 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #f59e0b; line-height: 1.2; }
         .logo-text p  { margin: 0; font-size: .75rem; color: rgba(245,158,11,.8); letter-spacing: .5px; font-weight: 500; }
 
-        .user-info { padding: 1.5rem 1.2rem; border-bottom: 1px solid rgba(78,199,210,.2); text-align: center; }
+        .user-info {
+            padding: 1.5rem 1.2rem;
+            border-bottom: 1px solid rgba(78,199,210,.2);
+            text-align: center;
+        }
         .user-avatar {
             width: 60px; height: 60px; border-radius: 50%;
             background: linear-gradient(135deg, #4ec7d2, #00508f);
@@ -56,7 +80,7 @@
         .menu-section-title {
             padding: 1rem 1.2rem .5rem;
             color: rgba(78,199,210,.8);
-            font-size: .65rem; font-weight: 700;
+            font-size: .80rem; font-weight: 700;
             text-transform: uppercase; letter-spacing: 1.2px;
         }
         .menu-item { margin: 0; }
@@ -76,11 +100,27 @@
             padding-left: calc(1.2rem - 3px);
         }
         .menu-link.active i { color: #4ec7d2; }
+        .menu-link.disabled-link { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
-        /* ── MAIN ── */
-        .main-content { margin-left: 280px; min-height: 100vh; background: #f5f7fa; }
+        /* ══════════════════════════════════════════════
+           MAIN CONTENT
+           — Con sidebar (admin/superadmin): margin-left 280px
+           — Sin sidebar (profesor/estudiante/padre): sin margen
+        ══════════════════════════════════════════════ */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
 
-        /* ── TOPBAR ── */
+        /* ← CLAVE: roles sin sidebar ocupan todo el ancho */
+        .main-content.no-sidebar {
+            margin-left: 0;
+        }
+
+        /* ══════════════════════════════════════════════
+           TOPBAR
+        ══════════════════════════════════════════════ */
         .topbar {
             background: white; padding: 0 1.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,.06);
@@ -93,28 +133,35 @@
         .topbar-left h5 { margin: 0; color: #003b73; font-weight: 700; font-size: 1.15rem; }
         .topbar-right { display: flex; align-items: center; gap: .6rem; flex-wrap: nowrap; }
         .topbar-divider { width: 1px; height: 24px; background: #e2e8f0; flex-shrink: 0; }
-        .topbar-date {
-            display: flex; align-items: center; gap: .4rem;
-            color: #6b7280; font-size: .8rem;
-            padding: .38rem .75rem;
-            background: #f9fafb; border-radius: 7px; border: 1px solid #e5e7eb;
-            white-space: nowrap; flex-shrink: 0;
-        }
-        .topbar-date i { color: #00508f; }
-        .topbar-actions-group { display: flex; align-items: center; gap: .5rem; flex-wrap: nowrap; }
+
         .btn-logout {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white; border: none;
-            padding: .38rem .9rem; border-radius: 7px;
-            font-size: .82rem; font-weight: 600;
+            padding: .6rem .75rem; border-radius: 7px;
+            font-size: .83rem; font-weight: 600;
             display: flex; align-items: center; gap: .4rem;
-            cursor: pointer; transition: all .2s ease; white-space: nowrap;
+            cursor: pointer; transition: all .2s ease;
+            white-space: nowrap;
         }
         .btn-logout:hover { opacity: .9; transform: translateY(-1px); }
 
+        /* ══════════════════════════════════════════════
+           CONTENT WRAPPER
+           — Con sidebar: padding normal
+           — Sin sidebar: padding lateral más generoso
+        ══════════════════════════════════════════════ */
         .content-wrapper { padding: 2rem; }
 
-        /* ── RESPONSIVE ── */
+        .no-sidebar .content-wrapper {
+            padding: 1.5rem 2rem;
+            /* Sin max-width para que ocupe todo el ancho disponible */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* ══════════════════════════════════════════════
+           MOBILE MENU
+        ══════════════════════════════════════════════ */
         .mobile-menu-btn {
             display: none;
             background: linear-gradient(135deg, #4ec7d2, #00508f);
@@ -132,15 +179,18 @@
         @media (max-width: 768px) {
             .sidebar { left: -280px; }
             .sidebar.active { left: 0; }
-            .main-content { margin-left: 0; }
+            .main-content { margin-left: 0 !important; }
             .mobile-menu-btn { display: block !important; }
             .content-wrapper { padding: 1rem; }
+            .no-sidebar .content-wrapper { padding: 1rem; }
             .topbar { padding: .75rem 1rem; }
             .topbar-date { display: none; }
             .topbar-divider { display: none; }
         }
 
-        /* ── MODAL ELIMINACIÓN ── */
+        /* ══════════════════════════════════════════════
+           MODAL ELIMINACIÓN
+        ══════════════════════════════════════════════ */
         .modal-delete-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
@@ -184,9 +234,16 @@
             50%      { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239,68,68,0); }
         }
 
-        .modal-delete-title { text-align: center; color: #1e293b; font-size: 1.5rem; font-weight: 700; margin: 0 0 1.5rem; padding: 0 2rem; }
+        .modal-delete-title {
+            text-align: center; color: #1e293b;
+            font-size: 1.5rem; font-weight: 700;
+            margin: 0 0 1.5rem; padding: 0 2rem;
+        }
         .modal-delete-content { padding: 0 2rem 2rem; }
-        .modal-delete-message { text-align: center; color: #64748b; font-size: .938rem; line-height: 1.6; margin: 0 0 1.5rem; }
+        .modal-delete-message {
+            text-align: center; color: #64748b;
+            font-size: .938rem; line-height: 1.6; margin: 0 0 1.5rem;
+        }
         .modal-delete-item {
             background: linear-gradient(135deg,#f8fafc,#e2e8f0);
             border-radius: 12px; padding: 1rem;
@@ -198,8 +255,13 @@
             display: flex; align-items: center; justify-content: center;
             color: #ef4444; font-size: 1.125rem; flex-shrink: 0;
         }
-        .delete-item-label { display: block; color: #64748b; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: .25rem; }
-        .delete-item-name  { display: block; color: #1e293b; font-size: .938rem; font-weight: 700; }
+        .delete-item-label {
+            display: block; color: #64748b; font-size: .75rem;
+            font-weight: 600; text-transform: uppercase;
+            letter-spacing: .5px; margin-bottom: .25rem;
+        }
+        .delete-item-name { display: block; color: #1e293b; font-size: .938rem; font-weight: 700; }
+
         .modal-delete-actions {
             padding: 1rem 1.5rem 1.5rem; display: flex; gap: .75rem;
             border-top: 1px solid #e2e8f0;
@@ -267,7 +329,6 @@
     {{-- Menú --}}
     <ul class="sidebar-menu">
 
-        {{-- ── PRINCIPAL ── --}}
         <li class="menu-section-title">PRINCIPAL</li>
         <li class="menu-item">
             <a href="{{ $isSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}"
@@ -276,7 +337,6 @@
             </a>
         </li>
 
-        {{-- ── USUARIOS ── --}}
         <li class="menu-section-title">USUARIOS</li>
 
         @if($isSuperAdmin)
@@ -307,7 +367,6 @@
             </a>
         </li>
 
-        {{-- ── MATRÍCULAS ── --}}
         <li class="menu-section-title">MATRÍCULAS</li>
         <li class="menu-item">
             <a href="{{ route('matriculas.index') }}"
@@ -328,7 +387,6 @@
             </a>
         </li>
 
-        {{-- ── ACADÉMICO ── --}}
         <li class="menu-section-title">ACADÉMICO</li>
         <li class="menu-item">
             <a href="{{ $isSuperAdmin ? route('superadmin.grados.index') : route('grados.index') }}"
@@ -349,11 +407,17 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('carga-docente.index') }}"
-               class="menu-link {{ request()->routeIs('carga-docente.*') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
-            </a>
-        </li>
+    @if($isSuperAdmin)
+        <a href="{{ route('carga-docente.index') }}"
+           class="menu-link {{ request()->routeIs('carga-docente.*') ? 'active' : '' }}">
+            <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
+        </a>
+    @else
+        <a href="#" class="menu-link disabled-link" title="Sin acceso">
+            <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
+        </a>
+    @endif
+</li>
         <li class="menu-item">
             <a href="{{ route('secciones.index') }}"
                class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
@@ -361,13 +425,12 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('cupos_maximos.index') }}"
-               class="menu-link {{ request()->routeIs('cupos_maximos.*') ? 'active' : '' }}">
-                <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
-            </a>
-        </li>
+    <a href="{{ route('superadmin.cupos_maximos.index') }}"
+       class="menu-link {{ request()->routeIs('superadmin.cupos_maximos.*') ? 'active' : '' }}">
+        <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
+    </a>
+</li>
 
-        {{-- ── CALENDARIO ── --}}
         <li class="menu-section-title">CALENDARIO</li>
         <li class="menu-item">
             <a href="{{ route('periodos-academicos.index') }}"
@@ -382,7 +445,6 @@
             </a>
         </li>
 
-        {{-- ── DOCUMENTACIÓN ── --}}
         <li class="menu-section-title">DOCUMENTACIÓN</li>
         <li class="menu-item">
             <a href="{{ route('observaciones.index') }}"
@@ -397,7 +459,6 @@
             </a>
         </li>
 
-        {{-- ── CONFIGURACIÓN ── --}}
         <li class="menu-section-title">CONFIGURACIÓN</li>
         @if($isSuperAdmin)
         <li class="menu-item">
@@ -418,9 +479,9 @@
 </aside>
 @endif
 
-<div class="main-content">
+{{-- ← CLAVE: clase no-sidebar para roles sin menú lateral --}}
+<div class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
 
-    {{-- TOPBAR --}}
     <div class="topbar">
         <div class="topbar-left">
             @if($showSidebar)
@@ -433,17 +494,11 @@
 
         <div class="topbar-right">
             @hasSection('topbar-actions')
-            <div class="topbar-actions-group">
-                @yield('topbar-actions')
-            </div>
-            <div class="topbar-divider"></div>
+                <div class="topbar-actions-group">
+                    @yield('topbar-actions')
+                </div>
+                <div class="topbar-divider"></div>
             @endif
-
-            <div class="topbar-date">
-                <i class="far fa-clock"></i>
-                <span>{{ now()->locale('es')->isoFormat('ddd, D [de] MMM [de] YYYY') }}</span>
-            </div>
-
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn-logout">
@@ -453,7 +508,6 @@
         </div>
     </div>
 
-    {{-- CONTENT --}}
     <div class="content-wrapper">
 
         @if(session('success'))

@@ -241,5 +241,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
+<<<<<<< HEAD
+@endsection
+=======
 
 @endsection
+
+>>>>>>> cesia-dev
