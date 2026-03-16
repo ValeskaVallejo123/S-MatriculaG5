@@ -167,7 +167,7 @@
                 </div>
                 {{-- Botón de Registrar con estilo Gradient --}}
                 <div class="col-md-4 text-md-end text-center">
-                    <a href="{{ route('cupos_maximos.index') }}"> class="btn btn-primary-gradient">
+                    <a href="{{ route('cupos_maximos.create') }}" class="btn btn-primary-gradient px-4 py-2">
                         Registrar nuevo cupo
                     </a>
                 </div>
@@ -219,12 +219,6 @@
                 </table>
             </div>
         </div>
-    </div>
-
-    <div class="text-center mt-4">
-        <a href="{{ route('admins.index') }}" class="btn btn-secondary px-4 py-2 fw-semibold">
-            <i class="bi bi-arrow-left-circle"></i> Volver a los administradores
-        </a>
     </div>
 </div>
 
