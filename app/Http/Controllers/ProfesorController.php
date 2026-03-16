@@ -46,7 +46,6 @@ class ProfesorController extends Controller
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'nombre' => 'required|string|max:50',
             'apellido' => 'required|string|max:50',
@@ -62,34 +61,31 @@ class ProfesorController extends Controller
             'fecha_ingreso' => 'nullable|date',
             'tipo_contrato' => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
             'estado' => 'required|in:activo,inactivo,licencia',
-
-
         ], [
-            'nombre1.required' => 'El primer nombre es obligatorio',
-            'apellido1.required' => 'El primer apellido es obligatorio',
+            'nombre.required' => 'El nombre es obligatorio',
+            'apellido.required' => 'El apellido es obligatorio',
             'dni.required' => 'El DNI es obligatorio',
             'dni.unique' => 'Este DNI ya está registrado',
             'email.required' => 'El email es obligatorio',
-            'email.email' => 'El email debe ser válido',
             'email.unique' => 'Este email ya está registrado',
             'especialidad.required' => 'La especialidad es obligatoria',
             'estado.required' => 'El estado es obligatorio',
         ]);
 
-        if (empty($validated['fecha_ingreso'])) {
-            $validated['fecha_ingreso'] = now()->format('Y-m-d');
-        }
+        // Si fecha_ingreso viene vacía, le damos un valor,
+        // pero SOLO si existe realmente en la lógica que queremos guardar.
+       // if (empty($validated['fecha_ingreso'])) {
+          //  $validated['fecha_ingreso'] = now()->format('Y-m-d');
+       // }
+
+        // --- SOLUCIÓN DE EMERGENCIA ---
+        // Si el error 1054 persiste, cambia la línea de abajo por:
+        // Profesor::create(collect($validated)->forget('fecha_ingreso')->toArray());
 
         Profesor::create($validated);
 
         return redirect()->route('profesores.index')
             ->with('success', 'Profesor creado exitosamente');
-
-    }
-
-    public function show(Profesor $profesor)
-    {
-        return view('profesores.show', compact('profesor'));
     }
 
     public function edit(Profesor $profesor)

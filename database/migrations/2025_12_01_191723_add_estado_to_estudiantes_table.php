@@ -8,15 +8,25 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::table('estudiantes', function (Blueprint $table) {
-            $table->enum('estado', ['activo', 'inactivo'])->default('activo')->after('seccion');
-        });
+        if (!Schema::hasColumn('estudiantes', 'estado')) {
+
+            Schema::table('estudiantes', function (Blueprint $table) {
+                $table->enum('estado', ['activo', 'inactivo'])
+                    ->default('activo')
+                    ->after('seccion');
+            });
+
+        }
     }
 
     public function down()
     {
-        Schema::table('estudiantes', function (Blueprint $table) {
-            $table->dropColumn('estado');
-        });
+        if (Schema::hasColumn('estudiantes', 'estado')) {
+
+            Schema::table('estudiantes', function (Blueprint $table) {
+                $table->dropColumn('estado');
+            });
+
+        }
     }
 };

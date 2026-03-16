@@ -25,7 +25,7 @@ class Profesor extends Model
     'nivel_academico',
     'fecha_contratacion',
     'tipo_contrato',
-    'estado',
+    'estado'
 ];
 
 
