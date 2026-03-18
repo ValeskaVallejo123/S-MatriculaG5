@@ -10,26 +10,79 @@ use App\Models\PeriodoAcademico;
 use App\Models\Grado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrarCalificacionController extends Controller
 {
+    /**
+     * Obtener el profesor vinculado al usuario logueado.
+     * Retorna null si el usuario no tiene un profesor asociado.
+     */
+    private function getProfesorActual(): ?Profesor
+    {
+        return Profesor::where('user_id', Auth::id())->first();
+    }
+
     public function index(Request $request)
     {
-        $grados = Grado::where('activo', true)
-            ->orderBy('nivel')
-            ->orderBy('numero')
-            ->orderBy('seccion')
-            ->get();
+        $profesorActual = $this->getProfesorActual();
 
-        $materias = Materia::all();
-        $periodos = PeriodoAcademico::all();
-        $profesores = Profesor::orderBy('apellido')->get();
+        // Si el usuario logueado es un profesor, filtramos solo sus grados
+        if ($profesorActual) {
+
+            // Grados asignados al profesor a través de ProfesorGradoSeccion
+            $gradosIds = $profesorActual->gradosAsignados()
+                ->pluck('grado_id')
+                ->unique();
+
+            $grados = Grado::whereIn('id', $gradosIds)
+                ->where('activo', true)
+                ->orderBy('nivel')
+                ->orderBy('numero')
+                ->orderBy('seccion')
+                ->get();
+
+            // Solo sus materias asignadas
+            $materiasIds = $profesorActual->materiasGrupos()
+                ->pluck('materia_id')
+                ->unique();
+
+            $materias = Materia::whereIn('id', $materiasIds)->get();
+
+            // Solo él en la lista de profesores
+            $profesores = collect([$profesorActual]);
+
+        } else {
+            // Admin / superadmin — ve todo
+            $grados = Grado::where('activo', true)
+                ->orderBy('nivel')
+                ->orderBy('numero')
+                ->orderBy('seccion')
+                ->get();
+
+            $materias   = Materia::all();
+            $profesores = Profesor::orderBy('apellido')->get();
+        }
+
+        $periodos    = PeriodoAcademico::all();
         $estudiantes = collect();
 
         if ($request->filled('grado_id')) {
             $grado = Grado::find($request->grado_id);
 
             if ($grado) {
+                // Si es profesor, verificar que ese grado le pertenece
+                if ($profesorActual) {
+                    $tieneGrado = $profesorActual->gradosAsignados()
+                        ->where('grado_id', $grado->id)
+                        ->exists();
+
+                    if (!$tieneGrado) {
+                        return redirect()->route('registrarcalificaciones.index')
+                            ->with('error', 'No tienes acceso a ese grado.');
+                    }
+                }
+
                 $estudiantes = Estudiante::where('grado', $grado->numero)
                     ->where('seccion', $grado->seccion)
                     ->orderBy('apellido1')
@@ -42,12 +95,15 @@ class RegistrarCalificacionController extends Controller
             'materias',
             'periodos',
             'profesores',
-            'estudiantes'
+            'estudiantes',
+            'profesorActual'
         ));
     }
 
     public function store(Request $request)
     {
+        $profesorActual = $this->getProfesorActual();
+
         $request->validate([
             'profesor_id'          => 'required|exists:profesores,id',
             'grado_id'             => 'required|exists:grados,id',
@@ -57,6 +113,11 @@ class RegistrarCalificacionController extends Controller
             'notas.*'              => 'nullable|numeric|min:0|max:100',
             'observacion'          => 'nullable|array',
         ]);
+
+        // Seguridad: si es profesor, no puede guardar calificaciones de otro profesor
+        if ($profesorActual && $request->profesor_id != $profesorActual->id) {
+            return back()->with('error', 'No puedes guardar calificaciones de otro profesor.');
+        }
 
         $gradoId = $request->grado_id;
 
@@ -80,19 +141,26 @@ class RegistrarCalificacionController extends Controller
 
         return redirect()
             ->route('registrarcalificaciones.index')
-            ->with('success', 'Calificaciones guardadas correctamente');
+            ->with('success', 'Calificaciones guardadas correctamente.');
     }
 
     public function ver()
     {
-        $calificaciones = RegistrarCalificacion::with([
+        $profesorActual = $this->getProfesorActual();
+
+        $query = RegistrarCalificacion::with([
             'estudiante',
             'grado',
             'materia',
             'periodoAcademico'
-        ])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        ]);
+
+        // Si es profesor, solo ve sus calificaciones
+        if ($profesorActual) {
+            $query->where('profesor_id', $profesorActual->id);
+        }
+
+        $calificaciones = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('registrarcalificaciones.ver', compact('calificaciones'));
     }

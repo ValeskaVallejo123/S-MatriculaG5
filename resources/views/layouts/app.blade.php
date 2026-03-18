@@ -368,7 +368,7 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('profesor_materia.index') }}"
+            <a href="{{ route('profesor_materia_grado.index') }}"
    class="menu-link {{ request()->routeIs('profesor_materia.*') ? 'active' : '' }}">
                 <i class="fas fa-user-tag"></i><span>Asignar Profesor</span>
             </a>

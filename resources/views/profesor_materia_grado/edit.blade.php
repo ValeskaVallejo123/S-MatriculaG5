@@ -80,7 +80,7 @@
                         @foreach($grados as $g)
                             <option value="{{ $g->id }}"
                                 {{ old('grado_id', $profesor_materia_grado->grado_id) == $g->id ? 'selected' : '' }}>
-                                {{ $g->nombre }}
+                                {{ $g->numero }}° {{ ucfirst($g->nivel) }} - Sección {{ $g->seccion }} ({{ $g->anio_lectivo }})
                             </option>
                         @endforeach
                     </select>

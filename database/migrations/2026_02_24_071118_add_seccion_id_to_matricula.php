@@ -9,9 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('matriculas', function (Blueprint $table) {
-            $table->foreignId('seccion_id')
-                  ->nullable()
-                  ->constrained('secciones')
+            // La columna seccion_id ya existe, solo agregamos la foreign key
+            $table->foreign('seccion_id')
+                  ->references('id')
+                  ->on('seccion')
                   ->nullOnDelete();
         });
     }
@@ -20,7 +21,6 @@ return new class extends Migration
     {
         Schema::table('matriculas', function (Blueprint $table) {
             $table->dropForeign(['seccion_id']);
-            $table->dropColumn('seccion_id');
         });
     }
 };

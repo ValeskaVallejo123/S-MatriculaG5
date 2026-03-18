@@ -38,7 +38,10 @@ class ProfesorMateriaController extends Controller
     {
         $profesores = Profesor::orderBy('nombre')->get();
         $materias   = Materia::orderBy('nombre')->get();
-        $grados     = Grado::orderBy('nombre')->get();
+        $grados     = Grado::orderBy('numero')   // ✅ corregido
+                           ->orderBy('nivel')
+                           ->orderBy('seccion')
+                           ->get();
         $secciones  = ['A', 'B', 'C', 'D'];
 
         return view('profesor_materia_grado.create', compact(
@@ -82,7 +85,10 @@ class ProfesorMateriaController extends Controller
     {
         $profesores = Profesor::orderBy('nombre')->get();
         $materias   = Materia::orderBy('nombre')->get();
-        $grados     = Grado::orderBy('nombre')->get();
+        $grados     = Grado::orderBy('numero')   // ✅ corregido
+                           ->orderBy('nivel')
+                           ->orderBy('seccion')
+                           ->get();
         $secciones  = ['A', 'B', 'C', 'D'];
 
         return view('profesor_materia_grado.edit', compact(

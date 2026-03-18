@@ -9,56 +9,53 @@ use App\Models\Estudiante;
 
 class SeccionController extends Controller
 {
-    /**
-     * Mostrar listado de secciones
-     */
-   // ... dentro de SeccionController ...
+    public function index()
+    {
+        // $inscripciones = matrículas con sus relaciones
+        // Solo mostramos las aprobadas que tienen estudiante
+        $inscripciones = Matricula::with(['estudiante', 'seccion'])
+            ->where('estado', 'aprobada')
+            ->whereHas('estudiante')
+            ->latest()
+            ->get();
 
-public function index()
-{
-    // Cargamos relaciones en español: estudiante y seccion
-    $inscripciones = Matricula::with(['estudiante', 'seccion'])->get();
-    $secciones = Seccion::all();
-    $alumnos = Estudiante::all();
+        // Lista de secciones disponibles para los modales
+        $secciones = Seccion::all();
 
-    return view('secciones.index', compact('inscripciones', 'secciones', 'alumnos'));
-}
+        // Alumnos sin sección asignada aún
+        $alumnos = Estudiante::whereDoesntHave('matriculas', function ($q) {
+            $q->whereNotNull('seccion_id');
+        })->orderBy('nombre1')->get();
 
-/**
- * Método para procesar el formulario de la vista
- */
-public function asignar(Request $request)
-{
-    $validated = $request->validate([
-        'estudiante_id' => 'required|exists:estudiantes,id',
-        'seccion_id' => 'required|exists:secciones,id',
-    ]);
-
-    // Buscamos la matrícula de ese estudiante (asumiendo que ya existe una)
-    $matricula = Matricula::where('estudiante_id', $request->estudiante_id)->first();
-
-    if (!$matricula) {
-        return back()->with('error', 'El estudiante no tiene una matrícula activa.');
+        return view('secciones.index', compact('inscripciones', 'secciones', 'alumnos'));
     }
 
-    $matricula->update([
-        'seccion_id' => $request->seccion_id
-    ]);
+    public function asignar(Request $request)
+    {
+        $validated = $request->validate([
+            'estudiante_id' => 'required|exists:estudiantes,id',
+            'seccion_id'    => 'required|exists:seccion,id', // tabla correcta: 'seccion'
+        ]);
 
-    return redirect()->route('secciones.index')->with('success', 'Sección asignada correctamente.');
-}
+        $matricula = Matricula::where('estudiante_id', $request->estudiante_id)
+            ->where('estado', 'aprobada')
+            ->first();
 
-    /**
-     * Mostrar formulario para crear una sección
-     */
+        if (!$matricula) {
+            return back()->with('error', 'El estudiante no tiene una matrícula aprobada.');
+        }
+
+        $matricula->update(['seccion_id' => $request->seccion_id]);
+
+        return redirect()->route('secciones.index')
+            ->with('success', 'Sección asignada correctamente.');
+    }
+
     public function create()
     {
         return view('secciones.create');
     }
 
-    /**
-     * Guardar una nueva sección
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -68,52 +65,37 @@ public function asignar(Request $request)
 
         Seccion::create($validated);
 
-        return redirect()
-            ->route('secciones.index')
-            ->with('success', 'La sección fue creada correctamente.');
+        return redirect()->route('secciones.index')
+            ->with('success', 'Sección creada correctamente.');
     }
 
-    /**
-     * Mostrar formulario de edición
-     */
     public function edit(Seccion $seccion)
     {
-        $secciones = Seccion::all();
         return view('secciones.edit', compact('seccion'));
     }
 
-    /**
-     * Actualizar una sección
-     */
     public function update(Request $request, Seccion $seccion)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|max:100',
+            'nombre'    => 'required|string|max:100',
             'capacidad' => 'required|integer|min:1',
         ]);
 
         $seccion->update($validated);
 
-        return redirect()
-            ->route('secciones.index')
-            ->with('success', 'La sección fue actualizada correctamente.');
+        return redirect()->route('secciones.index')
+            ->with('success', 'Sección actualizada correctamente.');
     }
 
-    /**
-     * Eliminar una sección
-     */
     public function destroy(Seccion $seccion)
     {
         if ($seccion->matriculas()->exists()) {
-            return redirect()
-                ->back()
-                ->with('error', 'No se puede eliminar una sección con alumnos inscritos.');
+            return back()->with('error', 'No se puede eliminar una sección con alumnos inscritos.');
         }
 
         $seccion->delete();
 
-        return redirect()
-            ->route('secciones.index')
-            ->with('success', 'La sección fue eliminada correctamente.');
+        return redirect()->route('secciones.index')
+            ->with('success', 'Sección eliminada correctamente.');
     }
 }

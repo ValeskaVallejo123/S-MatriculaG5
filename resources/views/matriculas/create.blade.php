@@ -810,4 +810,3 @@
 </script>
 @endpush
 
-@endsection

@@ -31,7 +31,7 @@ class PadrePermisoController extends Controller
 
         $padres = $query->paginate(15);
 
-        return view('admin.permisos.index', compact('padres'));
+        return view('admins.permisos.index', compact('padres'));
     }
 
     /**
@@ -46,7 +46,7 @@ class PadrePermisoController extends Controller
             ->get()
             ->keyBy('estudiante_id');
 
-        return view('admin.permisos.configurar', compact('padre', 'permisosExistentes'));
+        return view('admins.permisos.configurar', compact('padre', 'permisosExistentes'));
     }
 
     /**

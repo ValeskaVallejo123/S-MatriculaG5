@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up(): void
-{
-    Schema::table('estudiantes', function (Blueprint $table) {
-        $table->string('seccion')->nullable()->change();
-    });
-}
+    public function up(): void
+    {
+        Schema::table('padres', function (Blueprint $table) {
+            $table->enum('estado', ['activo', 'inactivo'])
+                  ->default('activo')
+                  ->after('observaciones');
+        });
+    }
 
-public function down(): void
-{
-    Schema::table('estudiantes', function (Blueprint $table) {
-        $table->string('seccion')->nullable(false)->change();
-    });
-}
+    public function down(): void
+    {
+        Schema::table('padres', function (Blueprint $table) {
+            $table->dropColumn('estado');
+        });
+    }
 };

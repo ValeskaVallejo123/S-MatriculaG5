@@ -79,7 +79,7 @@ class MatriculaController extends Controller
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // CREATE
+    // CREATE — Formulario del ADMIN (privado, requiere auth)
     // ────────────────────────────────────────────────────────────────────────
 
     public function create()
@@ -105,7 +105,18 @@ class MatriculaController extends Controller
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // STORE
+    // CREATE PÚBLICO — Formulario para el público (sin login)
+    // Ruta: GET /matricula-publica  →  name('matriculas.public.create')
+    // ────────────────────────────────────────────────────────────────────────
+
+    public function createPublico()
+    {
+        return view('matriculas.create-public');
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // STORE — Maneja tanto el formulario admin como el público
+    // El campo hidden "publico=1" activa la rama pública dentro de este método
     // ────────────────────────────────────────────────────────────────────────
 
     public function store(Request $request)
@@ -303,7 +314,7 @@ class MatriculaController extends Controller
     public function success()
     {
         if (!session('codigo')) {
-            return redirect()->route('matricula-publica')
+            return redirect()->route('matriculas.public.create')
                 ->with('error', 'No hay ninguna matrícula reciente para mostrar.');
         }
 
@@ -518,9 +529,6 @@ class MatriculaController extends Controller
         return back()->with('success', 'Matrícula rechazada correctamente.');
     }
 
-    /**
-     * Cancelar matrícula.
-     */
     public function cancelar(Matricula $matricula): RedirectResponse
     {
         if (in_array($matricula->estado, ['cancelada', 'rechazada'])) {
@@ -534,9 +542,6 @@ class MatriculaController extends Controller
         return back()->with('success', 'Matrícula cancelada correctamente.');
     }
 
-    /**
-     * Aprobar rápido (patch desde index).
-     */
     public function aprobar(Matricula $matricula)
     {
         $matricula->update(['estado' => 'aprobada']);

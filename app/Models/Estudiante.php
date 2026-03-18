@@ -46,7 +46,7 @@ class Estudiante extends Model
 
     public function getNombreCompletoAttribute()
     {
-        $nombre = trim("{$this->nombre1} {$this->nombre2}");
+        $nombre   = trim("{$this->nombre1} {$this->nombre2}");
         $apellido = trim("{$this->apellido1} {$this->apellido2}");
         return trim("{$nombre} {$apellido}");
     }
@@ -79,6 +79,14 @@ class Estudiante extends Model
     public function calificaciones()
     {
         return $this->hasMany(Calificacion::class, 'estudiante_id');
+    }
+
+    /**
+     * Matrículas del estudiante ← AGREGADA
+     */
+    public function matriculas()
+    {
+        return $this->hasMany(Matricula::class, 'estudiante_id');
     }
 
     /**
@@ -117,7 +125,7 @@ class Estudiante extends Model
             'comunicarse_profesores',
             'autorizar_salidas',
             'subir_documentos_matricula',
-            'notas_adicionales'
+            'notas_adicionales',
         ])->withTimestamps();
     }
 

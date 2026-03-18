@@ -304,7 +304,7 @@
     </a>
 
     {{-- Calificaciones — no hay ruta aún --}}
-    <a href="{{ route('profesor.calificaciones.index') }}" class="pd-qcard qc-3">
+    <a href="{{ route('registrarcalificaciones.index') }}" class="pd-qcard qc-3">
         <div class="pd-qcard-inner">
             <i class="fas fa-clipboard-check"></i>
             <span>Calificaciones</span>
