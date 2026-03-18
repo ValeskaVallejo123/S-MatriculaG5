@@ -12,7 +12,6 @@ use App\Models\Padre;
 use App\Models\Estudiante;
 use App\Models\Profesor;
 
-
 /**
  * @method static \App\Models\User|null find($id)
  * @method static \Illuminate\Database\Eloquent\Builder with($relations)
@@ -33,7 +32,6 @@ use App\Models\Profesor;
  *
  * @property-read \App\Models\Rol|null                     $rol
  * @property-read \App\Models\Padre|null                   $padre
- * @property-read \App\Models\Estudiante|null              $estudiante
  * @property-read \App\Models\Profesor|null                $docente
  * @property-read \Illuminate\Support\Collection           $notificaciones
  * @property-read \App\Models\NotificacionPreferencia|null $notificacionPreferencias
@@ -82,20 +80,38 @@ class User extends Authenticatable
         return $this->belongsTo(Rol::class, 'id_rol', 'id');
     }
 
+    /**
+     * Relación con Padre via user_id.
+     * NOTA: Si la tabla `padres` no tiene columna user_id, esta relación
+     * retornará null siempre. Agregar la columna con una migración si se
+     * necesita que los padres tengan login propio.
+     */
     public function padre()
     {
         return $this->hasOne(Padre::class, 'user_id');
     }
 
-    public function estudiante()
+    /**
+     * NOTA: La tabla `profesores` NO tiene columna user_id.
+     * Se busca el profesor por coincidencia de email.
+     * Uso: $user->docente  →  retorna Profesor|null
+     */
+    public function getDocenteAttribute(): ?Profesor
     {
-        return $this->hasOne(Estudiante::class, 'user_id');
+        return Profesor::where('email', $this->email)->first();
     }
 
-    public function docente()
-    {
-        return $this->hasOne(Profesor::class, 'user_id');
-    }
+    /**
+     * NOTA: La tabla `estudiantes` NO tiene columna user_id.
+     * Los estudiantes no tienen cuenta propia en users;
+     * acceden a través del padre/tutor.
+     * Este método queda comentado para evitar errores de columna.
+     *
+     * public function estudiante()
+     * {
+     *     return $this->hasOne(Estudiante::class, 'user_id');
+     * }
+     */
 
     public function notificaciones()
     {
@@ -177,10 +193,13 @@ class User extends Authenticatable
 
     public function infoParaObservaciones(): array
     {
+        // Verificamos si la columna existe físicamente en la tabla para evitar el error 1054
+        $tieneColumnaPadre = \Schema::hasColumn('padres', 'user_id');
+
         return [
-            'profesor_id'   => $this->docente?->id,
-            'estudiante_id' => $this->estudiante?->id,
-            'padre_id'      => $this->padre?->id,
+            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
+            'estudiante_id' => null,
+            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
         ];
     }
 
@@ -190,6 +209,8 @@ class User extends Authenticatable
 
     public function infoParaSistema(): array
     {
+        $tieneColumnaPadre = \Schema::hasColumn('padres', 'user_id');
+
         return [
             'id'            => $this->id,
             'nombre'        => $this->name,
@@ -200,9 +221,9 @@ class User extends Authenticatable
             'es_docente'    => $this->isDocente(),
             'es_estudiante' => $this->isEstudiante(),
             'es_padre'      => $this->isPadre(),
-            'profesor_id'   => $this->docente?->id,
-            'estudiante_id' => $this->estudiante?->id,
-            'padre_id'      => $this->padre?->id,
+            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
+            'estudiante_id' => null,
+            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
         ];
     }
 
@@ -283,18 +304,24 @@ class User extends Authenticatable
             return Observacion::query();
         }
 
-        if ($this->isDocente() && $this->docente) {
-            $profesorId = $this->docente->id;
-            return Observacion::where(function ($q) use ($profesorId) {
-                $q->where('profesor_id', $profesorId)
-                  ->orWhereHas('estudiante.user', function ($q2) {
-                      $q2->where('id', $this->id);
-                  });
-            });
+        if ($this->isDocente()) {
+            $profesorId = Profesor::where('email', $this->email)->value('id');
+            if ($profesorId) {
+                return Observacion::where('profesor_id', $profesorId);
+            }
         }
 
-        if ($this->isEstudiante() && $this->estudiante) {
-            return Observacion::where('estudiante_id', $this->estudiante->id);
+        // Estudiantes no tienen cuenta propia — sin acceso directo
+        if ($this->isEstudiante()) {
+            return Observacion::whereRaw('0 = 1');
+        }
+
+        // Padres: acceso a observaciones de sus estudiantes (si padre tiene user_id)
+        if ($this->isPadre() && $this->padre) {
+            $estudianteIds = $this->padre
+                ->estudiantes()
+                ->pluck('estudiantes.id');
+            return Observacion::whereIn('estudiante_id', $estudianteIds);
         }
 
         return Observacion::whereRaw('0 = 1');
@@ -327,7 +354,7 @@ class User extends Authenticatable
         return $this->notificaciones()->where('leida', false);
     }
 
-    public function getTotalNotificacionesNoLeidasAttribute()
+    public function getTotalNotificacionesNoLeidasAttribute(): int
     {
         return $this->notificaciones()->where('leida', false)->count();
     }

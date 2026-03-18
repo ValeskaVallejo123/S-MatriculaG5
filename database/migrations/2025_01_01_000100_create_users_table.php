@@ -15,8 +15,8 @@ return new class extends Migration
             $table->string('email')->unique();
 
             // Tipo de usuario
-            $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante'])
-                  ->default('estudiante');
+            $table->enum('user_type', ['super_admin', 'admin', 'profesor', 'estudiante','padre'])
+                ->default('estudiante');
 
             // Flags especiales
             $table->boolean('is_super_admin')->default(false);

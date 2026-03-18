@@ -6,6 +6,7 @@ use App\Models\Observacion;
 use App\Models\Estudiante;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ObservacionController extends Controller
 {
@@ -21,19 +22,18 @@ class ObservacionController extends Controller
 
         $query = Observacion::with(['estudiante', 'profesor'])->latest();
 
-        if ($user->isSuperAdmin()) {
-            // Superadmin ve todas — sin restricción adicional
+        if ($user->isSuperAdmin() || $user->isAdmin()) {
+            // Ve todas — sin restricción
 
         } elseif ($user->isDocente()) {
             $profesorId = $info['profesor_id'] ?? null;
-
             $query->where(function ($q) use ($profesorId) {
                 $q->where('profesor_id', $profesorId)
-                  ->orWhereHas('estudiante', function ($q2) use ($profesorId) {
-                      $q2->whereHas('profesor', function ($q3) use ($profesorId) {
-                          $q3->where('id', $profesorId);
-                      });
-                  });
+                    ->orWhereHas('estudiante', function ($q2) use ($profesorId) {
+                        $q2->whereHas('profesor', function ($q3) use ($profesorId) {
+                            $q3->where('id', $profesorId);
+                        });
+                    });
             });
 
         } elseif ($user->isEstudiante()) {
@@ -46,7 +46,6 @@ class ObservacionController extends Controller
             abort(403, 'No tienes permiso para ver observaciones.');
         }
 
-        // Filtros opcionales
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
         }
@@ -94,6 +93,8 @@ class ObservacionController extends Controller
         if ($user->isDocente()) {
             $info = $user->infoParaObservaciones();
             $validated['profesor_id'] = $info['profesor_id'] ?? null;
+        } else {
+            $validated['profesor_id'] = $request->input('profesor_id') ?: null;
         }
 
         Observacion::create($validated);
@@ -108,6 +109,8 @@ class ObservacionController extends Controller
 
     public function edit(Observacion $observacion)
     {
+        $this->autorizarModificacion($observacion);
+
         $estudiantes = Estudiante::orderBy('nombre1')->get();
         $profesores  = Profesor::orderBy('nombre')->get();
 
@@ -165,7 +168,7 @@ class ObservacionController extends Controller
             $info       = $user->infoParaObservaciones();
             $profesorId = $info['profesor_id'] ?? null;
 
-            if ($observacion->profesor_id && $observacion->profesor_id == $profesorId) {
+            if ($profesorId && $observacion->profesor_id == $profesorId) {
                 return;
             }
         }

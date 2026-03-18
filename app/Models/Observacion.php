@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Estudiante;
 use App\Models\Profesor;
+use App\Models\Calificacion;
+use App\Models\Padre;
+use App\Models\Rol;
 
 class Observacion extends Model
 {
     use HasFactory;
 
-    protected $table = 'observacions'; // 👈 Tu tabla real
+    protected $table = 'observaciones'; // 👈 Tu tabla real
 
     protected $fillable = [
         'estudiante_id',
