@@ -13,7 +13,7 @@
 @endsection
 
 @section('content')
-{{-- Sin container — el content-wrapper del layout ya provee el padding lateral --}}
+    {{-- Sin container — el content-wrapper del layout ya provee el padding lateral --}}
 
     {{-- Header --}}
     <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 12px;">
@@ -94,34 +94,34 @@
                             </div>
 
                             @error('estudiante_id')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
                         {{-- PROFESOR (solo admin) --}}
                         @if(auth()->user()->isAdmin() || auth()->user()->isSuperAdmin())
-                        <div class="mb-4">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #4ec7d2, #00508f); border-radius: 9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                    <i class="fas fa-chalkboard-user" style="color:white; font-size:0.9rem;"></i>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #4ec7d2, #00508f); border-radius: 9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i class="fas fa-chalkboard-user" style="color:white; font-size:0.9rem;"></i>
+                                    </div>
+                                    <h6 class="mb-0 fw-bold" style="color:#003b73; font-size:1rem;">Profesor</h6>
                                 </div>
-                                <h6 class="mb-0 fw-bold" style="color:#003b73; font-size:1rem;">Profesor</h6>
-                            </div>
 
-                            <label for="profesor_id" class="form-label small fw-semibold" style="color:#003b73;">Profesor asignado</label>
-                            <div class="position-relative">
-                                <i class="fas fa-chalkboard position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#00508f; font-size:0.85rem; z-index:10;"></i>
-                                <select class="form-select ps-5" id="profesor_id" name="profesor_id"
-                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.65rem 1rem 0.65rem 2.8rem;">
-                                    <option value="">Sin asignar</option>
-                                    @foreach($profesores as $prof)
-                                        <option value="{{ $prof->id }}" {{ old('profesor_id') == $prof->id ? 'selected' : '' }}>
-                                            {{ $prof->nombreCompleto }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label for="profesor_id" class="form-label small fw-semibold" style="color:#003b73;">Profesor asignado</label>
+                                <div class="position-relative">
+                                    <i class="fas fa-chalkboard position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#00508f; font-size:0.85rem; z-index:10;"></i>
+                                    <select class="form-select ps-5" id="profesor_id" name="profesor_id"
+                                            style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.65rem 1rem 0.65rem 2.8rem;">
+                                        <option value="">Sin asignar</option>
+                                        @foreach($profesores as $prof)
+                                            <option value="{{ $prof->id }}" {{ old('profesor_id') == $prof->id ? 'selected' : '' }}>
+                                                {{ $prof->nombreCompleto }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
                         @endif
 
                         {{-- TIPO --}}
@@ -144,21 +144,21 @@
                                     ['value'=>'salud',      'label'=>'Salud',      'icon'=>'fa-heart-pulse', 'color'=>'#4caf50'],
                                     ['value'=>'otro',       'label'=>'Otro',       'icon'=>'fa-ellipsis',    'color'=>'#9e9e9e'],
                                 ] as $t)
-                                <div class="col-6">
-                                    <input type="radio" class="btn-check" name="tipo" id="tipo_{{ $t['value'] }}"
-                                           value="{{ $t['value'] }}" {{ old('tipo') === $t['value'] ? 'checked' : '' }}>
-                                    <label class="btn w-100 d-flex flex-column align-items-center gap-1 py-3"
-                                           for="tipo_{{ $t['value'] }}"
-                                           style="border: 2px solid #bfd9ea; border-radius: 10px; background: white; cursor:pointer; transition: all 0.2s;">
-                                        <i class="fas {{ $t['icon'] }}" style="font-size:1.4rem; color:{{ $t['color'] }};"></i>
-                                        <span class="small fw-semibold" style="color:#003b73;">{{ $t['label'] }}</span>
-                                    </label>
-                                </div>
+                                    <div class="col-6">
+                                        <input type="radio" class="btn-check" name="tipo" id="tipo_{{ $t['value'] }}"
+                                               value="{{ $t['value'] }}" {{ old('tipo') === $t['value'] ? 'checked' : '' }}>
+                                        <label class="btn w-100 d-flex flex-column align-items-center gap-1 py-3"
+                                               for="tipo_{{ $t['value'] }}"
+                                               style="border: 2px solid #bfd9ea; border-radius: 10px; background: white; cursor:pointer; transition: all 0.2s;">
+                                            <i class="fas {{ $t['icon'] }}" style="font-size:1.4rem; color:{{ $t['color'] }};"></i>
+                                            <span class="small fw-semibold" style="color:#003b73;">{{ $t['label'] }}</span>
+                                        </label>
+                                    </div>
                                 @endforeach
                             </div>
 
                             @error('tipo')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -190,7 +190,7 @@
                         </div>
 
                         @error('descripcion')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -212,109 +212,109 @@
         </div>
     </div>
 
-@push('styles')
-<style>
-    .btn-check:checked + label {
-        border-color: #4ec7d2 !important;
-        background: rgba(78,199,210,0.12) !important;
-        box-shadow: 0 0 0 3px rgba(78,199,210,0.2);
-    }
-    .btn-check + label:hover {
-        border-color: #4ec7d2 !important;
-        background: rgba(78,199,210,0.06) !important;
-    }
-    #estudiante_dropdown .dropdown-item-custom {
-        padding: 0.65rem 1rem;
-        cursor: pointer;
-        font-size: 0.88rem;
-        color: #003b73;
-        border-bottom: 1px solid #f1f5f9;
-        transition: background 0.15s;
-    }
-    #estudiante_dropdown .dropdown-item-custom:hover {
-        background: rgba(78,199,210,0.1);
-    }
-    #estudiante_dropdown .dropdown-item-custom:last-child { border-bottom: none; }
-    .form-control:focus, .form-select:focus {
-        border-color: #4ec7d2 !important;
-        box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.2) !important;
-    }
-</style>
-@endpush
+    @push('styles')
+        <style>
+            .btn-check:checked + label {
+                border-color: #4ec7d2 !important;
+                background: rgba(78,199,210,0.12) !important;
+                box-shadow: 0 0 0 3px rgba(78,199,210,0.2);
+            }
+            .btn-check + label:hover {
+                border-color: #4ec7d2 !important;
+                background: rgba(78,199,210,0.06) !important;
+            }
+            #estudiante_dropdown .dropdown-item-custom {
+                padding: 0.65rem 1rem;
+                cursor: pointer;
+                font-size: 0.88rem;
+                color: #003b73;
+                border-bottom: 1px solid #f1f5f9;
+                transition: background 0.15s;
+            }
+            #estudiante_dropdown .dropdown-item-custom:hover {
+                background: rgba(78,199,210,0.1);
+            }
+            #estudiante_dropdown .dropdown-item-custom:last-child { border-bottom: none; }
+            .form-control:focus, .form-select:focus {
+                border-color: #4ec7d2 !important;
+                box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.2) !important;
+            }
+        </style>
+    @endpush
 
-@push('scripts')
-<script>
-    const estudiantes = @json($estudiantes->map(fn($e) => ['id' => $e->id, 'nombre' => $e->nombreCompleto]));
+    @push('scripts')
+        <script>
+            const estudiantes = @json($estudiantes->map(fn($e) => ['id' => $e->id, 'nombre' => $e->nombreCompleto]));
 
-    const searchInput  = document.getElementById('estudiante_search');
-    const hiddenId     = document.getElementById('estudiante_id');
-    const dropdown     = document.getElementById('estudiante_dropdown');
-    const selectedBox  = document.getElementById('estudiante_selected');
-    const selectedName = document.getElementById('estudiante_selected_name');
-    const clearBtn     = document.getElementById('estudiante_clear');
+            const searchInput  = document.getElementById('estudiante_search');
+            const hiddenId     = document.getElementById('estudiante_id');
+            const dropdown     = document.getElementById('estudiante_dropdown');
+            const selectedBox  = document.getElementById('estudiante_selected');
+            const selectedName = document.getElementById('estudiante_selected_name');
+            const clearBtn     = document.getElementById('estudiante_clear');
 
-    function showDropdown(results) {
-        dropdown.innerHTML = '';
-        if (!results.length) {
-            dropdown.innerHTML = '<div class="dropdown-item-custom text-muted">Sin resultados</div>';
-        } else {
-            results.forEach(e => {
-                const div = document.createElement('div');
-                div.className = 'dropdown-item-custom';
-                div.textContent = e.nombre;
-                div.addEventListener('mousedown', () => selectEstudiante(e));
-                dropdown.appendChild(div);
+            function showDropdown(results) {
+                dropdown.innerHTML = '';
+                if (!results.length) {
+                    dropdown.innerHTML = '<div class="dropdown-item-custom text-muted">Sin resultados</div>';
+                } else {
+                    results.forEach(e => {
+                        const div = document.createElement('div');
+                        div.className = 'dropdown-item-custom';
+                        div.textContent = e.nombre;
+                        div.addEventListener('mousedown', () => selectEstudiante(e));
+                        dropdown.appendChild(div);
+                    });
+                }
+                dropdown.style.display = 'block';
+            }
+
+            function selectEstudiante(e) {
+                hiddenId.value            = e.id;
+                searchInput.value         = '';
+                searchInput.style.display = 'none';
+                selectedName.textContent  = e.nombre;
+                selectedBox.style.display = 'block';
+                dropdown.style.display    = 'none';
+            }
+
+            function clearEstudiante() {
+                hiddenId.value            = '';
+                searchInput.value         = '';
+                searchInput.style.display = 'block';
+                selectedBox.style.display = 'none';
+                searchInput.focus();
+            }
+
+            searchInput.addEventListener('input', function () {
+                const q = this.value.trim().toLowerCase();
+                if (q.length < 2) { dropdown.style.display = 'none'; return; }
+                const found = estudiantes.filter(e => e.nombre.toLowerCase().includes(q)).slice(0, 8);
+                showDropdown(found);
             });
-        }
-        dropdown.style.display = 'block';
-    }
 
-    function selectEstudiante(e) {
-        hiddenId.value            = e.id;
-        searchInput.value         = '';
-        searchInput.style.display = 'none';
-        selectedName.textContent  = e.nombre;
-        selectedBox.style.display = 'block';
-        dropdown.style.display    = 'none';
-    }
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => dropdown.style.display = 'none', 150);
+            });
 
-    function clearEstudiante() {
-        hiddenId.value            = '';
-        searchInput.value         = '';
-        searchInput.style.display = 'block';
-        selectedBox.style.display = 'none';
-        searchInput.focus();
-    }
+            clearBtn.addEventListener('click', clearEstudiante);
 
-    searchInput.addEventListener('input', function () {
-        const q = this.value.trim().toLowerCase();
-        if (q.length < 2) { dropdown.style.display = 'none'; return; }
-        const found = estudiantes.filter(e => e.nombre.toLowerCase().includes(q)).slice(0, 8);
-        showDropdown(found);
-    });
+            @if(old('estudiante_id'))
+            const oldEst = estudiantes.find(e => e.id === {{ old('estudiante_id') }});
+            if (oldEst) selectEstudiante(oldEst);
+            @endif
 
-    searchInput.addEventListener('blur', () => {
-        setTimeout(() => dropdown.style.display = 'none', 150);
-    });
+            // Contador caracteres
+            const textarea  = document.getElementById('descripcion');
+            const charCount = document.getElementById('char_count');
 
-    clearBtn.addEventListener('click', clearEstudiante);
-
-    @if(old('estudiante_id'))
-        const oldEst = estudiantes.find(e => e.id === {{ old('estudiante_id') }});
-        if (oldEst) selectEstudiante(oldEst);
-    @endif
-
-    // Contador caracteres
-    const textarea  = document.getElementById('descripcion');
-    const charCount = document.getElementById('char_count');
-
-    function updateCount() {
-        const len = textarea.value.length;
-        charCount.textContent = `${len} / 1000`;
-        charCount.style.color = len > 900 ? '#ef4444' : len > 750 ? '#f59e0b' : '#6b7280';
-    }
-    textarea.addEventListener('input', updateCount);
-    updateCount();
-</script>
-@endpush
+            function updateCount() {
+                const len = textarea.value.length;
+                charCount.textContent = `${len} / 1000`;
+                charCount.style.color = len > 900 ? '#ef4444' : len > 750 ? '#f59e0b' : '#6b7280';
+            }
+            textarea.addEventListener('input', updateCount);
+            updateCount();
+        </script>
+    @endpush
 @endsection

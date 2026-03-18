@@ -13,12 +13,12 @@ return new class extends Migration
 
             // Relaciones
             $table->foreignId('estudiante_id')
-                  ->constrained('estudiantes')
-                  ->onDelete('cascade');
+                ->constrained('estudiantes')
+                ->onDelete('cascade');
 
             $table->foreignId('profesor_id')
-                  ->constrained('profesores')
-                  ->onDelete('cascade');
+                ->constrained('profesores')
+                ->onDelete('cascade');
 
             // Contenido de la observación (solo texto libre)
             $table->text('descripcion');

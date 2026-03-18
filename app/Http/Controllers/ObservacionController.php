@@ -29,11 +29,11 @@ class ObservacionController extends Controller
             $profesorId = $info['profesor_id'] ?? null;
             $query->where(function ($q) use ($profesorId) {
                 $q->where('profesor_id', $profesorId)
-                  ->orWhereHas('estudiante', function ($q2) use ($profesorId) {
-                      $q2->whereHas('profesor', function ($q3) use ($profesorId) {
-                          $q3->where('id', $profesorId);
-                      });
-                  });
+                    ->orWhereHas('estudiante', function ($q2) use ($profesorId) {
+                        $q2->whereHas('profesor', function ($q3) use ($profesorId) {
+                            $q3->where('id', $profesorId);
+                        });
+                    });
             });
 
         } elseif ($user->isEstudiante()) {

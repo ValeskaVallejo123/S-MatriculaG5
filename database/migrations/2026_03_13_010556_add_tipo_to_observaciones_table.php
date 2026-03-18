@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::table('observaciones', function (Blueprint $table) {
             $table->enum('tipo', ['academica', 'conductual', 'salud', 'otro'])
-                  ->nullable()
-                  ->after('descripcion');
+                ->nullable()
+                ->after('descripcion');
         });
     }
 

@@ -167,7 +167,7 @@ class MatriculaController extends Controller
                     'correo'     => $validated['padre_email']    ?? null,
                     'telefono'   => $validated['padre_telefono'],
                     'direccion'  => $validated['padre_direccion'],
-                    'estado'     => 1,
+                   // 'estado'     => 1,
                 ]);
             }
 

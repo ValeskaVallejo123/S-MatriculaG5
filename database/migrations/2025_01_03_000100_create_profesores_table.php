@@ -32,6 +32,8 @@ return new class extends Migration
             $table->date('fecha_ingreso');
 
             $table->text('observaciones')->nullable();
+            $table->enum('genero', ['masculino', 'femenino']);
+
 
             $table->timestamps();
         });

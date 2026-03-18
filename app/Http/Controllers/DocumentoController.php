@@ -109,6 +109,28 @@ class DocumentoController extends Controller
         return redirect()->route('documentos.index')
             ->with('success', 'Expediente actualizado correctamente.');
     }
+    public function show(Documento $documento, Request $request)
+    {
+        // 1. Recibimos el tipo de archivo por la URL (ej: ?tipo=foto)
+        $tipo = $request->query('tipo');
+
+        // 2. Mapeamos el tipo con la columna real de la tabla 'documentos'
+        $path = match($tipo) {
+            'foto'            => $documento->foto,
+            'acta'            => $documento->acta_nacimiento,
+            'calificaciones'  => $documento->calificaciones,
+            default           => null
+        };
+
+        // 3. Verificamos si existe la ruta y el archivo físico
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            return back()->with('error', 'El archivo solicitado no existe o no ha sido cargado.');
+        }
+
+        // 4. Servimos el archivo directamente al navegador
+        $fullPath = Storage::disk('public')->path($path);
+        return response()->file($fullPath);
+    }
 
     /**
      * Elimina el registro y sus archivos físicos.

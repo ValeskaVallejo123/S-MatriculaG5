@@ -21,7 +21,7 @@ class RolesPermisosSeeder extends Seeder
         ];
 
         foreach ($roles as $rol) {
-            DB::table('rol')->updateOrInsert(['nombre' => $rol['nombre']], $rol);
+            DB::table('roles')->updateOrInsert(['nombre' => $rol['nombre']], $rol);
         }
 
         // ============================

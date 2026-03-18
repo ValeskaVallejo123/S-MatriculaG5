@@ -24,7 +24,7 @@ class EstudianteController extends Controller
             return $next($request);
         });
     }
-      private function normalizarTexto(string $texto): string
+    private function normalizarTexto(string $texto): string
     {
         $texto = mb_strtolower($texto, 'UTF-8');
 
@@ -63,9 +63,9 @@ class EstudianteController extends Controller
         return view('estudiantes.create', compact('grados', 'secciones'));
     }
 
-        /* ============================================================
-       GUARDAR ESTUDIANTE
-       ============================================================ */
+    /* ============================================================
+   GUARDAR ESTUDIANTE
+   ============================================================ */
     public function store(Request $request)
     {
         $request->validate([
@@ -156,14 +156,14 @@ class EstudianteController extends Controller
              Correo: $email | Contraseña: egm2025");
     }
 
-        /* ============================================================
-       VER DETALLE DE ESTUDIANTE
-       ============================================================ */
-  public function show(Estudiante $estudiante)
-{
-    $estudiante->load('padres');
-    return view('estudiantes.show', compact('estudiante'));
-}
+    /* ============================================================
+   VER DETALLE DE ESTUDIANTE
+   ============================================================ */
+    public function show(Estudiante $estudiante)
+    {
+        $estudiante->load('padres');
+        return view('estudiantes.show', compact('estudiante'));
+    }
 
     /* ============================================================
        FORMULARIO DE EDICIÓN
@@ -282,7 +282,6 @@ class EstudianteController extends Controller
         return back()->with('success', 'Notificación marcada como leída.');
     }
 }
-
 
 
 

@@ -193,13 +193,13 @@ class User extends Authenticatable
 
     public function infoParaObservaciones(): array
     {
+        // Verificamos si la columna existe físicamente en la tabla para evitar el error 1054
+        $tieneColumnaPadre = \Schema::hasColumn('padres', 'user_id');
+
         return [
-            // Profesor: buscado por email (profesores no tienen user_id)
             'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
-            // Estudiantes no tienen cuenta propia en users
             'estudiante_id' => null,
-            // Padre: funciona si la tabla padres tiene user_id, null si no
-            'padre_id'      => $this->padre?->id,
+            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
         ];
     }
 
@@ -209,6 +209,8 @@ class User extends Authenticatable
 
     public function infoParaSistema(): array
     {
+        $tieneColumnaPadre = \Schema::hasColumn('padres', 'user_id');
+
         return [
             'id'            => $this->id,
             'nombre'        => $this->name,
@@ -219,12 +221,9 @@ class User extends Authenticatable
             'es_docente'    => $this->isDocente(),
             'es_estudiante' => $this->isEstudiante(),
             'es_padre'      => $this->isPadre(),
-            // Profesor: buscado por email (profesores no tienen user_id)
             'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
-            // Estudiantes no tienen cuenta propia en users
             'estudiante_id' => null,
-            // Padre: funciona si la tabla padres tiene user_id, null si no
-            'padre_id'      => $this->padre?->id,
+            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
         ];
     }
 
