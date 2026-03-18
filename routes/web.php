@@ -29,7 +29,7 @@ use App\Http\Controllers\CambiarContraseniaController;
 use App\Http\Controllers\PadrePermisoController;
 use App\Http\Controllers\PadreController;
 use App\Http\Controllers\PadreDashboardController;
-//use App\Http\Controllers\ProfesorMateriaController;
+use App\Http\Controllers\ProfesorMateriaController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\HorarioGradoController;
@@ -316,14 +316,14 @@ Route::middleware(['auth'])->group(function () {
     | ASIGNACIÓN PROFESOR-MATERIA
     |-------------------------------------------------------------------------
     */
-    /*Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
-        Route::get('/',                [ProfesorMateriaController::class, 'index'])->name('index');
-        Route::get('/create',          [ProfesorMateriaController::class, 'create'])->name('create');
-        Route::post('/',               [ProfesorMateriaController::class, 'store'])->name('store');
-        Route::get('/{profesor}/edit', [ProfesorMateriaController::class, 'edit'])->name('edit');
-        Route::put('/{profesor}',      [ProfesorMateriaController::class, 'update'])->name('update');
-        Route::delete('/{profesor}',   [ProfesorMateriaController::class, 'destroy'])->name('destroy');
-    });*/
+    Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
+    Route::get('/',                [ProfesorMateriaController::class, 'index'])->name('index');
+    Route::get('/create',          [ProfesorMateriaController::class, 'create'])->name('create');
+    Route::post('/',               [ProfesorMateriaController::class, 'store'])->name('store');
+    Route::get('/{profesor}/edit', [ProfesorMateriaController::class, 'edit'])->name('edit');
+    Route::put('/{profesor}',      [ProfesorMateriaController::class, 'update'])->name('update');
+    Route::delete('/{profesor}',   [ProfesorMateriaController::class, 'destroy'])->name('destroy');
+});
 
     /*
     |-------------------------------------------------------------------------

@@ -8,7 +8,7 @@ use App\Models\Profesor;
 use App\Models\ProfesorMateriaGrado;
 use Illuminate\Http\Request;
 
-class ProfesorMateriaGradoController extends Controller
+class ProfesorMateriaController extends Controller
 {
     public function __construct()
     {

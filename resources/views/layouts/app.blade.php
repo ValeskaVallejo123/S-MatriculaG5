@@ -401,8 +401,8 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ $isSuperAdmin ? route('superadmin.profesor_materia.index') : route('profesor_materia.index') }}"
-               class="menu-link {{ request()->routeIs('profesor_materia.*', 'superadmin.profesor_materia.*') ? 'active' : '' }}">
+            <a href="{{ route('profesor_materia.index') }}"
+   class="menu-link {{ request()->routeIs('profesor_materia.*') ? 'active' : '' }}">
                 <i class="fas fa-user-tag"></i><span>Asignar Profesor</span>
             </a>
         </li>
