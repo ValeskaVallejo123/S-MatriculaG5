@@ -4,16 +4,15 @@
 @section('page-title', 'Gestión de Estudiantes')
 
 @section('topbar-actions')
-
 <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <a href="{{ url()->previous() }}"
-           style="background:white;color:#00508f;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:1.5px solid #00508f;font-size:0.83rem;transition:all .2s;">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
-       <a href="{{ route('estudiantes.create') }}"
-         style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);color:white;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:none;box-shadow:0 2px 8px rgba(78,199,210,0.3);font-size:0.83rem;">
-         <i class="fas fa-plus"></i> Agregar Nuevo Estudiante
-        </a>
+    <a href="{{ url()->previous() }}"
+       style="background:white;color:#00508f;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:1.5px solid #00508f;font-size:0.83rem;transition:all .2s;">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+    <a href="{{ route('estudiantes.create') }}"
+       style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);color:white;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:none;box-shadow:0 2px 8px rgba(78,199,210,0.3);font-size:0.83rem;">
+        <i class="fas fa-plus"></i> Agregar Nuevo Estudiante
+    </a>
 </div>
 @endsection
 
@@ -70,11 +69,10 @@
     width: 4px; height: 100%;
     border-radius: 4px 0 0 4px;
 }
-.est-stat-total::before  { background: var(--green); }
-.est-stat-active::before { background: var(--teal); }
-.est-stat-inactive::before { background: var(--amber); }
-.est-stat-new::before    { background: var(--purple); }
-
+.est-stat-total::before   { background: var(--green); }
+.est-stat-active::before  { background: var(--teal); }
+.est-stat-inactive::before{ background: var(--amber); }
+.est-stat-new::before     { background: var(--purple); }
 .est-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
 .est-stat-icon {
@@ -84,17 +82,11 @@
 }
 .est-stat-total   .est-stat-icon { background: rgba(16,185,129,.12);  color: var(--green); }
 .est-stat-active  .est-stat-icon { background: var(--teal-light);     color: var(--teal); }
-.est-stat-inactive .est-stat-icon { background: rgba(245,158,11,.12); color: var(--amber); }
+.est-stat-inactive .est-stat-icon{ background: rgba(245,158,11,.12);  color: var(--amber); }
 .est-stat-new     .est-stat-icon { background: rgba(139,92,246,.12);  color: var(--purple); }
 
-.est-stat-lbl {
-    font-size: .68rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .07em; color: var(--text-muted); margin-bottom: .2rem;
-}
-.est-stat-num {
-    font-size: 1.75rem; font-weight: 800; color: var(--blue-dark);
-    line-height: 1; margin-bottom: .1rem;
-}
+.est-stat-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: .2rem; }
+.est-stat-num { font-size: 1.75rem; font-weight: 800; color: var(--blue-dark); line-height: 1; margin-bottom: .1rem; }
 .est-stat-sub { font-size: .73rem; color: var(--text-muted); }
 
 /* ── Toolbar ── */
@@ -110,43 +102,28 @@
     flex-wrap: wrap;
     box-shadow: var(--shadow-sm);
 }
-.est-search-wrap {
-    position: relative;
-    flex: 1;
-    min-width: 220px;
-}
-.est-search-wrap i {
-    position: absolute;
-    left: 12px; top: 50%;
-    transform: translateY(-50%);
-    color: var(--blue-mid);
-    font-size: .85rem;
-}
+.est-search-wrap { position: relative; flex: 1; min-width: 220px; }
+.est-search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--blue-mid); font-size: .85rem; }
 .est-search {
-    width: 100%;
-    padding: .5rem 1rem .5rem 2.4rem;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: .85rem;
-    background: var(--surface);
-    outline: none;
+    width: 100%; padding: .5rem 1rem .5rem 2.4rem;
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-size: .85rem; background: var(--surface); outline: none;
     transition: border-color .2s, box-shadow .2s;
-    font-family: inherit;
-    color: var(--text-main);
+    font-family: inherit; color: var(--text-main);
 }
-.est-search:focus {
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(78,199,210,.15);
-    background: white;
+.est-search:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(78,199,210,.15); background: white; }
+
+.est-badge-info { display: flex; align-items: center; gap: 1.25rem; flex-shrink: 0; }
+.est-badge-info span { display: flex; align-items: center; gap: .4rem; font-size: .82rem; }
+
+.est-perpage { display: flex; align-items: center; gap: .5rem; font-size: .8rem; color: #64748b; }
+.est-perpage label { white-space: nowrap; font-weight: 500; }
+.est-perpage select {
+    padding: .3rem .6rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: .8rem; font-family: inherit; color: #0f172a;
+    background: #f8fafc; outline: none; cursor: pointer; transition: border-color .2s;
 }
-.est-badge-info {
-    display: flex; align-items: center; gap: 1.25rem;
-    flex-shrink: 0;
-}
-.est-badge-info span {
-    display: flex; align-items: center; gap: .4rem;
-    font-size: .82rem;
-}
+.est-perpage select:focus { border-color: #4ec7d2; }
 
 /* ── Tabla card ── */
 .est-card {
@@ -159,38 +136,26 @@
 .est-card-head {
     background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
     padding: .9rem 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: .6rem;
+    display: flex; align-items: center; gap: .6rem;
 }
 .est-card-head i    { color: var(--teal); font-size: 1rem; }
 .est-card-head span { color: white; font-weight: 700; font-size: .95rem; }
 
-/* Tabla */
 .est-tbl { width: 100%; border-collapse: collapse; }
 .est-tbl thead th {
-    background: var(--surface);
-    padding: .65rem 1rem;
-    font-size: .68rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .07em;
-    color: var(--text-muted);
-    border-bottom: 1.5px solid var(--border);
-    white-space: nowrap;
+    background: var(--surface); padding: .65rem 1rem;
+    font-size: .68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--text-muted);
+    border-bottom: 1.5px solid var(--border); white-space: nowrap;
 }
 .est-tbl thead th.tc { text-align: center; }
-.est-tbl tbody td {
-    padding: .75rem 1rem;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: .84rem;
-    color: var(--text-main);
-    vertical-align: middle;
-}
+.est-tbl tbody td { padding: .75rem 1rem; border-bottom: 1px solid #f1f5f9; font-size: .84rem; color: var(--text-main); vertical-align: middle; }
 .est-tbl tbody td.tc { text-align: center; }
 .est-tbl tbody tr:last-child td { border-bottom: none; }
 .est-tbl tbody tr { transition: background .15s; }
 .est-tbl tbody tr:hover { background: #f7fbff; }
+.est-tbl tbody tr.hidden { display: none; }
 
-/* Número de fila */
 .row-num {
     width: 26px; height: 26px; border-radius: 7px;
     background: var(--surface); border: 1px solid var(--border);
@@ -198,7 +163,6 @@
     font-size: .72rem; font-weight: 700; color: var(--text-muted);
 }
 
-/* Avatar */
 .est-av {
     width: 38px; height: 38px; border-radius: 10px;
     background: linear-gradient(135deg, var(--teal), var(--blue-mid));
@@ -206,14 +170,10 @@
     color: white; font-weight: 700; font-size: .9rem; flex-shrink: 0;
     border: 2px solid rgba(78,199,210,.3);
 }
-.est-av img {
-    width: 100%; height: 100%;
-    object-fit: cover; border-radius: 8px;
-}
+.est-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
 .est-name  { font-weight: 600; color: var(--blue-dark); font-size: .88rem; }
 .est-email { font-size: .73rem; color: var(--text-muted); margin-top: .1rem; }
 
-/* DNI mono */
 .est-dni {
     font-family: 'Courier New', monospace;
     font-size: .82rem; color: var(--blue-mid); font-weight: 600;
@@ -221,28 +181,17 @@
     border-radius: 5px; white-space: nowrap;
 }
 
-/* Grado / Sección chip */
-.chip {
-    display: inline-flex; align-items: center;
-    padding: .22rem .65rem; border-radius: 999px;
-    font-size: .72rem; font-weight: 600; white-space: nowrap;
-}
+.chip { display: inline-flex; align-items: center; padding: .22rem .65rem; border-radius: 999px; font-size: .72rem; font-weight: 600; white-space: nowrap; }
 .chip-teal { background: var(--teal-light); color: var(--blue-mid); border: 1px solid rgba(78,199,210,.35); }
 .chip-blue { background: rgba(0,80,143,.08); color: var(--blue-dark); border: 1px solid rgba(0,80,143,.2); }
 
-/* Estado */
-.badge-estado {
-    display: inline-flex; align-items: center; gap: .3rem;
-    padding: .25rem .7rem; border-radius: 999px;
-    font-size: .72rem; font-weight: 700;
-}
+.badge-estado { display: inline-flex; align-items: center; gap: .3rem; padding: .25rem .7rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
 .badge-activo   { background: rgba(78,199,210,.15); color: var(--blue-mid); border: 1px solid rgba(78,199,210,.4); }
 .badge-inactivo { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
 .dot-teal { background: var(--teal); }
 .dot-red  { background: var(--red); }
 
-/* Botones acción */
 .act-btn {
     width: 30px; height: 30px; border-radius: 7px;
     display: inline-flex; align-items: center; justify-content: center;
@@ -257,13 +206,11 @@
 .act-edit:hover  { background: var(--teal);     color: white; transform: translateY(-1px); }
 .act-del:hover   { background: var(--red);      color: white; transform: translateY(-1px); }
 
-/* Empty */
 .est-empty { padding: 4rem 1rem; text-align: center; }
-.est-empty i { font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: 1rem; }
+.est-empty i  { font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: 1rem; }
 .est-empty h6 { color: var(--blue-dark); font-weight: 600; margin-bottom: .4rem; }
 .est-empty p  { font-size: .83rem; color: var(--text-muted); margin-bottom: 1.25rem; }
 
-/* Footer paginación */
 .est-footer {
     padding: .85rem 1.25rem;
     border-top: 1px solid var(--border);
@@ -272,14 +219,12 @@
 }
 .est-footer-info { font-size: .78rem; color: var(--text-muted); }
 
-/* Paginación Bootstrap override */
 .pagination { margin: 0; }
 .pagination .page-link {
     border-radius: 7px; margin: 0 2px;
     border: 1.5px solid var(--border);
     color: var(--blue-mid);
-    padding: .28rem .6rem; font-size: .82rem;
-    transition: all .15s;
+    padding: .28rem .6rem; font-size: .82rem; transition: all .15s;
 }
 .pagination .page-link:hover { background: var(--teal-light); border-color: var(--teal); color: var(--blue-dark); }
 .pagination .page-item.active .page-link {
@@ -288,74 +233,28 @@
     box-shadow: 0 2px 6px rgba(78,199,210,.35);
 }
 
-/* ── RESPONSIVE MOBILE ── */
+.no-results-row td { padding: 2rem; text-align: center; color: #94a3b8; font-size: .83rem; }
+
+/* ── RESPONSIVE ── */
 @media(max-width: 768px) {
-
-    /* Toolbar: búsqueda y badges en columna */
-    .est-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: .75rem;
-    }
+    .est-toolbar { flex-direction: column; align-items: stretch; gap: .75rem; }
     .est-search-wrap { min-width: unset; }
-    .est-badge-info {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: .75rem;
-    }
-
-    /* Ocultar columnas menos importantes en móvil */
-    .est-tbl thead th:nth-child(2),  /* Foto */
-    .est-tbl tbody td:nth-child(2),
-    .est-tbl thead th:nth-child(6),  /* Sección */
-    .est-tbl tbody td:nth-child(6) {
-        display: none;
-    }
-
-    /* Reducir padding de celdas */
-    .est-tbl thead th,
-    .est-tbl tbody td {
-        padding: .55rem .65rem;
-        font-size: .78rem;
-    }
-
-    /* Footer paginación en columna */
-    .est-footer {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: .75rem;
-    }
+    .est-badge-info { justify-content: center; flex-wrap: wrap; gap: .75rem; }
+    .est-tbl thead th:nth-child(2), .est-tbl tbody td:nth-child(2),
+    .est-tbl thead th:nth-child(6), .est-tbl tbody td:nth-child(6) { display: none; }
+    .est-tbl thead th, .est-tbl tbody td { padding: .55rem .65rem; font-size: .78rem; }
+    .est-footer { flex-direction: column; align-items: center; text-align: center; gap: .75rem; }
 }
-
 @media(max-width: 480px) {
-
-    /* Stats en 2 columnas compactas */
     .est-stats { grid-template-columns: repeat(2,1fr); gap: .65rem; }
     .est-stat { padding: .85rem .9rem; gap: .75rem; }
     .est-stat-num { font-size: 1.45rem; }
     .est-stat-icon { width: 38px; height: 38px; font-size: .95rem; }
-
-    /* Ocultar también DNI en pantallas muy pequeñas */
-    .est-tbl thead th:nth-child(4),
-    .est-tbl tbody td:nth-child(4) {
-        display: none;
-    }
-
-    /* Nombre más compacto */
+    .est-tbl thead th:nth-child(4), .est-tbl tbody td:nth-child(4) { display: none; }
     .est-name  { font-size: .82rem; }
     .est-email { display: none; }
-
-    /* Botones acción más pequeños */
-    .act-btn { width: 26px; height: 26px; font-size: .72rem; }
-
-    /* Chips más pequeños */
-    .chip { font-size: .65rem; padding: .18rem .5rem; }
-
-    /* Topbar botones en columna */
-    [style*="display:flex;gap:.5rem;flex-wrap:wrap"] {
-        width: 100%;
-    }
+    .act-btn   { width: 26px; height: 26px; font-size: .72rem; }
+    .chip      { font-size: .65rem; padding: .18rem .5rem; }
 }
 </style>
 @endpush
@@ -409,7 +308,7 @@
         <div class="est-badge-info">
             <span>
                 <i class="fas fa-users" style="color:var(--blue-mid);"></i>
-                <strong style="color:var(--blue-mid);">{{ $estudiantes->total() }}</strong>
+                <strong id="visibleCount" style="color:var(--blue-mid);">{{ $estudiantes->total() }}</strong>
                 <span style="color:var(--text-muted);">Total</span>
             </span>
             <span>
@@ -417,6 +316,16 @@
                 <strong style="color:var(--teal);">{{ $estudiantes->getCollection()->where('estado','activo')->count() }}</strong>
                 <span style="color:var(--text-muted);">Activos (esta página)</span>
             </span>
+        </div>
+        <div class="est-perpage">
+            <label for="perPageSelect"><i class="fas fa-list-ol" style="color:#4ec7d2;"></i> Mostrar:</label>
+            <select id="perPageSelect" onchange="cambiarPerPage(this.value)">
+                @foreach([10, 25, 50] as $op)
+                    <option value="{{ $op }}" {{ request('per_page', 10) == $op ? 'selected' : '' }}>
+                        {{ $op }} por página
+                    </option>
+                @endforeach
+            </select>
         </div>
     </div>
 
@@ -441,9 +350,11 @@
                         <th class="tc">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tableBody">
                     @forelse($estudiantes as $i => $estudiante)
-                    <tr class="student-row">
+                    <tr class="student-row"
+                        data-search="{{ strtolower(($estudiante->nombre1 ?? '') . ' ' . ($estudiante->nombre2 ?? '') . ' ' . ($estudiante->apellido1 ?? '') . ' ' . ($estudiante->apellido2 ?? '') . ' ' . ($estudiante->dni ?? '') . ' ' . ($estudiante->grado ?? '') . ' ' . ($estudiante->seccion ?? '')) }}">
+
                         <td class="tc">
                             <span class="row-num">{{ $estudiantes->firstItem() + $i }}</span>
                         </td>
@@ -553,37 +464,48 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('searchInput');
-    const tbody = document.querySelector('#studentsTable tbody');
-    const rows  = () => tbody.querySelectorAll('.student-row');
+    const input        = document.getElementById('searchInput');
+    const tbody        = document.getElementById('tableBody');
+    const visibleCount = document.getElementById('visibleCount');
+
+    if (!input || !tbody) return;
 
     input.addEventListener('input', function () {
         const term = this.value.toLowerCase().trim();
+
+        const noRow = tbody.querySelector('.no-results-row');
+        if (noRow) noRow.remove();
+
         let visible = 0;
 
-        rows().forEach(row => {
-            const match = row.textContent.toLowerCase().includes(term);
-            row.style.display = match ? '' : 'none';
+        tbody.querySelectorAll('.student-row').forEach(function (row) {
+            const texto = row.dataset.search || row.textContent.toLowerCase();
+            const match = term === '' || texto.includes(term);
+            row.classList.toggle('hidden', !match);
             if (match) visible++;
         });
 
-        let noRow = tbody.querySelector('.no-results-row');
-        if (visible === 0 && term) {
-            if (!noRow) {
-                noRow = document.createElement('tr');
-                noRow.className = 'no-results-row';
-                noRow.innerHTML = `<td colspan="8" style="text-align:center;padding:3rem 1rem;">
-                    <i class="fas fa-search" style="font-size:1.75rem;color:#cbd5e1;display:block;margin-bottom:.75rem;"></i>
-                    <p style="color:#94a3b8;margin:0;font-size:.85rem;">
-                        Sin resultados para <strong style="color:#0d2137;">"${term}"</strong>
-                    </p>
-                </td>`;
-                tbody.appendChild(noRow);
-            }
-        } else if (noRow) {
-            noRow.remove();
+        if (visibleCount) visibleCount.textContent = visible;
+
+        if (visible === 0 && term !== '') {
+            const tr = document.createElement('tr');
+            tr.className = 'no-results-row';
+            tr.innerHTML = `<td colspan="8" style="text-align:center;padding:3rem 1rem;">
+                <i class="fas fa-search" style="font-size:1.75rem;color:#cbd5e1;display:block;margin-bottom:.75rem;"></i>
+                <p style="color:#94a3b8;margin:0;font-size:.85rem;">
+                    Sin resultados para <strong style="color:#0d2137;">"${term}"</strong>
+                </p>
+            </td>`;
+            tbody.appendChild(tr);
         }
     });
 });
+
+function cambiarPerPage(val) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', val);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
 </script>
 @endpush

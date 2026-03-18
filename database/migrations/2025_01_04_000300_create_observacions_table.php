@@ -16,10 +16,7 @@ return new class extends Migration
                   ->constrained('estudiantes')
                   ->onDelete('cascade');
 
-            $table->foreignId('profesor_id')
-                  ->constrained('profesores')
-                  ->onDelete('cascade');
-
+            $table->foreignId('profesor_id')->nullable()->constrained('profesores');
             // Contenido de la observación (solo texto libre)
             $table->text('descripcion');
 

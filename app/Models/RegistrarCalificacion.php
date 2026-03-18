@@ -25,7 +25,6 @@ class RegistrarCalificacion extends Model
         'nota' => 'float',
     ];
 
-    // Relaciones
     public function profesor()
     {
         return $this->belongsTo(Profesor::class);

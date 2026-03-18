@@ -15,7 +15,7 @@
 
         /*
         ╔══════════════════════════════════════════════════════════════╗
-        ║  🔤 TAMAÑO DE LETRA GLOBAL — afecta TODO el sitio            ║
+        ║   TAMAÑO DE LETRA GLOBAL — afecta TODO el sitio            ║
         ║  Cambia el número para hacer todo más grande o pequeño.      ║
         ║  • 14px → más compacto                                       ║
         ║  • 16px → estándar                                           ║
@@ -83,7 +83,9 @@
             font-size: .80rem; font-weight: 700;
             text-transform: uppercase; letter-spacing: 1.2px;
         }
+
         .menu-item { margin: 0; }
+
         .menu-link {
             display: flex; align-items: center; gap: 12px;
             padding: .75rem 1.2rem;
@@ -102,21 +104,8 @@
         .menu-link.active i { color: #4ec7d2; }
         .menu-link.disabled-link { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
-        /* ══════════════════════════════════════════════
-           MAIN CONTENT
-           — Con sidebar (admin/superadmin): margin-left 280px
-           — Sin sidebar (profesor/estudiante/padre): sin margen
-        ══════════════════════════════════════════════ */
-        .main-content {
-            margin-left: 280px;
-            min-height: 100vh;
-            background: #f5f7fa;
-        }
-
-        /* ← CLAVE: roles sin sidebar ocupan todo el ancho */
-        .main-content.no-sidebar {
-            margin-left: 0;
-        }
+        /* ── MAIN ── */
+        .main-content { margin-left: 280px; min-height: 100vh; background: #f5f7fa; }
 
         /* ══════════════════════════════════════════════
            TOPBAR
@@ -152,22 +141,12 @@
         ══════════════════════════════════════════════ */
         .content-wrapper { padding: 2rem; }
 
-        .no-sidebar .content-wrapper {
-            padding: 1.5rem 2rem;
-            /* Sin max-width para que ocupe todo el ancho disponible */
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* ══════════════════════════════════════════════
-           MOBILE MENU
-        ══════════════════════════════════════════════ */
+        /* ── RESPONSIVE ── */
         .mobile-menu-btn {
             display: none;
-            background: linear-gradient(135deg, #4ec7d2, #00508f);
+            background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
             color: white; border: none;
-            padding: .5rem .75rem; border-radius: 7px;
-            font-size: 1rem; cursor: pointer;
+            padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 1.1rem;
         }
         .sidebar-overlay {
             display: none; position: fixed;
@@ -234,16 +213,9 @@
             50%      { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239,68,68,0); }
         }
 
-        .modal-delete-title {
-            text-align: center; color: #1e293b;
-            font-size: 1.5rem; font-weight: 700;
-            margin: 0 0 1.5rem; padding: 0 2rem;
-        }
+        .modal-delete-title { text-align: center; color: #1e293b; font-size: 1.5rem; font-weight: 700; margin: 0 0 1.5rem; padding: 0 2rem; }
         .modal-delete-content { padding: 0 2rem 2rem; }
-        .modal-delete-message {
-            text-align: center; color: #64748b;
-            font-size: .938rem; line-height: 1.6; margin: 0 0 1.5rem;
-        }
+        .modal-delete-message { text-align: center; color: #64748b; font-size: .938rem; line-height: 1.6; margin: 0 0 1.5rem; }
         .modal-delete-item {
             background: linear-gradient(135deg,#f8fafc,#e2e8f0);
             border-radius: 12px; padding: 1rem;
@@ -255,13 +227,8 @@
             display: flex; align-items: center; justify-content: center;
             color: #ef4444; font-size: 1.125rem; flex-shrink: 0;
         }
-        .delete-item-label {
-            display: block; color: #64748b; font-size: .75rem;
-            font-weight: 600; text-transform: uppercase;
-            letter-spacing: .5px; margin-bottom: .25rem;
-        }
-        .delete-item-name { display: block; color: #1e293b; font-size: .938rem; font-weight: 700; }
-
+        .delete-item-label { display: block; color: #64748b; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: .25rem; }
+        .delete-item-name  { display: block; color: #1e293b; font-size: .938rem; font-weight: 700; }
         .modal-delete-actions {
             padding: 1rem 1.5rem 1.5rem; display: flex; gap: .75rem;
             border-top: 1px solid #e2e8f0;
@@ -326,9 +293,9 @@
         </div>
     </div>
 
-    {{-- Menú --}}
     <ul class="sidebar-menu">
 
+        {{-- ── PRINCIPAL ── --}}
         <li class="menu-section-title">PRINCIPAL</li>
         <li class="menu-item">
             <a href="{{ $isSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}"
@@ -431,6 +398,28 @@
     </a>
 </li>
 
+        {{-- ── CALIFICACIONES (NUEVO) ── --}}
+        <li class="menu-section-title">CALIFICACIONES</li>
+        <li class="menu-item">
+            <a href="{{ route('registrarcalificaciones.index') }}"
+               class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
+                <i class="fas fa-clipboard-check"></i><span>Registrar Calificaciones</span>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{{ route('consultaestudiantesxcurso.index') }}"
+               class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
+                <i class="fas fa-users"></i><span>Estudiantes por Curso</span>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{{ route('h20cursos.index') }}"
+               class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
+                <i class="fas fa-graduation-cap"></i><span>Cursos Secundaria</span>
+            </a>
+        </li>
+
+        {{-- ── CALENDARIO ── --}}
         <li class="menu-section-title">CALENDARIO</li>
         <li class="menu-item">
             <a href="{{ route('periodos-academicos.index') }}"
@@ -472,6 +461,12 @@
             <a href="{{ route('estado-solicitud') }}"
                class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
                 <i class="fas fa-question-circle"></i><span>Estado de Solicitud</span>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="{{ route('acciones_importantes.index') }}"
+               class="menu-link {{ request()->routeIs('acciones_importantes.*') ? 'active' : '' }}">
+                <i class="fas fa-bell"></i><span>Acciones Recientes</span>
             </a>
         </li>
 
@@ -548,7 +543,7 @@
             </p>
             <div class="modal-delete-item" id="deleteItemInfo" style="display:none;">
                 <div class="delete-item-icon"><i class="fas fa-file-alt"></i></div>
-                <div class="delete-item-details">
+                <div>
                     <span class="delete-item-label">Elemento a eliminar:</span>
                     <strong class="delete-item-name" id="deleteItemName"></strong>
                 </div>

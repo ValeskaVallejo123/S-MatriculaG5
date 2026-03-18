@@ -9,7 +9,6 @@ use App\Models\Rol;
 use App\Models\Notificacion;
 use App\Models\NotificacionPreferencia;
 use App\Models\Padre;
-//use App\Models\Estudiante;
 use App\Models\Profesor;
 
 /**
@@ -29,6 +28,7 @@ use App\Models\Profesor;
  * @property bool        $is_protected
  * @property array|null  $permissions
  * @property string|null $email_verified_at
+ * @property string|null $fecha_registro
  *
  * @property-read \App\Models\Rol|null                     $rol
  * @property-read \App\Models\Padre|null                   $padre
@@ -47,6 +47,7 @@ class User extends Authenticatable
         'id_rol',
         'activo',
         'user_type',
+        'fecha_registro',
         'is_super_admin',
         'is_protected',
         'permissions',
@@ -82,9 +83,7 @@ class User extends Authenticatable
 
     /**
      * Relación con Padre via user_id.
-     * NOTA: Si la tabla `padres` no tiene columna user_id, esta relación
-     * retornará null siempre. Agregar la columna con una migración si se
-     * necesita que los padres tengan login propio.
+     * NOTA: Si la tabla `padres` no tiene columna user_id, retornará null siempre.
      */
     public function padre()
     {
@@ -92,7 +91,7 @@ class User extends Authenticatable
     }
 
     /**
-     * NOTA: La tabla `profesores` NO tiene columna user_id.
+     * La tabla `profesores` NO tiene columna user_id.
      * Se busca el profesor por coincidencia de email.
      * Uso: $user->docente  →  retorna Profesor|null
      */
@@ -102,10 +101,8 @@ class User extends Authenticatable
     }
 
     /**
-     * NOTA: La tabla `estudiantes` NO tiene columna user_id.
-     * Los estudiantes no tienen cuenta propia en users;
-     * acceden a través del padre/tutor.
-     * Este método queda comentado para evitar errores de columna.
+     * La tabla `estudiantes` NO tiene columna user_id.
+     * Los estudiantes acceden a través del padre/tutor.
      *
      * public function estudiante()
      * {
@@ -133,9 +130,27 @@ class User extends Authenticatable
             strtolower(trim($this->rol->nombre)) === strtolower(trim($nombreRol));
     }
 
+    /** Alias en inglés para compatibilidad */
+    public function hasRole($role): bool
+    {
+        return $this->tieneRol($role);
+    }
+
+    public function hasAnyRole(array $roles): bool
+    {
+        foreach ($roles as $role) {
+            if ($this->tieneRol($role)) return true;
+        }
+        return false;
+    }
+
     public function isSuperAdmin(): bool
     {
-        return $this->is_super_admin === true || $this->id_rol == 1;
+        return $this->is_super_admin === true
+            || $this->id_rol == 1
+            || $this->tieneRol('Super Administrador')
+            || $this->tieneRol('superadmin')
+            || $this->tieneRol('Super Admin');
     }
 
     public function isAdmin(): bool
@@ -144,6 +159,12 @@ class User extends Authenticatable
             || $this->id_rol == 2
             || $this->tieneRol('Administrador')
             || $this->tieneRol('Admin');
+    }
+
+    /** Alias para compatibilidad con código antiguo */
+    public function isAdministrador(): bool
+    {
+        return $this->isAdmin();
     }
 
     public function isDocente(): bool
@@ -177,6 +198,11 @@ class User extends Authenticatable
         return $this->activo === true;
     }
 
+    public function estaPendiente(): bool
+    {
+        return $this->activo === false;
+    }
+
     public function activar(): void
     {
         $this->update(['activo' => true]);
@@ -185,47 +211,6 @@ class User extends Authenticatable
     public function desactivar(): void
     {
         $this->update(['activo' => false]);
-    }
-
-    // =========================================================================
-    // INFO PARA OBSERVACIONES
-    // =========================================================================
-
-    public function infoParaObservaciones(): array
-    {
-        return [
-            // Profesor: buscado por email (profesores no tienen user_id)
-            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
-            // Estudiantes no tienen cuenta propia en users
-            'estudiante_id' => null,
-            // Padre: funciona si la tabla padres tiene user_id, null si no
-            'padre_id'      => $this->padre?->id,
-        ];
-    }
-
-    // =========================================================================
-    // INFO PARA SISTEMA
-    // =========================================================================
-
-    public function infoParaSistema(): array
-    {
-        return [
-            'id'            => $this->id,
-            'nombre'        => $this->name,
-            'email'         => $this->email,
-            'rol'           => $this->rol?->nombre,
-            'es_superadmin' => $this->isSuperAdmin(),
-            'es_admin'      => $this->isAdmin(),
-            'es_docente'    => $this->isDocente(),
-            'es_estudiante' => $this->isEstudiante(),
-            'es_padre'      => $this->isPadre(),
-            // Profesor: buscado por email (profesores no tienen user_id)
-            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
-            // Estudiantes no tienen cuenta propia en users
-            'estudiante_id' => null,
-            // Padre: funciona si la tabla padres tiene user_id, null si no
-            'padre_id'      => $this->padre?->id,
-        ];
     }
 
     // =========================================================================
@@ -268,9 +253,35 @@ class User extends Authenticatable
         return true;
     }
 
+    /** Alias en inglés para compatibilidad */
     public function hasPermission(string $permission): bool
     {
         return $this->tienePermiso($permission);
+    }
+
+    public function obtenerPermisos(): array
+    {
+        $lista = [];
+
+        if (is_array($this->permissions)) {
+            foreach ($this->permissions as $key => $value) {
+                if ($value === true) {
+                    $lista[] = strtolower($key);
+                }
+            }
+        }
+
+        if ($this->rol && $this->rol->permisos instanceof \Illuminate\Support\Collection) {
+            $lista = array_merge(
+                $lista,
+                $this->rol->permisos
+                    ->pluck('nombre')
+                    ->map(fn($n) => strtolower($n))
+                    ->toArray()
+            );
+        }
+
+        return array_values(array_unique(array_filter($lista)));
     }
 
     // =========================================================================
@@ -296,6 +307,25 @@ class User extends Authenticatable
     }
 
     // =========================================================================
+    // SCOPES
+    // =========================================================================
+
+    public function scopeActivos($query)
+    {
+        return $query->where('activo', true);
+    }
+
+    public function scopePendientes($query)
+    {
+        return $query->where('activo', false);
+    }
+
+    public function scopePorRol($query, $rolId)
+    {
+        return $query->where('id_rol', $rolId);
+    }
+
+    // =========================================================================
     // QUERIES POR ROL
     // =========================================================================
 
@@ -312,12 +342,10 @@ class User extends Authenticatable
             }
         }
 
-        // Estudiantes no tienen cuenta propia — sin acceso directo
         if ($this->isEstudiante()) {
             return Observacion::whereRaw('0 = 1');
         }
 
-        // Padres: acceso a observaciones de sus estudiantes (si padre tiene user_id)
         if ($this->isPadre() && $this->padre) {
             $estudianteIds = $this->padre
                 ->estudiantes()
@@ -328,6 +356,8 @@ class User extends Authenticatable
         return Observacion::whereRaw('0 = 1');
     }
 
+    // BUG CORREGIDO: la versión anterior de padresPermitidos() usaba
+    // Observacion::whereIn() por error. Ahora usa Padre correctamente.
     public function padresPermitidos()
     {
         if ($this->isSuperAdmin() || $this->isAdmin() || $this->isDocente()) {
@@ -366,31 +396,33 @@ class User extends Authenticatable
     }
 
     // =========================================================================
-    // OBTENER TODOS LOS PERMISOS
+    // INFO HELPERS
     // =========================================================================
 
-    public function obtenerPermisos(): array
+    public function infoParaObservaciones(): array
     {
-        $lista = [];
+        return [
+            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
+            'estudiante_id' => null,
+            'padre_id'      => $this->padre?->id,
+        ];
+    }
 
-        if (is_array($this->permissions)) {
-            foreach ($this->permissions as $key => $value) {
-                if ($value === true) {
-                    $lista[] = strtolower($key);
-                }
-            }
-        }
-
-        if ($this->rol && $this->rol->permisos instanceof \Illuminate\Support\Collection) {
-            $lista = array_merge(
-                $lista,
-                $this->rol->permisos
-                    ->pluck('nombre')
-                    ->map(fn($n) => strtolower($n))
-                    ->toArray()
-            );
-        }
-
-        return array_values(array_unique(array_filter($lista)));
+    public function infoParaSistema(): array
+    {
+        return [
+            'id'            => $this->id,
+            'nombre'        => $this->name,
+            'email'         => $this->email,
+            'rol'           => $this->rol?->nombre,
+            'es_superadmin' => $this->isSuperAdmin(),
+            'es_admin'      => $this->isAdmin(),
+            'es_docente'    => $this->isDocente(),
+            'es_estudiante' => $this->isEstudiante(),
+            'es_padre'      => $this->isPadre(),
+            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
+            'estudiante_id' => null,
+            'padre_id'      => $this->padre?->id,
+        ];
     }
 }

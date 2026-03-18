@@ -3,480 +3,395 @@
 @section('title', 'Grados')
 @section('page-title', 'Gestión de Grados y Secciones')
 
+@section('topbar-actions')
+    <a href="{{ route('superadmin.grados.create') }}" class="adm-btn-solid">
+        <i class="fas fa-plus"></i> Nuevo Grado
+    </a>
+@endsection
+
 @push('styles')
 <style>
-:root {
-    --blue:     #00508f;
-    --blue-mid: #003b73;
-    --teal:     #4ec7d2;
-    --border:   #e8edf4;
-    --muted:    #6b7a90;
-    --r:        14px;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-.gg-wrap { width: 100%; box-sizing: border-box; }
+.adm-wrap { font-family: 'Inter', sans-serif; }
 
-/* ── HEADER ── */
-.gg-header {
-    border-radius: var(--r) var(--r) 0 0;
-    background: linear-gradient(135deg, #002d5a 0%, #00508f 55%, #0077b6 100%);
-    padding: 2rem 1.7rem;
-    position: relative; overflow: hidden;
-}
-.gg-header::before {
-    content: ''; position: absolute; right: -50px; top: -50px;
-    width: 200px; height: 200px; border-radius: 50%;
-    background: rgba(78,199,210,.13); pointer-events: none;
-}
-.gg-header::after {
-    content: ''; position: absolute; right: 100px; bottom: -45px;
-    width: 120px; height: 120px; border-radius: 50%;
-    background: rgba(255,255,255,.05); pointer-events: none;
-}
-.gg-header-inner {
-    position: relative; z-index: 1;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 1rem;
-}
-.gg-header-left { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
-.gg-avatar {
-    width: 80px; height: 80px; border-radius: 18px;
-    border: 3px solid rgba(78,199,210,.7);
-    background: rgba(255,255,255,.12);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,.25); flex-shrink: 0;
-}
-.gg-avatar i { color: white; font-size: 2rem; }
-.gg-header h2 {
-    font-size: 1.45rem; font-weight: 800; color: white;
-    margin: 0 0 .5rem; text-shadow: 0 1px 4px rgba(0,0,0,.2);
-}
-.gg-badge {
-    display: inline-flex; align-items: center; gap: .3rem;
-    padding: .22rem .7rem; border-radius: 999px;
-    font-size: .72rem; font-weight: 700;
-    border: 1px solid rgba(255,255,255,.35);
-    background: rgba(255,255,255,.15); color: white;
-    margin-right: .4rem;
-}
-.gg-btn-nuevo {
+.adm-btn-outline {
     display: inline-flex; align-items: center; gap: .4rem;
-    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35);
-    color: white; padding: .5rem 1.2rem; border-radius: 8px;
-    font-size: .82rem; font-weight: 700; text-decoration: none;
-    transition: all .2s; white-space: nowrap;
+    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    background: #fff; color: #00508f; border: 1.5px solid #4ec7d2;
+    text-decoration: none; transition: background .15s;
 }
-.gg-btn-nuevo:hover {
-    background: rgba(255,255,255,.25); color: white; text-decoration: none;
+.adm-btn-outline:hover { background: #e8f8f9; }
+.adm-btn-solid {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: #fff; border: none; text-decoration: none; transition: opacity .15s;
 }
+.adm-btn-solid:hover { opacity: .88; color: #fff; }
 
-/* ── BODY ── */
-.gg-body {
-    background: white;
-    border: 1px solid var(--border);
-    border-top: none;
-    border-radius: 0 0 var(--r) var(--r);
-    box-shadow: 0 4px 16px rgba(0,59,115,.10);
-    padding: 1.4rem 1.7rem;
-    margin-bottom: 1.3rem;
+/* Stats */
+.adm-stats {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 1rem; margin-bottom: 1.5rem;
 }
+@media(max-width:768px){ .adm-stats { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:480px){ .adm-stats { grid-template-columns: 1fr; } }
 
-/* ── FILTROS ── */
-.gg-filters {
-    display: flex; align-items: center; gap: .75rem;
-    flex-wrap: wrap; margin-bottom: 1.2rem;
+.adm-stat {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
 }
-.gg-search-wrap { position: relative; flex: 1; min-width: 200px; }
-.gg-search {
-    width: 100%; padding: .55rem 1rem .55rem 2.4rem;
-    border: 1px solid var(--border); border-radius: 8px;
-    font-size: .82rem; color: var(--blue-mid);
-    background: #f9fbfd; outline: none;
-    transition: border-color .2s, box-shadow .2s;
+.adm-stat-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.gg-search:focus {
-    border-color: rgba(78,199,210,.5);
-    box-shadow: 0 0 0 3px rgba(78,199,210,.1);
-    background: white;
-}
-.gg-search-icon {
-    position: absolute; left: .8rem; top: 50%; transform: translateY(-50%);
-    color: var(--muted); font-size: .75rem; pointer-events: none;
-}
-.gg-select {
-    padding: .55rem .85rem; border: 1px solid var(--border);
-    border-radius: 8px; font-size: .8rem; color: var(--blue-mid);
-    background: #f9fbfd; outline: none; cursor: pointer;
-    transition: border-color .2s;
-}
-.gg-select:focus { border-color: rgba(78,199,210,.5); }
+.adm-stat-icon i { font-size: 1.15rem; color: #fff; }
+.adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
+.adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
 
-/* stats */
-.gg-stats-row {
-    display: flex; align-items: center; gap: 1rem;
-    flex-wrap: wrap; margin-left: auto;
-}
-.gg-stat-pill {
-    display: inline-flex; align-items: center; gap: .35rem;
-    font-size: .75rem; font-weight: 700; color: var(--blue-mid);
-    background: #f5f8fc; border: 1px solid var(--border);
-    border-radius: 999px; padding: .3rem .85rem;
-}
-.gg-stat-pill i { color: var(--teal); font-size: .7rem; }
-
-/* ── TABS ── */
-.gg-tabs {
-    display: flex; gap: .4rem; margin-bottom: 1.2rem;
-    border-bottom: 2px solid var(--border); padding-bottom: 0;
-}
-.gg-tab {
-    display: inline-flex; align-items: center; gap: .35rem;
-    padding: .55rem 1.1rem; border-radius: 8px 8px 0 0;
-    font-size: .78rem; font-weight: 700; color: var(--muted);
-    background: #f5f8fc; border: 1px solid var(--border);
-    border-bottom: none; cursor: pointer;
-    transition: all .18s; margin-bottom: -2px;
-    text-decoration: none;
-}
-.gg-tab.active, .gg-tab:hover {
-    background: white; color: var(--blue);
-    border-color: rgba(78,199,210,.5);
-    border-bottom: 2px solid white;
-}
-.gg-tab i { color: var(--teal); }
-
-/* ── SECTION TITLE ── */
-.gg-sec {
-    display: flex; align-items: center; gap: .5rem;
-    font-size: .75rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .08em;
-    color: var(--blue); margin-bottom: .95rem;
-    padding-bottom: .55rem;
-    border-bottom: 2px solid rgba(78,199,210,.15);
-}
-.gg-sec i { color: var(--teal); }
-
-/* ── GRID ── */
-.gg-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-}
-
-/* ── GRADO CARD ── */
-.gg-card {
-    border: 1px solid var(--border);
-    border-radius: 12px; overflow: hidden;
-    background: white;
-    transition: box-shadow .2s, transform .2s, border-color .2s;
-}
-.gg-card:hover {
-    box-shadow: 0 6px 24px rgba(0,80,143,.13);
-    border-color: rgba(78,199,210,.5);
-    transform: translateY(-2px);
-}
-.gg-card-top {
-    background: linear-gradient(135deg, #002d5a 0%, #00508f 60%, #0077b6 100%);
-    padding: 1rem 1.1rem .85rem;
-    position: relative; overflow: hidden;
-}
-.gg-card-top::after {
-    content: ''; position: absolute; right: -20px; top: -20px;
-    width: 80px; height: 80px; border-radius: 50%;
-    background: rgba(78,199,210,.12); pointer-events: none;
-}
-.gg-card-nivel {
-    font-size: .62rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .08em; color: rgba(78,199,210,.9); margin-bottom: .25rem;
-}
-.gg-card-grado {
-    font-size: 1.15rem; font-weight: 800; color: white; line-height: 1.1;
-}
-.gg-card-badges { margin-top: .4rem; display: flex; flex-wrap: wrap; gap: .3rem; }
-.gg-card-badge {
-    display: inline-flex; align-items: center; gap: .2rem;
-    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
-    border-radius: 999px; padding: .15rem .55rem;
-    font-size: .65rem; font-weight: 700; color: white;
-}
-.gg-card-badge.activo {
-    background: rgba(16,185,129,.25); border-color: rgba(16,185,129,.4); color: #6ee7b7;
-}
-.gg-card-badge.inactivo {
-    background: rgba(239,68,68,.2); border-color: rgba(239,68,68,.3); color: #fca5a5;
-}
-
-.gg-card-body { padding: .85rem 1rem; }
-.gg-card-info {
+/* Toolbar */
+.adm-toolbar {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: .85rem 1.25rem; margin-bottom: 1.25rem;
     display: flex; align-items: center; justify-content: space-between;
-    background: #f5f8fc; border: 1px solid var(--border); border-radius: 7px;
-    padding: .5rem .75rem; margin-bottom: .65rem;
-    font-size: .72rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05); gap: .75rem; flex-wrap: wrap;
 }
-.gg-card-info-label { color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: .3rem; }
-.gg-card-info-label i { color: var(--teal); }
-.gg-card-info-val { font-weight: 800; color: var(--blue-mid); }
+.adm-search-wrap { display: flex; align-items: center; gap: .5rem; flex: 1; min-width: 180px; }
+.adm-search-inner { position: relative; flex: 1; max-width: 280px; }
+.adm-search-inner i { position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.78rem;pointer-events:none; }
+.adm-search-inner input {
+    width: 100%; padding: .38rem .75rem .38rem 2rem;
+    border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: .82rem; color: #0f172a; background: #f8fafc; outline: none;
+}
+.adm-search-inner input:focus { border-color: #4ec7d2; }
+.adm-filter select, .adm-perpage select {
+    padding: .35rem .65rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
+}
+.adm-filter select:focus, .adm-perpage select:focus { border-color: #4ec7d2; }
+.adm-perpage { display: flex; align-items: center; gap: .5rem; font-size: .8rem; color: #64748b; }
 
-.gg-materia-tag {
-    display: inline-flex; align-items: center; gap: .2rem;
-    background: linear-gradient(135deg, rgba(78,199,210,.12), rgba(0,80,143,.07));
-    border: 1px solid rgba(78,199,210,.3); border-radius: 999px;
-    padding: .18rem .55rem; font-size: .65rem; font-weight: 600;
-    color: var(--blue-mid); margin: .1rem .1rem 0 0;
+/* Tabs */
+.adm-tabs { display: flex; gap: .4rem; margin-bottom: 1.25rem; }
+.adm-tab {
+    padding: .42rem 1.1rem; border-radius: 8px; font-size: .82rem; font-weight: 600;
+    border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; cursor: pointer; transition: all .15s;
 }
-.gg-materia-tag i { color: var(--teal); font-size: .4rem; }
+.adm-tab.active { background: linear-gradient(135deg,#4ec7d2,#00508f); color: #fff; border-color: transparent; }
+.adm-tab:not(.active):hover { border-color: #4ec7d2; color: #00508f; background: #e8f8f9; }
 
-.gg-card-footer {
-    border-top: 1px solid var(--border); padding: .65rem 1rem;
-    background: #f9fbfd; display: grid;
-    grid-template-columns: 1fr 1fr; gap: .4rem;
-}
-.gg-card-footer-full { grid-column: 1 / -1; }
-.gg-btn-sm {
-    display: flex; align-items: center; justify-content: center; gap: .3rem;
-    padding: .4rem .5rem; border-radius: 7px;
-    font-size: .7rem; font-weight: 700; text-decoration: none;
-    transition: all .18s; border: 1px solid transparent;
-}
-.gg-btn-ver   { background: #f0f7ff; color: var(--blue); border-color: rgba(0,80,143,.2); }
-.gg-btn-edit  { background: #fff8eb; color: #92400e; border-color: #fde68a; }
-.gg-btn-mat   { background: linear-gradient(135deg, var(--teal), var(--blue)); color: white; }
-.gg-btn-sm:hover { opacity: .85; transform: translateY(-1px); text-decoration: none; }
+/* Grid de grados */
+.grados-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+@media(max-width:900px){ .grados-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:500px){ .grados-grid { grid-template-columns: 1fr; } }
 
-/* ── EMPTY ── */
-.gg-empty {
-    text-align: center; padding: 3.5rem 1rem; color: var(--muted);
+.grado-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05); overflow: hidden;
+    transition: box-shadow .2s, transform .2s;
 }
-.gg-empty i { font-size: 2.8rem; display: block; margin-bottom: .75rem; color: rgba(78,199,210,.35); }
-.gg-empty p  { font-size: .9rem; font-weight: 600; margin: 0 0 .25rem; }
+.grado-card:hover { box-shadow: 0 4px 14px rgba(0,80,143,.1); transform: translateY(-2px); }
 
-/* ── PAGINATION ── */
-.gg-pagination {
-    display: flex; flex-direction: column; align-items: center;
-    gap: .75rem; margin-top: 1.5rem;
-}
-.gg-pag-info {
-    font-size: .75rem; color: var(--muted);
-    background: #f5f8fc; border: 1px solid var(--border);
-    border-radius: 8px; padding: .4rem 1rem;
-}
-.gg-pag-info strong { color: var(--blue); }
-.gg-pag-list { display: flex; gap: .35rem; flex-wrap: wrap; justify-content: center; list-style: none; margin: 0; padding: 0; }
-.gg-pag-list .page-link {
+.grado-card-head { padding: .75rem 1rem; display: flex; align-items: center; gap: .75rem; }
+.grado-numero-badge {
+    width: 46px; height: 46px; border-radius: 10px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    min-width: 36px; height: 36px; padding: .4rem .65rem;
-    background: white; border: 1px solid var(--border); border-radius: 7px;
-    color: var(--muted); font-weight: 700; font-size: .78rem;
-    text-decoration: none; transition: all .18s;
+    font-weight: 800; font-size: 1.15rem; color: #fff;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
 }
-.gg-pag-list .page-link:hover { border-color: var(--teal); color: var(--blue); }
-.gg-pag-list .page-item.active .page-link {
-    background: linear-gradient(135deg, var(--teal), var(--blue));
-    border-color: var(--teal); color: white;
-}
-.gg-pag-list .page-item.disabled .page-link { opacity: .5; pointer-events: none; }
+.grado-title   { font-weight: 700; color: #0f172a; font-size: .95rem; margin: 0; }
+.grado-subtitle{ font-size: .75rem; color: #64748b; margin: 0; }
 
-@media(max-width: 768px) {
-    .gg-header { padding: 1.4rem 1.1rem; }
-    .gg-body   { padding: 1rem 1.1rem; }
-    .gg-avatar { width: 60px; height: 60px; }
-    .gg-avatar i { font-size: 1.5rem; }
-    .gg-header h2 { font-size: 1.1rem; }
-    .gg-grid { grid-template-columns: 1fr 1fr; }
+.grado-card-body {
+    padding: .65rem 1rem; border-top: 1px solid #f1f5f9;
+    display: flex; gap: .5rem; flex-wrap: wrap;
 }
-@media(max-width: 480px) {
-    .gg-grid { grid-template-columns: 1fr; }
+.grado-meta {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .2rem .6rem; border-radius: 6px;
+    font-size: .72rem; font-weight: 600; background: #f8fafc; color: #64748b;
 }
+.grado-meta i { font-size: .65rem; }
+
+.grado-card-actions { padding: .65rem 1rem; border-top: 1px solid #f1f5f9; display: flex; gap: .4rem; }
+.act-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
+}
+.act-btn:hover { transform: translateY(-1px); }
+.act-view   { background: #f1f5f9; color: #475569; }
+.act-view:hover   { background: #475569; color: #fff; }
+.act-assign { background: #e8f8f9; color: #0891b2; }
+.act-assign:hover { background: #0891b2; color: #fff; }
+.act-edit   { background: #fef9c3; color: #ca8a04; }
+.act-edit:hover   { background: #ca8a04; color: #fff; }
+.act-delete { background: #fee2e2; color: #dc2626; }
+.act-delete:hover { background: #dc2626; color: #fff; }
+
+/* Nivel badges */
+.nivel-primaria   { background: #ecfdf5; color: #059669; }
+.nivel-secundaria { background: #eef2ff; color: #4f46e5; }
+
+/* Estado activo/inactivo */
+.badge-activo   { background: #ecfdf5; color: #059669; padding: .2rem .6rem; border-radius: 6px; font-size: .72rem; font-weight: 600; }
+.badge-inactivo { background: #fee2e2; color: #dc2626; padding: .2rem .6rem; border-radius: 6px; font-size: .72rem; font-weight: 600; }
+
+/* empty */
+.adm-empty { padding: 3rem 1rem; text-align: center; grid-column: 1/-1; }
+.adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .65rem; display: block; }
+.adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
+
+/* Pagination */
+.adm-pagination-wrap {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: .75rem 1.25rem; margin-top: 1.25rem;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05); flex-wrap: wrap; gap: .5rem;
+}
+.adm-pages { font-size: .78rem; color: #94a3b8; }
+.pagination { margin: 0; gap: 3px; display: flex; }
+.pagination .page-link {
+    border-radius: 7px; padding: .3rem .65rem;
+    font-size: .78rem; font-weight: 500;
+    border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
+}
+.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-color: #4ec7d2; color: #fff;
+}
+.pagination .page-item.disabled .page-link { opacity: .45; }
 </style>
 @endpush
 
 @section('content')
-<div class="container-fluid px-4">
-<div class="gg-wrap">
+<div class="adm-wrap">
 
-    {{-- ── HEADER ── --}}
-    <div class="gg-header">
-        <div class="gg-header-inner">
-            <div class="gg-header-left">
-                <div class="gg-avatar">
-                    <i class="fas fa-school"></i>
-                </div>
-                <div>
-                    <h2>Gestión de Grados</h2>
-                    <span class="gg-badge">
-                        <i class="fas fa-layer-group"></i>
-                        {{ $grados->total() }} grados registrados
-                    </span>
-                    <span class="gg-badge">
-                        <i class="fas fa-calendar"></i> {{ now()->format('Y') }}
-                    </span>
-                </div>
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mb-4" style="border-radius:10px;border:none;background:#ecfdf5;color:#059669;font-size:.85rem;">
+        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show mb-4" style="border-radius:10px;border-left:4px solid #ef4444;font-size:.85rem;">
+        <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    {{-- Stats --}}
+    <div class="adm-stats">
+        <div class="adm-stat">
+            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
+                <i class="fas fa-layer-group"></i>
             </div>
-            <a href="{{ route('superadmin.grados.create') }}" class="gg-btn-nuevo">
-                <i class="fas fa-plus"></i> Nuevo Grado
-            </a>
+            <div>
+                <div class="adm-stat-lbl">Total Grados</div>
+                <div class="adm-stat-num">{{ $grados->total() }}</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
+                <i class="fas fa-school"></i>
+            </div>
+            <div>
+                <div class="adm-stat-lbl">Primaria</div>
+                <div class="adm-stat-num">{{ $grados->getCollection()->where('nivel','primaria')->count() }}</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#818cf8,#4f46e5);">
+                <i class="fas fa-university"></i>
+            </div>
+            <div>
+                <div class="adm-stat-lbl">Secundaria</div>
+                <div class="adm-stat-num">{{ $grados->getCollection()->where('nivel','secundaria')->count() }}</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#fb923c,#ea580c);">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <div>
+                <div class="adm-stat-lbl">Total Materias</div>
+                <div class="adm-stat-num">{{ $grados->getCollection()->sum(fn($g) => $g->materias->count()) }}</div>
+            </div>
         </div>
     </div>
 
-    {{-- ── BODY ── --}}
-    <div class="gg-body">
-
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-4"
-                 style="border-radius:10px; border-left:4px solid #10b981; font-size:.83rem;">
-                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    {{-- Toolbar --}}
+    <div class="adm-toolbar">
+        <div class="adm-search-wrap">
+            <div class="adm-search-inner">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar grado...">
             </div>
-        @endif
-
-        {{-- Filtros --}}
-        <div class="gg-filters">
-            <div class="gg-search-wrap">
-                <i class="fas fa-search gg-search-icon"></i>
-                <input type="text" id="searchInput" class="gg-search" placeholder="Buscar grado...">
-            </div>
-            <select id="filterNivel" class="gg-select">
+        </div>
+        <div class="adm-filter">
+            <select id="filterNivel">
                 <option value="">Todos los niveles</option>
                 <option value="primaria">Primaria</option>
-                <option value="básica">Básica</option>
                 <option value="secundaria">Secundaria</option>
             </select>
-            <select class="gg-select" onchange="changePerPage(this.value)">
-                <option value="10"  {{ request('per_page') == 10  ? 'selected' : '' }}>10 / pág</option>
-                <option value="15"  {{ !request('per_page') || request('per_page') == 15 ? 'selected' : '' }}>15 / pág</option>
-                <option value="20"  {{ request('per_page') == 20  ? 'selected' : '' }}>20 / pág</option>
-                <option value="30"  {{ request('per_page') == 30  ? 'selected' : '' }}>30 / pág</option>
-                <option value="50"  {{ request('per_page') == 50  ? 'selected' : '' }}>50 / pág</option>
-            </select>
-            <div class="gg-stats-row">
-                <span class="gg-stat-pill">
-                    <i class="fas fa-check-circle"></i>
-                    {{ $grados->where('activo', true)->count() }} activos
-                </span>
-            </div>
         </div>
-
-        {{-- Tabs --}}
-        <div class="gg-tabs" id="nivelTabs">
-            <a class="gg-tab active" data-nivel="" href="#">
-                <i class="fas fa-th-large"></i> Todos
-            </a>
-            <a class="gg-tab" data-nivel="primaria" href="#">
-                <i class="fas fa-child"></i> Primaria
-            </a>
-            <a class="gg-tab" data-nivel="básica" href="#">
-                <i class="fas fa-book"></i> Básica
-            </a>
-            <a class="gg-tab" data-nivel="secundaria" href="#">
-                <i class="fas fa-user-graduate"></i> Secundaria
-            </a>
-        </div>
-
-        <div class="gg-sec">
-            <i class="fas fa-layer-group"></i> Grados Registrados
-        </div>
-
-        {{-- Grid --}}
-        @if($grados->isEmpty())
-            <div class="gg-empty">
-                <i class="fas fa-inbox"></i>
-                <p>No hay grados registrados</p>
-                <a href="{{ route('superadmin.grados.create') }}"
-                   style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;
-                          background:linear-gradient(135deg,var(--teal),var(--blue));color:white;
-                          padding:.5rem 1.2rem;border-radius:8px;text-decoration:none;font-size:.8rem;font-weight:700;">
-                    <i class="fas fa-plus"></i> Crear Grado
-                </a>
-            </div>
-        @else
-            <div class="gg-grid" id="gradosContainer">
-                @foreach($grados as $grado)
-                    <div class="gg-card-wrap"
-                         data-nivel="{{ strtolower($grado->nivel) }}"
-                         data-search="{{ strtolower($grado->nivel . ' ' . $grado->numero . ' ' . $grado->seccion . ' ' . $grado->anio_lectivo) }}">
-                        @include('superadmin.grados._card', ['grado' => $grado])
-                    </div>
+        <div class="adm-perpage">
+            <label>Mostrar:</label>
+            <select onchange="changePerPage(this.value)">
+                @foreach([10,15,20,30,50] as $op)
+                    <option value="{{ $op }}" {{ request('per_page', 15) == $op ? 'selected' : '' }}>{{ $op }}</option>
                 @endforeach
-            </div>
-        @endif
+            </select>
+        </div>
+    </div>
 
-        {{-- Paginación --}}
-        @if($grados->hasPages())
-            <div class="gg-pagination">
-                <div class="gg-pag-info">
-                    Mostrando <strong>{{ $grados->firstItem() }}</strong>
-                    a <strong>{{ $grados->lastItem() }}</strong>
-                    de <strong>{{ $grados->total() }}</strong> resultados
+    {{-- Tabs --}}
+    <div class="adm-tabs">
+        <button class="adm-tab active" data-nivel="" onclick="setTab(this,'')">
+            <i class="fas fa-layer-group"></i> Todos
+        </button>
+        <button class="adm-tab" data-nivel="primaria" onclick="setTab(this,'primaria')">
+            <i class="fas fa-school"></i> Primaria
+        </button>
+        <button class="adm-tab" data-nivel="secundaria" onclick="setTab(this,'secundaria')">
+            <i class="fas fa-university"></i> Secundaria
+        </button>
+    </div>
+
+    {{-- Grid --}}
+    <div class="grados-grid" id="gradosContainer">
+        @forelse($grados as $grado)
+        <div class="grado-card"
+             data-nivel="{{ $grado->nivel }}"
+             data-text="{{ strtolower($grado->numero.' '.($grado->seccion ?? '').' '.$grado->nivel.' '.$grado->anio_lectivo) }}">
+
+            <div class="grado-card-head">
+                <div class="grado-numero-badge">{{ $grado->numero }}</div>
+                <div>
+                    <p class="grado-title">
+                        {{ $grado->numero }}° Grado
+                        @if($grado->seccion) — Sección {{ $grado->seccion }} @endif
+                    </p>
+                    <p class="grado-subtitle">
+                        <span class="grado-meta {{ $grado->nivel === 'primaria' ? 'nivel-primaria' : 'nivel-secundaria' }}"
+                              style="padding:.15rem .55rem;">
+                            {{ ucfirst($grado->nivel) }}
+                        </span>
+                    </p>
                 </div>
-                <ul class="gg-pag-list">
-                    <li class="page-item {{ $grados->onFirstPage() ? 'disabled' : '' }}">
-                        <a class="page-link"
-                           href="{{ $grados->appends(['per_page' => request('per_page', 15)])->previousPageUrl() ?? '#' }}">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                    </li>
-                    @for($i = max(1, $grados->currentPage() - 2); $i <= min($grados->lastPage(), $grados->currentPage() + 2); $i++)
-                        <li class="page-item {{ $i == $grados->currentPage() ? 'active' : '' }}">
-                            <a class="page-link"
-                               href="{{ $grados->appends(['per_page' => request('per_page', 15)])->url($i) }}">{{ $i }}</a>
-                        </li>
-                    @endfor
-                    <li class="page-item {{ !$grados->hasMorePages() ? 'disabled' : '' }}">
-                        <a class="page-link"
-                           href="{{ $grados->appends(['per_page' => request('per_page', 15)])->nextPageUrl() ?? '#' }}">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                    </li>
-                </ul>
             </div>
-        @endif
 
-    </div>{{-- fin gg-body --}}
+            <div class="grado-card-body">
+                <span class="grado-meta">
+                    <i class="fas fa-calendar-alt"></i> {{ $grado->anio_lectivo }}
+                </span>
+                <span class="grado-meta">
+                    <i class="fas fa-book"></i> {{ $grado->materias->count() }} materias
+                </span>
+                {{-- Estado activo/inactivo (nuevo del main) --}}
+                @if(isset($grado->activo))
+                    <span class="{{ $grado->activo ? 'badge-activo' : 'badge-inactivo' }}">
+                        <i class="fas fa-circle" style="font-size:.5rem;"></i>
+                        {{ $grado->activo ? 'Activo' : 'Inactivo' }}
+                    </span>
+                @endif
+            </div>
+
+            <div class="grado-card-actions">
+                <a href="{{ route('superadmin.grados.show', $grado) }}"
+                   class="act-btn act-view" title="Ver detalle">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="{{ route('superadmin.grados.asignar-materias', $grado) }}"
+                   class="act-btn act-assign" title="Asignar materias">
+                    <i class="fas fa-tasks"></i>
+                </a>
+                <a href="{{ route('superadmin.grados.edit', $grado) }}"
+                   class="act-btn act-edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </a>
+                {{-- Eliminar (nuevo del main) --}}
+                <button type="button" class="act-btn act-delete" title="Eliminar"
+                    onclick="mostrarModalDelete(
+                        '{{ route('superadmin.grados.destroy', $grado) }}',
+                        '¿Estás seguro de que deseas eliminar este grado? Esta acción no se puede deshacer.',
+                        '{{ $grado->numero }}° Grado{{ $grado->seccion ? " — Sección " . $grado->seccion : "" }}'
+                    )">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+
+        </div>
+        @empty
+        <div class="adm-empty">
+            <i class="fas fa-layer-group"></i>
+            <p>No hay grados registrados</p>
+        </div>
+        @endforelse
+    </div>
+
+    {{-- Paginación --}}
+    @if($grados->hasPages())
+    <div class="adm-pagination-wrap">
+        <span class="adm-pages">
+            Mostrando {{ $grados->firstItem() }}–{{ $grados->lastItem() }}
+            de {{ $grados->total() }} grados
+        </span>
+        {{ $grados->appends(['per_page' => request('per_page', 15)])->links() }}
+    </div>
+    @endif
 
 </div>
-</div>
+@endsection
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('searchInput');
-    const tabs        = document.querySelectorAll('.gg-tab');
-    const cards       = document.querySelectorAll('.gg-card-wrap');
-    let activeNivel   = '';
+    const searchInput  = document.getElementById('searchInput');
+    const filterNivel  = document.getElementById('filterNivel');
+    const cards        = document.querySelectorAll('.grado-card');
+    let   currentNivel = '';
 
     function filterCards() {
         const term = searchInput.value.toLowerCase().trim();
-        cards.forEach(function (card) {
-            const matchSearch = card.dataset.search.includes(term);
-            const matchNivel  = !activeNivel || card.dataset.nivel === activeNivel;
+        cards.forEach(card => {
+            const text  = card.dataset.text || '';
+            const nivel = card.dataset.nivel || '';
+            const matchSearch = !term || text.includes(term);
+            const matchNivel  = !currentNivel || nivel === currentNivel;
             card.style.display = (matchSearch && matchNivel) ? '' : 'none';
         });
     }
 
-    tabs.forEach(function (tab) {
-        tab.addEventListener('click', function (e) {
-            e.preventDefault();
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            activeNivel = this.dataset.nivel;
-            filterCards();
-        });
-    });
+    searchInput.addEventListener('keyup', filterCards);
 
-    searchInput.addEventListener('input', filterCards);
-    document.getElementById('filterNivel').addEventListener('change', function () {
-        activeNivel = this.value.toLowerCase();
-        tabs.forEach(t => t.classList.remove('active'));
-        const match = document.querySelector(`.gg-tab[data-nivel="${activeNivel}"]`);
-        if (match) match.classList.add('active');
+    filterNivel.addEventListener('change', function () {
+        currentNivel = this.value;
+        document.querySelectorAll('.adm-tab').forEach(t => {
+            t.classList.toggle('active', t.dataset.nivel === currentNivel);
+        });
         filterCards();
     });
+
+    window.setTab = function(btn, nivel) {
+        document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        currentNivel = nivel;
+        filterNivel.value = nivel;
+        filterCards();
+    };
 });
 
-function changePerPage(value) {
+function changePerPage(val) {
     const url = new URL(window.location.href);
-    url.searchParams.set('per_page', value);
+    url.searchParams.set('per_page', val);
     url.searchParams.delete('page');
     window.location.href = url.toString();
 }
 </script>
-@endsection
+@endpush

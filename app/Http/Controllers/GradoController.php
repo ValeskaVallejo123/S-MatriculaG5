@@ -180,10 +180,7 @@ class GradoController extends Controller
 $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')->get();
         $materiasAsignadas = $grado->materias->pluck('id')->toArray();
 
-        return view(
-            'grados.asignar-materias',
-            compact('grado', 'materias', 'profesores', 'materiasAsignadas')
-        );
+        return view('grados.asignar-materias', compact('grado'));
     }
 
     /**

@@ -3,6 +3,29 @@
 @section('title', 'Editar Observacion')
 @section('page-title', 'Editar Observacion')
 
+@push('styles')
+    <style>
+        .form-control-sm, .form-select-sm {
+            border-radius: 6px;
+            border: 1.5px solid #e2e8f0;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        .form-control-sm:focus, .form-select-sm:focus {
+            border-color: #4ec7d2;
+            box-shadow: 0 0 0 0.15rem rgba(78, 199, 210, 0.15);
+        }
+        .form-label { color: #003b73; font-size: 0.85rem; margin-bottom: 0.3rem; }
+        small.text-muted { font-size: 0.7rem; display: block; margin-top: 0.15rem; }
+        .btn:hover { transform: translateY(-2px); transition: all 0.3s ease; }
+        .btn-back:hover { background: #00508f !important; color: white !important; transform: translateY(-2px); }
+        button[type="submit"]:hover { box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important; }
+        .border-bottom { border-color: rgba(0, 80, 143, 0.15) !important; }
+        textarea { min-height: 100px !important; }
+    </style>
+@endpush
+
 @section('topbar-actions')
     <a href="{{ route('observaciones.index') }}" class="btn-back"
        style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px;

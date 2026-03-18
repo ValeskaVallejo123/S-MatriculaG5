@@ -5,21 +5,111 @@
 
 @push('styles')
 <style>
-    .info-card { transition: all 0.3s ease; }
-    .info-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 16px rgba(0,59,115,0.12) !important;
-    }
-    .notif-item {
-        border-left: 4px solid #4ec7d2;
-        transition: background 0.2s ease;
-        border-radius: 8px;
-    }
-    .notif-item.leida {
-        border-left-color: #cbd5e1;
-        background: #f8fafc !important;
-    }
-    .notif-item:hover { background: rgba(78,199,210,0.05); }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --blue-dark:  #003b73;
+    --blue-mid:   #00508f;
+    --cyan:       #4ec7d2;
+    --cyan-light: #e8f8f9;
+    --cyan-border:#b2e8ed;
+    --surface:    #f8fafc;
+    --border:     #e2e8f0;
+    --text:       #0f172a;
+    --muted:      #64748b;
+    --subtle:     #94a3b8;
+}
+
+.est-portal { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* ── Banner ── */
+.welcome-card {
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+    border-radius: 14px; padding: 1.6rem 1.75rem;
+    display: flex; align-items: center; gap: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0,59,115,.2);
+    position: relative; overflow: hidden;
+}
+.welcome-card::before {
+    content:''; position:absolute; top:-40%; right:-4%;
+    width:210px; height:210px; background:rgba(255,255,255,.06); border-radius:50%;
+}
+.welcome-card::after {
+    content:''; position:absolute; bottom:-50%; right:14%;
+    width:140px; height:140px; background:rgba(255,255,255,.04); border-radius:50%;
+}
+.welcome-avatar {
+    width: 64px; height: 64px; border-radius: 14px; flex-shrink: 0;
+    background: rgba(255,255,255,.15); border: 2.5px solid var(--cyan);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; color: #fff; position: relative; z-index: 1;
+}
+.welcome-info { position: relative; z-index: 1; flex: 1; }
+.welcome-info h4 { color: #fff; font-weight: 700; margin: 0 0 .2rem; font-size: 1.15rem; }
+.welcome-info p  { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0 0 .6rem; }
+.welcome-badges  { display: flex; flex-wrap: wrap; gap: .4rem; }
+.w-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .22rem .7rem; border-radius: 999px; font-size: .72rem; font-weight: 600;
+}
+.w-badge-cyan  { background: rgba(78,199,210,.25); color: #fff; border: 1px solid rgba(78,199,210,.5); }
+.w-badge-navy  { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+.w-badge-green { background: rgba(16,185,129,.25); color: #fff; border: 1px solid rgba(16,185,129,.5); }
+.w-badge-warn  { background: rgba(234,179,8,.2); color: #fde047; border: 1px solid rgba(234,179,8,.4); }
+
+/* ── Stats ── */
+.stats-row {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem;
+}
+@media(max-width:900px){ .stats-row { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:500px){ .stats-row { grid-template-columns: 1fr; } }
+
+.stat-card {
+    background: #fff; border: 1px solid var(--border); border-radius: 12px;
+    padding: 1rem 1.1rem; display: flex; align-items: center; gap: .85rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05); position: relative; overflow: hidden;
+    transition: box-shadow .15s;
+}
+.stat-card:hover { box-shadow: 0 4px 14px rgba(0,80,143,.1); }
+.stat-stripe {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; border-radius: 12px 0 0 12px;
+}
+.stat-icon {
+    width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.stat-label { font-size: .7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
+.stat-value { font-size: 1.45rem; font-weight: 800; color: var(--blue-dark); line-height: 1; }
+
+.notif-item {
+    border-left: 3.5px solid var(--cyan); border-radius: 8px;
+    padding: .85rem 1rem; background: #fff;
+    transition: background .15s; margin-bottom: .6rem;
+}
+.notif-item:last-child { margin-bottom: 0; }
+.notif-item.leida { border-left-color: #cbd5e1; background: var(--surface); }
+.notif-item:hover { background: var(--cyan-light); }
+.notif-title  { font-weight: 700; color: var(--blue-dark); font-size: .84rem; margin-bottom: .2rem; }
+.notif-msg    { color: var(--muted); font-size: .78rem; margin-bottom: .25rem; }
+.notif-time   { color: var(--subtle); font-size: .72rem; }
+
+.badge-nueva {
+    display: inline-flex; align-items: center;
+    padding: .15rem .55rem; border-radius: 999px;
+    background: var(--cyan-light); color: var(--blue-mid);
+    font-size: .65rem; font-weight: 700; border: 1px solid var(--cyan-border);
+}
+.btn-marcar {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 6px; border: 1.5px solid var(--cyan-border);
+    background: var(--cyan-light); color: var(--blue-mid); cursor: pointer;
+    font-size: .72rem; transition: all .15s; flex-shrink: 0;
+}
+.btn-marcar:hover { background: var(--cyan); color: #fff; border-color: var(--cyan); }
+
+.info-card { transition: transform .15s, box-shadow .15s; }
+.info-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,59,115,.12) !important; }
 </style>
 @endpush
 
@@ -31,55 +121,85 @@
     $notificaciones = $user->notificacionesPermitidas()->take(5)->get();
 @endphp
 
-<div class="container-fluid px-4">
+<div class="est-portal">
 
-    {{-- Bienvenida --}}
-    <div class="card border-0 shadow-sm mb-4"
-         style="border-radius:12px;background:linear-gradient(135deg,rgba(78,199,210,0.15) 0%,rgba(0,80,143,0.1) 100%);">
-        <div class="card-body p-4">
-            <div class="row align-items-center g-3">
-                <div class="col-auto">
-                    <div style="width:70px;height:70px;background:linear-gradient(135deg,#00508f 0%,#003b73 100%);border-radius:16px;display:flex;align-items:center;justify-content:center;border:3px solid #4ec7d2;">
-                        <i class="fas fa-user-graduate" style="font-size:2rem;color:white;"></i>
-                    </div>
+    {{-- ══ Banner bienvenida ══ --}}
+    <div class="welcome-card">
+        <div class="welcome-avatar">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="welcome-info">
+            <h4>Hola, {{ $user->name }}</h4>
+            <p>Bienvenido a tu portal estudiantil · {{ now()->format('d/m/Y') }}</p>
+            @if($estudiante)
+                <div class="welcome-badges">
+                    <span class="w-badge w-badge-cyan">
+                        <i class="fas fa-graduation-cap"></i>
+                        {{ $estudiante->grado }} — Sección {{ $estudiante->seccion }}
+                    </span>
+                    <span class="w-badge w-badge-navy">
+                        <i class="fas fa-id-card"></i> {{ $estudiante->dni }}
+                    </span>
+                    <span class="w-badge w-badge-green">
+                        <i class="fas fa-circle" style="font-size:.4rem;"></i> {{ ucfirst($estudiante->estado) }}
+                    </span>
                 </div>
+            @else
+                <span class="w-badge w-badge-warn">
+                    <i class="fas fa-exclamation-triangle"></i> Sin perfil de estudiante vinculado
+                </span>
+            @endif
+        </div>
+    </div>
 
-                <div class="col">
-                    <h2 class="mb-1 fw-bold" style="color:#003b73;font-size:1.5rem;">
-                        Hola, {{ $user->name }}
-                    </h2>
-                    <p class="text-muted mb-2">Bienvenido a tu portal estudiantil</p>
+    {{-- ══ Stats ══ --}}
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-stripe" style="background:var(--cyan);"></div>
+            <div class="stat-icon" style="background:var(--cyan-light);">
+                <i class="fas fa-book" style="color:var(--blue-mid);"></i>
+            </div>
+            <div>
+                <div class="stat-label">Mis Materias</div>
+                <div class="stat-value">{{ $totalMaterias ?? '—' }}</div>
+            </div>
+        </div>
 
-                    @if($estudiante)
-                        <div class="d-flex flex-wrap gap-2">
-                            <span class="badge" style="background:rgba(78,199,210,0.2);color:#00508f;border:1px solid #4ec7d2;font-size:0.8rem;">
-                                <i class="fas fa-graduation-cap me-1"></i>{{ $estudiante->grado }} — Sección {{ $estudiante->seccion }}
-                            </span>
-                            <span class="badge" style="background:rgba(0,59,115,0.1);color:#003b73;border:1px solid #00508f;font-size:0.8rem;">
-                                <i class="fas fa-id-card me-1"></i>DNI: {{ $estudiante->dni }}
-                            </span>
-                            <span class="badge" style="background:rgba(16,185,129,0.1);color:#059669;border:1px solid #10b981;font-size:0.8rem;">
-                                <i class="fas fa-circle me-1" style="font-size:0.5rem;"></i>{{ ucfirst($estudiante->estado) }}
-                            </span>
-                        </div>
-                    @else
-                        <span class="badge bg-warning text-dark" style="font-size:0.8rem;">
-                            <i class="fas fa-exclamation-triangle me-1"></i>Sin perfil de estudiante vinculado
-                        </span>
-                    @endif
-                </div>
+        <div class="stat-card">
+            <div class="stat-stripe" style="background:var(--blue-mid);"></div>
+            <div class="stat-icon" style="background:#e8f1f9;">
+                <i class="fas fa-clipboard-check" style="color:var(--blue-dark);"></i>
+            </div>
+            <div>
+                <div class="stat-label">Calificaciones</div>
+                <div class="stat-value">{{ $totalCalificaciones ?? '—' }}</div>
+            </div>
+        </div>
 
-                <div class="col-auto">
-                    <a href="{{ route('estado-solicitud') }}" class="btn btn-sm fw-semibold"
-                       style="background:#00508f;color:white;border-radius:8px;">
-                        <i class="fas fa-question-circle me-1"></i>Estado de Solicitud
-                    </a>
-                </div>
+        <div class="stat-card">
+            <div class="stat-stripe" style="background:var(--blue-dark);"></div>
+            <div class="stat-icon" style="background:#eef2ff;">
+                <i class="fas fa-calendar-alt" style="color:#4f46e5;"></i>
+            </div>
+            <div>
+                <div class="stat-label">Horario</div>
+                <div class="stat-value">{{ $totalHoras ?? '—' }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-stripe" style="background:#f59e0b;"></div>
+            <div class="stat-icon" style="background:#fefce8;">
+                <i class="fas fa-bell" style="color:#d97706;"></i>
+            </div>
+            <div>
+                <div class="stat-label">Sin leer</div>
+                <div class="stat-value">{{ $noLeidas }}</div>
             </div>
         </div>
     </div>
 
-    {{-- Tarjetas resumen (clicables) --}}
+    {{-- ══ Tarjetas resumen (clicables) ══ --}}
     <div class="row g-3 mb-4">
 
         <div class="col-md-3">
@@ -161,6 +281,7 @@
 
     </div>
 
+    {{-- ══ Notificaciones + Accesos rápidos ══ --}}
     <div class="row g-4">
 
         {{-- Notificaciones recientes --}}
@@ -177,7 +298,6 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="card-body p-3">
                     @if($notificaciones->isEmpty())
                         <div class="text-center py-4 text-muted">
@@ -187,10 +307,9 @@
                     @else
                         <div class="d-flex flex-column gap-2">
                             @foreach($notificaciones as $notif)
-                                <div class="notif-item p-3 {{ $notif->leida ? 'leida' : '' }}">
+                                <div class="notif-item {{ $notif->leida ? 'leida' : '' }}">
                                     <div class="d-flex justify-content-between align-items-start gap-2">
                                         <div class="flex-grow-1">
-
                                             <div class="d-flex align-items-center gap-2 mb-1">
                                                 @switch($notif->tipo)
                                                     @case('calificacion')
@@ -208,36 +327,23 @@
                                                     @default
                                                         <i class="fas fa-info-circle" style="color:#4ec7d2;font-size:0.85rem;"></i>
                                                 @endswitch
-
                                                 <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
                                                     {{ $notif->titulo }}
                                                 </span>
-
                                                 @if(!$notif->leida)
-                                                    <span class="badge" style="background:rgba(78,199,210,0.2);color:#00508f;font-size:0.65rem;">
-                                                        Nueva
-                                                    </span>
+                                                    <span class="badge-nueva">Nueva</span>
                                                 @endif
                                             </div>
-
-                                            <p class="text-muted mb-1" style="font-size:0.82rem;">
-                                                {{ $notif->mensaje }}
-                                            </p>
-
-                                            <small class="text-muted" style="font-size:0.75rem;">
+                                            <p class="notif-msg">{{ $notif->mensaje }}</p>
+                                            <small class="notif-time">
                                                 <i class="fas fa-clock me-1"></i>{{ $notif->created_at->diffForHumans() }}
                                             </small>
                                         </div>
-
                                         @if(!$notif->leida)
                                             <form action="{{ route('notificaciones.marcarLeida', $notif->id) }}"
                                                   method="POST" class="flex-shrink-0">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit"
-                                                        class="btn btn-outline-primary btn-sm"
-                                                        style="font-size:0.75rem;padding:0.2rem 0.5rem;"
-                                                        title="Marcar como leída">
+                                                @csrf @method('PATCH')
+                                                <button type="submit" class="btn-marcar" title="Marcar como leída">
                                                     <i class="fas fa-check"></i>
                                                 </button>
                                             </form>
@@ -262,44 +368,69 @@
                 </div>
                 <div class="card-body p-3 d-flex flex-column gap-2">
 
-                    <a href="{{ route('estudiante.miHorario') }}"
-                       class="btn text-start fw-semibold"
-                       style="background:rgba(0,80,143,0.08);color:#003b73;border:1px solid #00508f;border-radius:8px;">
-                        <i class="fas fa-calendar-alt me-2" style="color:#00508f;"></i>Mi Horario de Clases
+                    <a href="{{ route('estudiante.miHorario') }}" class="text-decoration-none">
+                        <div class="card border-0 info-card" style="background:rgba(0,80,143,0.06);border:1px solid #00508f !important;border-radius:8px;">
+                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
+                                <i class="fas fa-calendar-alt" style="color:#00508f;width:20px;text-align:center;"></i>
+                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Mi Horario de Clases</span>
+                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
+                            </div>
+                        </div>
                     </a>
 
-                    <a href="{{ route('estudiante.calificaciones') }}"
-                       class="btn text-start fw-semibold"
-                       style="background:rgba(78,199,210,0.08);color:#003b73;border:1px solid #4ec7d2;border-radius:8px;">
-                        <i class="fas fa-clipboard-check me-2" style="color:#4ec7d2;"></i>Mis Calificaciones
+                    <a href="{{ route('estudiante.calificaciones') }}" class="text-decoration-none">
+                        <div class="card border-0 info-card" style="background:rgba(78,199,210,0.06);border:1px solid #4ec7d2 !important;border-radius:8px;">
+                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
+                                <i class="fas fa-clipboard-check" style="color:#4ec7d2;width:20px;text-align:center;"></i>
+                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Mis Calificaciones</span>
+                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
+                            </div>
+                        </div>
                     </a>
 
-                    <a href="{{ route('estado-solicitud') }}"
-                       class="btn text-start fw-semibold"
-                       style="background:rgba(78,199,210,0.08);color:#003b73;border:1px solid #4ec7d2;border-radius:8px;">
-                        <i class="fas fa-file-signature me-2" style="color:#4ec7d2;"></i>Estado de mi Matrícula
+                    <a href="{{ route('estado-solicitud') }}" class="text-decoration-none">
+                        <div class="card border-0 info-card" style="background:rgba(78,199,210,0.06);border:1px solid #4ec7d2 !important;border-radius:8px;">
+                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
+                                <i class="fas fa-file-signature" style="color:#4ec7d2;width:20px;text-align:center;"></i>
+                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Estado de mi Matrícula</span>
+                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
+                            </div>
+                        </div>
                     </a>
 
-                    <a href="{{ route('notificaciones.index') }}"
-                       class="btn text-start fw-semibold"
-                       style="background:rgba(245,158,11,0.08);color:#003b73;border:1px solid #f59e0b;border-radius:8px;">
-                        <i class="fas fa-bell me-2" style="color:#f59e0b;"></i>
-                        Todas mis Notificaciones
-                        @if($noLeidas > 0)
-                            <span class="badge bg-danger ms-1">{{ $noLeidas }}</span>
-                        @endif
+                    <a href="{{ route('notificaciones.index') }}" class="text-decoration-none">
+                        <div class="card border-0 info-card" style="background:rgba(245,158,11,0.06);border:1px solid #f59e0b !important;border-radius:8px;">
+                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
+                                <i class="fas fa-bell" style="color:#d97706;width:20px;text-align:center;"></i>
+                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
+                                    Todas mis Notificaciones
+                                    @if($noLeidas > 0)
+                                        <span class="badge bg-danger ms-1" style="font-size:0.65rem;">{{ $noLeidas }}</span>
+                                    @endif
+                                </span>
+                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
+                            </div>
+                        </div>
                     </a>
 
-                    <a href="{{ route('notificaciones.preferencias') }}"
-                       class="btn text-start fw-semibold"
-                       style="background:rgba(0,80,143,0.08);color:#003b73;border:1px solid #00508f;border-radius:8px;">
-                        <i class="fas fa-sliders-h me-2" style="color:#00508f;"></i>Preferencias de Notificación
+                    <a href="{{ route('notificaciones.preferencias') }}" class="text-decoration-none">
+                        <div class="card border-0 info-card" style="background:rgba(0,59,115,0.06);border:1px solid #003b73 !important;border-radius:8px;">
+                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
+                                <i class="fas fa-sliders-h" style="color:#003b73;width:20px;text-align:center;"></i>
+                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Preferencias de Notificación</span>
+                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
+                            </div>
+                        </div>
                     </a>
 
-                    <a href="{{ route('cambiarcontrasenia.edit') }}"
-                       class="btn text-start fw-semibold"
-                       style="background:rgba(0,59,115,0.06);color:#003b73;border:1px solid #003b73;border-radius:8px;">
-                        <i class="fas fa-key me-2" style="color:#003b73;"></i>Cambiar Contraseña
+                    <a href="{{ route('cambiarcontrasenia.edit') }}" class="text-decoration-none">
+                        <div class="card border-0 info-card" style="background:rgba(124,58,237,0.06);border:1px solid #7c3aed !important;border-radius:8px;">
+                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
+                                <i class="fas fa-key" style="color:#7c3aed;width:20px;text-align:center;"></i>
+                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Cambiar Contraseña</span>
+                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
+                            </div>
+                        </div>
                     </a>
 
                 </div>
@@ -307,5 +438,6 @@
         </div>
 
     </div>
+
 </div>
 @endsection
