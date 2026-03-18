@@ -28,7 +28,7 @@ return new class extends Migration
         });
 
         // índice único para evitar duplicados
-        Schema::table('grado', function (Blueprint $table) {
+        Schema::table('grados', function (Blueprint $table) {
             $table->unique(['nivel', 'numero', 'seccion', 'anio_lectivo']);
         });
     }

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class seccion extends Model
+class Seccion extends Model
 {
-    protected $table = 'seccion';
+    protected $table = 'secciones';
 
     protected $fillable = ['nombre', 'grado', 'capacidad'];
 

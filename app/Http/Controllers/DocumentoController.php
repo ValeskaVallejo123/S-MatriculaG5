@@ -179,5 +179,3 @@ class DocumentoController extends Controller
             ->with('success', 'Documentos eliminados correctamente.');
     }
 }
-
-

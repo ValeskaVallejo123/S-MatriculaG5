@@ -9,14 +9,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('profesor_materia', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('profesor_id')->constrained('profesores')->onDelete('cascade');
-        $table->foreignId('materia_id')->constrained('materias')->onDelete('cascade');
-        $table->timestamps();
+            $table->id();
+            
+            // Relación con el Profesor
+            $table->foreignId('profesor_id')
+                  ->constrained('profesores')
+                  ->onDelete('cascade');
 
-        $table->unique(['profesor_id', 'materia_id']);
-    });
+            // Relación con la Materia
+            $table->foreignId('materia_id')
+                  ->constrained('materias')
+                  ->onDelete('cascade');
 
+            // NUEVO: Relación con el Grado (Necesario para la vista)
+            $table->foreignId('grado_id')
+                  ->constrained('grados')
+                  ->onDelete('cascade');
+
+            // NUEVO: Campo sección (Ej: 'A', 'B')
+            $table->string('seccion', 10);
+
+            $table->timestamps();
+
+            // Ajuste del índice único para permitir que un profesor 
+            // tenga la misma materia en diferentes grados/secciones
+            $table->unique(['profesor_id', 'materia_id', 'grado_id', 'seccion'], 'profesor_materia_grado_unique');
+        });
     }
 
     public function down(): void
@@ -24,4 +42,3 @@ return new class extends Migration
         Schema::dropIfExists('profesor_materia');
     }
 };
-

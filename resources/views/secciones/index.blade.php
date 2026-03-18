@@ -4,7 +4,6 @@
 @section('page-title', 'Gestión de Secciones')
 
 @section('topbar-actions')
-    
 @endsection
 
 @section('content')
@@ -69,19 +68,15 @@
     <ul class="nav nav-tabs mb-0" id="seccionesTabs" role="tablist"
         style="border-bottom: 2px solid #e0eaf4;">
         <li class="nav-item" role="presentation">
-            <button class="tab-btn active"
-                    id="tab-asignar-btn"
-                    data-bs-toggle="tab"
-                    data-bs-target="#tab-asignar"
+            <button class="tab-btn active" id="tab-asignar-btn"
+                    data-bs-toggle="tab" data-bs-target="#tab-asignar"
                     type="button" role="tab">
                 <i class="fas fa-user-check me-2"></i>Asignar Secciones
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="tab-btn"
-                    id="tab-alumnos-btn"
-                    data-bs-toggle="tab"
-                    data-bs-target="#tab-alumnos"
+            <button class="tab-btn" id="tab-alumnos-btn"
+                    data-bs-toggle="tab" data-bs-target="#tab-alumnos"
                     type="button" role="tab">
                 <i class="fas fa-chalkboard-teacher me-2"></i>Alumnos por Sección
             </button>
@@ -109,40 +104,38 @@
                                        placeholder="Nombre, apellido o DNI..."
                                        value="{{ request('buscar') }}">
                             </div>
-                           <div class="col-md-3">
-    <label class="filter-label"><i class="fas fa-graduation-cap"></i> Grado</label>
-    <select name="grado" class="form-select form-select-sm filter-input">
-        <option value="">Todos los grados</option>
-        @foreach ($grados as $g)
-            <option value="{{ $g }}" {{ request('grado') === $g ? 'selected' : '' }}>
-                {{ $g }}
-            </option>
-        @endforeach
-    </select>
-</div>
-    <div class="col-md-3">
-    <label class="filter-label"><i class="fas fa-chalkboard"></i> Sección / Estado</label>
-    <select name="estado" class="form-select form-select-sm filter-input">
-        <option value="">Todas las matrículas</option>
-        
-        <optgroup label="Estados Generales">
-            <option value="sin_asignar" {{ request('estado') === 'sin_asignar' ? 'selected' : '' }}>
-                ⚠ Sin asignar
-            </option>
-            <option value="asignada" {{ request('estado') === 'asignada' ? 'selected' : '' }}>
-                ✓ Asignadas (Cualquiera)
-            </option>
-        </optgroup>
-
-        <optgroup label="Secciones Específicas">
-            @foreach($secciones as $seccion)
-                <option value="{{ $seccion->id }}" {{ request('estado') == $seccion->id ? 'selected' : '' }}>
-                {{ $seccion->grado }}° {{ $seccion->nombre }}
-                </option>
-            @endforeach
-        </optgroup>
-    </select>
-</div>
+                            <div class="col-md-3">
+                                <label class="filter-label"><i class="fas fa-graduation-cap"></i> Grado</label>
+                                <select name="grado" class="form-select form-select-sm filter-input">
+                                    <option value="">Todos los grados</option>
+                                    @foreach ($grados as $g)
+                                        <option value="{{ $g }}" {{ request('grado') === $g ? 'selected' : '' }}>
+                                            {{ $g }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="filter-label"><i class="fas fa-chalkboard"></i> Sección / Estado</label>
+                                <select name="estado" class="form-select form-select-sm filter-input">
+                                    <option value="">Todas las matrículas</option>
+                                    <optgroup label="Estados Generales">
+                                        <option value="sin_asignar" {{ request('estado') === 'sin_asignar' ? 'selected' : '' }}>
+                                            ⚠ Sin asignar
+                                        </option>
+                                        <option value="asignada" {{ request('estado') === 'asignada' ? 'selected' : '' }}>
+                                            ✓ Asignadas (Cualquiera)
+                                        </option>
+                                    </optgroup>
+                                    <optgroup label="Secciones Específicas">
+                                        @foreach($secciones as $seccion)
+                                            <option value="{{ $seccion->id }}" {{ request('estado') == $seccion->id ? 'selected' : '' }}>
+                                                {{ $seccion->grado }} — Sección {{ $seccion->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                </select>
+                            </div>
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-sm w-100 btn-filtrar">
                                     <i class="fas fa-filter"></i> Filtrar
@@ -175,12 +168,17 @@
                             </thead>
                             <tbody>
                                 @forelse($matriculas as $matricula)
-                                <tr class="matricula-row">
 
+                                {{-- Normalizar UNA vez, usado en dropdown e modal --}}
+                                @php
+                                    $gradoNorm    = \App\Http\Controllers\SeccionController::normalizarGrado($matricula->estudiante->grado);
+                                    $secsDelGrado = $seccionesPorGrado[$gradoNorm] ?? collect();
+                                @endphp
+
+                                <tr class="matricula-row">
                                     <td>
                                         <span class="badge-codigo">{{ $matricula->codigo_matricula }}</span>
                                     </td>
-
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="avatar-initials">
@@ -199,16 +197,14 @@
                                             </div>
                                         </div>
                                     </td>
-
                                     <td>
                                         <span class="badge-grado">{{ $matricula->estudiante->grado }}</span>
                                     </td>
-
                                     <td>
                                         @if($matricula->seccion)
                                             <span class="badge-seccion-ok">
                                                 <i class="fas fa-chalkboard me-1"></i>
-                                                {{ $matricula->seccion->grado }} — {{ $matricula->seccion->letra }}
+                                                {{ $matricula->seccion->grado }} — {{ $matricula->seccion->nombre }}
                                             </span>
                                         @else
                                             <span class="badge-sin-asignar">
@@ -217,7 +213,7 @@
                                         @endif
                                     </td>
 
-                                    {{-- Dropdown inline --}}
+                                    {{-- Dropdown inline ─────────────────────────────────────────────── --}}
                                     <td>
                                         <form action="{{ route('secciones.asignar') }}" method="POST"
                                               class="d-flex align-items-center gap-2">
@@ -227,10 +223,10 @@
                                                     class="form-select form-select-sm"
                                                     style="min-width:190px; border-radius:8px; border:1.5px solid #d0dce8; font-size:0.8rem;">
                                                 <option value="">— Elegir sección —</option>
-                                                @foreach($secciones->where('grado', $matricula->estudiante->grado) as $sec)
+                                                @foreach($secsDelGrado as $sec)
                                                     <option value="{{ $sec->id }}"
                                                         {{ $matricula->seccion_id == $sec->id ? 'selected' : '' }}>
-                                                        {{ $sec->grado }} — Sección {{ $sec->letra }}
+                                                        {{ $sec->grado }} — Sección {{ $sec->nombre }}
                                                         ({{ $sec->cupo_disponible }} cupos)
                                                     </option>
                                                 @endforeach
@@ -241,7 +237,7 @@
                                         </form>
                                     </td>
 
-                                    {{-- Modal individual --}}
+                                    {{-- Botón modal ──────────────────────────────────────────────────── --}}
                                     <td class="text-center">
                                         <button type="button"
                                                 class="btn btn-sm btn-outline-modal"
@@ -253,7 +249,7 @@
                                     </td>
                                 </tr>
 
-                                {{-- Modal por fila --}}
+                                {{-- Modal por fila ───────────────────────────────────────────────────── --}}
                                 <div class="modal fade" id="modalAsignar{{ $matricula->id }}" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content modal-custom">
@@ -290,15 +286,15 @@
                                                         <select name="seccion_id" class="form-select" required
                                                                 style="border-radius:8px; border:1.5px solid #e0e0e0;">
                                                             <option value="">— Seleccione una sección —</option>
-                                                            @foreach($secciones->where('grado', $matricula->estudiante->grado) as $sec)
+                                                            @foreach($secsDelGrado as $sec)
                                                                 <option value="{{ $sec->id }}"
                                                                     {{ $matricula->seccion_id == $sec->id ? 'selected' : '' }}>
-                                                                    {{ $sec->grado }} — Sección {{ $sec->letra }}
+                                                                    {{ $sec->grado }} — Sección {{ $sec->nombre }}
                                                                     ({{ $sec->cupo_disponible }} cupos)
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                        @if($secciones->where('grado', $matricula->estudiante->grado)->isEmpty())
+                                                        @if($secsDelGrado->isEmpty())
                                                         <small class="text-warning d-block mt-1">
                                                             <i class="fas fa-exclamation-triangle me-1"></i>
                                                             No hay secciones para el grado "{{ $matricula->estudiante->grado }}".
@@ -372,22 +368,19 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <h6 class="mb-0 text-white fw-bold">
                                                 <i class="fas fa-chalkboard me-2"></i>
-                                                Sección {{ $seccion->letra }}
+                                                Sección {{ $seccion->nombre }}
                                             </h6>
                                             <div class="d-flex gap-2 align-items-center">
                                                 <span class="cupo-badge">
                                                     {{ $seccion->matriculas->count() }}/{{ $seccion->capacidad }}
                                                 </span>
                                                 @if($seccion->cupo_disponible > 0)
-                                                    <span class="cupo-libre">
-                                                        {{ $seccion->cupo_disponible }} libre(s)
-                                                    </span>
+                                                    <span class="cupo-libre">{{ $seccion->cupo_disponible }} libre(s)</span>
                                                 @else
                                                     <span class="cupo-lleno">Llena</span>
                                                 @endif
                                             </div>
                                         </div>
-                                        {{-- Barra de ocupación --}}
                                         @php
                                             $pct = $seccion->capacidad > 0
                                                 ? min(($seccion->matriculas->count() / $seccion->capacidad) * 100, 100)
@@ -395,8 +388,7 @@
                                             $barColor = $pct >= 100 ? '#ff4757' : ($pct >= 80 ? '#ffa502' : 'white');
                                         @endphp
                                         <div class="progress-track mt-2">
-                                            <div class="progress-fill"
-                                                 style="width:{{ $pct }}%; background:{{ $barColor }};"></div>
+                                            <div class="progress-fill" style="width:{{ $pct }}%; background:{{ $barColor }};"></div>
                                         </div>
                                     </div>
 
@@ -430,14 +422,13 @@
                                                 @else
                                                     <i class="fas fa-times-circle text-danger" style="font-size:0.8rem;" title="Rechazada"></i>
                                                 @endif
-                                                {{-- Quitar de sección --}}
                                                 <form action="{{ route('secciones.quitar') }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('PATCH')
                                                     <input type="hidden" name="matricula_id" value="{{ $matricula->id }}">
                                                     <button type="submit" class="btn-quitar"
                                                             title="Quitar de sección"
-                                                            onclick="return confirm('¿Quitar a este alumno de la sección {{ $seccion->letra }}?')">
+                                                            onclick="return confirm('¿Quitar a este alumno de la sección {{ $seccion->nombre }}?')">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </form>
@@ -451,20 +442,24 @@
                                         @endforelse
                                     </div>
 
-                                    {{-- Footer: asignar alumno directo a esta sección --}}
+                                    {{-- Footer: agregar alumno sin sección --}}
                                     <div class="card-footer border-0 p-3"
                                          style="background:#f8fafc; border-top:1px solid #e8f0f8;">
                                         @if($seccion->cupo_disponible > 0)
+                                        {{-- $grado es la clave del groupBy (secciones.grado, ya normalizado) --}}
+                                        @php
+                                            $gradoNormSec      = \App\Http\Controllers\SeccionController::normalizarGrado($grado);
+                                            $alumnosSinSeccion = $matriculasSinSeccionPorGrado[$gradoNormSec] ?? collect();
+                                        @endphp
                                         <form action="{{ route('secciones.asignar') }}" method="POST"
                                               class="d-flex gap-2 align-items-center">
                                             @csrf
-                                            {{-- Sección fija; el usuario solo elige la matrícula --}}
                                             <input type="hidden" name="seccion_id" value="{{ $seccion->id }}">
                                             <select name="matricula_id"
                                                     class="form-select form-select-sm flex-grow-1"
                                                     style="border-radius:7px; border:1.5px solid #d0dce8; font-size:0.77rem;">
                                                 <option value="">— Agregar alumno —</option>
-                                                @foreach($matriculasSinSeccionPorGrado[$grado] ?? [] as $m)
+                                                @foreach($alumnosSinSeccion as $m)
                                                     <option value="{{ $m->id }}">
                                                         {{ $m->estudiante->nombre1 }}
                                                         {{ $m->estudiante->apellido1 }}
@@ -546,7 +541,7 @@
                             <option value="">— Seleccione una sección —</option>
                             @foreach($secciones as $sec)
                                 <option value="{{ $sec->id }}">
-                                    {{ $sec->grado }} — Sección {{ $sec->letra }}
+                                    {{ $sec->grado }} — Sección {{ $sec->nombre }}
                                     ({{ $sec->cupo_disponible }} cupos)
                                 </option>
                             @endforeach
@@ -568,183 +563,54 @@
 
 {{-- ── Estilos ───────────────────────────────────────────────────────────────── --}}
 <style>
-/* Topbar */
-.btn-topbar {
-    background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
-    color: white; padding: 0.5rem 1.2rem; border-radius: 8px;
-    font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;
-    border: none; box-shadow: 0 2px 8px rgba(78,199,210,0.3); font-size: 0.9rem;
-    transition: all 0.2s;
-}
-.btn-topbar:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(78,199,210,0.45); }
-
-/* Stat cards */
-.stat-card {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 0.9rem 1rem; border-radius: 10px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
-    background: white;
-}
-.stat-card__icon {
-    width: 48px; height: 48px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.stat-card__icon i { color: white; font-size: 1.3rem; }
-.stat-card__label { margin: 0; font-size: 0.78rem; color: #6c757d; }
-.stat-card__value { margin: 0; font-weight: 700; font-size: 1.4rem; color: #003b73; }
-
-/* Pestañas */
-.tab-btn {
-    background: #f1f5f9; border: 2px solid #e0eaf4; border-bottom: none;
-    color: #5a7a9a; font-weight: 600; font-size: 0.88rem;
-    padding: 0.65rem 1.4rem; border-radius: 10px 10px 0 0;
-    cursor: pointer; transition: all 0.2s; margin-right: 4px;
-}
-.tab-btn:hover { background: #e8f2fb; color: #003b73; }
-.tab-btn.active {
-    background: white; color: #003b73;
-    border-color: #e0eaf4; border-bottom-color: white;
-}
-
-/* Filtros */
+.stat-card { display:flex; align-items:center; gap:1rem; padding:0.9rem 1rem; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,0.07); background:white; }
+.stat-card__icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.stat-card__icon i { color:white; font-size:1.3rem; }
+.stat-card__label { margin:0; font-size:0.78rem; color:#6c757d; }
+.stat-card__value { margin:0; font-weight:700; font-size:1.4rem; color:#003b73; }
+.tab-btn { background:#f1f5f9; border:2px solid #e0eaf4; border-bottom:none; color:#5a7a9a; font-weight:600; font-size:0.88rem; padding:0.65rem 1.4rem; border-radius:10px 10px 0 0; cursor:pointer; transition:all .2s; margin-right:4px; }
+.tab-btn:hover { background:#e8f2fb; color:#003b73; }
+.tab-btn.active { background:white; color:#003b73; border-color:#e0eaf4; border-bottom-color:white; }
 .filter-label { display:block; font-size:0.79rem; font-weight:600; color:#003b73; margin-bottom:0.2rem; }
-.filter-input { border-radius: 8px !important; border: 1.5px solid #d0dce8 !important; }
-.btn-filtrar {
-    background: linear-gradient(135deg,#4ec7d2,#00508f);
-    color: white; border: none; border-radius: 8px; padding: 0.47rem; font-weight: 600;
-}
-
-/* Tabla */
-.th-style {
-    color: white; font-size: 0.81rem; font-weight: 600;
-    padding: 0.75rem 1rem; white-space: nowrap; border: none;
-}
-.matricula-row td { padding: 0.65rem 1rem; vertical-align: middle; border-color: #f0f0f0; }
-.matricula-row:hover { background: rgba(78,199,210,0.04); }
-
-/* Avatar tabla */
-.avatar-initials {
-    width: 36px; height: 36px; border-radius: 9px;
-    background: linear-gradient(135deg, #00508f, #003b73);
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 700; font-size: 0.82rem; flex-shrink: 0;
-    border: 2px solid #4ec7d2;
-}
-
-/* Badges tabla */
-.badge-codigo {
-    background: rgba(0,80,143,0.08); color: #003b73;
-    border: 1px solid #cde; padding: 0.28rem 0.55rem;
-    border-radius: 6px; font-size: 0.76rem; font-weight: 600; font-family: monospace;
-}
-.badge-grado {
-    background: rgba(78,199,210,0.12); color: #00508f;
-    border: 1px solid #4ec7d2; padding: 0.28rem 0.6rem;
-    border-radius: 20px; font-size: 0.74rem; font-weight: 600; white-space: nowrap;
-}
-.badge-seccion-ok {
-    background: rgba(40,167,69,0.1); color: #28a745;
-    border: 1px solid #28a745; padding: 0.28rem 0.6rem;
-    border-radius: 20px; font-size: 0.74rem; font-weight: 600;
-}
-.badge-sin-asignar {
-    background: rgba(255,193,7,0.12); color: #b45309;
-    border: 1px solid #ffc107; padding: 0.28rem 0.6rem;
-    border-radius: 20px; font-size: 0.74rem; font-weight: 600;
-}
-
-/* Botones tabla */
-.btn-guardar {
-    width: 32px; height: 32px; border-radius: 7px; flex-shrink: 0;
-    background: linear-gradient(135deg,#4ec7d2,#00508f);
-    color: white; border: none; font-size: 0.8rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-}
-.btn-guardar:hover { transform: scale(1.08); box-shadow: 0 3px 10px rgba(0,80,143,0.3); }
-.btn-outline-modal {
-    border: 1.5px solid #00508f; color: #00508f; background: white;
-    border-radius: 7px; padding: 0.3rem 0.6rem; font-size: 0.8rem; transition: all 0.2s;
-}
-.btn-outline-modal:hover { background: #00508f; color: white; }
-
-/* Modal */
-.modal-custom { border-radius: 12px; border: none; box-shadow: 0 4px 24px rgba(0,0,0,0.15); }
-.modal-header-custom {
-    background: linear-gradient(135deg,#4ec7d2,#00508f);
-    border-radius: 12px 12px 0 0; border: none;
-}
-.btn-confirmar {
-    background: linear-gradient(135deg,#4ec7d2,#00508f);
-    color: white; border: none; border-radius: 8px;
-    padding: 0.5rem 1.2rem; font-weight: 600;
-    box-shadow: 0 2px 8px rgba(78,199,210,0.3); transition: all 0.2s;
-}
-.btn-confirmar:hover { transform: translateY(-1px); color: white; }
-
-/* ── Pestaña 2: Secciones ─────────────────────────────────────────── */
-.grado-badge {
-    width: 44px; height: 44px; flex-shrink: 0;
-    background: linear-gradient(135deg,#00508f,#003b73);
-    border-radius: 11px; display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 700; font-size: 1rem;
-    box-shadow: 0 4px 10px rgba(0,59,115,0.2);
-}
-
-.seccion-card { border-radius: 12px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
-.seccion-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,59,115,0.12) !important; }
-
-.seccion-header {
-    background: linear-gradient(135deg,#4ec7d2,#00508f);
-    padding: 0.7rem 1rem;
-}
-.progress-track { background: rgba(255,255,255,0.2); border-radius: 4px; height: 4px; }
-.progress-fill  { height: 100%; border-radius: 4px; transition: width 0.4s; }
-
-.cupo-badge {
-    background: rgba(255,255,255,0.2); color: white;
-    font-size: 0.7rem; font-weight: 600; padding: 0.18rem 0.5rem; border-radius: 20px;
-}
-.cupo-libre {
-    background: rgba(40,167,69,0.85); color: white;
-    font-size: 0.67rem; font-weight: 600; padding: 0.18rem 0.45rem; border-radius: 20px;
-}
-.cupo-lleno {
-    background: rgba(220,53,69,0.85); color: white;
-    font-size: 0.67rem; font-weight: 600; padding: 0.18rem 0.45rem; border-radius: 20px;
-}
-
-.alumno-row { border-bottom: 1px solid #f0f4f8; transition: background 0.15s; }
-.alumno-row:last-child { border-bottom: none; }
-.alumno-row:hover { background: #f0f8ff; }
-
-.avatar-sm {
-    width: 30px; height: 30px; flex-shrink: 0; border-radius: 7px;
-    background: linear-gradient(135deg,#4ec7d2,#00508f);
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 700; font-size: 0.72rem;
-    border: 1.5px solid #e8f4f8;
-}
-
-.btn-quitar {
-    width: 22px; height: 22px; border-radius: 5px; padding: 0;
-    background: rgba(220,53,69,0.08); border: 1px solid rgba(220,53,69,0.25);
-    color: #dc3545; font-size: 0.62rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
-}
-.btn-quitar:hover { background: #dc3545; color: white; border-color: #dc3545; }
-
-.btn-asignar-rapido {
-    width: 30px; height: 30px; flex-shrink: 0; border-radius: 7px;
-    background: linear-gradient(135deg,#4ec7d2,#00508f);
-    border: none; color: white; font-size: 0.78rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-}
-.btn-asignar-rapido:hover { transform: scale(1.1); box-shadow: 0 3px 10px rgba(0,80,143,0.3); }
+.filter-input { border-radius:8px !important; border:1.5px solid #d0dce8 !important; }
+.btn-filtrar { background:linear-gradient(135deg,#4ec7d2,#00508f); color:white; border:none; border-radius:8px; padding:0.47rem; font-weight:600; }
+.th-style { color:white; font-size:0.81rem; font-weight:600; padding:0.75rem 1rem; white-space:nowrap; border:none; }
+.matricula-row td { padding:0.65rem 1rem; vertical-align:middle; border-color:#f0f0f0; }
+.matricula-row:hover { background:rgba(78,199,210,0.04); }
+.avatar-initials { width:36px; height:36px; border-radius:9px; background:linear-gradient(135deg,#00508f,#003b73); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:0.82rem; flex-shrink:0; border:2px solid #4ec7d2; }
+.badge-codigo { background:rgba(0,80,143,0.08); color:#003b73; border:1px solid #cde; padding:0.28rem 0.55rem; border-radius:6px; font-size:0.76rem; font-weight:600; font-family:monospace; }
+.badge-grado { background:rgba(78,199,210,0.12); color:#00508f; border:1px solid #4ec7d2; padding:0.28rem 0.6rem; border-radius:20px; font-size:0.74rem; font-weight:600; white-space:nowrap; }
+.badge-seccion-ok { background:rgba(40,167,69,0.1); color:#28a745; border:1px solid #28a745; padding:0.28rem 0.6rem; border-radius:20px; font-size:0.74rem; font-weight:600; }
+.badge-sin-asignar { background:rgba(255,193,7,0.12); color:#b45309; border:1px solid #ffc107; padding:0.28rem 0.6rem; border-radius:20px; font-size:0.74rem; font-weight:600; }
+.btn-guardar { width:32px; height:32px; border-radius:7px; flex-shrink:0; background:linear-gradient(135deg,#4ec7d2,#00508f); color:white; border:none; font-size:0.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.btn-guardar:hover { transform:scale(1.08); box-shadow:0 3px 10px rgba(0,80,143,0.3); }
+.btn-outline-modal { border:1.5px solid #00508f; color:#00508f; background:white; border-radius:7px; padding:0.3rem 0.6rem; font-size:0.8rem; transition:all .2s; }
+.btn-outline-modal:hover { background:#00508f; color:white; }
+.modal-custom { border-radius:12px; border:none; box-shadow:0 4px 24px rgba(0,0,0,0.15); }
+.modal-header-custom { background:linear-gradient(135deg,#4ec7d2,#00508f); border-radius:12px 12px 0 0; border:none; }
+.btn-confirmar { background:linear-gradient(135deg,#4ec7d2,#00508f); color:white; border:none; border-radius:8px; padding:0.5rem 1.2rem; font-weight:600; box-shadow:0 2px 8px rgba(78,199,210,0.3); transition:all .2s; }
+.btn-confirmar:hover { transform:translateY(-1px); color:white; }
+.grado-badge { width:44px; height:44px; flex-shrink:0; background:linear-gradient(135deg,#00508f,#003b73); border-radius:11px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1rem; box-shadow:0 4px 10px rgba(0,59,115,0.2); }
+.seccion-card { border-radius:12px; overflow:hidden; transition:transform .2s, box-shadow .2s; }
+.seccion-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,59,115,0.12) !important; }
+.seccion-header { background:linear-gradient(135deg,#4ec7d2,#00508f); padding:0.7rem 1rem; }
+.progress-track { background:rgba(255,255,255,0.2); border-radius:4px; height:4px; }
+.progress-fill { height:100%; border-radius:4px; transition:width .4s; }
+.cupo-badge { background:rgba(255,255,255,0.2); color:white; font-size:0.7rem; font-weight:600; padding:0.18rem 0.5rem; border-radius:20px; }
+.cupo-libre { background:rgba(40,167,69,0.85); color:white; font-size:0.67rem; font-weight:600; padding:0.18rem 0.45rem; border-radius:20px; }
+.cupo-lleno { background:rgba(220,53,69,0.85); color:white; font-size:0.67rem; font-weight:600; padding:0.18rem 0.45rem; border-radius:20px; }
+.alumno-row { border-bottom:1px solid #f0f4f8; transition:background .15s; }
+.alumno-row:last-child { border-bottom:none; }
+.alumno-row:hover { background:#f0f8ff; }
+.avatar-sm { width:30px; height:30px; flex-shrink:0; border-radius:7px; background:linear-gradient(135deg,#4ec7d2,#00508f); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:0.72rem; border:1.5px solid #e8f4f8; }
+.btn-quitar { width:22px; height:22px; border-radius:5px; padding:0; background:rgba(220,53,69,0.08); border:1px solid rgba(220,53,69,0.25); color:#dc3545; font-size:0.62rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.btn-quitar:hover { background:#dc3545; color:white; border-color:#dc3545; }
+.btn-asignar-rapido { width:30px; height:30px; flex-shrink:0; border-radius:7px; background:linear-gradient(135deg,#4ec7d2,#00508f); border:none; color:white; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.btn-asignar-rapido:hover { transform:scale(1.1); box-shadow:0 3px 10px rgba(0,80,143,0.3); }
 </style>
 
 @push('scripts')
 <script>
-// Reabrir la pestaña correcta tras redirect (evita volver siempre a la tab 1)
 document.addEventListener('DOMContentLoaded', function () {
     const activeTab = new URLSearchParams(window.location.search).get('tab');
     if (activeTab === 'alumnos') {

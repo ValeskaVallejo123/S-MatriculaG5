@@ -7,9 +7,13 @@ use App\Models\Materia;
 use App\Models\User;
 use App\Models\Seccion;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class GradoController extends Controller
 {
+    /**
+     * Nombres de las materias que se asignan automáticamente a todo grado de Primaria.
+     */
     private const MATERIAS_DEFAULT_PRIMARIA = [
         'Español (Lengua Materna)',
         'Matemáticas',
@@ -40,6 +44,9 @@ class GradoController extends Controller
         $grado->materias()->syncWithoutDetaching($syncData);
     }
 
+    /**
+     * Listar todos los grados
+     */
     public function index()
     {
         $grados = Grado::with('materias')
@@ -50,6 +57,9 @@ class GradoController extends Controller
         return view('grados.index', compact('grados'));
     }
 
+    /**
+     * Mostrar formulario de creación
+     */
     public function create()
     {
         return view('grados.create');
@@ -210,7 +220,13 @@ public function edit(Grado $grado)
     return view('grados.edit', compact('grado'));
 }
 
-public function destroy(Grado $grado)
+/**
+ * Eliminar un grado y sus materias asociadas
+ *
+ * @param Grado $grado Grado a eliminar
+ * @return RedirectResponse
+ */
+public function destroy(Grado $grado): RedirectResponse
 {
     $grado->materias()->detach();
     $grado->delete();
@@ -220,7 +236,7 @@ public function destroy(Grado $grado)
         ->with('success', 'Grado eliminado correctamente.');
 }
 
-ppublic function asignarMaterias(Grado $grado)
+public function asignarMaterias(Grado $grado)
 {
     $grado->load('materias');
     $materias          = Materia::where('activo', true)->orderBy('nombre')->get();

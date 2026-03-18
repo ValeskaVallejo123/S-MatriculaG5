@@ -406,11 +406,7 @@
                 <i class="fas fa-user-tag"></i><span>Asignar Profesor</span>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="#" class="menu-link disabled-link" title="Próximamente disponible">
-                <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
-            </a>
-        </li>
+        
         <li class="menu-item">
             <a href="{{ route('secciones.index') }}"
                class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
@@ -426,7 +422,7 @@
 
         <li class="menu-section-title">CALENDARIO</li>
         <li class="menu-item">
-            <a href="{{ route('periodos-academicos.index') }}"
+            <a href="{{ route('superadmin.periodos-academicos.index') }}"
                class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
                 <i class="fas fa-calendar-alt"></i><span>Períodos Académicos</span>
             </a>
@@ -446,8 +442,8 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('documentos.index') }}"
-               class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
+            <a href="{{ route('superadmin.documentos.index') }}"
+               class="menu-link {{ request()->routeIs('superadmin.documentos.*', 'documentos.*') ? 'active' : '' }}">
                 <i class="fas fa-folder-open"></i><span>Documentos</span>
             </a>
         </li>

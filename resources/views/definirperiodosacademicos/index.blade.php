@@ -4,7 +4,7 @@
 @section('page-title', 'Períodos Académicos')
 
 @section('topbar-actions')
-    <a href="{{ route('periodos-academicos.create') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.45rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
+    <a href="{{ route('superadmin.periodos-academicos.create') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.45rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
         <i class="fas fa-plus"></i>
         Nuevo
     </a>
@@ -34,7 +34,7 @@
 
                 <!-- BOTONES alineados a la IZQUIERDA (estilo del template) -->
                 <div class="d-flex flex-wrap gap-3 mb-4">
-                    <a href="{{ route('periodos-academicos.create') }}"
+                    <a href="{{ route('superadmin.periodos-academicos.create') }}"
                        class="btn btn-sm fw-semibold d-inline-flex align-items-center"
                        style="background: linear-gradient(135deg,#004191 0%,#0b96b6 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(4,64,120,0.12); text-decoration: none;">
                         <i class="fas fa-plus me-2"></i> Crear nuevo período

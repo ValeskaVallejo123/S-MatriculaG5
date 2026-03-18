@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Grado;
 use App\Models\Matricula;
 use App\Models\Seccion;
@@ -11,98 +12,141 @@ class SeccionController extends Controller
     public const GRADOS = [
         '1er Grado', '2do Grado', '3er Grado',
         '4to Grado', '5to Grado', '6to Grado',
-        '7mo Grado', '8vo Grado', '9no Grado' // Corregido '7to' a '7mo'
+        '7mo Grado', '8vo Grado', '9no Grado'
     ];
 
-public function index(Request $request)
-{
-    // ── 1. Secciones ──────────────────────────────────────────────────────
-    $secciones = Seccion::orderBy('grado')->orderBy('nombre')->get();
-
-    // ── 2. Grados desde la tabla grados (activos) ─────────────────────────
-    $nombresGrado = [
-        1 => '1er Grado', 2 => '2do Grado', 3 => '3er Grado',
-        4 => '4to Grado', 5 => '5to Grado', 6 => '6to Grado',
-        7 => '7mo Grado', 8 => '8vo Grado', 9 => '9no Grado',
+    public const GRADO_MAP = [
+        // Variantes textuales
+        'Primero'   => '1er Grado',
+        'Segundo'   => '2do Grado',
+        'Tercero'   => '3er Grado',
+        'Cuarto'    => '4to Grado',
+        'Quinto'    => '5to Grado',
+        'Sexto'     => '6to Grado',
+        'Séptimo'   => '7mo Grado',
+        'Octavo'    => '8vo Grado',
+        'Noveno'    => '9no Grado',
+        // Variantes numéricas
+        '1'         => '1er Grado',
+        '2'         => '2do Grado',
+        '3'         => '3er Grado',
+        '4'         => '4to Grado',
+        '5'         => '5to Grado',
+        '6'         => '6to Grado',
+        '7'         => '7mo Grado',
+        '8'         => '8vo Grado',
+        '9'         => '9no Grado',
+        // Identidades (ya normalizados)
+        '1er Grado' => '1er Grado',
+        '2do Grado' => '2do Grado',
+        '3er Grado' => '3er Grado',
+        '4to Grado' => '4to Grado',
+        '5to Grado' => '5to Grado',
+        '6to Grado' => '6to Grado',
+        '7mo Grado' => '7mo Grado',
+        '8vo Grado' => '8vo Grado',
+        '9no Grado' => '9no Grado',
     ];
 
-    $grados = Grado::where('activo', true)
-                ->orderBy('numero')
-                ->get()
-                ->pluck('numero')
-                ->unique()
-                ->map(fn($n) => $nombresGrado[$n] ?? "{$n}° Grado");
-
-    // ── 3. Letras de sección disponibles ──────────────────────────────────
-    $letras = Seccion::orderBy('nombre')
-                     ->pluck('nombre')
-                     ->unique()
-                     ->values();
-
-    // ── 4. Query base con filtros ──────────────────────────────────────────
-    $query = Matricula::with(['estudiante', 'seccion'])->whereHas('estudiante');
-
-    if ($request->filled('buscar')) {
-        $buscar = $request->buscar;
-        $query->whereHas('estudiante', function ($q) use ($buscar) {
-            $q->where('nombre1',   'like', "%{$buscar}%")
-              ->orWhere('apellido1', 'like', "%{$buscar}%")
-              ->orWhere('dni',       'like', "%{$buscar}%");
-        });
+    /** Normaliza cualquier variante al formato canónico */
+    public static function normalizarGrado(?string $grado): string
+    {
+        if ($grado === null) return 'Sin Grado';
+        return self::GRADO_MAP[$grado] ?? $grado;
     }
 
-    if ($request->filled('grado')) {
-        $query->whereHas('estudiante', function ($q) use ($request) {
-            $q->where('grado', $request->grado);
-        });
-    }
+    public function index(Request $request)
+    {
+        // Todas las secciones de la BD
+        $secciones = Seccion::orderBy('grado')->orderBy('nombre')->get();
 
-    if ($request->filled('estado')) {
-        if ($request->estado === 'sin_asignar') {
-            $query->whereNull('seccion_id');
-        } else {
-            $seccionIds = Seccion::where('nombre', $request->estado)->pluck('id');
-            $query->whereIn('seccion_id', $seccionIds);
+        $nombresGrado = [
+            1 => '1er Grado', 2 => '2do Grado', 3 => '3er Grado',
+            4 => '4to Grado', 5 => '5to Grado', 6 => '6to Grado',
+            7 => '7mo Grado', 8 => '8vo Grado', 9 => '9no Grado',
+        ];
+
+        $grados = Grado::where('activo', true)
+                    ->orderBy('numero')->get()
+                    ->pluck('numero')->unique()
+                    ->map(fn($n) => $nombresGrado[$n] ?? "{$n}° Grado");
+
+        $letras = Seccion::orderBy('nombre')->pluck('nombre')->unique()->values();
+
+        // ── Índice de secciones por grado NORMALIZADO ────────────────────────
+        // Normaliza TAMBIÉN el lado de secciones.grado para que el match
+        // funcione sin importar cómo esté guardado en la BD.
+        $seccionesPorGrado = $secciones->groupBy(
+            fn($s) => self::normalizarGrado($s->grado)
+        );
+
+        // ── Query de matrículas ──────────────────────────────────────────────
+        $query = Matricula::with(['estudiante', 'seccion'])->whereHas('estudiante');
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->whereHas('estudiante', function ($q) use ($buscar) {
+                $q->where('nombre1',   'like', "%{$buscar}%")
+                  ->orWhere('apellido1', 'like', "%{$buscar}%")
+                  ->orWhere('dni',       'like', "%{$buscar}%");
+            });
         }
+
+        if ($request->filled('grado')) {
+            // El filtro envía "1er Grado"; buscamos TODAS sus variantes en BD
+            $gradoBuscado = $request->grado;
+            $variantes    = array_unique(array_merge(
+                array_keys(self::GRADO_MAP, $gradoBuscado),
+                [$gradoBuscado]
+            ));
+            $query->whereHas('estudiante', fn($q) => $q->whereIn('grado', $variantes));
+        }
+
+        if ($request->filled('estado')) {
+            if ($request->estado === 'sin_asignar') {
+                $query->whereNull('seccion_id');
+            } elseif ($request->estado === 'asignada') {
+                $query->whereNotNull('seccion_id');
+            } else {
+                $query->where('seccion_id', $request->estado);
+            }
+        }
+
+        $matriculas = $query->paginate(20);
+
+        $conSeccion = Matricula::whereNotNull('seccion_id')->count();
+        $sinSeccion = Matricula::whereNull('seccion_id')->count();
+
+        $gradosSecciones = Seccion::with(['matriculas.estudiante'])
+                            ->orderBy('grado')->orderBy('nombre')
+                            ->get()->groupBy('grado');
+
+        // Agrupar con grado NORMALIZADO → claves "1er Grado", "2do Grado", etc.
+        $matriculasSinSeccionPorGrado = Matricula::with('estudiante')
+                            ->whereNull('seccion_id')->get()
+                            ->groupBy(fn($m) => self::normalizarGrado($m->estudiante->grado ?? null));
+
+        $gradoMap = self::GRADO_MAP;
+
+        return view('secciones.index', compact(
+            'matriculas', 'secciones', 'grados', 'letras',
+            'gradosSecciones', 'matriculasSinSeccionPorGrado',
+            'conSeccion', 'sinSeccion', 'gradoMap', 'seccionesPorGrado'
+        ));
     }
 
-    $matriculas = $query->paginate(20);
-
-    // ── 5. Estadísticas ───────────────────────────────────────────────────
-    $totalMatriculas = Matricula::count();           // ← definido aquí
-    $conSeccion      = Matricula::whereNotNull('seccion_id')->count();
-    $sinSeccion      = Matricula::whereNull('seccion_id')->count();
-
-    // ── 6. Pestaña 2 ──────────────────────────────────────────────────────
-    $gradosSecciones = Seccion::with(['matriculas.estudiante'])
-                        ->orderBy('grado')->orderBy('nombre')
-                        ->get()->groupBy('grado');
-
-    $matriculasSinSeccionPorGrado = Matricula::with('estudiante')
-                        ->whereNull('seccion_id')->get()
-                        ->groupBy(fn($m) => $m->estudiante->grado);
-
-    $seccionesDisponibles = Seccion::orderBy('grado')->orderBy('nombre')->get();
-
-    return view('secciones.index', compact(
-        'matriculas',
-        'totalMatriculas',
-        'secciones',
-        'grados',
-        'letras',
-        'gradosSecciones',
-        'matriculasSinSeccionPorGrado',
-        'conSeccion',
-        'sinSeccion',
-        'seccionesDisponibles'
-    ));
-}
+    public function create()
+    {
+        // ✅ Pasar $grados a la vista de creación
+        $grados = self::GRADOS;
+        return view('secciones.create', compact('grados'));
+    }
 
     public function asignar(Request $request)
     {
         $validated = $request->validate([
             'matricula_id' => 'required|exists:matriculas,id',
-            'seccion_id'   => 'required|exists:seccions,id', // Cambiado 'seccion' a 'seccions' (plural común en Laravel)
+            'seccion_id'   => 'required|exists:secciones,id',
         ]);
 
         $matricula = Matricula::findOrFail($validated['matricula_id']);
@@ -111,15 +155,11 @@ public function index(Request $request)
         if ($matricula->seccion_id !== $seccion->id) {
             $asignados = Matricula::where('seccion_id', $seccion->id)->count();
             if ($asignados >= $seccion->capacidad) {
-                return back()->with(
-                    'error',
-                    "La sección {$seccion->letra} del {$seccion->grado} no tiene cupo disponible."
-                );
+                return back()->with('error', "La sección {$seccion->nombre} del {$seccion->grado} no tiene cupo.");
             }
         }
 
         $matricula->update(['seccion_id' => $seccion->id]);
-
         return back()->with('success', 'Sección asignada correctamente.');
     }
 
@@ -129,61 +169,36 @@ public function index(Request $request)
             'matricula_id' => 'required|exists:matriculas,id',
         ]);
 
-        $matricula = Matricula::with('estudiante')->findOrFail($validated['matricula_id']);
-
-        if (is_null($matricula->seccion_id)) {
-            return back()->withErrors(['error' => 'Este alumno no tiene sección asignada.']);
-        }
-
+        $matricula = Matricula::findOrFail($validated['matricula_id']);
         $matricula->update(['seccion_id' => null]);
-
-        return back()->with(
-            'success',
-            "Alumno {$matricula->estudiante->nombre1} {$matricula->estudiante->apellido1} removido de la sección."
-        );
+        return back()->with('success', 'Alumno quitado de la sección correctamente.');
     }
 
-    public function create()
-    {
-        $grados = self::GRADOS;
-        return view('secciones.create', compact('grados'));
-    }
-
-    /**
-     * Guardar una nueva sección con la lógica de validación integrada.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'grado'     => 'required|in:' . implode(',', self::GRADOS),
-            'seccion'   => 'required|in:A,B,C,D', // El input del form se llama 'seccion'
+            'seccion'   => 'required|in:A,B,C,D',
             'capacidad' => 'required|integer|min:1|max:60',
         ]);
 
         $existe = Seccion::where('grado', $validated['grado'])
-                         ->where('nombre', $validated['seccion']) 
+                         ->where('nombre', $validated['seccion'])
                          ->exists();
 
         if ($existe) {
             return back()->withInput()->withErrors([
-                'seccion' => "Ya existe la Sección {$validated['seccion']} para {$validated['grado']}.",
+                'seccion' => "Ya existe la Sección {$validated['seccion']} para {$validated['grado']}."
             ]);
         }
 
         Seccion::create([
             'grado'     => $validated['grado'],
-            'nombre'     => $validated['seccion'], 
+            'nombre'    => $validated['seccion'],
             'capacidad' => $validated['capacidad'],
         ]);
 
-        return redirect()->route('secciones.index')
-            ->with('success', 'Sección creada correctamente.');
-    }
-
-    public function edit(Seccion $seccion)
-    {
-        $grados = self::GRADOS;
-        return view('secciones.edit', compact('seccion', 'grados'));
+        return redirect()->route('secciones.index')->with('success', 'Sección creada correctamente.');
     }
 
     public function update(Request $request, Seccion $seccion)
@@ -194,44 +209,27 @@ public function index(Request $request)
             'capacidad' => 'required|integer|min:1|max:60',
         ]);
 
-        // Verificar si se intenta cambiar a una combinación que ya existe (excluyendo a sí misma)
         $existeOtro = Seccion::where('grado', $validated['grado'])
-            ->where('letra', $validated['seccion'])
+            ->where('nombre', $validated['seccion'])
             ->where('id', '!=', $seccion->id)
             ->exists();
 
         if ($existeOtro) {
-            return back()->withInput()->withErrors([
-                'seccion' => "Ya existe otra sección con esa letra para este grado.",
-            ]);
+            return back()->withInput()->withErrors(['seccion' => 'Ya existe esa sección para este grado.']);
         }
 
-        $asignados = $seccion->matriculas()->count();
-        if ($validated['capacidad'] < $asignados) {
+        if ($validated['capacidad'] < $seccion->matriculas()->count()) {
             return back()->withInput()->withErrors([
-                'capacidad' => "No puedes reducir la capacidad a {$validated['capacidad']} porque ya hay {$asignados} alumno(s) asignados.",
+                'capacidad' => 'La capacidad no puede ser menor a los alumnos ya inscritos.'
             ]);
         }
 
         $seccion->update([
             'grado'     => $validated['grado'],
-            'letra'     => $validated['seccion'],
+            'nombre'    => $validated['seccion'],
             'capacidad' => $validated['capacidad'],
         ]);
 
-        return redirect()->route('secciones.index')
-            ->with('success', 'Sección actualizada correctamente.');
-    }
-
-    public function destroy(Seccion $seccion)
-    {
-        if ($seccion->matriculas()->exists()) {
-            return back()->with('error', 'No se puede eliminar una sección con alumnos inscritos.');
-        }
-
-        $seccion->delete();
-
-        return redirect()->route('secciones.index')
-            ->with('success', 'La sección fue eliminada correctamente.');
+        return redirect()->route('secciones.index')->with('success', 'Sección actualizada correctamente.');
     }
 }
