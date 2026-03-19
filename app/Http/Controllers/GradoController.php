@@ -154,6 +154,73 @@ class GradoController extends Controller
             ->with('success', 'Grado actualizado exitosamente.');
     }
 
+    /**
+     * Eliminar un grado
+     */
+    public function destroy(Grado $grado): RedirectResponse
+    {
+        // Verificar si tiene estudiantes asignados antes de eliminar
+        // if ($grado->estudiantes()->count() > 0) {
+        //     return back()->with('error', 'No se puede eliminar el grado porque tiene estudiantes asignados.');
+        // }
+
+        $grado->delete();
+
+        return redirect()
+            ->route('grados.index')
+            ->with('success', 'Grado eliminado exitosamente.');
+    }
+
+    /**
+     * Mostrar formulario de asignación de materias
+     */
+    public function asignarMaterias(Grado $grado)
+    {
+        $materias = Materia::where('nivel', $grado->nivel)
+            ->where('activo', true)
+            ->get();
+$profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')->get();
+        $materiasAsignadas = $grado->materias->pluck('id')->toArray();
+
+        return view('grados.asignar-materias', compact('grado'));
+    }
+
+    /**
+     * Guardar materias asignadas a un grado
+     */
+    public function guardarMaterias(Request $request, Grado $grado): RedirectResponse
+    {
+        $validated = $request->validate([
+            'materias'   => 'required|array|min:1',
+            'materias.*' => 'exists:materias,id',
+            'profesores' => 'nullable|array',
+            'horas'      => 'nullable|array',
+        ]);
+
+        $syncData = [];
+
+        foreach ($validated['materias'] as $materiaId) {
+    $syncData[$materiaId] = [
+        'profesor_id' => $request->profesores[$materiaId] ?? null,
+        'seccion'     => $request->seccion ?? $grado->seccion,
+    ];
+}
+
+        $grado->materias()->sync($syncData);
+
+        return redirect()
+            ->route('grados.show', $grado)
+            ->with('success', 'Materias asignadas exitosamente.');
+    }
+
+    /**
+     * Mostrar formulario de creación masiva
+     */
+    public function crearMasivo()
+    {
+        return view('grados.crear-masivo');
+    }
+
     public function generarMasivo(Request $request)
     {
         $validated = $request->validate([

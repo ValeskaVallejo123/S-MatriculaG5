@@ -35,6 +35,7 @@
 
                 <div class="row g-3">
 
+                    <!-- Nivel Educativo -->
                     <div class="col-md-6">
                         <label for="nivel" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-layer-group text-primary"></i> Nivel Educativo *
@@ -45,6 +46,7 @@
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar nivel...</option>
+                            {{-- Values en minúsculas: coinciden con ENUM BD y validación del controlador --}}
                             <option value="primaria"   {{ old('nivel') === 'primaria'   ? 'selected' : '' }}>
                                 Primaria (1° - 6° Grado)
                             </option>
@@ -67,6 +69,7 @@
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar grado...</option>
+                            {{-- 1-6 Primaria | 7-9 Secundaria --}}
                             @for($i = 1; $i <= 9; $i++)
                                 <option value="{{ $i }}" {{ old('numero') == $i ? 'selected' : '' }}>
                                     {{ $i }}° Grado
@@ -148,18 +151,20 @@
                     </div>
                 </div>
 
-                <div id="info-primaria" class="alert mt-4 d-none d-flex align-items-start"
+                <!-- Info contextual según nivel -->
+                <div id="info-primaria" class="alert mt-3 d-none d-flex align-items-start"
                      style="border-radius: 8px; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
                     <i class="fas fa-magic me-2 mt-1" style="color: #10b981;"></i>
                     <div>
                         <strong style="color: #065f46;">Asignación automática:</strong>
                         <p class="mb-0 small text-muted">
-                            Al guardar se asignarán automáticamente las materias base de Primaria.
+                            Al guardar se asignarán automáticamente: Español, Matemáticas, Ciencias Naturales,
+                            Ciencias Sociales, Educación Artística, Educación Física, Inglés y Educación Cívica/Valores.
                         </p>
                     </div>
                 </div>
 
-                <div id="info-secundaria" class="alert mt-4 d-none d-flex align-items-start"
+                <div id="info-secundaria" class="alert mt-3 d-none d-flex align-items-start"
                      style="border-radius: 8px; border-left: 4px solid #4ec7d2; background: rgba(78,199,210,0.1);">
                     <i class="fas fa-info-circle me-2 mt-1" style="color: #00508f;"></i>
                     <div>
@@ -170,6 +175,18 @@
                     </div>
                 </div>
 
+                <div id="info-default" class="alert alert-info mt-3 d-flex align-items-start"
+                     style="border-radius: 8px; border-left: 4px solid #4ec7d2; background: rgba(78,199,210,0.1);">
+                    <i class="fas fa-info-circle me-2 mt-1" style="color: #00508f;"></i>
+                    <div>
+                        <strong style="color: #003b73;">Nota:</strong>
+                        <p class="mb-0 small text-muted">
+                            Selecciona el nivel educativo para ver las opciones de asignación de materias.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Botones --}}
                 <div class="d-flex gap-2 mt-4 pt-3 border-top">
                     <button type="submit" class="btn flex-fill"
                             style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.7rem; font-weight: 600; border: none;">
@@ -185,3 +202,80 @@
     </div>
 </div>
 @endsection
+
+{{-- ── Estilos ─────────────────────────────────────────────────────────── --}}
+@push('styles')
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #4ec7d2;
+        box-shadow: 0 0 0 0.2rem rgba(78,199,210,0.15);
+        outline: none;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .btn-back:hover {
+        background: #00508f !important;
+        color: white !important;
+        transform: translateY(-2px);
+    }
+</style>
+@endpush
+
+{{-- ── Scripts ─────────────────────────────────────────────────────────── --}}
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nivelSelect    = document.getElementById('nivel');
+    const numeroSelect   = document.getElementById('numero');
+    const infoPrimaria   = document.getElementById('info-primaria');
+    const infoSecundaria = document.getElementById('info-secundaria');
+    const infoDefault    = document.getElementById('info-default');
+
+    // Rangos de grado por nivel (alineados con generarMasivo del controlador)
+    const RANGOS = {
+        primaria:   { min: 1, max: 6 },
+        secundaria: { min: 7, max: 9 },
+    };
+
+    function actualizarUI() {
+        const nivel = nivelSelect.value;
+
+        // Filtrar opciones de número según nivel
+        Array.from(numeroSelect.querySelectorAll('option')).forEach(opt => {
+            if (opt.value === '') return;
+            const n = parseInt(opt.value);
+            const rango = RANGOS[nivel];
+            opt.style.display = rango ? (n >= rango.min && n <= rango.max ? '' : 'none') : '';
+        });
+
+        // Reset número si el valor actual no es válido para el nivel elegido
+        const current = parseInt(numeroSelect.value);
+        const rango = RANGOS[nivel];
+        if (rango && (current < rango.min || current > rango.max)) {
+            numeroSelect.value = '';
+        }
+
+        // Mostrar info contextual
+        infoPrimaria.classList.add('d-none');
+        infoSecundaria.classList.add('d-none');
+        infoDefault.classList.add('d-none');
+
+        if (nivel === 'primaria') {
+            infoPrimaria.classList.remove('d-none');
+        } else if (nivel === 'secundaria') {
+            infoSecundaria.classList.remove('d-none');
+        } else {
+            infoDefault.classList.remove('d-none');
+        }
+    }
+
+    nivelSelect.addEventListener('change', actualizarUI);
+
+    // Ejecutar al cargar si hay valor previo (old())
+    actualizarUI();
+});
+</script>
+@endpush
+

@@ -201,9 +201,6 @@
         @endif
     </div>
 
-</div>
-
-</div>
 
 <style>
     .avatar-circle {

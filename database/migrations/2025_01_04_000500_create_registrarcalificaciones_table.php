@@ -16,7 +16,6 @@ return new class extends Migration
                 ->constrained('profesores')
                 ->onDelete('cascade');
 
-            // ✅ CAMBIAR curso_id POR grado_id
             $table->foreignId('grado_id')
                 ->constrained('grados')
                 ->onDelete('cascade');
@@ -40,7 +39,6 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // ✅ UNIQUE CORRECTO
             $table->unique([
                 'profesor_id',
                 'grado_id',

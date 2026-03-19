@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-    {
-        Schema::create('observaciones', function (Blueprint $table) {
-            $table->id();
+{
+    Schema::create('observaciones', function (Blueprint $table) {
+        $table->id();
 
             // Relaciones
             $table->foreignId('estudiante_id')
@@ -20,13 +20,12 @@ return new class extends Migration
                 ->constrained('profesores')
                 ->onDelete('cascade');
 
-            // Contenido de la observación (solo texto libre)
-            $table->text('descripcion');
+        $table->string('tipo')->default('academica');
+        $table->text('descripcion');
 
-            $table->timestamps();
-        });
-    }
-
+        $table->timestamps();
+    });
+}
     public function down(): void
     {
         Schema::dropIfExists('observaciones');

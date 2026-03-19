@@ -13,16 +13,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /*
-        ╔══════════════════════════════════════════════════════════════╗
-        ║  🔤 TAMAÑO DE LETRA GLOBAL — afecta TODO el sitio            ║
-        ║  Cambia el número para hacer todo más grande o pequeño.      ║
-        ║  • 14px → más compacto                                       ║
-        ║  • 16px → estándar                                           ║
-        ║  • 17px → valor actual                                       ║
-        ║  • 18px → más grande                                         ║
-        ╚══════════════════════════════════════════════════════════════╝
-        */
         html { font-size: 17px; }
 
         body {
@@ -102,21 +92,9 @@
         .menu-link.active i { color: #4ec7d2; }
         .menu-link.disabled-link { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
-        /* ══════════════════════════════════════════════
-           MAIN CONTENT
-           — Con sidebar (admin/superadmin): margin-left 280px
-           — Sin sidebar (profesor/estudiante/padre): sin margen
-        ══════════════════════════════════════════════ */
-        .main-content {
-            margin-left: 280px;
-            min-height: 100vh;
-            background: #f5f7fa;
-        }
-
-        /* ← CLAVE: roles sin sidebar ocupan todo el ancho */
-        .main-content.no-sidebar {
-            margin-left: 0;
-        }
+        /* ── MAIN ── */
+       .main-content { margin-left: 280px; min-height: 100vh; background: #f5f7fa; }
+.main-content.no-sidebar { margin-left: 0 !important; }
 
         /* ══════════════════════════════════════════════
            TOPBAR
@@ -147,27 +125,15 @@
 
         /* ══════════════════════════════════════════════
            CONTENT WRAPPER
-           — Con sidebar: padding normal
-           — Sin sidebar: padding lateral más generoso
         ══════════════════════════════════════════════ */
         .content-wrapper { padding: 2rem; }
 
-        .no-sidebar .content-wrapper {
-            padding: 1.5rem 2rem;
-            /* Sin max-width para que ocupe todo el ancho disponible */
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* ══════════════════════════════════════════════
-           MOBILE MENU
-        ══════════════════════════════════════════════ */
+        /* ── RESPONSIVE ── */
         .mobile-menu-btn {
             display: none;
-            background: linear-gradient(135deg, #4ec7d2, #00508f);
+            background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
             color: white; border: none;
-            padding: .5rem .75rem; border-radius: 7px;
-            font-size: 1rem; cursor: pointer;
+            padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 1.1rem;
         }
         .sidebar-overlay {
             display: none; position: fixed;
@@ -186,6 +152,76 @@
             .topbar { padding: .75rem 1rem; }
             .topbar-date { display: none; }
             .topbar-divider { display: none; }
+        }
+
+        /* ══════════════════════════════════════════════
+           ALERTAS FLASH
+        ══════════════════════════════════════════════ */
+        .flash-alert {
+            display: flex; align-items: flex-start; gap: .75rem;
+            padding: .9rem 1.1rem; border-radius: 10px;
+            font-size: .88rem; font-weight: 500;
+            margin-bottom: 1rem; position: relative;
+            animation: slideDown .3s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .flash-alert > .btn-close {
+            position: absolute; right: .75rem; top: .75rem;
+        }
+        .flash-success {
+            background: #f0fdf4; color: #065f46;
+            border: 1px solid #6ee7b7; border-left: 4px solid #10b981;
+        }
+        .flash-delete {
+            background: #fef2f2; color: #991b1b;
+            border: 1px solid #fca5a5; border-left: 4px solid #ef4444;
+        }
+        .flash-error {
+            background: #fef2f2; color: #991b1b;
+            border: 1px solid #fca5a5; border-left: 4px solid #ef4444;
+        }
+        .flash-warning {
+            background: #fffbeb; color: #92400e;
+            border: 1px solid #fcd34d; border-left: 4px solid #f59e0b;
+        }
+        .flash-info {
+            background: #eff6ff; color: #1e40af;
+            border: 1px solid #93c5fd; border-left: 4px solid #3b82f6;
+        }
+
+        /* ── Caja de credenciales ── */
+        .cred-box {
+            margin-top: .65rem;
+            background: rgba(0,0,0,.06);
+            border-radius: 8px;
+            padding: .75rem .9rem;
+            display: flex; flex-direction: column; gap: .45rem;
+        }
+        .cred-row {
+            display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+        }
+        .cred-label {
+            font-size: .7rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .05em; opacity: .7; min-width: 85px;
+        }
+        .cred-value {
+            font-size: .85rem; font-weight: 700;
+            background: rgba(0,0,0,.08); padding: .2rem .5rem;
+            border-radius: 5px; font-family: monospace; flex: 1;
+        }
+        .cred-copy {
+            border: none; background: rgba(0,0,0,.12);
+            border-radius: 6px; padding: .2rem .55rem;
+            font-size: .72rem; font-weight: 600;
+            cursor: pointer; transition: all .2s; color: inherit;
+            white-space: nowrap;
+        }
+        .cred-copy:hover { background: rgba(0,0,0,.2); }
+        .cred-note {
+            margin-top: .4rem; font-size: .72rem; opacity: .75;
         }
 
         /* ══════════════════════════════════════════════
@@ -234,16 +270,9 @@
             50%      { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239,68,68,0); }
         }
 
-        .modal-delete-title {
-            text-align: center; color: #1e293b;
-            font-size: 1.5rem; font-weight: 700;
-            margin: 0 0 1.5rem; padding: 0 2rem;
-        }
+        .modal-delete-title { text-align: center; color: #1e293b; font-size: 1.5rem; font-weight: 700; margin: 0 0 1.5rem; padding: 0 2rem; }
         .modal-delete-content { padding: 0 2rem 2rem; }
-        .modal-delete-message {
-            text-align: center; color: #64748b;
-            font-size: .938rem; line-height: 1.6; margin: 0 0 1.5rem;
-        }
+        .modal-delete-message { text-align: center; color: #64748b; font-size: .938rem; line-height: 1.6; margin: 0 0 1.5rem; }
         .modal-delete-item {
             background: linear-gradient(135deg,#f8fafc,#e2e8f0);
             border-radius: 12px; padding: 1rem;
@@ -255,13 +284,8 @@
             display: flex; align-items: center; justify-content: center;
             color: #ef4444; font-size: 1.125rem; flex-shrink: 0;
         }
-        .delete-item-label {
-            display: block; color: #64748b; font-size: .75rem;
-            font-weight: 600; text-transform: uppercase;
-            letter-spacing: .5px; margin-bottom: .25rem;
-        }
-        .delete-item-name { display: block; color: #1e293b; font-size: .938rem; font-weight: 700; }
-
+        .delete-item-label { display: block; color: #64748b; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: .25rem; }
+        .delete-item-name  { display: block; color: #1e293b; font-size: .938rem; font-weight: 700; }
         .modal-delete-actions {
             padding: 1rem 1.5rem 1.5rem; display: flex; gap: .75rem;
             border-top: 1px solid #e2e8f0;
@@ -306,7 +330,6 @@
 
 <aside class="sidebar" id="sidebar">
 
-    {{-- Logo --}}
     <div class="sidebar-header">
         <a href="{{ $isSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}" class="sidebar-logo">
             <i class="fas fa-graduation-cap"></i>
@@ -317,7 +340,6 @@
         </a>
     </div>
 
-    {{-- Usuario --}}
     <div class="user-info">
         <div class="user-avatar">{{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}</div>
         <div class="user-details">
@@ -326,7 +348,6 @@
         </div>
     </div>
 
-    {{-- Menú --}}
     <ul class="sidebar-menu">
 
         <li class="menu-section-title">PRINCIPAL</li>
@@ -401,12 +422,23 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ $isSuperAdmin ? route('superadmin.profesor_materia.index') : route('profesor_materia.index') }}"
-               class="menu-link {{ request()->routeIs('profesor_materia.*', 'superadmin.profesor_materia.*') ? 'active' : '' }}">
+            <a href="{{ route('profesor_materia.index') }}"
+               class="menu-link {{ request()->routeIs('profesor_materia.*') ? 'active' : '' }}">
                 <i class="fas fa-user-tag"></i><span>Asignar Profesor</span>
             </a>
         </li>
-        
+        <li class="menu-item">
+            @if($isSuperAdmin)
+                <a href="{{ route('carga-docente.index') }}"
+                   class="menu-link {{ request()->routeIs('carga-docente.*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
+                </a>
+            @else
+                <a href="#" class="menu-link disabled-link" title="Sin acceso">
+                    <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
+                </a>
+            @endif
+        </li>
         <li class="menu-item">
             <a href="{{ route('secciones.index') }}"
                class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
@@ -463,12 +495,17 @@
                 <i class="fas fa-question-circle"></i><span>Estado de Solicitud</span>
             </a>
         </li>
+        <li class="menu-item">
+            <a href="{{ route('acciones_importantes.index') }}"
+               class="menu-link {{ request()->routeIs('acciones_importantes.*') ? 'active' : '' }}">
+                <i class="fas fa-bell"></i><span>Acciones Recientes</span>
+            </a>
+        </li>
 
     </ul>
 </aside>
 @endif
 
-{{-- ← CLAVE: clase no-sidebar para roles sin menú lateral --}}
 <div class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
 
     <div class="topbar">
@@ -499,22 +536,96 @@
 
     <div class="content-wrapper">
 
+        {{-- ══ ALERTAS FLASH ══ --}}
         @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert"
-             style="border-left:4px solid #10b981;border-radius:10px;">
-            <i class="fas fa-check-circle me-2"></i>
-            <strong>¡Éxito!</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+            @php
+                $msg          = session('success');
+                $isDelete     = str_contains(strtolower($msg), 'elimin');
+                $isCredencial = str_contains($msg, 'Correo:');
+
+                // Extraer correo y contraseña si es mensaje de credenciales
+                $credCorreo = '';
+                $credPass   = '';
+                $textoBase  = $msg;
+                if ($isCredencial) {
+                    preg_match('/Correo:\s*(\S+)/',     $msg, $mc);
+                    preg_match('/Contraseña:\s*(\S+)/', $msg, $mp);
+                    $credCorreo = $mc[1] ?? '';
+                    $credPass   = $mp[1] ?? '';
+                    // Solo el texto antes de las credenciales
+                    $textoBase  = trim(explode('Correo:', $msg)[0]);
+                }
+            @endphp
+
+            <div class="flash-alert {{ $isDelete ? 'flash-delete' : 'flash-success' }} alert-dismissible fade show"
+                 id="flashAlert">
+                <i class="fas {{ $isDelete ? 'fa-trash-alt' : 'fa-check-circle' }}"
+                   style="margin-top:.1rem;flex-shrink:0;"></i>
+                <div style="flex:1;padding-right:1.5rem;">
+                    <strong>{{ $isDelete ? '¡Eliminado!' : '¡Éxito!' }}</strong>
+                    {{ $textoBase }}
+
+                    @if($isCredencial)
+                        <div class="cred-box">
+                            <div class="cred-row">
+                                <span class="cred-label">
+                                    <i class="fas fa-envelope me-1"></i>Correo:
+                                </span>
+                                <code class="cred-value" id="credCorreo">{{ $credCorreo }}</code>
+                                <button type="button" class="cred-copy"
+                                        onclick="copiar('credCorreo', this)">
+                                    <i class="fas fa-copy me-1"></i>Copiar
+                                </button>
+                            </div>
+                            <div class="cred-row">
+                                <span class="cred-label">
+                                    <i class="fas fa-key me-1"></i>Contraseña:
+                                </span>
+                                <code class="cred-value" id="credPass">{{ $credPass }}</code>
+                                <button type="button" class="cred-copy"
+                                        onclick="copiar('credPass', this)">
+                                    <i class="fas fa-copy me-1"></i>Copiar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cred-note">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Guarda estas credenciales antes de cerrar esta notificación.
+                        </div>
+                    @endif
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         @endif
 
         @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert"
-             style="border-left:4px solid #ef4444;border-radius:10px;">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <strong>¡Error!</strong> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+            <div class="flash-alert flash-error alert-dismissible fade show">
+                <i class="fas fa-exclamation-circle" style="flex-shrink:0;margin-top:.1rem;"></i>
+                <span style="flex:1;padding-right:1.5rem;">
+                    <strong>¡Error!</strong> {{ session('error') }}
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if(session('warning'))
+            <div class="flash-alert flash-warning alert-dismissible fade show">
+                <i class="fas fa-exclamation-triangle" style="flex-shrink:0;margin-top:.1rem;"></i>
+                <span style="flex:1;padding-right:1.5rem;">
+                    <strong>¡Atención!</strong> {{ session('warning') }}
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if(session('info'))
+            <div class="flash-alert flash-info alert-dismissible fade show">
+                <i class="fas fa-info-circle" style="flex-shrink:0;margin-top:.1rem;"></i>
+                <span style="flex:1;padding-right:1.5rem;">
+                    <strong>Info:</strong> {{ session('info') }}
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         @endif
 
         @yield('content')
@@ -537,7 +648,7 @@
             </p>
             <div class="modal-delete-item" id="deleteItemInfo" style="display:none;">
                 <div class="delete-item-icon"><i class="fas fa-file-alt"></i></div>
-                <div class="delete-item-details">
+                <div>
                     <span class="delete-item-label">Elemento a eliminar:</span>
                     <strong class="delete-item-name" id="deleteItemName"></strong>
                 </div>
@@ -565,12 +676,40 @@
         document.getElementById('sidebarOverlay').classList.toggle('active');
     }
 
+    // Auto-cerrar alertas a los 5s — EXCEPTO las de credenciales
     setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(el => {
+        document.querySelectorAll('.flash-alert').forEach(el => {
+            if (el.querySelector('#credCorreo')) return; // no cerrar credenciales
             try { new bootstrap.Alert(el).close(); } catch(e) {}
         });
     }, 5000);
 
+    // Copiar al portapapeles
+    function copiar(elementId, btn) {
+        const texto = document.getElementById(elementId).textContent.trim();
+        navigator.clipboard.writeText(texto).then(() => {
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Copiado';
+            btn.style.background = 'rgba(16,185,129,.3)';
+            setTimeout(() => {
+                btn.innerHTML = original;
+                btn.style.background = '';
+            }, 2000);
+        }).catch(() => {
+            // Fallback para navegadores sin clipboard API
+            const el = document.getElementById(elementId);
+            const range = document.createRange();
+            range.selectNode(el);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Copiado';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy me-1"></i>Copiar'; }, 2000);
+        });
+    }
+
+    // Guardar posición del scroll del sidebar
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         const saved = sessionStorage.getItem('sidebarScrollPosition');
@@ -593,6 +732,7 @@
         }
     }
 
+    // Modal de eliminación
     function mostrarModalDelete(url, mensaje, itemName) {
         document.getElementById('deleteMessage').textContent =
             mensaje || 'Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este registro?';

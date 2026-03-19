@@ -16,7 +16,7 @@ use Carbon\Carbon;
 class MatriculaController extends Controller
 {
     // ── Grados disponibles (definidos una sola vez) ──────────────────────────
-    // CORRECCIÓN: el original los repetía en create() y edit() por separado.
+   
     private const GRADOS = [
         '1er Grado', '2do Grado', '3er Grado',
         '4to Grado', '5to Grado', '6to Grado',
@@ -150,7 +150,7 @@ class MatriculaController extends Controller
         try {
             DB::beginTransaction();
 
-            // ── Padre ────────────────────────────────────────────────────
+            // ── Padre ─────────────────────────────────────────────────────
             $padre = Padre::where('dni', $validated['padre_dni'])->first();
 
             // Solo en matrícula admin: bloquear si ya existe el padre
@@ -209,7 +209,7 @@ class MatriculaController extends Controller
                 }
             }
 
-            // ── Estudiante ───────────────────────────────────────────────
+            // ── Estudiante ────────────────────────────────────────────────
             $nombrePartes   = explode(' ', trim($validated['estudiante_nombre']),   2);
             $apellidoPartes = explode(' ', trim($validated['estudiante_apellido']), 2);
 
@@ -252,11 +252,7 @@ class MatriculaController extends Controller
                     : ($validated['observaciones'] ?? null),
             ]);
 
-            // ── Documentos ───────────────────────────────────────────────
-            // CORRECCIÓN: el original guardaba rutas en $documentosRutas
-            // pero el update estaba comentado — los archivos se subían al
-            // storage pero las rutas NUNCA se guardaban en la BD.
-            // Se descomenta y corrige la actualización.
+            // ── Documentos ────────────────────────────────────────────────
             $documentosRutas = [];
 
             $archivosDoc = [
@@ -276,6 +272,11 @@ class MatriculaController extends Controller
 
             if (!empty($documentosRutas)) {
                 $matricula->update($documentosRutas);
+            }
+
+            if ($estadoInicial === 'aprobada') {
+                $matricula->update(['fecha_confirmacion' => now()]);
+                $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
             }
 
             DB::commit();
@@ -301,7 +302,7 @@ class MatriculaController extends Controller
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // SUCCESS (matrícula pública)
+    // SUCCESS
     // ────────────────────────────────────────────────────────────────────────
 
     public function success()
@@ -437,11 +438,6 @@ class MatriculaController extends Controller
     // CAMBIOS DE ESTADO
     // ────────────────────────────────────────────────────────────────────────
 
-    /**
-     * Aprobar matrícula.
-     * CORRECCIÓN: el original solo permitía aprobar si estado era 'pendiente'.
-     * Se mantiene esa restricción pero se agrega mensaje más claro.
-     */
     public function confirmar(Matricula $matricula)
     {
         if ($matricula->estado !== 'pendiente') {
@@ -455,9 +451,6 @@ class MatriculaController extends Controller
         return back()->with('success', 'Matrícula aprobada correctamente.');
     }
 
-    /**
-     * Rechazar matrícula.
-     */
     public function rechazar(Request $request, Matricula $matricula)
     {
         $request->validate([
@@ -494,5 +487,69 @@ class MatriculaController extends Controller
         $matricula->update(['estado' => 'cancelada']);
 
         return back()->with('success', 'Matrícula cancelada correctamente.');
+    }
+
+    /**
+     * Aprobar rápido (patch desde index).
+     */
+    public function aprobar(Matricula $matricula)
+    {
+        $matricula->update(['estado' => 'aprobada']);
+
+        return back()->with('success', 'Matrícula aprobada correctamente.');
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // APROBACIÓN — crear/activar usuario del padre
+    // ────────────────────────────────────────────────────────────────────────
+
+    private function procesarAprobacion(Matricula $matricula): void
+    {
+        $padre      = $matricula->padre;
+        $estudiante = $matricula->estudiante;
+
+        if (!$padre || !$estudiante) {
+            return;
+        }
+
+        if (!$padre->user_id) {
+
+            $rolPadre = Rol::where('nombre', 'like', '%adre%')
+                           ->orWhere('nombre', 'like', '%utor%')
+                           ->first();
+
+            if ($padre->correo && !User::where('email', $padre->correo)->exists()) {
+                $email = $padre->correo;
+            } else {
+                $base  = Str::slug($padre->nombre . '.' . $padre->apellido) . '.' . $padre->id;
+                $email = $base . '@escuela.edu';
+
+                if (User::where('email', $email)->exists()) {
+                    $email = 'padre.' . $padre->id . '.' . time() . '@escuela.edu';
+                }
+            }
+
+            $user = User::create([
+                'name'              => $padre->nombre . ' ' . $padre->apellido,
+                'email'             => $email,
+                'password'          => Hash::make($padre->dni),
+                'user_type'         => 'padre',
+                'id_rol'            => $rolPadre?->id ?? 5,
+                'activo'            => true,
+                'email_verified_at' => now(),
+                'permissions'       => json_encode([
+                    'ver_calificaciones' => true,
+                    'ver_asistencias'    => true,
+                ]),
+            ]);
+
+            $padre->update(['user_id' => $user->id]);
+
+        } else {
+            User::where('id', $padre->user_id)->update(['activo' => true]);
+        }
+
+        $padre->update(['estado' => 'activo']);
+        $estudiante->update(['estado' => 'activo']);
     }
 }

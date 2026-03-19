@@ -16,9 +16,6 @@ use App\Models\Profesor;
  * @method static \App\Models\User|null find($id)
  * @method static \Illuminate\Database\Eloquent\Builder with($relations)
  *
- * Estas anotaciones le indican al IDE que auth()->user() retorna este modelo.
- * Sin esto, el IDE marca "Undefined method 'user'" aunque el código funcione.
- *
  * @property int         $id
  * @property string      $name
  * @property string      $email
@@ -32,6 +29,7 @@ use App\Models\Profesor;
  *
  * @property-read \App\Models\Rol|null                     $rol
  * @property-read \App\Models\Padre|null                   $padre
+ * @property-read \App\Models\Estudiante|null              $estudiante
  * @property-read \App\Models\Profesor|null                $docente
  * @property-read \Illuminate\Support\Collection           $notificaciones
  * @property-read \App\Models\NotificacionPreferencia|null $notificacionPreferencias
@@ -80,38 +78,31 @@ class User extends Authenticatable
         return $this->belongsTo(Rol::class, 'id_rol', 'id');
     }
 
-    /**
-     * Relación con Padre via user_id.
-     * NOTA: Si la tabla `padres` no tiene columna user_id, esta relación
-     * retornará null siempre. Agregar la columna con una migración si se
-     * necesita que los padres tengan login propio.
-     */
     public function padre()
     {
         return $this->hasOne(Padre::class, 'user_id');
     }
 
     /**
-     * NOTA: La tabla `profesores` NO tiene columna user_id.
-     * Se busca el profesor por coincidencia de email.
+     * Estudiante buscado por coincidencia de email.
+     * La tabla `estudiantes` no tiene columna user_id,
+     * por lo que se busca igual que con profesores.
+     * Uso: $user->estudiante  →  retorna Estudiante|null
+     */
+    public function getEstudianteAttribute(): ?Estudiante
+    {
+        return Estudiante::where('email', $this->email)->first();
+    }
+
+    /**
+     * Profesor buscado por coincidencia de email.
+     * La tabla `profesores` no tiene columna user_id.
      * Uso: $user->docente  →  retorna Profesor|null
      */
     public function getDocenteAttribute(): ?Profesor
     {
         return Profesor::where('email', $this->email)->first();
     }
-
-    /**
-     * NOTA: La tabla `estudiantes` NO tiene columna user_id.
-     * Los estudiantes no tienen cuenta propia en users;
-     * acceden a través del padre/tutor.
-     * Este método queda comentado para evitar errores de columna.
-     *
-     * public function estudiante()
-     * {
-     *     return $this->hasOne(Estudiante::class, 'user_id');
-     * }
-     */
 
     public function notificaciones()
     {
@@ -233,7 +224,8 @@ class User extends Authenticatable
 
     public function tienePermiso(string $permiso): bool
     {
-        $permiso   = strtolower(trim($permiso));
+        $permiso = strtolower(trim($permiso));
+
         $jsonPerms = $this->permissions ?? [];
 
         if (is_array($jsonPerms)) {
@@ -311,12 +303,14 @@ class User extends Authenticatable
             }
         }
 
-        // Estudiantes no tienen cuenta propia — sin acceso directo
         if ($this->isEstudiante()) {
+            $estudianteId = Estudiante::where('email', $this->email)->value('id');
+            if ($estudianteId) {
+                return Observacion::where('estudiante_id', $estudianteId);
+            }
             return Observacion::whereRaw('0 = 1');
         }
 
-        // Padres: acceso a observaciones de sus estudiantes (si padre tiene user_id)
         if ($this->isPadre() && $this->padre) {
             $estudianteIds = $this->padre
                 ->estudiantes()
@@ -325,19 +319,6 @@ class User extends Authenticatable
         }
 
         return Observacion::whereRaw('0 = 1');
-    }
-
-    public function padresPermitidos()
-    {
-        if ($this->isSuperAdmin() || $this->isAdmin() || $this->isDocente()) {
-            return Padre::query();
-        }
-
-        if ($this->isPadre() && $this->padre) {
-            return Padre::where('id', $this->padre->id);
-        }
-
-        return Padre::whereRaw('0 = 1');
     }
 
     // =========================================================================
@@ -365,6 +346,23 @@ class User extends Authenticatable
     }
 
     // =========================================================================
+    // PADRES
+    // =========================================================================
+
+    public function padresPermitidos()
+    {
+        if ($this->isSuperAdmin() || $this->isAdmin() || $this->isDocente()) {
+            return Padre::query();
+        }
+
+        if ($this->isPadre() && $this->padre) {
+            return Padre::where('id', $this->padre->id);
+        }
+
+        return Padre::whereRaw('0 = 1');
+    }
+
+    // =========================================================================
     // OBTENER TODOS LOS PERMISOS
     // =========================================================================
 
@@ -383,10 +381,7 @@ class User extends Authenticatable
         if ($this->rol && $this->rol->permisos instanceof \Illuminate\Support\Collection) {
             $lista = array_merge(
                 $lista,
-                $this->rol->permisos
-                    ->pluck('nombre')
-                    ->map(fn($n) => strtolower($n))
-                    ->toArray()
+                $this->rol->permisos->pluck('nombre')->map(fn($n) => strtolower($n))->toArray()
             );
         }
 

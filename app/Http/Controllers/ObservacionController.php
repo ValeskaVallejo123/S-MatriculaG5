@@ -13,11 +13,9 @@ class ObservacionController extends Controller
     // ────────────────────────────────────────────────────────────────────────
     // INDEX
     // ────────────────────────────────────────────────────────────────────────
-
     public function index(Request $request)
     {
-        // usuarioAuth() viene del Controller base — retorna User tipado, sin warnings
-        $user  = $this->usuarioAuth();
+        $user  = Auth::user();
         $info  = $user->infoParaObservaciones();
 
         $query = Observacion::with(['estudiante', 'profesor'])->latest();
@@ -37,10 +35,8 @@ class ObservacionController extends Controller
             });
 
         } elseif ($user->isEstudiante()) {
-            $query->where('estudiante_id', $info['estudiante_id'] ?? null);
-
-        } elseif ($user->isAdmin()) {
-            // Admin ve todas — sin restricción adicional
+            $estudianteId = $info['estudiante_id'] ?? null;
+            $query->where('estudiante_id', $estudianteId);
 
         } else {
             abort(403, 'No tienes permiso para ver observaciones.');
@@ -65,22 +61,31 @@ class ObservacionController extends Controller
     // ────────────────────────────────────────────────────────────────────────
     // CREATE
     // ────────────────────────────────────────────────────────────────────────
+   public function create()
+{
+    $estudiantes = Estudiante::orderBy('apellido1')->orderBy('nombre1')->get();
+    $profesores  = Profesor::orderBy('nombre')->get();
 
-    public function create()
-    {
-        $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $profesores  = Profesor::orderBy('nombre')->get();
+    $estudiantesJS = $estudiantes->map(function ($e) {
+        return [
+            'id'      => $e->id,
+            'nombre'  => $e->nombreCompleto ?? ($e->nombre1 . ' ' . $e->apellido1),
+            'grado'   => $e->grado   ?? '',
+            'seccion' => $e->seccion ?? '',
+            'dni'     => $e->dni     ?? '',
+            'foto'    => $e->foto    ? '/storage/' . $e->foto : null,
+        ];
+    });
 
-        return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
-    }
+    return view('observaciones.createObservacion', compact('estudiantes', 'profesores', 'estudiantesJS'));
+}
 
     // ────────────────────────────────────────────────────────────────────────
     // STORE
     // ────────────────────────────────────────────────────────────────────────
-
     public function store(Request $request)
     {
-        $user = $this->usuarioAuth();
+        $user = Auth::user();
 
         $validated = $request->validate([
             'estudiante_id' => 'required|exists:estudiantes,id',
@@ -89,7 +94,7 @@ class ObservacionController extends Controller
             'profesor_id'   => 'nullable|exists:profesores,id',
         ]);
 
-        // Si el usuario es docente, se asigna automáticamente su profesor_id
+        // Docente: se asigna automáticamente su profesor_id
         if ($user->isDocente()) {
             $info = $user->infoParaObservaciones();
             $validated['profesor_id'] = $info['profesor_id'] ?? null;
@@ -104,23 +109,40 @@ class ObservacionController extends Controller
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // EDIT
+    // SHOW
     // ────────────────────────────────────────────────────────────────────────
-
-    public function edit(Observacion $observacion)
+    public function show(Observacion $observacion)
     {
         $this->autorizarModificacion($observacion);
-
-        $estudiantes = Estudiante::orderBy('nombre1')->get();
-        $profesores  = Profesor::orderBy('nombre')->get();
-
-        return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores'));
+        return view('observaciones.showObservacion', compact('observacion'));
     }
 
     // ────────────────────────────────────────────────────────────────────────
+    // EDIT
+    // ────────────────────────────────────────────────────────────────────────
+   public function edit(Observacion $observacion)
+{
+    $this->autorizarModificacion($observacion);
+
+    $estudiantes = Estudiante::orderBy('apellido1')->orderBy('nombre1')->get();
+    $profesores  = Profesor::orderBy('nombre')->get();
+
+    $estudiantesJS = $estudiantes->map(function ($e) {
+        return [
+            'id'      => $e->id,
+            'nombre'  => $e->nombreCompleto ?? ($e->nombre1 . ' ' . $e->apellido1),
+            'grado'   => $e->grado   ?? '',
+            'seccion' => $e->seccion ?? '',
+            'dni'     => $e->dni     ?? '',
+            'foto'    => $e->foto    ? '/storage/' . $e->foto : null,
+        ];
+    });
+
+    return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores', 'estudiantesJS'));
+}
+    // ────────────────────────────────────────────────────────────────────────
     // UPDATE
     // ────────────────────────────────────────────────────────────────────────
-
     public function update(Request $request, Observacion $observacion)
     {
         $this->autorizarModificacion($observacion);
@@ -141,11 +163,9 @@ class ObservacionController extends Controller
     // ────────────────────────────────────────────────────────────────────────
     // DESTROY
     // ────────────────────────────────────────────────────────────────────────
-
     public function destroy(Observacion $observacion)
     {
         $this->autorizarModificacion($observacion);
-
         $observacion->delete();
 
         return redirect()->route('observaciones.index')
@@ -155,10 +175,9 @@ class ObservacionController extends Controller
     // ────────────────────────────────────────────────────────────────────────
     // HELPER PRIVADO
     // ────────────────────────────────────────────────────────────────────────
-
     private function autorizarModificacion(Observacion $observacion): void
     {
-        $user = $this->usuarioAuth();
+        $user = Auth::user();
 
         if ($user->isSuperAdmin() || $user->isAdmin()) {
             return;
