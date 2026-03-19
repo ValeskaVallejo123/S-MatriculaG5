@@ -10,7 +10,7 @@ class PeriodoAcademicoController extends Controller
     public function __construct()
     {
         // SOLO admin y super_admin pueden hacer CRUD
-        $this->middleware(['auth', 'rol:admin,super_admin'])
+        $this->middleware(['auth', 'role:admin,super_admin'])
             ->except(['index']); // index es visible para todos
     }
 

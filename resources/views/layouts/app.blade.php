@@ -406,18 +406,7 @@
                 <i class="fas fa-user-tag"></i><span>Asignar Profesor</span>
             </a>
         </li>
-        <li class="menu-item">
-    @if($isSuperAdmin)
-        <a href="{{ route('carga-docente.index') }}"
-           class="menu-link {{ request()->routeIs('carga-docente.*') ? 'active' : '' }}">
-            <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
-        </a>
-    @else
-        <a href="#" class="menu-link disabled-link" title="Sin acceso">
-            <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
-        </a>
-    @endif
-</li>
+        
         <li class="menu-item">
             <a href="{{ route('secciones.index') }}"
                class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
@@ -425,15 +414,15 @@
             </a>
         </li>
         <li class="menu-item">
-    <a href="{{ route('superadmin.cupos_maximos.index') }}"
-       class="menu-link {{ request()->routeIs('superadmin.cupos_maximos.*') ? 'active' : '' }}">
-        <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
-    </a>
-</li>
+            <a href="{{ route('cupos_maximos.index') }}"
+               class="menu-link {{ request()->routeIs('cupos_maximos.*') ? 'active' : '' }}">
+                <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
+            </a>
+        </li>
 
         <li class="menu-section-title">CALENDARIO</li>
         <li class="menu-item">
-            <a href="{{ route('periodos-academicos.index') }}"
+            <a href="{{ route('superadmin.periodos-academicos.index') }}"
                class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
                 <i class="fas fa-calendar-alt"></i><span>Períodos Académicos</span>
             </a>
@@ -453,8 +442,8 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('documentos.index') }}"
-               class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
+            <a href="{{ route('superadmin.documentos.index') }}"
+               class="menu-link {{ request()->routeIs('superadmin.documentos.*', 'documentos.*') ? 'active' : '' }}">
                 <i class="fas fa-folder-open"></i><span>Documentos</span>
             </a>
         </li>

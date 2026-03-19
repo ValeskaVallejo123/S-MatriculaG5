@@ -1,3 +1,16 @@
+@php
+    use App\Http\Controllers\SeccionController;
+
+    $gradoSeleccionado = old('estudiante_grado');
+
+    $gradoNorm = $gradoSeleccionado
+        ? SeccionController::normalizarGrado($gradoSeleccionado)
+        : null;
+
+    $secsDelGrado = $gradoNorm
+        ? ($seccionesPorGrado[$gradoNorm] ?? collect())
+        : collect();
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -85,6 +98,15 @@
         .form-select.campo-rellenado {
             background-color: #e8f4fd;
             border-color: #4ec7d2;
+        }
+
+        /* Campo deshabilitado */
+        .form-select:disabled,
+        .form-control:disabled {
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
+            cursor: not-allowed;
+            opacity: .75;
         }
 
         /* Sin icono izquierdo (textarea dirección, observaciones) */
@@ -208,6 +230,18 @@
             pointer-events: none;
             z-index: 5;
         }
+
+        /* ── Spinner de sección ── */
+        #seccion-spinner {
+            display: none;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4ec7d2;
+            font-size: .85rem;
+            z-index: 5;
+        }
     </style>
 </head>
 <body>
@@ -221,6 +255,17 @@
         <p>Escuela Gabriela Mistral - Año Escolar {{ date('Y') }}</p>
     </div>
 </div>
+
+{{-- Mapa completo de secciones por grado → accesible en JS para el filtrado dinámico --}}
+<script>
+    const SECCIONES_POR_GRADO = @json(
+        collect($seccionesPorGrado)->map(fn($secs) =>
+            $secs->map(fn($s) => ['id' => $s->id, 'nombre' => $s->nombre])->values()
+        )
+    );
+    const GRADO_SELECCIONADO_OLD = @json($gradoNorm);
+    const SECCION_SELECCIONADA_OLD = @json(old('estudiante_seccion'));
+</script>
 
 <div class="container">
     <div class="form-container">
@@ -595,7 +640,7 @@
                             </div>
                         </div>
 
-                        {{-- Grado --}}
+                        {{-- ── Grado ── --}}
                         <div class="col-md-6">
                             <label for="estudiante_grado" class="form-label">
                                 Grado <span class="required-mark">*</span>
@@ -622,8 +667,41 @@
                                     </div>
                                 @enderror
                             </div>
+                        </div>
+
+                        {{-- ── Sección (depende del grado) ── --}}
+                        <div class="col-md-6">
+                            <label for="estudiante_seccion" class="form-label">
+                                Sección <span class="required-mark">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-door-open input-icon" style="z-index:10;"></i>
+                                <i class="fas fa-spinner fa-spin" id="seccion-spinner"></i>
+                                <select class="form-select @error('estudiante_seccion') is-invalid @enderror"
+                                        id="estudiante_seccion"
+                                        name="estudiante_seccion"
+                                        required
+                                        {{ $secsDelGrado->isEmpty() ? 'disabled' : '' }}>
+                                    @if($secsDelGrado->isEmpty())
+                                        <option value="">— Selecciona un grado primero —</option>
+                                    @else
+                                        <option value="">Seleccionar sección...</option>
+                                        @foreach($secsDelGrado as $seccion)
+                                            <option value="{{ $seccion->id }}"
+                                                {{ old('estudiante_seccion') == $seccion->id ? 'selected' : '' }}>
+                                                {{ $seccion->nombre }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                @error('estudiante_seccion')
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
                             <small class="text-muted" style="font-size:.75rem;">
-                                <i class="fas fa-info-circle me-1"></i>La sección será asignada por el administrador
+                                <i class="fas fa-info-circle me-1"></i>Las secciones se cargan según el grado elegido
                             </small>
                         </div>
 
@@ -872,8 +950,8 @@
        Mostrar / ocultar campo "otro parentesco"
     ============================================================ */
     function toggleOtroParentesco() {
-        const select  = document.getElementById('padre_parentesco');
-        const otroDiv = document.getElementById('otro_parentesco_div');
+        const select    = document.getElementById('padre_parentesco');
+        const otroDiv   = document.getElementById('otro_parentesco_div');
         const otroInput = document.getElementById('padre_parentesco_otro');
         if (!select || !otroDiv || !otroInput) return;
 
@@ -884,10 +962,75 @@
     }
 
     /* ============================================================
-       Archivos: mostrar preview y marcar caja
+       Secciones dinámicas según el grado seleccionado
+       ─────────────────────────────────────────────────────────────
+       SECCIONES_POR_GRADO   → objeto JSON inyectado por Blade con
+                               la forma { "primer_grado": [{id, nombre}, …], … }
+       normalizarGrado()     → replica en JS la misma lógica que
+                               SeccionController::normalizarGrado()
+    ============================================================ */
+    function normalizarGrado(grado) {
+        if (!grado) return null;
 
-       CORRECCIÓN: la función limpiarArchivo usaba `box` como
-       variable no declarada. Ahora recibe el boxId correctamente.
+        // Eliminar tildes, convertir a minúsculas y reemplazar espacios por _
+        const mapa = {
+            'á':'a','é':'e','í':'i','ó':'o','ú':'u',
+            'Á':'a','É':'e','Í':'i','Ó':'o','Ú':'u'
+        };
+        return grado
+            .toLowerCase()
+            .replace(/[áéíóúÁÉÍÓÚ]/g, c => mapa[c] || c)
+            .replace(/\s+/g, '_');
+    }
+
+    function actualizarSecciones(gradoRaw) {
+        const selectSec = document.getElementById('estudiante_seccion');
+        const spinner   = document.getElementById('seccion-spinner');
+        if (!selectSec) return;
+
+        // Limpiar opciones anteriores
+        selectSec.innerHTML = '';
+
+        const gradoNorm = normalizarGrado(gradoRaw);
+        const secciones  = (gradoNorm && SECCIONES_POR_GRADO[gradoNorm]) || [];
+
+        if (!gradoRaw || secciones.length === 0) {
+            // Sin grado o sin secciones disponibles
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = gradoRaw
+                ? '— Sin secciones disponibles para este grado —'
+                : '— Selecciona un grado primero —';
+            selectSec.appendChild(placeholder);
+            selectSec.disabled = true;
+            selectSec.required = false;
+        } else {
+            // Opción vacía inicial
+            const primera = document.createElement('option');
+            primera.value = '';
+            primera.textContent = 'Seleccionar sección...';
+            selectSec.appendChild(primera);
+
+            secciones.forEach(function (sec) {
+                const opt = document.createElement('option');
+                opt.value = sec.id;
+                opt.textContent = sec.nombre;
+                // Restaurar selección previa (old() en recarga por error)
+                if (String(sec.id) === String(SECCION_SELECCIONADA_OLD)) {
+                    opt.selected = true;
+                }
+                selectSec.appendChild(opt);
+            });
+
+            selectSec.disabled = false;
+            selectSec.required = true;
+        }
+
+        marcarCampo(selectSec);
+    }
+
+    /* ============================================================
+       Archivos: mostrar preview y marcar caja
     ============================================================ */
     function mostrarArchivo(inputEl, previewId, boxId) {
         const preview = document.getElementById(previewId);
@@ -914,7 +1057,7 @@
         if (box) box.classList.add('archivo-subido');
 
         let icono = 'fa-file';
-        if (file.type.includes('pdf'))   icono = 'fa-file-pdf';
+        if (file.type.includes('pdf'))        icono = 'fa-file-pdf';
         else if (file.type.includes('image')) icono = 'fa-file-image';
 
         const filePreview = document.createElement('div');
@@ -935,8 +1078,7 @@
     }
 
     /* ============================================================
-       CORRECCIÓN: limpiarArchivo — antes usaba `box` sin declarar.
-       Ahora el botón lleva data-* y se delega el evento al documento.
+       Delegación de eventos: botón "Quitar" de archivos
     ============================================================ */
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-clear');
@@ -952,15 +1094,14 @@
     });
 
     /* ============================================================
-       Enlazar inputs de archivo a sus cajas (sin onchange inline)
+       Enlazar inputs de archivo a sus cajas
     ============================================================ */
     function enlazarInputsArchivo() {
         const archivos = [
-            { inputId: 'foto_perfil',   previewId: 'preview_foto',           boxId: 'box_foto' },
+            { inputId: 'foto_perfil',    previewId: 'preview_foto',           boxId: 'box_foto' },
             { inputId: 'calificaciones', previewId: 'preview_calificaciones', boxId: 'box_calificaciones' },
-            { inputId: 'acta_nacimiento', previewId: 'preview_acta',         boxId: 'box_acta' },
+            { inputId: 'acta_nacimiento',previewId: 'preview_acta',           boxId: 'box_acta' },
         ];
-
         archivos.forEach(function (cfg) {
             const input = document.getElementById(cfg.inputId);
             if (input) {
@@ -1006,6 +1147,20 @@
         const selectParentesco = document.getElementById('padre_parentesco');
         if (selectParentesco) {
             selectParentesco.addEventListener('change', toggleOtroParentesco);
+        }
+
+        // Enlazar cambio de grado → actualizar secciones
+        const selectGrado = document.getElementById('estudiante_grado');
+        if (selectGrado) {
+            selectGrado.addEventListener('change', function () {
+                actualizarSecciones(this.value);
+                marcarCampo(this);
+            });
+
+            // Si hay un grado preseleccionado por old(), poblar secciones inmediatamente
+            if (selectGrado.value) {
+                actualizarSecciones(selectGrado.value);
+            }
         }
     });
 

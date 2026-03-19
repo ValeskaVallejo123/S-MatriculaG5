@@ -9,6 +9,8 @@ class Grado extends Model
 {
     use HasFactory;
 
+    protected $table = 'grados';
+
     protected $fillable = [
         'nivel',
         'numero',
@@ -21,33 +23,22 @@ class Grado extends Model
         'activo' => 'boolean',
     ];
 
-    // Relación con materias a través de profesor_materia_grados
+    // --- Relaciones ---
+
+    /**
+     * Relación muchos a muchos con Materia.
+     * Se integra la versión con llaves foráneas explícitas.
+     */
     public function materias()
     {
-        return $this->belongsToMany(Materia::class, 'profesor_materia_grados')
-                    ->withPivot('profesor_id', 'seccion')
-                    ->withTimestamps();
-    }
-
-    // Accesor para nombre completo del grado
-    public function getNombreCompletoAttribute()
-    {
-        $nombre = $this->numero . '° Grado';
-        if ($this->seccion) {
-            $nombre .= ' Sección ' . $this->seccion;
-        }
-        return $nombre;
-    }
-
-    // Scope para filtrar por nivel
-    public function scopePrimaria($query)
-    {
-        return $query->where('nivel', 'primaria');
-    }
-
-    public function scopeSecundaria($query)
-    {
-        return $query->where('nivel', 'secundaria');
+        return $this->belongsToMany(
+            Materia::class,
+            'profesor_materia_grados', // Tabla pivot
+            'grado_id',                // Llave foránea en pivot para este modelo
+            'materia_id'               // Llave foránea en pivot para el modelo relacionado
+        )
+        ->withPivot(['profesor_id', 'seccion', 'horas_semanales'])
+        ->withTimestamps();
     }
 
     public function profesores()
@@ -58,5 +49,28 @@ class Grado extends Model
     public function profesoresMaterias()
     {
         return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
+    }
+
+    // --- Scopes ---
+
+    public function scopePrimaria($query)
+    {
+        return $query->where('nivel', 'primaria');
+    }
+
+    public function scopeSecundaria($query)
+    {
+        return $query->where('nivel', 'secundaria');
+    }
+
+    // --- Accessors ---
+
+    public function getNombreCompletoAttribute(): string
+    {
+        $nombre = $this->numero . '° Grado';
+        if ($this->seccion) {
+            $nombre .= ' Sección ' . $this->seccion;
+        }
+        return $nombre;
     }
 }

@@ -9,18 +9,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('matriculas', function (Blueprint $table) {
-            $table->foreignId('seccion_id')
-                  ->nullable()
-                  ->constrained('secciones')
-                  ->nullOnDelete();
+            // Solo agrega si no existe — evita el error de columna duplicada
+            if (!Schema::hasColumn('matriculas', 'seccion_id')) {
+                $table->unsignedBigInteger('seccion_id')->nullable()->after('estudiante_id');
+                $table->foreign('seccion_id')
+                      ->references('id')
+                      ->on('seccion')
+                      ->nullOnDelete();
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('matriculas', function (Blueprint $table) {
-            $table->dropForeign(['seccion_id']);
-            $table->dropColumn('seccion_id');
+            if (Schema::hasColumn('matriculas', 'seccion_id')) {
+                $table->dropForeign(['seccion_id']);
+                $table->dropColumn('seccion_id');
+            }
         });
     }
 };

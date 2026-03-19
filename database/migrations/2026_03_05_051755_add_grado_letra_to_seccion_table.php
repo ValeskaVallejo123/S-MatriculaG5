@@ -10,20 +10,19 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('seccion', function (Blueprint $table) {
-        $table->id();
-        $table->string('nombre');
-        $table->integer('capacidad')->default(30);
-        $table->timestamps();
-    });
-}
+    {
+        Schema::table('seccion', function (Blueprint $table) {
+            $table->string('grado')->after('id'); // O el tipo de dato que necesites
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('seccion');
+        Schema::table('seccion', function (Blueprint $table) {
+            //
+        });
     }
 };
