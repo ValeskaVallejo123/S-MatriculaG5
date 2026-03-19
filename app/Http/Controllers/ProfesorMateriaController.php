@@ -15,16 +15,23 @@ class ProfesorMateriaController extends Controller
         $this->middleware(['auth']);
     }
 
-    /** Lista todas las asignaciones agrupadas por profesor */
-    public function index()
+    /** Lista todas las asignaciones con paginación */
+    public function index(Request $request)
     {
-        $asignaciones = ProfesorMateriaGrado::with(['profesor', 'materia', 'grado'])
+        $perPage = in_array($request->per_page, [10, 25, 50]) ? $request->per_page : 15;
+
+        $query = ProfesorMateriaGrado::with(['profesor', 'materia', 'grado'])
             ->orderBy('profesor_id')
             ->orderBy('grado_id')
-            ->orderBy('seccion')
-            ->get()
-            ->groupBy('profesor_id');
+            ->orderBy('seccion');
 
+        if ($request->filled('buscar')) {
+            $b = $request->buscar;
+            $query->whereHas('profesor', fn($q) => $q->where('nombre', 'like', "%$b%")->orWhere('apellido', 'like', "%$b%"))
+                  ->orWhereHas('materia', fn($q) => $q->where('nombre', 'like', "%$b%"));
+        }
+
+        $asignaciones      = $query->paginate($perPage)->withQueryString();
         $totalAsignaciones = ProfesorMateriaGrado::count();
         $totalProfesores   = ProfesorMateriaGrado::distinct('profesor_id')->count();
 
@@ -130,12 +137,12 @@ class ProfesorMateriaController extends Controller
     }
 
     /** Eliminar asignación */
-    public function destroy(ProfesorMateriaGrado $profesor_materia_grado)
+    public function destroy(Request $request, ProfesorMateriaGrado $profesor_materia_grado)
     {
         $profesor_materia_grado->delete();
 
         return redirect()
-            ->route('profesor_materia_grado.index')
+            ->route('profesor_materia_grado.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Asignación eliminada.');
     }
 }

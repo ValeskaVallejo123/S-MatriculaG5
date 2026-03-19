@@ -4,6 +4,22 @@
 
 @section('page-title', 'Vincular Padre con Estudiante')
 
+@section('topbar-actions')
+    <div style="display:flex;gap:10px;">
+        <a href="{{ route('padres.create') }}"
+           class="btn btn-sm"
+           style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
+                  color:white;border:none;border-radius:8px;font-weight:600;">
+            <i class="fas fa-plus me-1"></i> Nuevo Padre/Tutor
+        </a>
+        <a href="{{ isset($estudiante) ? route('estudiantes.show', $estudiante->id) : route('padres.index') }}"
+           class="btn btn-sm"
+           style="border:2px solid #00508f;color:#00508f;border-radius:8px;font-weight:600;">
+            <i class="fas fa-arrow-left me-1"></i> Volver
+        </a>
+    </div>
+@endsection
+
 @section('content')
 <div class="container-fluid px-4">
 
@@ -80,10 +96,10 @@
                                         DNI/Identidad
                                     </label>
                                     <input type="text"
-                                           name="identidad"
+                                           name="dni"
                                            class="form-control-modern"
                                            placeholder="Ej: 0801-1990-12345"
-                                           value="{{ request('identidad') }}">
+                                           value="{{ request('dni') }}">
                                 </div>
                             </div>
 
@@ -122,7 +138,7 @@
     </div>
 
     <!-- Resultados de Búsqueda -->
-    @if(request()->anyFilled(['nombre', 'identidad', 'telefono']))
+    @if(request()->anyFilled(['nombre', 'dni', 'telefono']))
     <div class="row">
         <div class="col-12">
             <div class="results-card">

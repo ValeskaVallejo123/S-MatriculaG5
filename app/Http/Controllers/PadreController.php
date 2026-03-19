@@ -81,7 +81,7 @@ class PadreController extends Controller
      */
     public function show($id)
     {
-        $padre = Padre::with(['estudiantes'])->findOrFail($id);
+        $padre = Padre::with(['estudiantes.gradoAsignado'])->findOrFail($id);
         return view('padre.show', compact('padre'));
     }
 
@@ -113,7 +113,7 @@ class PadreController extends Controller
     /**
      * Eliminar padre
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $this->authorizeRol();
         $padre = Padre::findOrFail($id);
@@ -124,7 +124,7 @@ class PadreController extends Controller
 
         $padre->delete();
 
-        return redirect()->route('padres.index')
+        return redirect()->route('padres.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Padre/tutor eliminado correctamente.');
     }
 
@@ -142,7 +142,7 @@ class PadreController extends Controller
         }
 
         $padres = $request->anyFilled(['nombre','apellido','dni','correo','telefono'])
-            ? $query->with('estudiantes')->paginate(15)->withQueryString()
+            ? $query->orderBy('apellido')->with('estudiantes')->paginate(15)->withQueryString()
             : collect();
 
         $estudianteId = $request->input('estudiante_id');

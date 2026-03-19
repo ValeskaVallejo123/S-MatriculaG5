@@ -10,14 +10,31 @@
     </a>
 @endsection
 
-@section('content')
-<div class="container" style="max-width: 1400px;">
+@push('styles')
+<style>
+.pmgi-footer {
+    padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafafa; flex-wrap: wrap; gap: .5rem;
+}
+.pmgi-pages { font-size: .78rem; color: #94a3b8; }
+.pagination { margin: 0; gap: 3px; display: flex; }
+.pagination .page-link {
+    border-radius: 7px; padding: .3rem .65rem;
+    font-size: .78rem; font-weight: 500;
+    border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
+}
+.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-color: #4ec7d2; color: #fff;
+}
+.pagination .page-item.disabled .page-link { opacity: .45; }
+</style>
+@endpush
 
-    @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm mb-3" style="border-radius: 10px; border-left: 4px solid #388e3c !important;">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-        </div>
-    @endif
+@section('content')
+<div class="container-fluid px-4">
 
     {{-- Resumen --}}
     <div class="row g-3 mb-3">
@@ -67,13 +84,29 @@
         <div class="card-body p-0">
 
             {{-- Buscador --}}
-            <div class="p-3 border-bottom">
-                <div class="position-relative" style="max-width: 350px;">
-                    <i class="fas fa-search position-absolute" style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:0.85rem;"></i>
-                    <input type="text" id="searchInput" class="form-control form-control-sm ps-4"
-                           placeholder="Buscar profesor, materia o grado..."
-                           style="border:1.5px solid #e2e8f0;border-radius:8px;">
-                </div>
+            <div class="p-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <form method="GET" action="{{ route('profesor_materia_grado.index') }}" class="d-flex gap-2 align-items-center flex-wrap">
+                    <div class="position-relative" style="min-width:260px;">
+                        <i class="fas fa-search position-absolute" style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:0.85rem;"></i>
+                        <input type="text" name="buscar" value="{{ request('buscar') }}"
+                               class="form-control form-control-sm ps-4"
+                               placeholder="Buscar profesor o materia..."
+                               style="border:1.5px solid #e2e8f0;border-radius:8px;">
+                    </div>
+                    <select name="per_page" class="form-select form-select-sm" style="width:auto;border:1.5px solid #e2e8f0;border-radius:8px;" onchange="this.form.submit()">
+                        @foreach([10,15,25,50] as $n)
+                            <option value="{{ $n }}" {{ request('per_page', 15) == $n ? 'selected' : '' }}>{{ $n }} por página</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-sm" style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border-radius:8px;padding:0.3rem 0.9rem;">
+                        <i class="fas fa-search me-1"></i> Buscar
+                    </button>
+                    @if(request('buscar'))
+                        <a href="{{ route('profesor_materia_grado.index') }}" class="btn btn-sm" style="border:1.5px solid #e2e8f0;border-radius:8px;color:#6b7280;padding:0.3rem 0.9rem;">
+                            <i class="fas fa-times me-1"></i> Limpiar
+                        </a>
+                    @endif
+                </form>
             </div>
 
             <div class="table-responsive">
@@ -89,14 +122,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php $i = 1; @endphp
-                        @forelse($asignaciones as $profesorId => $items)
-                            @foreach($items as $asignacion)
+                        @forelse($asignaciones as $asignacion)
                             <tr class="pmg-row" style="border-bottom:1px solid #f1f5f9;">
-                                <td class="px-3 py-2 text-muted small">{{ $i++ }}</td>
+                                <td class="px-3 py-2 text-muted small">{{ $asignaciones->firstItem() + $loop->index }}</td>
                                 <td class="px-3 py-2">
                                     <div class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
-                                        {{ $asignacion->profesor->nombre_completo ?? ($asignacion->profesor->nombre . ' ' . $asignacion->profesor->apellido) }}
+                                        {{ $asignacion->profesor?->nombre_completo ?? (($asignacion->profesor?->nombre ?? '') . ' ' . ($asignacion->profesor?->apellido ?? '')) ?: 'Sin asignar' }}
                                     </div>
                                 </td>
                                 <td class="px-3 py-2">
@@ -106,7 +137,7 @@
                                     </span>
                                 </td>
                                 <td class="px-3 py-2 small" style="color:#334155;">
-                                    {{ $asignacion->grado->nombre ?? '—' }}
+                                    {{ $asignacion->grado?->nombre_completo ?? '—' }}
                                 </td>
                                 <td class="px-3 py-2 text-center">
                                     <span class="badge rounded-pill fw-bold"
@@ -117,8 +148,7 @@
                                 <td class="px-3 py-2 text-center">
                                     <div class="d-flex align-items-center justify-content-center gap-2">
                                         <a href="{{ route('profesor_materia_grado.edit', $asignacion->id) }}"
-                                           class="btn btn-sm"
-                                           title="Editar"
+                                           class="btn btn-sm" title="Editar"
                                            style="background:rgba(78,199,210,0.1);color:#00508f;border:1px solid #4ec7d2;border-radius:6px;padding:0.25rem 0.5rem;">
                                             <i class="fas fa-edit" style="font-size:0.75rem;"></i>
                                         </a>
@@ -136,7 +166,6 @@
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center py-5">
@@ -155,16 +184,16 @@
             </div>
         </div>
     </div>
-</div>
 
-@push('scripts')
-<script>
-document.getElementById('searchInput').addEventListener('input', function () {
-    const q = this.value.toLowerCase();
-    document.querySelectorAll('.pmg-row').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
-});
-</script>
-@endpush
+    {{-- Paginación --}}
+    @if($asignaciones->hasPages())
+        <div class="pmgi-footer">
+            <span class="pmgi-pages">
+                Mostrando {{ $asignaciones->firstItem() }}–{{ $asignaciones->lastItem() }} de {{ $asignaciones->total() }} asignaciones
+            </span>
+            {{ $asignaciones->appends(request()->query())->links() }}
+        </div>
+    @endif
+
+</div>
 @endsection

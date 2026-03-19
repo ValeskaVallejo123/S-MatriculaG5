@@ -106,6 +106,7 @@
 
         /* ── MAIN ── */
         .main-content { margin-left: 280px; min-height: 100vh; background: #f5f7fa; }
+        .main-content.no-sidebar { margin-left: 0; }
 
         /* ══════════════════════════════════════════════
            TOPBAR
@@ -339,12 +340,6 @@
             <a href="{{ route('matriculas.index') }}"
                class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
                 <i class="fas fa-clipboard-list"></i><span>Matrículas</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('padres.buscar') }}"
-               class="menu-link {{ request()->routeIs('padres.buscar') ? 'active' : '' }}">
-               <i class="fas fa-search"></i><span>Buscar Padre / Tutor</span>
             </a>
         </li>
         <li class="menu-item">
@@ -643,5 +638,29 @@
 </script>
 
 @stack('scripts')
+
+{{-- ── Preservar página en formularios de vistas paginadas ── --}}
+<script>
+(function () {
+    const page = new URLSearchParams(window.location.search).get('page');
+    if (!page || page === '1') return;
+
+    function injectPage(form) {
+        if (!form.querySelector('input[name="page"]')) {
+            const h = document.createElement('input');
+            h.type = 'hidden'; h.name = 'page'; h.value = page;
+            form.appendChild(h);
+        }
+    }
+
+    // Formularios ya presentes al cargar
+    document.querySelectorAll('form').forEach(injectPage);
+
+    // Formularios que aparecen dinámicamente (modales Bootstrap)
+    document.addEventListener('show.bs.modal', function (e) {
+        e.target.querySelectorAll('form').forEach(injectPage);
+    });
+})();
+</script>
 </body>
 </html>

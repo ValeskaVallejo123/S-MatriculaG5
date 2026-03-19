@@ -601,5 +601,64 @@ class MatriculaController extends Controller
 
         $padre->update(['estado' => 'activo']);
         $estudiante->update(['estado' => 'activo']);
+
+        // Asignar grado_id al estudiante si aún no tiene uno
+        if (!$estudiante->grado_id) {
+            $this->asignarGradoAlEstudiante($estudiante);
+        }
+    }
+
+    /**
+     * Mapa de string grado → [numero, nivel] para buscar en tabla grados.
+     */
+    private static function mapaGrados(): array
+    {
+        return [
+            'Primero'        => [1, 'primaria'],
+            'Segundo'        => [2, 'primaria'],
+            'Tercero'        => [3, 'primaria'],
+            'Cuarto'         => [4, 'primaria'],
+            'Quinto'         => [5, 'primaria'],
+            'Sexto'          => [6, 'primaria'],
+            '6to Grado'      => [6, 'primaria'],
+            'I curso'        => [7, 'secundaria'],
+            'Séptimo'        => [7, 'secundaria'],
+            'II curso'       => [8, 'secundaria'],
+            'Octavo'         => [8, 'secundaria'],
+            'III curso'      => [9, 'secundaria'],
+            'Noveno'         => [9, 'secundaria'],
+        ];
+    }
+
+    /**
+     * Asigna al estudiante la sección con menos alumnos del grado que corresponde.
+     */
+    private function asignarGradoAlEstudiante(\App\Models\Estudiante $estudiante): void
+    {
+        $mapa = self::mapaGrados();
+        $gradoStr = trim($estudiante->grado ?? '');
+
+        if (!isset($mapa[$gradoStr])) {
+            return;
+        }
+
+        [$numero, $nivel] = $mapa[$gradoStr];
+
+        // Buscar grado con menos estudiantes para ese nivel+numero
+        $gradoElegido = \App\Models\Grado::where('nivel', $nivel)
+            ->where('numero', $numero)
+            ->where('activo', true)
+            ->withCount('estudiantes')
+            ->orderBy('estudiantes_count')
+            ->first();
+
+        if (!$gradoElegido) {
+            return;
+        }
+
+        $estudiante->update([
+            'grado_id' => $gradoElegido->id,
+            'seccion'  => $gradoElegido->seccion,
+        ]);
     }
 }

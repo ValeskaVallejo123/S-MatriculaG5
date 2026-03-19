@@ -24,6 +24,7 @@ class Estudiante extends Model
         'direccion',
         'grado',
         'seccion',
+        'grado_id',
         'estado',
         'observaciones',
         'nombre_padre',
@@ -87,6 +88,14 @@ class Estudiante extends Model
     public function matriculas()
     {
         return $this->hasMany(Matricula::class, 'estudiante_id');
+    }
+
+    /**
+     * Grado asignado (relación con tabla grados)
+     */
+    public function gradoAsignado()
+    {
+        return $this->belongsTo(Grado::class, 'grado_id');
     }
 
     /**

@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Storage;
 class DocumentoController extends Controller
 {
     /**
+     * Listar todos los documentos.
+     */
+    public function index()
+    {
+        $documentos = Documento::with('estudiante')->paginate(15);
+
+        return view('Documentos.indexDocumento', compact('documentos'));
+    }
+
+    /**
      * Mostrar formulario de creación de documentos para un estudiante.
      *
      * CORRECCIÓN: el original recibía $estudiante_id como parámetro de ruta

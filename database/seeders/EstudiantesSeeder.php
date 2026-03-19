@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class EstudiantesSeeder extends Seeder
@@ -18,6 +19,8 @@ class EstudiantesSeeder extends Seeder
      * Secundaria: 7A    | 8A    | 9A
      *
      * ⚠️  DNI ficticios de 13 dígitos. Reemplaza con datos reales.
+     * ⚠️  Correos y contraseñas generados automáticamente. Actualizar con datos reales.
+     *     Contraseña por defecto: Alumno2025!
      */
 
     private array $nombres_f = [
@@ -43,9 +46,22 @@ class EstudiantesSeeder extends Seeder
         'Zelaya','Lagos','Bautista',
     ];
 
+    /** Convierte texto con tildes/ñ a ASCII puro para usar en emails */
+    private function slug(string $texto): string
+    {
+        $mapa = [
+            'á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n',
+            'Á'=>'a','É'=>'e','Í'=>'i','Ó'=>'o','Ú'=>'u','Ü'=>'u','Ñ'=>'n',
+        ];
+        return strtolower(strtr($texto, $mapa));
+    }
+
     public function run(): void
     {
         $now = Carbon::now();
+
+        // Obtener el ID del rol Estudiante (si ya fue creado por RolesPermisosSeeder)
+        $estudianteRolId = DB::table('roles')->where('nombre', 'Estudiante')->value('id');
 
         // [ grado, seccion, anio_nacimiento_base ]
         $secciones = [
@@ -102,9 +118,28 @@ class EstudiantesSeeder extends Seeder
                 $anio = $anioBase - ($i % 2);
                 $fechaNacimiento = "{$anio}-{$mes}-{$dia}";
 
+                // Email único: nombre.apellido{contador}@egm.edu.hn
+                $email = $this->slug($nombre1) . '.' . $this->slug($ap1) . $contador . '@egm.edu.hn';
+
                 $existe = DB::table('estudiantes')->where('dni', $dni)->exists();
 
-                if (!$existe) {
+                if (! $existe) {
+                    // 1) Crear usuario en la tabla users
+                    $userId = DB::table('users')->insertGetId([
+                        'name'              => "{$nombre1} {$nombre2} {$ap1} {$ap2}",
+                        'email'             => $email,
+                        'password'          => Hash::make('Alumno2025!'),
+                        'user_type'         => 'estudiante',
+                        'id_rol'            => $estudianteRolId,
+                        'activo'            => true,
+                        'is_super_admin'    => false,
+                        'is_protected'      => false,
+                        'email_verified_at' => $now,
+                        'created_at'        => $now,
+                        'updated_at'        => $now,
+                    ]);
+
+                    // 2) Insertar el estudiante vinculado al usuario
                     DB::table('estudiantes')->insert([
                         'nombre1'          => $nombre1,
                         'nombre2'          => $nombre2,
@@ -113,13 +148,16 @@ class EstudiantesSeeder extends Seeder
                         'dni'              => $dni,
                         'fecha_nacimiento' => $fechaNacimiento,
                         'sexo'             => $sexo,
+                        'email'            => $email,
                         'grado'            => $grado,
                         'seccion'          => $seccion,
                         'estado'           => 'activo',
                         'padre_id'         => null,
+                        'user_id'          => $userId,
                         'created_at'       => $now,
                         'updated_at'       => $now,
                     ]);
+
                     $insertados++;
                 } else {
                     $omitidos++;
@@ -132,9 +170,15 @@ class EstudiantesSeeder extends Seeder
         }
 
         $this->command->info("✅ {$insertados} estudiantes insertados.");
+        $this->command->info("✅ {$insertados} usuarios creados para los estudiantes.");
         if ($omitidos > 0) {
             $this->command->warn("⚠️  {$omitidos} omitidos (DNI ya existía).");
         }
         $this->command->info("📊 Secciones: " . count($secciones) . " | Total esperado: " . (count($secciones) * 25));
+        $this->command->line('');
+        $this->command->line('  Contraseña por defecto : Alumno2025!');
+        $this->command->line('  Formato de correos     : nombre.apellido{N}@egm.edu.hn');
+        $this->command->line('');
+        $this->command->warn('⚠️  Recuerda actualizar los datos con la información real de los estudiantes.');
     }
 }

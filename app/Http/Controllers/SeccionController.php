@@ -9,20 +9,34 @@ use App\Models\Estudiante;
 
 class SeccionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // $inscripciones = matrículas con sus relaciones
-        // Solo mostramos las aprobadas que tienen estudiante
-        $inscripciones = Matricula::with(['estudiante', 'seccion'])
+        $query = Matricula::with(['estudiante', 'seccion'])
             ->where('estado', 'aprobada')
-            ->whereHas('estudiante')
-            ->latest()
-            ->get();
+            ->whereHas('estudiante');
 
-        // Lista de secciones disponibles para los modales
+        if ($request->filled('buscar')) {
+            $b = $request->buscar;
+            $query->whereHas('estudiante', fn($q) =>
+                $q->where('nombre1', 'like', "%$b%")
+                  ->orWhere('nombre2', 'like', "%$b%")
+                  ->orWhere('apellido1', 'like', "%$b%")
+                  ->orWhere('apellido2', 'like', "%$b%")
+            );
+        }
+
+        if ($request->filled('estado')) {
+            if ($request->estado === 'asignada') {
+                $query->whereNotNull('seccion_id');
+            } elseif ($request->estado === 'sin_asignar') {
+                $query->whereNull('seccion_id');
+            }
+        }
+
+        $inscripciones = $query->latest()->paginate(15)->withQueryString();
+
         $secciones = Seccion::all();
 
-        // Alumnos sin sección asignada aún
         $alumnos = Estudiante::whereDoesntHave('matriculas', function ($q) {
             $q->whereNotNull('seccion_id');
         })->orderBy('nombre1')->get();
@@ -47,7 +61,7 @@ class SeccionController extends Controller
 
         $matricula->update(['seccion_id' => $request->seccion_id]);
 
-        return redirect()->route('secciones.index')
+        return redirect()->route('secciones.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Sección asignada correctamente.');
     }
 
@@ -87,7 +101,7 @@ class SeccionController extends Controller
             ->with('success', 'Sección actualizada correctamente.');
     }
 
-    public function destroy(Seccion $seccion)
+    public function destroy(Request $request, Seccion $seccion)
     {
         if ($seccion->matriculas()->exists()) {
             return back()->with('error', 'No se puede eliminar una sección con alumnos inscritos.');
@@ -95,7 +109,7 @@ class SeccionController extends Controller
 
         $seccion->delete();
 
-        return redirect()->route('secciones.index')
+        return redirect()->route('secciones.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Sección eliminada correctamente.');
     }
 }

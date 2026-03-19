@@ -142,13 +142,13 @@ class ObservacionController extends Controller
     // DESTROY
     // ────────────────────────────────────────────────────────────────────────
 
-    public function destroy(Observacion $observacion)
+    public function destroy(Request $request, Observacion $observacion)
     {
         $this->autorizarModificacion($observacion);
 
         $observacion->delete();
 
-        return redirect()->route('observaciones.index')
+        return redirect()->route('observaciones.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Observación eliminada correctamente.');
     }
 

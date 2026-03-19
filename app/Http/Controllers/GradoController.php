@@ -49,7 +49,7 @@ class GradoController extends Controller
      */
     public function index()
     {
-        $grados = Grado::with('materias')
+        $grados = Grado::with(['materias', 'estudiantes'])
             ->orderBy('nivel')
             ->orderBy('numero')
             ->paginate(request('per_page', 15));
@@ -113,10 +113,11 @@ class GradoController extends Controller
      * Mostrar detalle de un grado
      */
     public function show(Grado $grado)
-{
-    $grado->load('materias'); // ← sin .grados
-    return view('grados.show', compact('grado'));
-}
+    {
+        $grado->load('materias');
+        $estudiantes = $grado->estudiantes()->orderBy('apellido1')->orderBy('nombre1')->get();
+        return view('grados.show', compact('grado', 'estudiantes'));
+    }
 
     /**
      * Mostrar formulario de edición
@@ -180,7 +181,7 @@ class GradoController extends Controller
 $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')->get();
         $materiasAsignadas = $grado->materias->pluck('id')->toArray();
 
-        return view('grados.asignar-materias', compact('grado'));
+        return view('grados.asignar-materias', compact('grado', 'materias', 'profesores', 'materiasAsignadas'));
     }
 
     /**

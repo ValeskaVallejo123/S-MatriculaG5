@@ -216,11 +216,11 @@
         </div>
         <div class="adm-stat">
             <div class="adm-stat-icon" style="background:linear-gradient(135deg,#fb923c,#ea580c);">
-                <i class="fas fa-book-open"></i>
+                <i class="fas fa-user-graduate"></i>
             </div>
             <div>
-                <div class="adm-stat-lbl">Total Materias</div>
-                <div class="adm-stat-num">{{ $grados->getCollection()->sum(fn($g) => $g->materias->count()) }}</div>
+                <div class="adm-stat-lbl">Total Estudiantes</div>
+                <div class="adm-stat-num">{{ $grados->getCollection()->sum(fn($g) => $g->estudiantes->count()) }}</div>
             </div>
         </div>
     </div>
@@ -293,7 +293,10 @@
                 <span class="grado-meta">
                     <i class="fas fa-book"></i> {{ $grado->materias->count() }} materias
                 </span>
-                {{-- Estado activo/inactivo (nuevo del main) --}}
+                <span class="grado-meta" style="background:#f0fdf4;color:#059669;">
+                    <i class="fas fa-user-graduate"></i> {{ $grado->estudiantes->count() }} alumnos
+                </span>
+                {{-- Estado activo/inactivo --}}
                 @if(isset($grado->activo))
                     <span class="{{ $grado->activo ? 'badge-activo' : 'badge-inactivo' }}">
                         <i class="fas fa-circle" style="font-size:.5rem;"></i>

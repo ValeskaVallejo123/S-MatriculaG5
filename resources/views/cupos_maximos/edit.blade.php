@@ -23,6 +23,31 @@
 }
 .adm-btn-outline:hover { background: #e8f8f9; color: #00508f; }
 
+/* Hero banner */
+.adm-hero {
+    background: linear-gradient(135deg, #4ec7d2 0%, #00508f 60%, #003b73 100%);
+    border-radius: 14px; padding: 1.6rem 1.75rem; margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1.25rem;
+    box-shadow: 0 4px 18px rgba(0,59,115,.18);
+}
+.adm-hero-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: rgba(255,255,255,.18); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.adm-hero-icon i { font-size: 1.5rem; color: #fff; }
+.adm-hero-title { font-size: 1.35rem; font-weight: 700; color: #fff; margin: 0; line-height: 1.2; }
+.adm-hero-sub { font-size: .82rem; color: rgba(255,255,255,.78); margin-top: .25rem; }
+.adm-hero-meta {
+    display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem;
+}
+.adm-hero-pill {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: rgba(255,255,255,.18); color: #fff;
+    border-radius: 999px; padding: .18rem .7rem; font-size: .75rem; font-weight: 600;
+}
+
+/* Card */
 .adm-card {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
     overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
@@ -93,19 +118,27 @@
 .frm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 @media(max-width:540px){ .frm-row { grid-template-columns: 1fr; } }
 .frm-group { display: flex; flex-direction: column; }
-
-.adm-curso-badge {
-    display: inline-flex; align-items: center; gap: .4rem;
-    background: #f0f9ff; border: 1px solid #bae6fd;
-    color: #0369a1; border-radius: 8px;
-    padding: .4rem .85rem; font-size: .8rem; font-weight: 600;
-    margin-bottom: 1.25rem;
-}
 </style>
 @endpush
 
 @section('content')
-<div class="adm-wrap">
+<div class="adm-wrap container-fluid px-4">
+
+    {{-- Hero --}}
+    <div class="adm-hero">
+        <div class="adm-hero-icon">
+            <i class="fas fa-pen"></i>
+        </div>
+        <div>
+            <div class="adm-hero-title">{{ $curso->nombre }}</div>
+            <div class="adm-hero-sub">Editando cupo máximo</div>
+            <div class="adm-hero-meta">
+                <span class="adm-hero-pill"><i class="fas fa-tag"></i> Sección {{ $curso->seccion ?? '—' }}</span>
+                <span class="adm-hero-pill"><i class="fas fa-clock"></i> {{ $curso->jornada ?? '—' }}</span>
+                <span class="adm-hero-pill"><i class="fas fa-users"></i> {{ $curso->cupo_maximo }} cupos</span>
+            </div>
+        </div>
+    </div>
 
     <div class="adm-card">
         <div class="adm-card-head">
@@ -113,14 +146,6 @@
             <span>Actualizar Cupo — {{ $curso->nombre }}</span>
         </div>
         <div class="adm-card-body">
-
-            {{-- Badge informativo --}}
-            <div class="adm-curso-badge">
-                <i class="fas fa-info-circle"></i>
-                Editando el cupo para <strong>{{ $curso->nombre }}</strong>
-                &nbsp;·&nbsp; Sección <strong>{{ $curso->seccion ?? '—' }}</strong>
-                &nbsp;·&nbsp; Jornada <strong>{{ $curso->jornada ?? '—' }}</strong>
-            </div>
 
             @if ($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert"

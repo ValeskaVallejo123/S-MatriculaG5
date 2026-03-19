@@ -53,6 +53,53 @@
                     Calificaciones Registradas
                 </h6>
 
+                <!-- FILTROS -->
+                <form method="GET" action="{{ route('registrarcalificaciones.ver') }}"
+                      class="mb-3 d-flex flex-wrap gap-2 align-items-end">
+                    <div>
+                        <label class="form-label small fw-semibold mb-1" style="color:#003b73;">Grado</label>
+                        <select name="grado_id" class="form-select form-select-sm" style="border:2px solid #bfd9ea;border-radius:8px;min-width:170px;">
+                            <option value="">Todos los grados</option>
+                            @foreach($gradosFiltro as $g)
+                                <option value="{{ $g->id }}" {{ request('grado_id') == $g->id ? 'selected' : '' }}>
+                                    {{ $g->numero }}° {{ ucfirst($g->nivel) }} — Sec. {{ $g->seccion }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold mb-1" style="color:#003b73;">Materia</label>
+                        <select name="materia_id" class="form-select form-select-sm" style="border:2px solid #bfd9ea;border-radius:8px;min-width:160px;">
+                            <option value="">Todas las materias</option>
+                            @foreach($materiasFiltro as $m)
+                                <option value="{{ $m->id }}" {{ request('materia_id') == $m->id ? 'selected' : '' }}>{{ $m->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label small fw-semibold mb-1" style="color:#003b73;">Período</label>
+                        <select name="periodo_id" class="form-select form-select-sm" style="border:2px solid #bfd9ea;border-radius:8px;min-width:150px;">
+                            <option value="">Todos los períodos</option>
+                            @foreach($periodosFiltro as $per)
+                                <option value="{{ $per->id }}" {{ request('periodo_id') == $per->id ? 'selected' : '' }}>{{ $per->nombre_periodo }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-sm"
+                                style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:#fff;border:none;border-radius:8px;font-weight:600;padding:6px 14px;">
+                            <i class="fas fa-filter me-1"></i> Filtrar
+                        </button>
+                        @if(request()->hasAny(['grado_id','materia_id','periodo_id']))
+                            <a href="{{ route('registrarcalificaciones.ver') }}"
+                               class="btn btn-sm ms-1"
+                               style="border:2px solid #94a3b8;color:#64748b;border-radius:8px;font-weight:600;">
+                                <i class="fas fa-times me-1"></i> Limpiar
+                            </a>
+                        @endif
+                    </div>
+                </form>
+
                 <!-- TABLA -->
                 <div class="table-responsive">
 

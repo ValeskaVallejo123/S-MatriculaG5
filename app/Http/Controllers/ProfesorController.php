@@ -142,11 +142,11 @@ class ProfesorController extends Controller
     /**
      * Eliminar profesor
      */
-    public function destroy(Profesor $profesor): RedirectResponse
+    public function destroy(Request $request, Profesor $profesor): RedirectResponse
     {
         $profesor->delete();
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesores.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Profesor eliminado exitosamente.');
     }
 

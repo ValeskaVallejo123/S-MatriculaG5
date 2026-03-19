@@ -44,8 +44,10 @@ use App\Http\Controllers\SeccionController;
 use App\Http\Controllers\CupoMaximoController;
 use App\Http\Controllers\PublicoPlanEstudiosController;
 use App\Http\Controllers\RegistrarCalificacionController;
+use App\Http\Controllers\MisCalificacionesController;
 use App\Http\Controllers\ConsultaestudiantexcursoController;
 use App\Http\Controllers\H20CursoController;
+use App\Http\Controllers\ProfesorDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -372,6 +374,7 @@ Route::get('/consultaestudiantesxcurso/{grado}/{seccion}',  [Consultaestudiantex
     Route::get('calificaciones',                               [RegistrarCalificacionController::class, 'index'])->name('registrarcalificaciones.index');
     Route::get('registrar-calificaciones/estudiantes/{curso}', [RegistrarCalificacionController::class, 'obtenerEstudiantes'])->name('registrarcalificaciones.estudiantes');
     Route::get('registrar-calificaciones/ver',                 [RegistrarCalificacionController::class, 'ver'])->name('registrarcalificaciones.ver');
+    Route::get('registrar-calificaciones/notas-existentes',   [RegistrarCalificacionController::class, 'notasExistentes'])->name('registrarcalificaciones.notas-existentes');
 
     /*
     |-------------------------------------------------------------------------
@@ -501,9 +504,7 @@ Route::get('/consultaestudiantesxcurso/{grado}/{seccion}',  [Consultaestudiantex
     |----------------------------------------------------------------------
     */
     Route::prefix('profesor')->name('profesor.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('profesor.dashboard.index');
-        })->name('dashboard');
+        Route::get('/dashboard', [ProfesorDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
         Route::put('/cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
@@ -533,7 +534,7 @@ Route::get('/consultaestudiantesxcurso/{grado}/{seccion}',  [Consultaestudiantex
         })->name('dashboard');
 
         Route::get('/mi-horario',     [HorarioController::class,                 'miHorario'])->name('miHorario');
-        Route::get('/calificaciones', [EstudianteController::class,              'misNotas'])->name('calificaciones');
+        Route::get('/calificaciones', [MisCalificacionesController::class,       'index'])->name('calificaciones');
         Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'index'])->name('notificaciones.index');
     });
 
