@@ -4,23 +4,11 @@
 @section('page-title', 'Gestión de Administradores')
 
 @section('topbar-actions')
-
     <a href="{{ route('superadmin.administradores.permisos') }}" class="adm-btn-outline">
         <i class="fas fa-shield-alt"></i> Permisos y Roles
     </a>
     <a href="{{ route('superadmin.administradores.create') }}" class="adm-btn-solid">
         <i class="fas fa-plus"></i> Nuevo Administrador
-
-    <a href="{{ route('superadmin.administradores.permisos') }}"
-       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem; margin-right: 0.5rem;">
-        <i class="fas fa-shield-alt"></i>
-        Permisos y Roles
-    </a>
-    <a href="{{ route('superadmin.administradores.create') }}"
-       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; font-size: 0.9rem;">
-        <i class="fas fa-plus"></i>
-        Nuevo Administrador
-
     </a>
 @endsection
 
@@ -37,6 +25,7 @@
     text-decoration: none; margin-right: .4rem; transition: background .15s;
 }
 .adm-btn-outline:hover { background: #e8f8f9; }
+
 .adm-btn-solid {
     display: inline-flex; align-items: center; gap: .4rem;
     padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
@@ -46,10 +35,10 @@
 .adm-btn-solid:hover { opacity: .88; color: #fff; }
 
 .adm-stats {
-    display: grid; grid-template-columns: repeat(3,1fr);
+    display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 1rem; margin-bottom: 1.5rem;
 }
-@media(max-width:640px){ .adm-stats { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .adm-stats { grid-template-columns: 1fr; } }
 
 .adm-stat {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
@@ -61,7 +50,10 @@
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .adm-stat-icon i { font-size: 1.15rem; color: #fff; }
-.adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
+.adm-stat-lbl {
+    font-size: .72rem; font-weight: 600; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem;
+}
 .adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
 
 .adm-toolbar {
@@ -139,7 +131,7 @@
 .act-edit { background: #e8f8f9; color: #00508f; }
 .act-edit:hover { background: #4ec7d2; color: #fff; }
 .act-del  { background: #fef2f2; color: #ef4444; }
-.act-del:hover  { background: #ef4444; color: #fff; }
+.act-del:hover { background: #ef4444; color: #fff; }
 
 .adm-empty { padding: 3.5rem 1rem; text-align: center; }
 .adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
@@ -173,43 +165,16 @@
     {{-- Stats --}}
     <div class="adm-stats">
         <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
+            <div class="adm-stat-icon" style="background: linear-gradient(135deg, #4ec7d2, #00508f);">
                 <i class="fas fa-users"></i>
             </div>
             <div>
                 <div class="adm-stat-lbl">Total</div>
-<<<<<<< HEAD
-<<<<<<< HEAD
                 <div class="adm-stat-num">{{ $administradores->total() }}</div>
-=======
-=======
->>>>>>> origin/main
-                <div class="adm-stat-num">{{ $administradores->count() }}</div>
-=======
-<div class="container-fluid">
-    <!-- Estadísticas en Cards -->
-    <div class="row g-4 mb-4">
-        <!-- Total -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);">
-                            <i class="fas fa-users" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="mb-1" style="color: #64748b; font-size: 0.875rem; font-weight: 600;">Total Administradores</p>
-                            <h3 class="mb-0" style="color: #003b73; font-weight: 700; font-size: 1.875rem;">{{ $administradores->count() }}</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="adm-stat-num">{{ $administradores->total() }}</div>
-
             </div>
         </div>
         <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#f87171,#dc2626);">
+            <div class="adm-stat-icon" style="background: linear-gradient(135deg, #f87171, #dc2626);">
                 <i class="fas fa-crown"></i>
             </div>
             <div>
@@ -218,7 +183,7 @@
             </div>
         </div>
         <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
+            <div class="adm-stat-icon" style="background: linear-gradient(135deg, #34d399, #059669);">
                 <i class="fas fa-user-shield"></i>
             </div>
             <div>
@@ -248,7 +213,7 @@
             <i class="fas fa-user-shield"></i>
             <span>Lista de Administradores</span>
         </div>
-        <div style="overflow-x:auto;">
+        <div style="overflow-x: auto;">
             <table class="adm-tbl">
                 <thead>
                     <tr>
@@ -268,12 +233,12 @@
                             <span class="adm-num">{{ $administradores->firstItem() + $index }}</span>
                         </td>
                         <td>
-                            <div style="display:flex;align-items:center;gap:.65rem;">
-                                <div class="adm-av">{{ strtoupper(substr($admin->name,0,1)) }}</div>
+                            <div style="display: flex; align-items: center; gap: .65rem;">
+                                <div class="adm-av">{{ strtoupper(substr($admin->name, 0, 1)) }}</div>
                                 <div>
                                     <div class="adm-name">{{ $admin->name }}</div>
                                     @if($admin->is_protected)
-                                        <span class="bpill b-amber" style="margin-top:.2rem;">
+                                        <span class="bpill b-amber" style="margin-top: .2rem;">
                                             <i class="fas fa-lock"></i> Protegido
                                         </span>
                                     @endif
@@ -298,12 +263,12 @@
                         </td>
                         <td class="tc">
                             <span class="bpill b-green">
-                                <i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle;"></i> Activo
+                                <i class="fas fa-circle" style="font-size: .45rem; vertical-align: middle;"></i> Activo
                             </span>
                         </td>
                         <td class="tc">
                             @if(!$admin->is_protected)
-                                <div style="display:inline-flex;gap:.4rem;align-items:center;">
+                                <div style="display: inline-flex; gap: .4rem; align-items: center;">
                                     <a href="{{ route('superadmin.administradores.edit', $admin->id) }}"
                                        class="act-btn act-edit" title="Editar">
                                         <i class="fas fa-edit"></i>
@@ -319,7 +284,7 @@
                                     </button>
                                 </div>
                             @else
-                                <span style="color:#cbd5e1;font-size:.75rem;font-weight:600;">
+                                <span style="color: #cbd5e1; font-size: .75rem; font-weight: 600;">
                                     <i class="fas fa-lock"></i> Protegido
                                 </span>
                             @endif
@@ -348,46 +313,10 @@
             {{ $administradores->appends(request()->query())->links() }}
         </div>
         @endif
-
     </div>
+
 </div>
-
-
-@push('scripts')
-<script>
-function cambiarPerPage(valor) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('per_page', valor);
-    url.searchParams.set('page', 1);
-    window.location.href = url.toString();
-}
-</script>
-@endpush
-
-@push('styles')
-<style>
-    .table tbody tr:hover {
-        background-color: #f8fafc;
-        transform: scale(1.001);
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    @media (max-width: 768px) {
-        .table {
-            font-size: 0.875rem;
-        }
-        .card-body {
-            padding: 1rem !important;
-        }
-    }
-</style>
-@endpush
 @endsection
-
 
 @push('scripts')
 <script>

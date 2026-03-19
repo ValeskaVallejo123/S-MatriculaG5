@@ -7,23 +7,25 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-    {
-        Schema::create('observaciones', function (Blueprint $table) {
-            $table->id();
+{
+    Schema::create('observaciones', function (Blueprint $table) {
+        $table->id();
 
-            // Relaciones
-            $table->foreignId('estudiante_id')
-                  ->constrained('estudiantes')
-                  ->onDelete('cascade');
+        $table->foreignId('estudiante_id')
+              ->constrained('estudiantes')
+              ->onDelete('cascade');
 
-            $table->foreignId('profesor_id')->nullable()->constrained('profesores');
-            // Contenido de la observación (solo texto libre)
-            $table->text('descripcion');
+        $table->foreignId('profesor_id')
+              ->nullable()
+              ->constrained('profesores')
+              ->onDelete('set null');
 
-            $table->timestamps();
-        });
-    }
+        $table->string('tipo')->default('academica');
+        $table->text('descripcion');
 
+        $table->timestamps();
+    });
+}
     public function down(): void
     {
         Schema::dropIfExists('observaciones');

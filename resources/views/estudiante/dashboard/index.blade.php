@@ -5,435 +5,438 @@
 
 @push('styles')
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
     --blue-dark:  #003b73;
     --blue-mid:   #00508f;
     --cyan:       #4ec7d2;
-    --cyan-light: #e8f8f9;
+    --cyan-light: rgba(78,199,210,.1);
     --cyan-border:#b2e8ed;
-    --surface:    #f8fafc;
+    --surface:    #f5f7fa;
     --border:     #e2e8f0;
     --text:       #0f172a;
     --muted:      #64748b;
     --subtle:     #94a3b8;
+    --radius:     12px;
+    --shadow:     0 1px 4px rgba(0,59,115,.07);
+    --shadow-md:  0 4px 16px rgba(0,59,115,.1);
 }
 
-.est-portal { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 1.25rem; }
+.est-wrap {
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
 
-/* ── Banner ── */
-.welcome-card {
-    background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
-    border-radius: 14px; padding: 1.6rem 1.75rem;
-    display: flex; align-items: center; gap: 1.25rem;
+/* ══ BANNER ══ */
+.est-banner {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 55%, var(--cyan) 100%);
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
     box-shadow: 0 4px 20px rgba(0,59,115,.2);
     position: relative; overflow: hidden;
 }
-.welcome-card::before {
-    content:''; position:absolute; top:-40%; right:-4%;
-    width:210px; height:210px; background:rgba(255,255,255,.06); border-radius:50%;
+.est-banner::before {
+    content:''; position:absolute; top:-50%; right:-3%;
+    width:220px; height:220px; background:rgba(255,255,255,.07); border-radius:50%;
 }
-.welcome-card::after {
-    content:''; position:absolute; bottom:-50%; right:14%;
-    width:140px; height:140px; background:rgba(255,255,255,.04); border-radius:50%;
+.est-banner::after {
+    content:''; position:absolute; bottom:-55%; right:15%;
+    width:150px; height:150px; background:rgba(255,255,255,.04); border-radius:50%;
 }
-.welcome-avatar {
-    width: 64px; height: 64px; border-radius: 14px; flex-shrink: 0;
-    background: rgba(255,255,255,.15); border: 2.5px solid var(--cyan);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem; color: #fff; position: relative; z-index: 1;
+.est-banner-avatar {
+    width:68px; height:68px; border-radius:16px; flex-shrink:0;
+    background:rgba(255,255,255,.15); border:2.5px solid rgba(255,255,255,.35);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.75rem; color:#fff; position:relative; z-index:1;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
 }
-.welcome-info { position: relative; z-index: 1; flex: 1; }
-.welcome-info h4 { color: #fff; font-weight: 700; margin: 0 0 .2rem; font-size: 1.15rem; }
-.welcome-info p  { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0 0 .6rem; }
-.welcome-badges  { display: flex; flex-wrap: wrap; gap: .4rem; }
-.w-badge {
-    display: inline-flex; align-items: center; gap: .3rem;
-    padding: .22rem .7rem; border-radius: 999px; font-size: .72rem; font-weight: 600;
+.est-banner-info { position:relative; z-index:1; flex:1; }
+.est-banner-info h3 { color:#fff; font-weight:800; margin:0 0 .25rem; font-size:1.3rem; }
+.est-banner-info p  { color:rgba(255,255,255,.72); font-size:.82rem; margin:0 0 .65rem; }
+.est-banner-tags { display:flex; flex-wrap:wrap; gap:.4rem; }
+.est-tag {
+    display:inline-flex; align-items:center; gap:.3rem;
+    padding:.22rem .75rem; border-radius:999px;
+    font-size:.72rem; font-weight:600;
 }
-.w-badge-cyan  { background: rgba(78,199,210,.25); color: #fff; border: 1px solid rgba(78,199,210,.5); }
-.w-badge-navy  { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); }
-.w-badge-green { background: rgba(16,185,129,.25); color: #fff; border: 1px solid rgba(16,185,129,.5); }
-.w-badge-warn  { background: rgba(234,179,8,.2); color: #fde047; border: 1px solid rgba(234,179,8,.4); }
+.tag-cyan  { background:rgba(78,199,210,.3); color:#fff; border:1px solid rgba(78,199,210,.5); }
+.tag-white { background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.28); }
+.tag-green { background:rgba(16,185,129,.28); color:#fff; border:1px solid rgba(16,185,129,.5); }
+.tag-warn  { background:rgba(234,179,8,.22); color:#fde047; border:1px solid rgba(234,179,8,.4); }
 
-/* ── Stats ── */
-.stats-row {
-    display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem;
+/* ══ STAT GRID ══ */
+.est-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
 }
-@media(max-width:900px){ .stats-row { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:500px){ .stats-row { grid-template-columns: 1fr; } }
+@media(max-width:900px){ .est-stats { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:500px){ .est-stats { grid-template-columns: 1fr 1fr; gap:.65rem; } }
 
-.stat-card {
-    background: #fff; border: 1px solid var(--border); border-radius: 12px;
-    padding: 1rem 1.1rem; display: flex; align-items: center; gap: .85rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05); position: relative; overflow: hidden;
-    transition: box-shadow .15s;
+.est-stat {
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem;
+    box-shadow: var(--shadow); position: relative; overflow: hidden;
+    transition: box-shadow .15s, transform .15s;
 }
-.stat-card:hover { box-shadow: 0 4px 14px rgba(0,80,143,.1); }
-.stat-stripe {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 4px; border-radius: 12px 0 0 12px;
+.est-stat:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.est-stat-stripe {
+    position:absolute; left:0; top:0; bottom:0;
+    width:4px; border-radius: var(--radius) 0 0 var(--radius);
 }
-.stat-icon {
-    width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+.est-stat-icon {
+    width:44px; height:44px; border-radius:11px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:1.05rem;
 }
-.stat-label { font-size: .7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
-.stat-value { font-size: 1.45rem; font-weight: 800; color: var(--blue-dark); line-height: 1; }
+.est-stat-lbl { font-size:.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.15rem; }
+.est-stat-val { font-size:1.6rem; font-weight:800; color:var(--blue-dark); line-height:1; }
+
+/* ══ SECTION CARD ══ */
+.sec-card {
+    background:#fff; border:1px solid var(--border); border-radius:var(--radius);
+    overflow:hidden; box-shadow:var(--shadow);
+}
+.sec-head {
+    background: var(--blue-dark);
+    padding:.85rem 1.25rem;
+    display:flex; align-items:center; justify-content:space-between;
+}
+.sec-head-left { display:flex; align-items:center; gap:.6rem; }
+.sec-head i    { color:var(--cyan); font-size:1rem; }
+.sec-head span { color:#fff; font-weight:700; font-size:.95rem; }
+.sec-head-link {
+    color:rgba(255,255,255,.75); font-size:.75rem; font-weight:600;
+    text-decoration:none; display:flex; align-items:center; gap:.3rem;
+    transition:color .15s;
+}
+.sec-head-link:hover { color:#fff; }
+
+/* ══ QUICK LINKS ══ */
+.quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .6rem;
+    padding: 1rem;
+}
+@media(max-width:480px){ .quick-grid { grid-template-columns: 1fr; } }
+
+.quick-link {
+    display:flex; align-items:center; gap:.75rem;
+    padding:.8rem 1rem; border-radius:9px;
+    text-decoration:none; transition:all .15s;
+    border:1.5px solid var(--border);
+    background:var(--surface);
+}
+.quick-link:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.quick-icon {
+    width:36px; height:36px; border-radius:9px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:.9rem;
+}
+.quick-label { font-size:.83rem; font-weight:600; color:var(--blue-dark); flex:1; }
+.quick-arrow { color:var(--subtle); font-size:.7rem; }
+
+/* ══ NOTIFICACIONES ══ */
+.notif-list { padding:.75rem 1rem; display:flex; flex-direction:column; gap:.5rem; }
 
 .notif-item {
-    border-left: 3.5px solid var(--cyan); border-radius: 8px;
-    padding: .85rem 1rem; background: #fff;
-    transition: background .15s; margin-bottom: .6rem;
+    display:flex; align-items:flex-start; gap:.85rem;
+    padding:.85rem 1rem; border-radius:9px;
+    border:1px solid var(--border); background:#fff;
+    transition:background .15s, border-color .15s;
 }
-.notif-item:last-child { margin-bottom: 0; }
-.notif-item.leida { border-left-color: #cbd5e1; background: var(--surface); }
-.notif-item:hover { background: var(--cyan-light); }
-.notif-title  { font-weight: 700; color: var(--blue-dark); font-size: .84rem; margin-bottom: .2rem; }
-.notif-msg    { color: var(--muted); font-size: .78rem; margin-bottom: .25rem; }
-.notif-time   { color: var(--subtle); font-size: .72rem; }
+.notif-item:hover { background:var(--cyan-light); border-color:var(--cyan-border); }
+.notif-item.leida { background:var(--surface); border-color:var(--border); opacity:.75; }
+
+.notif-dot {
+    width:36px; height:36px; border-radius:9px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:.85rem;
+}
+.notif-body { flex:1; min-width:0; }
+.notif-title { font-weight:700; color:var(--blue-dark); font-size:.84rem; margin-bottom:.2rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.notif-msg   { color:var(--muted); font-size:.76rem; margin-bottom:.2rem; line-height:1.4;
+               display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.notif-time  { color:var(--subtle); font-size:.7rem; }
 
 .badge-nueva {
-    display: inline-flex; align-items: center;
-    padding: .15rem .55rem; border-radius: 999px;
-    background: var(--cyan-light); color: var(--blue-mid);
-    font-size: .65rem; font-weight: 700; border: 1px solid var(--cyan-border);
+    display:inline-flex; align-items:center;
+    padding:.12rem .5rem; border-radius:999px; margin-left:.4rem;
+    background:var(--cyan-light); color:var(--blue-mid);
+    font-size:.62rem; font-weight:700; border:1px solid var(--cyan-border);
 }
 .btn-marcar {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 26px; height: 26px; border-radius: 6px; border: 1.5px solid var(--cyan-border);
-    background: var(--cyan-light); color: var(--blue-mid); cursor: pointer;
-    font-size: .72rem; transition: all .15s; flex-shrink: 0;
+    width:28px; height:28px; border-radius:7px; flex-shrink:0;
+    border:1.5px solid var(--cyan-border); background:var(--cyan-light);
+    color:var(--blue-mid); cursor:pointer; font-size:.72rem;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .15s;
 }
-.btn-marcar:hover { background: var(--cyan); color: #fff; border-color: var(--cyan); }
+.btn-marcar:hover { background:var(--cyan); color:#fff; border-color:var(--cyan); }
 
-.info-card { transition: transform .15s, box-shadow .15s; }
-.info-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,59,115,.12) !important; }
+.notif-empty {
+    padding:3rem 1rem; text-align:center;
+}
+.notif-empty i { font-size:2rem; color:#cbd5e1; display:block; margin-bottom:.75rem; }
+.notif-empty p { color:var(--subtle); font-size:.82rem; margin:0; }
+
+/* ══ MAIN GRID ══ */
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;  /* ← reducido de 380px */
+    gap: 1.25rem;
+    align-items: start;
+}
+@media(max-width:1100px){ .main-grid { grid-template-columns: 1fr; } }
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: 1fr;  /* ← una sola columna */
+    gap: .6rem;
+    padding: 1rem;
+}
+@media(max-width:1024px){ .main-grid { grid-template-columns: 1fr; } }
 </style>
 @endpush
 
 @section('content')
 @php
-    $user       = auth()->user();
-    $estudiante = $user->estudiante;
-    $noLeidas   = $user->total_notificaciones_no_leidas;
-    $notificaciones = $user->notificacionesPermitidas()->take(5)->get();
+    $user           = auth()->user();
+    $estudiante     = $user->estudiante;
+    $noLeidas       = $user->total_notificaciones_no_leidas;
+    $notificaciones = $user->notificacionesPermitidas()->take(6)->get();
 @endphp
 
-<div class="est-portal">
+<div class="est-wrap">
 
-    {{-- ══ Banner bienvenida ══ --}}
-    <div class="welcome-card">
-        <div class="welcome-avatar">
+    {{-- ══ BANNER ══ --}}
+    <div class="est-banner">
+        <div class="est-banner-avatar">
             <i class="fas fa-user-graduate"></i>
         </div>
-        <div class="welcome-info">
-            <h4>Hola, {{ $user->name }}</h4>
-            <p>Bienvenido a tu portal estudiantil · {{ now()->format('d/m/Y') }}</p>
+        <div class="est-banner-info">
+            <h3>Hola, {{ $user->name }}</h3>
+            <p>
+                <i class="fas fa-calendar me-1"></i>
+                {{ now()->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
+            </p>
             @if($estudiante)
-                <div class="welcome-badges">
-                    <span class="w-badge w-badge-cyan">
+                <div class="est-banner-tags">
+                    <span class="est-tag tag-cyan">
                         <i class="fas fa-graduation-cap"></i>
                         {{ $estudiante->grado }} — Sección {{ $estudiante->seccion }}
                     </span>
-                    <span class="w-badge w-badge-navy">
-                        <i class="fas fa-id-card"></i> {{ $estudiante->dni }}
+                    <span class="est-tag tag-white">
+                        <i class="fas fa-id-card"></i>
+                        {{ $estudiante->dni }}
                     </span>
-                    <span class="w-badge w-badge-green">
-                        <i class="fas fa-circle" style="font-size:.4rem;"></i> {{ ucfirst($estudiante->estado) }}
+                    <span class="est-tag tag-green">
+                        <i class="fas fa-circle" style="font-size:.4rem;"></i>
+                        {{ ucfirst($estudiante->estado) }}
                     </span>
+                    @if($noLeidas > 0)
+                        <span class="est-tag tag-warn">
+                            <i class="fas fa-bell"></i>
+                            {{ $noLeidas }} sin leer
+                        </span>
+                    @endif
                 </div>
             @else
-                <span class="w-badge w-badge-warn">
-                    <i class="fas fa-exclamation-triangle"></i> Sin perfil de estudiante vinculado
+                <span class="est-tag tag-warn">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Sin perfil de estudiante vinculado
                 </span>
             @endif
         </div>
     </div>
 
-    {{-- ══ Stats ══ --}}
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="stat-stripe" style="background:var(--cyan);"></div>
-            <div class="stat-icon" style="background:var(--cyan-light);">
+    {{-- ══ STATS ══ --}}
+    <div class="est-stats">
+        <div class="est-stat">
+            <div class="est-stat-stripe" style="background:var(--cyan);"></div>
+            <div class="est-stat-icon" style="background:rgba(78,199,210,.12);">
                 <i class="fas fa-book" style="color:var(--blue-mid);"></i>
             </div>
             <div>
-                <div class="stat-label">Mis Materias</div>
-                <div class="stat-value">{{ $totalMaterias ?? '—' }}</div>
+                <div class="est-stat-lbl">Materias</div>
+                <div class="est-stat-val">{{ $totalMaterias ?? '—' }}</div>
             </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-stripe" style="background:var(--blue-mid);"></div>
-            <div class="stat-icon" style="background:#e8f1f9;">
+        <div class="est-stat">
+            <div class="est-stat-stripe" style="background:var(--blue-mid);"></div>
+            <div class="est-stat-icon" style="background:rgba(0,80,143,.1);">
                 <i class="fas fa-clipboard-check" style="color:var(--blue-dark);"></i>
             </div>
             <div>
-                <div class="stat-label">Calificaciones</div>
-                <div class="stat-value">{{ $totalCalificaciones ?? '—' }}</div>
+                <div class="est-stat-lbl">Calificaciones</div>
+                <div class="est-stat-val">{{ $totalCalificaciones ?? '—' }}</div>
             </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-stripe" style="background:var(--blue-dark);"></div>
-            <div class="stat-icon" style="background:#eef2ff;">
+        <div class="est-stat">
+            <div class="est-stat-stripe" style="background:#4f46e5;"></div>
+            <div class="est-stat-icon" style="background:rgba(79,70,229,.1);">
                 <i class="fas fa-calendar-alt" style="color:#4f46e5;"></i>
             </div>
             <div>
-                <div class="stat-label">Horario</div>
-                <div class="stat-value">{{ $totalHoras ?? '—' }}</div>
+                <div class="est-stat-lbl">Horas / Semana</div>
+                <div class="est-stat-val">{{ $totalHoras ?? '—' }}</div>
             </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-stripe" style="background:#f59e0b;"></div>
-            <div class="stat-icon" style="background:#fefce8;">
+        <div class="est-stat">
+            <div class="est-stat-stripe" style="background:#f59e0b;"></div>
+            <div class="est-stat-icon" style="background:rgba(245,158,11,.1);">
                 <i class="fas fa-bell" style="color:#d97706;"></i>
             </div>
             <div>
-                <div class="stat-label">Sin leer</div>
-                <div class="stat-value">{{ $noLeidas }}</div>
+                <div class="est-stat-lbl">Sin Leer</div>
+                <div class="est-stat-val">{{ $noLeidas }}</div>
             </div>
         </div>
     </div>
 
-    {{-- ══ Tarjetas resumen (clicables) ══ --}}
-    <div class="row g-3 mb-4">
+    {{-- ══ MAIN GRID: notificaciones + accesos ══ --}}
+    <div class="main-grid">
 
-        <div class="col-md-3">
-            <a href="{{ route('estudiante.miHorario') }}" class="text-decoration-none">
-                <div class="card border-0 shadow-sm h-100 info-card"
-                     style="border-radius:10px;border-left:4px solid #003b73 !important;cursor:pointer;">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <div style="width:50px;height:50px;background:rgba(0,59,115,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-calendar-alt fa-lg" style="color:#003b73;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="text-muted mb-0 small">Mi Horario</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalHoras ?? '—' }}</h3>
-                        </div>
-                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
-                    </div>
+        {{-- Notificaciones --}}
+        <div class="sec-card">
+            <div class="sec-head">
+                <div class="sec-head-left">
+                    <i class="fas fa-bell"></i>
+                    <span>Notificaciones Recientes</span>
                 </div>
-            </a>
-        </div>
+                <a href="{{ route('notificaciones.index') }}" class="sec-head-link">
+                    Ver todas <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
 
-        <div class="col-md-3">
-            <a href="{{ route('estudiante.calificaciones') }}" class="text-decoration-none">
-                <div class="card border-0 shadow-sm h-100 info-card"
-                     style="border-radius:10px;border-left:4px solid #00508f !important;cursor:pointer;">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <div style="width:50px;height:50px;background:rgba(0,80,143,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-clipboard-check fa-lg" style="color:#00508f;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="text-muted mb-0 small">Calificaciones</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalCalificaciones ?? '—' }}</h3>
-                        </div>
-                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
-                    </div>
+            @if($notificaciones->isEmpty())
+                <div class="notif-empty">
+                    <i class="fas fa-bell-slash"></i>
+                    <p>No tienes notificaciones nuevas.</p>
                 </div>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="{{ route('estado-solicitud') }}" class="text-decoration-none">
-                <div class="card border-0 shadow-sm h-100 info-card"
-                     style="border-radius:10px;border-left:4px solid #4ec7d2 !important;cursor:pointer;">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <div style="width:50px;height:50px;background:rgba(78,199,210,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-file-signature fa-lg" style="color:#4ec7d2;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="text-muted mb-0 small">Mi Matrícula</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">Estado</h3>
-                        </div>
-                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="{{ route('notificaciones.index') }}" class="text-decoration-none">
-                <div class="card border-0 shadow-sm h-100 info-card"
-                     style="border-radius:10px;border-left:4px solid #f59e0b !important;cursor:pointer;">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <div style="width:50px;height:50px;background:rgba(245,158,11,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-bell fa-lg" style="color:#f59e0b;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="text-muted mb-0 small">Notificaciones</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">
-                                {{ $noLeidas }}
-                                @if($noLeidas > 0)
-                                    <span class="badge bg-danger ms-1" style="font-size:0.65rem;">Sin leer</span>
-                                @endif
-                            </h3>
-                        </div>
-                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-    </div>
-
-    {{-- ══ Notificaciones + Accesos rápidos ══ --}}
-    <div class="row g-4">
-
-        {{-- Notificaciones recientes --}}
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
-                <div class="card-header border-0 py-3 px-4"
-                     style="background:linear-gradient(135deg,#00508f 0%,#4ec7d2 100%);border-radius:12px 12px 0 0;">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="text-white fw-bold mb-0">
-                            <i class="fas fa-bell me-2"></i>Notificaciones Recientes
-                        </h5>
-                        <a href="{{ route('notificaciones.index') }}" class="btn btn-light btn-sm fw-semibold">
-                            Ver todas
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body p-3">
-                    @if($notificaciones->isEmpty())
-                        <div class="text-center py-4 text-muted">
-                            <i class="fas fa-bell-slash fa-2x mb-2" style="color:#cbd5e1;"></i>
-                            <p class="mb-0 small">No tienes notificaciones nuevas.</p>
-                        </div>
-                    @else
-                        <div class="d-flex flex-column gap-2">
-                            @foreach($notificaciones as $notif)
-                                <div class="notif-item {{ $notif->leida ? 'leida' : '' }}">
-                                    <div class="d-flex justify-content-between align-items-start gap-2">
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                @switch($notif->tipo)
-                                                    @case('calificacion')
-                                                        <i class="fas fa-star" style="color:#f59e0b;font-size:0.85rem;"></i>
-                                                        @break
-                                                    @case('horario')
-                                                        <i class="fas fa-calendar-alt" style="color:#4ec7d2;font-size:0.85rem;"></i>
-                                                        @break
-                                                    @case('observacion')
-                                                        <i class="fas fa-comment-alt" style="color:#6366f1;font-size:0.85rem;"></i>
-                                                        @break
-                                                    @case('matricula')
-                                                        <i class="fas fa-file-signature" style="color:#00508f;font-size:0.85rem;"></i>
-                                                        @break
-                                                    @default
-                                                        <i class="fas fa-info-circle" style="color:#4ec7d2;font-size:0.85rem;"></i>
-                                                @endswitch
-                                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
-                                                    {{ $notif->titulo }}
-                                                </span>
-                                                @if(!$notif->leida)
-                                                    <span class="badge-nueva">Nueva</span>
-                                                @endif
-                                            </div>
-                                            <p class="notif-msg">{{ $notif->mensaje }}</p>
-                                            <small class="notif-time">
-                                                <i class="fas fa-clock me-1"></i>{{ $notif->created_at->diffForHumans() }}
-                                            </small>
-                                        </div>
-                                        @if(!$notif->leida)
-                                            <form action="{{ route('notificaciones.marcarLeida', $notif->id) }}"
-                                                  method="POST" class="flex-shrink-0">
-                                                @csrf @method('PATCH')
-                                                <button type="submit" class="btn-marcar" title="Marcar como leída">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
+            @else
+                <div class="notif-list">
+                    @foreach($notificaciones as $notif)
+                        @php
+                            $colors = [
+                                'calificacion' => ['bg'=>'rgba(245,158,11,.12)','color'=>'#d97706','icon'=>'fa-star'],
+                                'horario'      => ['bg'=>'rgba(78,199,210,.12)','color'=>'#00508f','icon'=>'fa-calendar-alt'],
+                                'observacion'  => ['bg'=>'rgba(99,102,241,.12)','color'=>'#6366f1','icon'=>'fa-comment-alt'],
+                                'matricula'    => ['bg'=>'rgba(0,80,143,.12)','color'=>'#00508f','icon'=>'fa-file-signature'],
+                            ];
+                            $c = $colors[$notif->tipo] ?? ['bg'=>'rgba(78,199,210,.12)','color'=>'#00508f','icon'=>'fa-info-circle'];
+                        @endphp
+                        <div class="notif-item {{ $notif->leida ? 'leida' : '' }}">
+                            <div class="notif-dot" style="background:{{ $c['bg'] }};">
+                                <i class="fas {{ $c['icon'] }}" style="color:{{ $c['color'] }};"></i>
+                            </div>
+                            <div class="notif-body">
+                                <div class="notif-title">
+                                    {{ $notif->titulo }}
+                                    @if(!$notif->leida)
+                                        <span class="badge-nueva">Nueva</span>
+                                    @endif
                                 </div>
-                            @endforeach
+                                <div class="notif-msg">{{ $notif->mensaje }}</div>
+                                <div class="notif-time">
+                                    <i class="fas fa-clock me-1"></i>{{ $notif->created_at->diffForHumans() }}
+                                </div>
+                            </div>
+                            @if(!$notif->leida)
+                                <form action="{{ route('notificaciones.marcarLeida', $notif->id) }}"
+                                      method="POST">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" class="btn-marcar" title="Marcar como leída">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                            @endif
                         </div>
-                    @endif
+                    @endforeach
                 </div>
-            </div>
+            @endif
         </div>
 
         {{-- Accesos rápidos --}}
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
-                <div class="card-header border-0 py-3 px-4"
-                     style="background:linear-gradient(135deg,#003b73 0%,#00508f 100%);border-radius:12px 12px 0 0;">
-                    <h5 class="text-white fw-bold mb-0">
-                        <i class="fas fa-rocket me-2"></i>Accesos Rápidos
-                    </h5>
+        <div class="sec-card">
+            <div class="sec-head">
+                <div class="sec-head-left">
+                    <i class="fas fa-rocket"></i>
+                    <span>Accesos Rápidos</span>
                 </div>
-                <div class="card-body p-3 d-flex flex-column gap-2">
+            </div>
+            <div class="quick-grid">
 
-                    <a href="{{ route('estudiante.miHorario') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(0,80,143,0.06);border:1px solid #00508f !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-calendar-alt" style="color:#00508f;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Mi Horario de Clases</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
+                <a href="{{ route('estudiante.miHorario') }}" class="quick-link"
+                   style="border-color:rgba(0,80,143,.2);">
+                    <div class="quick-icon" style="background:rgba(0,80,143,.1);">
+                        <i class="fas fa-calendar-alt" style="color:var(--blue-mid);"></i>
+                    </div>
+                    <span class="quick-label">Mi Horario</span>
+                    <i class="fas fa-chevron-right quick-arrow"></i>
+                </a>
 
-                    <a href="{{ route('estudiante.calificaciones') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(78,199,210,0.06);border:1px solid #4ec7d2 !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-clipboard-check" style="color:#4ec7d2;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Mis Calificaciones</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
+                <a href="{{ route('estudiante.calificaciones') }}" class="quick-link"
+                   style="border-color:rgba(78,199,210,.3);">
+                    <div class="quick-icon" style="background:rgba(78,199,210,.1);">
+                        <i class="fas fa-clipboard-check" style="color:var(--cyan);"></i>
+                    </div>
+                    <span class="quick-label">Calificaciones</span>
+                    <i class="fas fa-chevron-right quick-arrow"></i>
+                </a>
 
-                    <a href="{{ route('estado-solicitud') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(78,199,210,0.06);border:1px solid #4ec7d2 !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-file-signature" style="color:#4ec7d2;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Estado de mi Matrícula</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
+                <a href="{{ route('estado-solicitud') }}" class="quick-link"
+                   style="border-color:rgba(78,199,210,.3);">
+                    <div class="quick-icon" style="background:rgba(78,199,210,.1);">
+                        <i class="fas fa-file-signature" style="color:var(--cyan);"></i>
+                    </div>
+                    <span class="quick-label">Mi Matrícula</span>
+                    <i class="fas fa-chevron-right quick-arrow"></i>
+                </a>
 
-                    <a href="{{ route('notificaciones.index') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(245,158,11,0.06);border:1px solid #f59e0b !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-bell" style="color:#d97706;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
-                                    Todas mis Notificaciones
-                                    @if($noLeidas > 0)
-                                        <span class="badge bg-danger ms-1" style="font-size:0.65rem;">{{ $noLeidas }}</span>
-                                    @endif
-                                </span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
+                <a href="{{ route('notificaciones.index') }}" class="quick-link"
+                   style="border-color:rgba(245,158,11,.3);">
+                    <div class="quick-icon" style="background:rgba(245,158,11,.1);">
+                        <i class="fas fa-bell" style="color:#d97706;"></i>
+                    </div>
+                    <span class="quick-label">
+                        Notificaciones
+                        @if($noLeidas > 0)
+                            <span style="display:inline-flex;align-items:center;justify-content:center;
+                                         width:18px;height:18px;border-radius:50%;
+                                         background:#ef4444;color:#fff;font-size:.6rem;
+                                         font-weight:700;margin-left:.3rem;">
+                                {{ $noLeidas }}
+                            </span>
+                        @endif
+                    </span>
+                    <i class="fas fa-chevron-right quick-arrow"></i>
+                </a>
 
-                    <a href="{{ route('notificaciones.preferencias') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(0,59,115,0.06);border:1px solid #003b73 !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-sliders-h" style="color:#003b73;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Preferencias de Notificación</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
+                <a href="{{ route('notificaciones.preferencias') }}" class="quick-link"
+                   style="border-color:rgba(0,59,115,.2);">
+                    <div class="quick-icon" style="background:rgba(0,59,115,.08);">
+                        <i class="fas fa-sliders-h" style="color:var(--blue-dark);"></i>
+                    </div>
+                    <span class="quick-label">Preferencias</span>
+                    <i class="fas fa-chevron-right quick-arrow"></i>
+                </a>
 
-                    <a href="{{ route('cambiarcontrasenia.edit') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(124,58,237,0.06);border:1px solid #7c3aed !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-key" style="color:#7c3aed;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Cambiar Contraseña</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
+                <a href="{{ route('cambiarcontrasenia.edit') }}" class="quick-link"
+                   style="border-color:rgba(124,58,237,.25);">
+                    <div class="quick-icon" style="background:rgba(124,58,237,.08);">
+                        <i class="fas fa-key" style="color:#7c3aed;"></i>
+                    </div>
+                    <span class="quick-label">Cambiar Contraseña</span>
+                    <i class="fas fa-chevron-right quick-arrow"></i>
+                </a>
 
-                </div>
             </div>
         </div>
 

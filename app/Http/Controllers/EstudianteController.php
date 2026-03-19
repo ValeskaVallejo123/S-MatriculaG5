@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class EstudianteController extends Controller
 {
@@ -34,16 +35,47 @@ class EstudianteController extends Controller
     /* ============================================================
        LISTAR ESTUDIANTES
        ============================================================ */
-    public function index()
-    {
-        $estudiantes = Estudiante::orderBy('apellido1')
-            ->orderBy('apellido2')
-            ->orderBy('nombre1')
-            ->orderBy('nombre2')
-            ->paginate(10);
+    public function index(Request $request)
+{
+    $perPage = in_array($request->get('per_page'), [10, 25, 50])
+               ? (int) $request->get('per_page')
+               : 10;
 
-        return view('estudiantes.index', compact('estudiantes'));
+    $query = Estudiante::orderBy('apellido1')
+        ->orderBy('apellido2')
+        ->orderBy('nombre1')
+        ->orderBy('nombre2');
+
+    // ↓ Búsqueda en toda la BD
+    if ($request->filled('buscar')) {
+        $q = $request->buscar;
+        $query->where(function ($sub) use ($q) {
+            $sub->where('nombre1',   'like', "%{$q}%")
+                ->orWhere('nombre2',   'like', "%{$q}%")
+                ->orWhere('apellido1', 'like', "%{$q}%")
+                ->orWhere('apellido2', 'like', "%{$q}%")
+                ->orWhere('dni',       'like', "%{$q}%")
+                ->orWhere('grado',     'like', "%{$q}%")
+                ->orWhere('seccion',   'like', "%{$q}%")
+                ->orWhereRaw("CONCAT(nombre1,' ',apellido1) LIKE ?", ["%{$q}%"])
+                ->orWhereRaw("CONCAT(nombre1,' ',nombre2,' ',apellido1,' ',apellido2) LIKE ?", ["%{$q}%"]);
+        });
     }
+
+    $estudiantes = $query->paginate($perPage)->appends($request->query());
+    if ($request->ajax() || $request->get('ajax')) {
+    $lista = $estudiantes->getCollection()->map(fn($e) => [
+        'nombre'  => $e->nombre_completo,
+        'grado'   => $e->grado,
+        'seccion' => $e->seccion,
+    ]);
+    return response()->json(['estudiantes' => $lista]);
+}
+
+return view('estudiantes.index', compact('estudiantes'));
+
+    return view('estudiantes.index', compact('estudiantes'));
+}
 
     /* ============================================================
        BUSCAR ESTUDIANTES
@@ -55,7 +87,6 @@ class EstudianteController extends Controller
         $grado   = $request->input('grado');
         $estado  = $request->input('estado');
 
-        // Se considera que hay búsqueda si al menos un campo fue enviado
         $busquedaRealizada = $request->hasAny(['nombre','dni','grado','estado'])
             && ($nombre || $dni || $grado || $estado);
 
@@ -69,8 +100,8 @@ class EstudianteController extends Controller
                         ->orWhereRaw("CONCAT(nombre1, ' ', nombre2, ' ', apellido1, ' ', apellido2) LIKE ?", ["%{$nombre}%"]);
                 });
             })
-            ->when($dni, fn($q) => $q->where('dni', 'like', "%{$dni}%"))
-            ->when($grado, fn($q) => $q->where('grado', 'like', "%{$grado}%"))
+            ->when($dni,    fn($q) => $q->where('dni',    'like', "%{$dni}%"))
+            ->when($grado,  fn($q) => $q->where('grado',  'like', "%{$grado}%"))
             ->when($estado, fn($q) => $q->where('estado', $estado))
             ->orderBy('apellido1')
             ->orderBy('nombre1')
@@ -79,13 +110,13 @@ class EstudianteController extends Controller
 
         return view('estudiantes.buscar', compact('estudiantes', 'busquedaRealizada'));
     }
+
     /* ============================================================
        CONSULTA PÚBLICA
        ============================================================ */
     public function consultarPublico(Request $request)
     {
-        $dni = $request->input('dni');
-
+        $dni        = $request->input('dni');
         $estudiante = Estudiante::where('dni', $dni)->first();
 
         return view('publico.consultar-estudiante', compact('estudiante', 'dni'));
@@ -145,22 +176,36 @@ class EstudianteController extends Controller
             $data['foto'] = $request->file('foto')->store('estudiantes', 'public');
         }
 
-        $estudiante = Estudiante::create($data);
+        DB::beginTransaction();
+        try {
+            $estudiante = Estudiante::create($data);
 
-        Documento::create([
-            'estudiante_id'   => $estudiante->id,
-            'foto'            => $estudiante->foto ?? null,
-            'acta_nacimiento' => $request->file('acta_nacimiento')->store('documentos/actas', 'public'),
-            'calificaciones'  => $request->file('calificaciones')->store('documentos/calificaciones', 'public'),
-        ]);
+            Documento::create([
+                'estudiante_id'   => $estudiante->id,
+                'foto'            => $estudiante->foto ?? null,
+                'acta_nacimiento' => $request->file('acta_nacimiento')->store('documentos/actas', 'public'),
+                'calificaciones'  => $request->file('calificaciones')->store('documentos/calificaciones', 'public'),
+            ]);
 
-        \App\Models\User::create([
-            'name'     => $estudiante->nombre_completo,
-            'email'    => $email,
-            'password' => Hash::make('egm2025'),
-            'id_rol'   => 4,
-            'activo'   => 1,
-        ]);
+            // Solo crear usuario si no existe ya uno con ese email
+            if (!\App\Models\User::where('email', $email)->exists()) {
+                \App\Models\User::create([
+                    'name'     => $estudiante->nombre_completo,
+                    'email'    => $email,
+                    'password' => Hash::make('egm2025'),
+                    'id_rol'   => 4,
+                    'activo'   => 1,
+                ]);
+            }
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()
+                ->withInput()
+                ->with('error', 'Error al registrar el estudiante: ' . $e->getMessage());
+        }
 
         return redirect()
             ->route('estudiantes.show', $estudiante->id)

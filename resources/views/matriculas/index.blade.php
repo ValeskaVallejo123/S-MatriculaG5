@@ -91,6 +91,14 @@
 .mat-card-head i { color: #4ec7d2; font-size: 1rem; }
 .mat-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
 
+/* ── Row number ── */
+.row-num {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .72rem; font-weight: 700; color: #64748b;
+}
+
 /* ── Table ── */
 .mat-tbl { width: 100%; border-collapse: collapse; }
 .mat-tbl thead th {
@@ -286,6 +294,7 @@
             <table class="mat-tbl">
                 <thead>
                     <tr>
+                        <th class="tc" style="width:50px;">#</th>
                         <th>Estudiante</th>
                         <th class="tc">Grado / Sección</th>
                         <th class="tc">Año</th>
@@ -297,6 +306,11 @@
                 <tbody>
                     @forelse($matriculas as $matricula)
                     <tr>
+                        {{-- Número de fila --}}
+                        <td class="tc">
+                            <span class="row-num">{{ $matriculas->firstItem() + $loop->index }}</span>
+                        </td>
+
                         <td>
                             <div style="display:flex;align-items:center;gap:.65rem;">
                                 <div class="mat-av">
@@ -335,31 +349,31 @@
                         </td>
 
                         <td class="tc">
-                          @if($matricula->estado === 'aprobada')
-                          <span class="bpill b-green">
-                            <i class="fas fa-check-circle"></i> Aprobada
-                          </span>
-                             @elseif($matricula->estado === 'pendiente')
-                              <form action="{{ route('matriculas.aprobar', $matricula->id) }}" method="POST"
-                               style="display:inline;">
-                               @csrf
-                               @method('PATCH')
-                               <button type="submit" class="bpill b-yellow"
-                                style="border:none;cursor:pointer;font-family:inherit;"
-                                onclick="return confirm('¿Aprobar esta matrícula?')"
-                                title="Clic para aprobar">
-                                 <i class="fas fa-clock"></i> Pendiente
-                                <i class="fas fa-arrow-right" style="font-size:.6rem;margin-left:.2rem;opacity:.6;"></i>
-                               </button>
+                            @if($matricula->estado === 'aprobada')
+                            <span class="bpill b-green">
+                                <i class="fas fa-check-circle"></i> Aprobada
+                            </span>
+                            @elseif($matricula->estado === 'pendiente')
+                            <form action="{{ route('matriculas.aprobar', $matricula->id) }}" method="POST"
+                                  style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="bpill b-yellow"
+                                        style="border:none;cursor:pointer;font-family:inherit;"
+                                        onclick="return confirm('¿Aprobar esta matrícula?')"
+                                        title="Clic para aprobar">
+                                    <i class="fas fa-clock"></i> Pendiente
+                                    <i class="fas fa-arrow-right" style="font-size:.6rem;margin-left:.2rem;opacity:.6;"></i>
+                                </button>
                             </form>
-                               @elseif($matricula->estado === 'rechazada')
-                                 <span class="bpill b-red">
-                                  <i class="fas fa-times-circle"></i> Rechazada
-                                 </span>
-                               @else
-                         <span class="bpill b-gray">{{ ucfirst($matricula->estado) }}</span>
-                    @endif
-                </td>
+                            @elseif($matricula->estado === 'rechazada')
+                            <span class="bpill b-red">
+                                <i class="fas fa-times-circle"></i> Rechazada
+                            </span>
+                            @else
+                            <span class="bpill b-gray">{{ ucfirst($matricula->estado) }}</span>
+                            @endif
+                        </td>
 
                         <td class="tr">
                             <div style="display:inline-flex;gap:.35rem;">
@@ -376,7 +390,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="mat-empty">
                                 <i class="fas fa-clipboard-list"></i>
                                 <p>

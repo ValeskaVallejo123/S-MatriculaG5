@@ -12,13 +12,9 @@ use App\Models\Padre;
 use App\Models\Estudiante;
 use App\Models\Profesor;
 
-
 /**
  * @method static \App\Models\User|null find($id)
  * @method static \Illuminate\Database\Eloquent\Builder with($relations)
- *
- * Estas anotaciones le indican al IDE que auth()->user() retorna este modelo.
- * Sin esto, el IDE marca "Undefined method 'user'" aunque el código funcione.
  *
  * @property int         $id
  * @property string      $name
@@ -87,11 +83,22 @@ class User extends Authenticatable
         return $this->hasOne(Padre::class, 'user_id');
     }
 
-    // ELIMINADO: estudiante() — la tabla `estudiantes` no tiene columna user_id.
-    // Los estudiantes no tienen cuenta propia en users; acceden a través del padre.
+    /**
+     * Estudiante buscado por coincidencia de email.
+     * La tabla `estudiantes` no tiene columna user_id,
+     * por lo que se busca igual que con profesores.
+     * Uso: $user->estudiante  →  retorna Estudiante|null
+     */
+    public function getEstudianteAttribute(): ?Estudiante
+    {
+        return Estudiante::where('email', $this->email)->first();
+    }
 
-    // NOTA: La tabla `profesores` NO tiene columna user_id.
-    // Se busca el profesor por email. No es una relación Eloquent tradicional.
+    /**
+     * Profesor buscado por coincidencia de email.
+     * La tabla `profesores` no tiene columna user_id.
+     * Uso: $user->docente  →  retorna Profesor|null
+     */
     public function getDocenteAttribute(): ?Profesor
     {
         return Profesor::where('email', $this->email)->first();
@@ -179,13 +186,13 @@ class User extends Authenticatable
     {
         return [
             'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
-            'estudiante_id' => null, // estudiantes no tienen cuenta en users
+            'estudiante_id' => Estudiante::where('email', $this->email)->value('id'),
             'padre_id'      => $this->padre?->id,
         ];
     }
 
     // =========================================================================
-    // infoParaSistema
+    // INFO PARA SISTEMA
     // =========================================================================
 
     public function infoParaSistema(): array
@@ -201,7 +208,7 @@ class User extends Authenticatable
             'es_estudiante' => $this->isEstudiante(),
             'es_padre'      => $this->isPadre(),
             'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
-            'estudiante_id' => null, // estudiantes no tienen cuenta en users
+            'estudiante_id' => Estudiante::where('email', $this->email)->value('id'),
             'padre_id'      => $this->padre?->id,
         ];
     }
@@ -291,8 +298,11 @@ class User extends Authenticatable
             }
         }
 
-        // Los estudiantes no tienen cuenta propia — sin acceso directo
         if ($this->isEstudiante()) {
+            $estudianteId = Estudiante::where('email', $this->email)->value('id');
+            if ($estudianteId) {
+                return Observacion::where('estudiante_id', $estudianteId);
+            }
             return Observacion::whereRaw('0 = 1');
         }
 
@@ -320,7 +330,7 @@ class User extends Authenticatable
         return $this->notificaciones()->where('leida', false);
     }
 
-    public function getTotalNotificacionesNoLeidasAttribute()
+    public function getTotalNotificacionesNoLeidasAttribute(): int
     {
         return $this->notificaciones()->where('leida', false)->count();
     }

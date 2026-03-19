@@ -3,6 +3,12 @@
 @section('title', 'Gestión de Permisos de Padres')
 @section('page-title', 'Gestión de Permisos de Padres')
 
+@section('topbar-actions')
+    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Volver al Dashboard
+    </a>
+@endsection
+
 @push('styles')
 <style>
     .avatar-circle {
@@ -14,6 +20,10 @@
     .table tbody tr:hover {
         background-color: #f8f9fa;
         transform: translateX(2px);
+    }
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
     }
 </style>
 @endpush
@@ -29,9 +39,6 @@
             </h2>
             <p class="text-muted mb-0">Configure qué información y acciones puede realizar cada padre/tutor</p>
         </div>
-        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Volver al Dashboard
-        </a>
     </div>
 
     {{-- Mensajes --}}
@@ -115,7 +122,6 @@
                     <tr>
                         <td class="px-4 py-3">
                             <div class="d-flex align-items-center gap-3">
-                                {{-- Iniciales protegidas con ?? para evitar crash si es null --}}
                                 <div class="avatar-circle"
                                      style="width:40px;height:40px;background:linear-gradient(135deg,#4ec7d2,#3ba5b0);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">
                                     {{ strtoupper(substr($padre->nombre ?? 'P', 0, 1)) }}{{ strtoupper(substr($padre->apellido ?? 'A', 0, 1)) }}
@@ -215,5 +221,4 @@
         font-size: 0.875rem;
     }
 </style>
-
 @endsection

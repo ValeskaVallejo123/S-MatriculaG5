@@ -582,7 +582,7 @@
         <h2>Iniciar Sesión</h2>
         <p>Ingresa tus credenciales para acceder</p>
       </div>
-       
+
       @if (session('status'))
         <div class="alert alert-success">
           <i class="fas fa-check-circle"></i>
@@ -638,8 +638,8 @@
             <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
             <span>Recordarme</span>
           </label>
-          @if (Route::has('password.request'))
-            <a href="{{ route('password.request') }}" class="forgot-password">
+          @if (Route::has('password.solicitar'))
+            <a href="{{ route('password.solicitar') }}" class="forgot-password">
               ¿Olvidaste tu contraseña?
             </a>
           @else
