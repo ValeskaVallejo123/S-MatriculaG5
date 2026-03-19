@@ -37,7 +37,7 @@ class Grado extends Model
             'grado_id',                // Llave foránea en pivot para este modelo
             'materia_id'               // Llave foránea en pivot para el modelo relacionado
         )
-        ->withPivot(['profesor_id', 'section', 'horas_semanales'])
+        ->withPivot(['profesor_id', 'seccion', 'horas_semanales'])
         ->withTimestamps();
     }
 
