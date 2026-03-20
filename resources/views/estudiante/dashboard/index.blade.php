@@ -27,6 +27,47 @@
             background: #f8fafc !important;
         }
         .notif-item:hover { background: rgba(78,199,210,0.05); }
+
+        /* ========================================================
+           ADICIÓN PARA MODO OSCURO (CORRECCIÓN DE TEXTOS)
+           ======================================================== */
+
+        /* 1. Forzar color blanco en títulos de bienvenida y cards */
+        body.dark-mode h2,
+        body.dark-mode h3,
+        body.dark-mode .fw-bold {
+            color: #ffffff !important;
+        }
+
+        /* 2. Corregir Badges (DNI, Grado, etc.) que se ven oscuros */
+        body.dark-mode .badge {
+            background-color: rgba(78, 199, 210, 0.2) !important;
+            color: #4ec7d2 !important;
+            border: 1px solid #4ec7d2 !important;
+        }
+
+        /* 3. Corregir botones de Accesos Rápidos */
+        body.dark-mode .btn.text-start {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* 4. Corregir textos en las Notificaciones */
+        body.dark-mode .notif-item span,
+        body.dark-mode .notif-item p {
+            color: #f1f5f9 !important;
+        }
+
+        body.dark-mode .notif-item.leida {
+            background: rgba(255, 255, 255, 0.05) !important;
+            opacity: 0.7;
+        }
+
+        /* 5. Asegurar que los iconos se vean claros */
+        body.dark-mode .info-card i {
+            color: #4ec7d2 !important;
+        }
     </style>
 @endpush
 
