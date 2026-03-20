@@ -3,7 +3,7 @@
 @section('title', 'Gestión Profesor-Materia')
 
 @section('topbar-actions')
-    <a href="{{ route('profesor_materia_grado.create') }}"
+    <a href="{{ route('profesor_materia.create') }}"
        style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);color:white;
               padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;
               display:inline-flex;align-items:center;gap:.5rem;border:none;
@@ -223,12 +223,9 @@
                    placeholder="Buscar profesor, materia o grado..."
                    autocomplete="off">
         </div>
-
-        {{-- Botón lupa azul --}}
         <button type="button" id="searchBtn" class="pmg-search-btn" title="Buscar">
             <i class="fas fa-search" style="font-size:.85rem;"></i>
         </button>
-
         <div class="pmg-count">
             <i class="fas fa-list-ul" style="color:var(--blue-mid);"></i>
             <strong id="visibleCount" style="color:var(--blue-mid);">{{ $totalAsignaciones }}</strong>
@@ -293,18 +290,18 @@
                             </td>
                             <td class="tc">
                                 <div style="display:inline-flex;gap:.35rem;align-items:center;">
-                                    <a href="{{ route('profesor_materia_grado.edit', $asignacion->id) }}"
+                                    <a href="{{ route('profesor_materia.edit', $asignacion->id) }}"
                                        class="act-btn act-edit" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form method="POST"
-                                          action="{{ route('profesor_materia_grado.destroy', $asignacion->id) }}"
+                                          action="{{ route('profesor_materia.destroy', $asignacion->id) }}"
                                           style="display:inline;">
                                         @csrf @method('DELETE')
                                         <button type="button"
                                                 class="act-btn act-del" title="Eliminar"
                                                 onclick="mostrarModalDelete(
-                                                    '{{ route('profesor_materia_grado.destroy', $asignacion->id) }}',
+                                                    '{{ route('profesor_materia.destroy', $asignacion->id) }}',
                                                     '¿Estás seguro de eliminar esta asignación? Esta acción no se puede deshacer.',
                                                     '{{ addslashes(($asignacion->profesor->nombre ?? '') . ' — ' . ($asignacion->materia->nombre ?? '')) }}'
                                                 )">
@@ -322,7 +319,7 @@
                                 <i class="fas fa-inbox"></i>
                                 <h6>No hay asignaciones registradas</h6>
                                 <p>Comienza creando la primera asignación profesor-materia-grado</p>
-                                <a href="{{ route('profesor_materia_grado.create') }}"
+                                <a href="{{ route('profesor_materia.create') }}"
                                    style="display:inline-flex;align-items:center;gap:.5rem;
                                           padding:.55rem 1.3rem;
                                           background:linear-gradient(135deg,#4ec7d2,#00508f);
@@ -383,16 +380,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Filtrar al escribir
     input.addEventListener('input', filtrar);
 
-    // Botón lupa azul
     searchBtn.addEventListener('click', function () {
         filtrar();
         input.focus();
     });
 
-    // Limpiar con Escape
     input.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             this.value = '';

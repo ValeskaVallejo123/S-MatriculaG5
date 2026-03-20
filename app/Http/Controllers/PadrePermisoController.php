@@ -31,7 +31,7 @@ class PadrePermisoController extends Controller
 
         $padres = $query->paginate(15);
 
-        return view('admin.permisos.index', compact('padres'));
+        return view('admins.permisos.index', compact('padres'));
     }
 
     /**
@@ -46,7 +46,7 @@ class PadrePermisoController extends Controller
             ->get()
             ->keyBy('estudiante_id');
 
-        return view('admin.permisos.configurar', compact('padre', 'permisosExistentes'));
+        return view('admins.permisos.configurar', compact('padre', 'permisosExistentes'));
     }
 
     /**
@@ -55,8 +55,8 @@ class PadrePermisoController extends Controller
     public function guardar(Request $request, $padreId)
     {
         $request->validate([
-            'estudiante_id' => 'required|exists:estudiantes,id',
-            'notas_adicionales' => 'nullable|string|max:500',
+            'estudiante_id'      => 'required|exists:estudiantes,id',
+            'notas_adicionales'  => 'nullable|string|max:500',
         ]);
 
         // Lista de permisos disponibles
@@ -69,7 +69,7 @@ class PadrePermisoController extends Controller
             'ver_comportamiento',
             'descargar_boletas',
             'ver_tareas',
-            'recibir_notificaciones'
+            'recibir_notificaciones',
         ];
 
         try {
@@ -86,8 +86,8 @@ class PadrePermisoController extends Controller
 
             PadrePermiso::updateOrCreate(
                 [
-                    'padre_id' => $padreId,
-                    'estudiante_id' => $request->estudiante_id
+                    'padre_id'      => $padreId,
+                    'estudiante_id' => $request->estudiante_id,
                 ],
                 $data
             );
@@ -95,7 +95,7 @@ class PadrePermisoController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('admin.permisos.configurar', $padreId)
+                ->route('admins.permisos.configurar', $padreId)
                 ->with('success', 'Permisos actualizados correctamente.');
 
         } catch (\Exception $e) {
@@ -115,19 +115,19 @@ class PadrePermisoController extends Controller
         try {
             PadrePermiso::updateOrCreate(
                 [
-                    'padre_id' => $padreId,
-                    'estudiante_id' => $estudianteId
+                    'padre_id'      => $padreId,
+                    'estudiante_id' => $estudianteId,
                 ],
                 [
-                    'ver_calificaciones' => true,
-                    'ver_asistencias' => true,
-                    'comunicarse_profesores' => true,
-                    'autorizar_salidas' => false,
-                    'modificar_datos_contacto' => false,
-                    'ver_comportamiento' => true,
-                    'descargar_boletas' => true,
-                    'ver_tareas' => true,
-                    'recibir_notificaciones' => true,
+                    'ver_calificaciones'        => true,
+                    'ver_asistencias'           => true,
+                    'comunicarse_profesores'    => true,
+                    'autorizar_salidas'         => false,
+                    'modificar_datos_contacto'  => false,
+                    'ver_comportamiento'        => true,
+                    'descargar_boletas'         => true,
+                    'ver_tareas'                => true,
+                    'recibir_notificaciones'    => true,
                 ]
             );
 
@@ -162,7 +162,6 @@ class PadrePermisoController extends Controller
     {
         $activar = $request->input('activar', true);
 
-        // Lista de permisos
         $permisos = [
             'ver_calificaciones',
             'ver_asistencias',
@@ -172,7 +171,7 @@ class PadrePermisoController extends Controller
             'ver_comportamiento',
             'descargar_boletas',
             'ver_tareas',
-            'recibir_notificaciones'
+            'recibir_notificaciones',
         ];
 
         $data = [];
@@ -183,8 +182,8 @@ class PadrePermisoController extends Controller
         try {
             PadrePermiso::updateOrCreate(
                 [
-                    'padre_id' => $padreId,
-                    'estudiante_id' => $estudianteId
+                    'padre_id'      => $padreId,
+                    'estudiante_id' => $estudianteId,
                 ],
                 $data
             );

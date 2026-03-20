@@ -23,36 +23,24 @@ class Grado extends Model
         'activo' => 'boolean',
     ];
 
-    // --- Relaciones ---
-
-    /**
-     * Relación muchos a muchos con Materia.
-     * Se integra la versión con llaves foráneas explícitas.
-     */
+    // Relación con materias a través de grado_materia
     public function materias()
     {
-        return $this->belongsToMany(
-            Materia::class,
-            'profesor_materia_grados', // Tabla pivot
-            'grado_id',                // Llave foránea en pivot para este modelo
-            'materia_id'               // Llave foránea en pivot para el modelo relacionado
-        )
-        ->withPivot(['profesor_id', 'seccion', 'horas_semanales'])
-        ->withTimestamps();
+        return $this->belongsToMany(Materia::class, 'grado_materia')
+                    ->withTimestamps();
     }
 
-    public function profesores()
+    // Accesor para nombre completo del grado
+    public function getNombreCompletoAttribute()
     {
-        return $this->hasMany(ProfesorGradoSeccion::class, 'grado_id');
+        $nombre = $this->numero . '° Grado';
+        if ($this->seccion) {
+            $nombre .= ' Sección ' . $this->seccion;
+        }
+        return $nombre;
     }
 
-    public function profesoresMaterias()
-    {
-        return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
-    }
-
-    // --- Scopes ---
-
+    // Scope para filtrar por nivel
     public function scopePrimaria($query)
     {
         return $query->where('nivel', 'primaria');
@@ -63,14 +51,13 @@ class Grado extends Model
         return $query->where('nivel', 'secundaria');
     }
 
-    // --- Accessors ---
-
-    public function getNombreCompletoAttribute(): string
+    public function profesores()
     {
-        $nombre = $this->numero . '° Grado';
-        if ($this->seccion) {
-            $nombre .= ' Sección ' . $this->seccion;
-        }
-        return $nombre;
+        return $this->hasMany(ProfesorGradoSeccion::class, 'grado_id');
+    }
+
+    public function profesoresMaterias()
+    {
+        return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
     }
 }

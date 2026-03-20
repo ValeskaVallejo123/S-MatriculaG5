@@ -5,10 +5,8 @@
 @section('page-title', 'Nueva Asignación')
 
 @section('topbar-actions')
-    <a href="{{ route('profesor_materia.index') }}" class="btn-back"
-       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none;
-              font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;
-              border: 2px solid #00508f; font-size: 0.9rem;">
+    <a href="{{ route('profesor_materia.index') }}"
+       style="background:white;color:#00508f;padding:0.5rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:2px solid #00508f;font-size:0.9rem;">
         <i class="fas fa-arrow-left"></i> Volver
     </a>
 @endsection
@@ -36,7 +34,7 @@
     {{-- Formulario --}}
     <div class="card border-0 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-4">
-            <form action="{{ route('profesor_materia.store') }}" method="POST">
+            <form method="POST" action="{{ route('profesor_materia.store') }}">
                 @csrf
 
                 {{-- Profesor --}}
@@ -74,6 +72,46 @@
                 </div>
 
                 {{-- Materia --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small mb-1" style="color:#003b73;">
+                        <i class="fas fa-book me-1" style="color:#4ec7d2;"></i>
+                        Materia <span class="text-danger">*</span>
+                    </label>
+                    <select name="materia_id" required
+                            class="form-select @error('materia_id') is-invalid @enderror"
+                            style="border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.875rem;">
+                        <option value="">Seleccione una materia…</option>
+                        @foreach($materias as $m)
+                            <option value="{{ $m->id }}" {{ old('materia_id') == $m->id ? 'selected' : '' }}>
+                                {{ $m->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('materia_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+
+                {{-- Grado --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small mb-1" style="color:#003b73;">
+                        <i class="fas fa-school me-1" style="color:#4ec7d2;"></i>
+                        Grado <span class="text-danger">*</span>
+                    </label>
+                    <select name="grado_id" required
+                            class="form-select @error('grado_id') is-invalid @enderror"
+                            style="border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.875rem;">
+                        <option value="">Seleccione un grado…</option>
+                        @foreach($grados as $g)
+                            <option value="{{ $g->id }}" {{ old('grado_id') == $g->id ? 'selected' : '' }}>
+                                {{ $g->numero }}° Grado
+                                @if($g->seccion) — Sección {{ $g->seccion }} @endif
+                                ({{ ucfirst($g->nivel) }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('grado_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+
+                {{-- Sección --}}
                 <div class="mb-4">
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
@@ -179,9 +217,8 @@
                                    border: none; box-shadow: 0 2px 8px rgba(78,199,210,0.3); padding: 0.65rem; border-radius: 8px;">
                         <i class="fas fa-check me-1"></i> Guardar Asignación
                     </button>
-                    <a href="{{ route('profesor_materia.index') }}" class="btn btn-sm fw-semibold flex-fill"
-                       style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.65rem; border-radius: 8px;">
-                        <i class="fas fa-times me-1"></i> Cancelar
+                    <a href="{{ route('profesor_materia.index') }}" class="small text-muted" style="text-decoration:none;">
+                        Cancelar
                     </a>
                 </div>
             </form>

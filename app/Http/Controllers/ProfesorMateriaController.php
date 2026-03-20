@@ -22,17 +22,24 @@ class ProfesorMateriaController extends Controller
         $asignaciones = Profesor::with(['materiasGrupos.grado', 'materiasGrupos.materia'])
             ->paginate(10);
 
-        return view('profesor_materia.index', compact('asignaciones'));
+        $totalAsignaciones = ProfesorMateriaGrado::count();
+        $totalProfesores   = ProfesorMateriaGrado::distinct('profesor_id')->count();
+
+        return view('profesor_materia.index', compact(
+            'asignaciones', 'totalAsignaciones', 'totalProfesores'
+        ));
     }
 
     public function create(): View
     {
-        $profesores = Profesor::all();
-        $materias   = Materia::all();
-        $grados     = Grado::all();
+        $profesores = Profesor::orderBy('nombre')->get();
+        $materias   = Materia::orderBy('nombre')->get();
+        $grados     = Grado::orderBy('nivel')->orderBy('numero')->get();
         $secciones  = ['A', 'B', 'C', 'D'];
 
-        return view('profesor_materia.create', compact('profesores', 'materias', 'grados', 'secciones'));
+        return view('profesor_materia.create', compact(
+            'profesores', 'materias', 'grados', 'secciones'
+        ));
     }
 
     public function store(Request $request)
@@ -44,9 +51,50 @@ class ProfesorMateriaController extends Controller
             'seccion'     => 'required|string|max:2',
         ]);
 
-        // Aplicando la corrección con "s" y validando duplicados
-        $existe = DB::table('profesor_materia_grados')
-            ->where('profesor_id', $request->profesor_id)
+        if (ProfesorMateriaGrado::yaAsignado(
+            $request->profesor_id,
+            $request->materia_id,
+            $request->grado_id,
+            $request->seccion
+        )) {
+            return back()
+                ->withInput()
+                ->withErrors(['duplicado' => 'Ya existe esa asignación (mismo profesor, materia, grado y sección).']);
+        }
+
+        ProfesorMateriaGrado::create($request->only([
+            'profesor_id', 'materia_id', 'grado_id', 'seccion'
+        ]));
+
+        return redirect()
+            ->route('profesor_materia.index')
+            ->with('success', 'Asignación creada correctamente.');
+    }
+
+    /** Formulario de edición */
+    public function edit(ProfesorMateriaGrado $profesor_materia_grado)
+    {
+        $profesores = Profesor::orderBy('nombre')->get();
+        $materias   = Materia::orderBy('nombre')->get();
+        $grados     = Grado::orderBy('nivel')->orderBy('numero')->get();
+        $secciones  = ['A', 'B', 'C', 'D'];
+
+        return view('profesor_materia.edit', compact(
+            'profesor_materia_grado', 'profesores', 'materias', 'grados', 'secciones'
+        ));
+    }
+
+    /** Actualizar asignación */
+    public function update(Request $request, ProfesorMateriaGrado $profesor_materia_grado)
+    {
+        $request->validate([
+            'profesor_id' => 'required|exists:profesores,id',
+            'materia_id'  => 'required|exists:materias,id',
+            'grado_id'    => 'required|exists:grados,id',
+            'seccion'     => 'required|string|max:5',
+        ]);
+
+        $existe = ProfesorMateriaGrado::where('profesor_id', $request->profesor_id)
             ->where('materia_id',  $request->materia_id)
             ->where('grado_id',    $request->grado_id)
             ->where('seccion',     $request->seccion)
@@ -62,8 +110,9 @@ class ProfesorMateriaController extends Controller
             'seccion'    => $request->seccion,
         ]);
 
-        return redirect()->route('profesor_materia.index')
-            ->with('success', 'Asignación creada correctamente.');
+        return redirect()
+            ->route('profesor_materia.index')
+            ->with('success', 'Asignación actualizada correctamente.');
     }
 
     public function edit($id): View
@@ -75,51 +124,8 @@ class ProfesorMateriaController extends Controller
         $grados    = Grado::all();
         $secciones = ['A', 'B', 'C', 'D'];
 
-        return view('profesor_materia.edit', compact('profesor', 'materias', 'grados', 'secciones'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'materia_id' => 'required|exists:materias,id',
-            'grado_id'   => 'required|exists:grados,id',
-            'seccion'    => 'required|string|max:2',
-        ]);
-
-        // Aplicando la corrección solicitada aquí también
-        $existe = DB::table('profesor_materia_grados')
-            ->where('profesor_id', $id)
-            ->where('materia_id',  $request->materia_id)
-            ->where('grado_id',    $request->grado_id)
-            ->where('seccion',     $request->seccion)
-            ->exists();
-
-        if ($existe) {
-            return back()->withErrors(['duplicado' => 'Esta asignación ya existe para este profesor.'])->withInput();
-        }
-
-        Profesor::findOrFail($id)->materiasGrupos()->create([
-            'materia_id' => $request->materia_id,
-            'grado_id'   => $request->grado_id,
-            'seccion'    => $request->seccion,
-        ]);
-
-        return redirect()->route('profesor_materia.edit', $id)
-            ->with('success', 'Asignación agregada correctamente.');
-    }
-
-    public function destroyAsignacion($id)
-    {
-        DB::table('profesor_materia_grados')->where('id', $id)->delete();
-
-        return back()->with('success', 'Asignación eliminada.');
-    }
-
-    public function destroy($id)
-    {
-        DB::table('profesor_materia_grados')->where('profesor_id', $id)->delete();
-
-        return redirect()->route('profesor_materia.index')
-            ->with('success', 'Todas las asignaciones del profesor fueron eliminadas.');
+        return redirect()
+            ->route('profesor_materia.index')
+            ->with('success', 'Asignación eliminada.');
     }
 }
