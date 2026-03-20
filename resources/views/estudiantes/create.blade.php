@@ -166,17 +166,7 @@
 
             <form action="{{ route('estudiantes.store') }}" method="POST">
                 @csrf
-                {{-- Añade esto justo arriba del primer título de sección --}}
-                @if ($errors->any())
-                    <div style="background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 1rem; border-radius: 10px; margin: 1rem 1.7rem;">
-                        <strong style="font-size: .8rem; text-transform: uppercase;">Hubo errores en el registro:</strong>
-                        <ul style="margin-top: .5rem; font-size: .75rem;">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+
                 {{-- ══════════════════════════════════════
                      SECCIÓN 1 · INFORMACIÓN PERSONAL
                 ══════════════════════════════════════ --}}

@@ -108,8 +108,6 @@
             }
         }
     </script>
-<<<<<<< HEAD
 @endsection
-=======
 @endsection
->>>>>>> dev/valeska
+

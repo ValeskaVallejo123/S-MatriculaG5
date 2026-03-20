@@ -25,13 +25,12 @@ class DashboardController extends Controller
 
         $usuario = Auth::user();
 
-        // Nota: Asegúrate de que los IDs coincidan con tu tabla 'roles'
         switch ($usuario->id_rol) {
             case 1: // SuperAdmin
                 return redirect()->route('superadmin.dashboard');
 
             case 2: // Administrador
-                return redirect()->route('admin.dashboard');
+                return redirect()->route('admins.dashboard');
 
             case 3: // Profesor
                 return redirect()->route('profesor.dashboard');
@@ -45,28 +44,6 @@ class DashboardController extends Controller
             default:
                 return $this->dashboardFallback();
         }
-    }
-
-    /**
-     * Dashboard de Estudiante
-     */
-    public function estudiante()
-    {
-        $user = Auth::user();
-
-        // Obtenemos el perfil de estudiante vinculado
-        $estudiante = $user->estudiante;
-
-        // Variables para las tarjetas (puedes personalizarlas luego con consultas reales)
-        $totalHoras = "Ver Horario";
-        $totalCalificaciones = "Ver Notas";
-
-        return view('estudiante.dashboard.index', compact(
-            'user',
-            'estudiante',
-            'totalHoras',
-            'totalCalificaciones'
-        ));
     }
 
     /**
@@ -127,7 +104,8 @@ class DashboardController extends Controller
                 ->where('fecha_fin', '>=', now())
                 ->first();
 
-            return view('admin.dashboard', compact(
+            // 👉 Vista correcta del dashboard admin
+            return view('admins.dashboard', compact(
                 'totalEstudiantes',
                 'estudiantesActivos',
                 'totalProfesores',

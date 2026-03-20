@@ -294,28 +294,81 @@ class EstudianteController extends Controller
         return back()->with('success', 'Notificación marcada como leída.');
     }
 
+    /* ============================================================
+   HISTORIAL PARA EL ESTUDIANTE (Solo Lectura)
+   ============================================================ */
     public function historial()
     {
         $user = auth()->user();
-
-        // Buscamos al estudiante que tenga vinculado el ID del usuario que inició sesión
-        $estudiante = \App\Models\Estudiante::with([
-            'calificaciones.materia',
-            'calificaciones.periodo'
-        ])->where('user_id', $user->id) // <--- Esta es la clave: buscar por ID, no por nombre
-        ->first();
-
-        // Si no lo encuentra por ID, intentamos por el email exacto como respaldo
-        if (!$estudiante) {
-            $estudiante = \App\Models\Estudiante::where('email', $user->email)->firstOrFail();
-        }
+        $estudiante = \App\Models\Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])
+            ->where('email', $user->email)
+            ->firstOrFail();
 
         $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
+        $historialAgrupado = $estudiante->calificaciones->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
 
-        $historialAgrupado = $estudiante->calificaciones->groupBy(function($nota) {
-            return $nota->periodo->anio_lectivo ?? 'Ciclo Actual';
-        });
+        // Pasamos una variable 'readonly' para ocultar botones de edición en la vista
+        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))->with('readonly', true);
+    }
 
-        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'));
+    /* ============================================================
+       HISTORIAL PARA ADMIN (Lectura y Edición)
+       ============================================================ */
+    public function verHistorialAdmin($id)
+    {
+        $estudiante = \App\Models\Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])
+            ->findOrFail($id);
+
+        $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
+        $historialAgrupado = $estudiante->calificaciones->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
+
+        // Aquí NO enviamos 'readonly', por lo que el admin verá los botones de editar notas
+        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))->with('readonly', false);
+    }
+
+    public function editHistorialAdmin($id)
+    {
+        // 1. Buscamos al estudiante o lanzamos error 404 si no existe
+        $estudiante = \App\Models\Estudiante::findOrFail($id);
+
+        // 2. Cargamos sus calificaciones actuales
+        $calificaciones = \App\Models\Calificacion::where('estudiante_id', $id)
+            ->with('materia') // Asegúrate de tener la relación 'materia' en tu modelo Calificacion
+            ->get();
+
+        // 3. Retornamos la vista de edición (Asegúrate de que esta vista exista)
+        return view('historial.edit', compact('estudiante', 'calificaciones'));
+    }
+    public function updateHistorialAdmin(Request $request, $id)
+    {
+        // 1. Validar al estudiante
+        $estudiante = \App\Models\Estudiante::findOrFail($id);
+        $cambiosRealizados = false;
+
+        // 2. Procesar las notas si vienen en el request
+        if ($request->has('notas')) {
+            foreach ($request->notas as $calificacionId => $nuevoValor) {
+                $calificacion = \App\Models\Calificacion::find($calificacionId);
+
+                if ($calificacion && $calificacion->estudiante_id == $id) {
+                    // Comparamos el valor actual con el nuevo
+                    if ($calificacion->nota != $nuevoValor) {
+                        $calificacion->update(['nota' => $nuevoValor]);
+                        $cambiosRealizados = true;
+                    }
+                }
+            }
+        }
+
+        // 3. Respuesta condicional según si hubo cambios o no
+        if ($cambiosRealizados) {
+            return redirect()
+                ->route('superadmin.estudiantes.historial.show', $id)
+                ->with('success', '¡Éxito! Los cambios se han guardado correctamente.');
+        } else {
+            return redirect()
+                ->route('superadmin.estudiantes.historial.show', $id)
+                ->with('info', 'No se realizaron cambios en el historial académico.');
+        }
     }
 }

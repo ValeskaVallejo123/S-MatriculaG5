@@ -1,264 +1,322 @@
 @extends('layouts.app')
-    <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Listado de Cursos - Escuela Gabriela Mistral</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
+@section('title', 'Cupos Máximos')
+@section('page-title', 'Cupos Máximos')
+
+@section('topbar-actions')
+    <a href="{{ route('superadmin.cupos_maximos.create') }}" class="adm-btn-solid">
+        <i class="fas fa-plus"></i> Nuevo Cupo
+    </a>
+@endsection
+
+@push('styles')
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #e6f0ff;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        .adm-wrap { font-family: 'Inter', sans-serif; }
+
+        .adm-btn-solid {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+            background: linear-gradient(135deg, #4ec7d2, #00508f);
+            color: #fff; border: none; text-decoration: none; transition: opacity .15s;
+        }
+        .adm-btn-solid:hover { opacity: .88; color: #fff; }
+
+        .adm-stats {
+            display: grid; grid-template-columns: repeat(3,1fr);
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        @media(max-width:640px){ .adm-stats { grid-template-columns: 1fr; } }
+
+        .adm-stat {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+            padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,.05);
+        }
+        .adm-stat-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .adm-stat-icon i { font-size: 1.15rem; color: #fff; }
+        .adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
+        .adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
+
+        .adm-toolbar {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+            padding: .85rem 1.25rem; margin-bottom: 1.25rem;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,.05); gap: .75rem; flex-wrap: wrap;
+        }
+        .adm-search {
+            display: flex; align-items: center; gap: .5rem;
+            flex: 1; min-width: 180px; max-width: 320px;
+        }
+        .adm-search input {
+            width: 100%; padding: .35rem .75rem .35rem 2rem;
+            border: 1.5px solid #e2e8f0; border-radius: 7px;
+            font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none;
+        }
+        .adm-search input:focus { border-color: #4ec7d2; }
+        .adm-search-icon { position: absolute; left: .65rem; color: #94a3b8; font-size: .75rem; }
+        .adm-search-wrap { position: relative; flex: 1; }
+
+        .adm-filters { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+        .adm-filters select {
+            padding: .35rem .75rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
+            font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
+        }
+        .adm-filters select:focus { border-color: #4ec7d2; }
+
+        .adm-card {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+            overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+        }
+        .adm-card-head {
+            background: #003b73; padding: .85rem 1.25rem;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .adm-card-head i { color: #4ec7d2; font-size: 1rem; }
+        .adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+
+        .adm-tbl { width: 100%; border-collapse: collapse; }
+        .adm-tbl thead th {
+            background: #f8fafc; padding: .6rem 1rem;
+            font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+            text-transform: uppercase; color: #64748b;
+            border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+        }
+        .adm-tbl thead th.tc { text-align: center; }
+        .adm-tbl tbody td {
+            padding: .65rem 1rem; border-bottom: 1px solid #f1f5f9;
+            font-size: .82rem; color: #334155; vertical-align: middle;
+        }
+        .adm-tbl tbody td.tc { text-align: center; }
+        .adm-tbl tbody tr:last-child td { border-bottom: none; }
+        .adm-tbl tbody tr:hover { background: #fafbfc; }
+
+        .adm-num {
+            width: 28px; height: 28px; border-radius: 6px;
+            background: #f1f5f9; color: #64748b;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: .75rem; font-weight: 700;
         }
 
-        /* ------------------------------------------- */
-        /* --- ESTILOS DE BOTONES TEMÁTICOS (REUSO) --- */
-        /* ------------------------------------------- */
-
-        /* Botón Primario: Degradado (Azul fuerte) */
-        .btn-primary-gradient {
-            background: linear-gradient(135deg, #1E5A8E 0%, #4C98B6 100%);
-            border: none;
-            color: white;
-            font-weight: bold;
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 10px rgba(30, 90, 142, 0.4);
-            transition: all 0.2s ease-in-out;
+        .bpill {
+            display: inline-flex; align-items: center; gap: .25rem;
+            padding: .22rem .65rem; border-radius: 999px;
+            font-size: .7rem; font-weight: 600; white-space: nowrap;
         }
+        .b-blue   { background: #e8f8f9; color: #00508f; }
+        .b-yellow { background: #fef9c3; color: #854d0e; }
+        .b-purple { background: #f3e8ff; color: #6b21a8; }
+        .b-green  { background: #dcfce7; color: #166534; }
 
-        .btn-primary-gradient:hover {
-            background: linear-gradient(135deg, #1A4E78 0%, #4288A5 100%);
-            box-shadow: 0 6px 12px rgba(30, 90, 142, 0.6);
-            color: white;
+        .act-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 7px; border: none;
+            cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
         }
+        .act-btn:hover { transform: translateY(-1px); }
+        .act-edit { background: #e8f8f9; color: #00508f; }
+        .act-edit:hover { background: #4ec7d2; color: #fff; }
+        .act-del  { background: #fef2f2; color: #ef4444; }
+        .act-del:hover  { background: #ef4444; color: #fff; }
 
-        /* Botón Secundario Temático: Contorno azul */
-        .btn-secondary-themed {
-            background-color: transparent;
-            border: 2px solid #1E5A8E;
-            color: #1E5A8E;
-            font-weight: 600;
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.2s ease-in-out;
-        }
+        .adm-empty { padding: 3.5rem 1rem; text-align: center; }
+        .adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
+        .adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
 
-        .btn-secondary-themed:hover {
-            background-color: #1E5A8E;
-            color: white;
-        }
-
-        /* --- CORRECCIÓN AQUÍ --- */
-        /* Botón Destructivo: Rojo (específico para Eliminar) */
-        .btn-red-destructive {
-            background-color: #d90429 !important; /* !important fuerza el color rojo */
-            border: none !important;
-            color: #fff !important; /* Fuerza el texto blanco */
-            font-weight: 600;
-            transition: background-color 0.2s;
-            border-radius: 0.375rem;
-        }
-
-        .btn-red-destructive:hover {
-            background-color: #a1031f !important; /* Rojo más oscuro al pasar el mouse */
-            color: #fff !important;
-        }
-        /* ----------------------- */
-
-        /* ------------------------------------------- */
-        /* --- ESTILOS DE TABLA Y LAYOUT --- */
-        /* ------------------------------------------- */
-        .table th, .table td { vertical-align: middle !important; }
-        .table-container {
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        /* Estilo base para los botones pequeños dentro de la tabla */
-        .table .btn-sm {
-            padding: 0.3rem 0.6rem;
-            font-size: 0.8rem;
-        }
-
-        /* Ajuste específico para el botón gradiente cuando es pequeño */
-        .table .btn-primary-gradient.btn-sm {
-            padding: 0.3rem 0.6rem;
-        }
-
-        /* CLASE CRÍTICA: Fuerza el mismo tamaño para Actualizar y Eliminar */
-        .btn-table-action {
-            min-width: 90px;
-            text-align: center;
-            display: inline-block;
-        }
-
-        /* Contenedor principal con margen izquierdo para la navbar */
-        .main-content-wrapper {
-            margin-left: 280px;
-            padding: 40px 40px 40px 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        @media (max-width: 768px) {
-            .main-content-wrapper {
-                margin-left: 0;
-                padding: 20px;
-            }
-        }
+        #noResults { display: none; }
+        #noResults.visible { display: block; }
     </style>
-</head>
-<body>
+@endpush
 
-<div class="main-content-wrapper">
-    <div class="container-fluid">
-        <div class="table-container">
-            <h2 class="mb-4 text-center fw-bold">Listado de cupos</h2>
+@section('content')
+    <div class="adm-wrap">
 
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        {{-- Stats --}}
+        <div class="adm-stats">
+            <div class="adm-stat">
+                <div class="adm-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
+                    <i class="fas fa-users-cog"></i>
                 </div>
-            @endif
-
-            @if (session('info'))
-                <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
-                    {{ session('info') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                </div>
-            @endif
-
-
-            <div class="row mb-3 align-items-center">
-                {{-- Filtros y Búsqueda --}}
-                <div class="col-md-4 mb-2 mb-md-0">
-                    <input type="text" id="searchNombre" class="form-control form-control-sm" placeholder="Buscar por curso...">
-                </div>
-                <div class="col-md-2 mb-2 mb-md-0">
-                    <select id="filterJornada" class="form-select form-select-sm">
-                        <option value="">Jornada...</option>
-                        <option value="Matutina">Matutina</option>
-                        <option value="Vespertina">Vespertina</option>
-                    </select>
-                </div>
-                <div class="col-md-2 mb-2 mb-md-0">
-                    <select id="filterSeccion" class="form-select form-select-sm">
-                        <option value="">Sección...</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                    </select>
-                </div>
-                {{-- Botón de Registrar con estilo Gradient --}}
-                <div class="col-md-4 text-md-end text-center">
-                    <a href="{{ route('cupos_maximos.create') }}" class="btn btn-primary-gradient px-4 py-2">
-                        Registrar nuevo cupo
-                    </a>
+                <div>
+                    <div class="adm-stat-lbl">Total Cupos</div>
+                    <div class="adm-stat-num">{{ $cursos->count() }}</div>
                 </div>
             </div>
+            <div class="adm-stat">
+                <div class="adm-stat-icon" style="background:linear-gradient(135deg,#fbbf24,#d97706);">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <div>
+                    <div class="adm-stat-lbl">Jornada Matutina</div>
+                    <div class="adm-stat-num">{{ $cursos->where('jornada','Matutina')->count() }}</div>
+                </div>
+            </div>
+            <div class="adm-stat">
+                <div class="adm-stat-icon" style="background:linear-gradient(135deg,#818cf8,#4f46e5);">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div>
+                    <div class="adm-stat-lbl">Jornada Vespertina</div>
+                    <div class="adm-stat-num">{{ $cursos->where('jornada','Vespertina')->count() }}</div>
+                </div>
+            </div>
+        </div>
 
+        {{-- Toolbar --}}
+        <div class="adm-toolbar">
+            <div class="adm-search">
+                <div class="adm-search-wrap">
+                    <i class="fas fa-search adm-search-icon"></i>
+                    <input type="text" id="searchNombre" placeholder="Buscar por curso...">
+                </div>
+            </div>
+            <div class="adm-filters">
+                <select id="filterJornada">
+                    <option value="">Jornada...</option>
+                    <option value="Matutina">Matutina</option>
+                    <option value="Vespertina">Vespertina</option>
+                </select>
+                <select id="filterSeccion">
+                    <option value="">Sección...</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+            </div>
+        </div>
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle text-center" id="cursosTable">
-                    <thead class="table-primary" style="background-color: #e6f0ff !important; color: #1E5A8E;">
+        {{-- Tabla --}}
+        <div class="adm-card">
+            <div class="adm-card-head">
+                <i class="fas fa-users-cog"></i>
+                <span>Lista de Cupos Máximos</span>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="adm-tbl" id="cursosTable">
+                    <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Nombre</th>
-                        <th>Cupo Máximo</th>
-                        <th>Jornada</th>
-                        <th>Sección</th>
-                        <th>Acciones</th>
+                        <th class="tc">#</th>
+                        <th>Nombre del Curso</th>
+                        <th class="tc">Cupo Máximo</th>
+                        <th class="tc">Jornada</th>
+                        <th class="tc">Sección</th>
+                        <th class="tc">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($cursos as $curso)
+                    @forelse($cursos as $curso)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td class="nombre">{{ $curso->nombre }}</td>
-                            <td>{{ $curso->cupo_maximo }}</td>
-                            <td class="jornada">{{ $curso->jornada ?? '-' }}</td>
-                            <td class="seccion">{{ $curso->seccion ?? '-' }}</td>
-                            <td>
-                                {{-- Botón Actualizar (Azul Degradado) --}}
-                                <a href="{{ route('cupos_maximos.edit', $curso->id) }}" class="btn btn-sm btn-primary-gradient btn-table-action">
-                                    Actualizar
-                                </a>
-                                <form action="{{ route('cupos_maximos.destroy', $curso->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    {{-- Botón Eliminar (Rojo Forzado) --}}
-                                    <button type="submit" class="btn btn-sm btn-red-destructive btn-table-action" onclick="return confirm('¿Está seguro que desea eliminar este cupo?')">
-                                        Eliminar
+                            <td class="tc">
+                                <span class="adm-num">{{ $loop->iteration }}</span>
+                            </td>
+                            <td class="nombre" style="font-weight:600;color:#0f172a;">
+                                {{ $curso->nombre }}
+                            </td>
+                            <td class="tc">
+                            <span class="bpill b-blue">
+                                <i class="fas fa-users"></i> {{ $curso->cupo_maximo }} alumnos
+                            </span>
+                            </td>
+                            <td class="tc jornada">
+                                @if($curso->jornada === 'Matutina')
+                                    <span class="bpill b-yellow">
+                                    <i class="fas fa-sun"></i> Matutina
+                                </span>
+                                @elseif($curso->jornada === 'Vespertina')
+                                    <span class="bpill b-purple">
+                                    <i class="fas fa-moon"></i> Vespertina
+                                </span>
+                                @else
+                                    <span style="color:#cbd5e1;">—</span>
+                                @endif
+                            </td>
+                            <td class="tc seccion">
+                                @if($curso->seccion)
+                                    <span class="bpill b-green">{{ $curso->seccion }}</span>
+                                @else
+                                    <span style="color:#cbd5e1;">—</span>
+                                @endif
+                            </td>
+                            <td class="tc">
+                                <div style="display:inline-flex;gap:.4rem;align-items:center;">
+                                    <a href="{{ route('superadmin.cupos_maximos.edit', $curso->id) }}"
+                                       class="act-btn act-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="act-btn act-del"
+                                            data-route="{{ route('superadmin.cupos_maximos.destroy', $curso->id) }}"
+                                            data-message="¿Seguro que deseas eliminar el cupo de {{ addslashes($curso->nombre) }}? Esta acción no se puede deshacer."
+                                            data-name="{{ $curso->nombre }}"
+                                            onclick="mostrarModalDeleteData(this)"
+                                            title="Eliminar">
+                                        <i class="fas fa-trash"></i>
                                     </button>
-                                </form>
+                                </div>
                             </td>
                         </tr>
-                    @endforeach
-                    @if($cursos->isEmpty())
+                    @empty
                         <tr>
-                            <td colspan="6">No se encontraron cursos.</td>
+                            <td colspan="6">
+                                <div class="adm-empty">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>No hay cupos registrados</p>
+                                </div>
+                            </td>
                         </tr>
-                    @endif
+                    @endforelse
                     </tbody>
                 </table>
             </div>
+
+            {{-- Sin resultados por filtro --}}
+            <div id="noResults" style="padding:2.5rem 1rem;text-align:center;color:#94a3b8;">
+                <i class="fas fa-search-minus" style="font-size:1.75rem;display:block;margin-bottom:.5rem;"></i>
+                <p style="margin:0;font-size:.85rem;">No hay coincidencias con los filtros aplicados.</p>
+            </div>
+
         </div>
     </div>
-</div>
+@endsection
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const searchInput = document.getElementById('searchNombre');
-    const filterJornada = document.getElementById('filterJornada');
-    const filterSeccion = document.getElementById('filterSeccion');
-    const table = document.getElementById('cursosTable').getElementsByTagName('tbody')[0];
+@push('scripts')
+    <script>
+        const searchInput   = document.getElementById('searchNombre');
+        const filterJornada = document.getElementById('filterJornada');
+        const filterSeccion = document.getElementById('filterSeccion');
+        const tbody         = document.querySelector('#cursosTable tbody');
+        const noResults     = document.getElementById('noResults');
 
-    function filterTable() {
-        const searchValue = searchInput.value.toLowerCase();
-        const jornadaValue = filterJornada.value;
-        const seccionValue = filterSeccion.value;
+        function filterTable() {
+            const s   = searchInput.value.toLowerCase();
+            const j   = filterJornada.value;
+            const sec = filterSeccion.value;
+            let visible = 0;
 
-        let hasResults = false;
+            Array.from(tbody.rows).forEach(row => {
+                if (row.cells.length < 6) return;
+                const nombre  = row.querySelector('.nombre')?.textContent.toLowerCase() ?? '';
+                const jornada = row.querySelector('.jornada')?.textContent.trim() ?? '';
+                const seccion = row.querySelector('.seccion')?.textContent.trim() ?? '';
 
-        Array.from(table.rows).forEach(row => {
-            if (row.cells.length < 6) return;
+                const ok = nombre.includes(s)
+                    && (j   === '' || jornada.includes(j))
+                    && (sec === '' || seccion.includes(sec));
 
-            const nombre = row.querySelector('.nombre').textContent.toLowerCase();
-            const jornada = row.querySelector('.jornada').textContent;
-            const seccion = row.querySelector('.seccion').textContent;
+                row.style.display = ok ? '' : 'none';
+                if (ok) visible++;
+            });
 
-            const matchNombre = nombre.includes(searchValue);
-            const matchJornada = jornadaValue === '' || jornada === jornadaValue;
-            const matchSeccion = seccionValue === '' || seccion === seccionValue;
+            noResults.style.display = visible === 0 && tbody.rows.length > 0 ? 'block' : 'none';
+        }
 
-            const isVisible = (matchNombre && matchJornada && matchSeccion);
-            row.style.display = isVisible ? '' : 'none';
-
-            if (isVisible) {
-                hasResults = true;
-            }
-        });
-    }
-
-    searchInput.addEventListener('input', filterTable);
-    filterJornada.addEventListener('change', filterTable);
-    filterSeccion.addEventListener('change', filterTable);
-</script>
-</body>
-</html>
+        searchInput.addEventListener('input', filterTable);
+        filterJornada.addEventListener('change', filterTable);
+        filterSeccion.addEventListener('change', filterTable);
+    </script>
+@endpush
