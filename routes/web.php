@@ -330,14 +330,10 @@ Route::middleware(['auth'])->group(function () {
     |-------------------------------------------------------------------------
     */
     Route::prefix('profesor-materia')->name('profesor_materia.')->group(function () {
-        Route::get('/',                [ProfesorMateriaController::class, 'index'])->name('index');
-        Route::get('/create',          [ProfesorMateriaController::class, 'create'])->name('create');
-        Route::post('/',               [ProfesorMateriaController::class, 'store'])->name('store');
-        Route::get('/{profesor}/edit', [ProfesorMateriaController::class, 'edit'])->name('edit');
-        Route::put('/{profesor}',      [ProfesorMateriaController::class, 'update'])->name('update');
-        Route::delete('/{profesor}',   [ProfesorMateriaController::class, 'destroy'])->name('destroy');
-    });
-
+        Route::get('profesor-materia/{id}/edit',    [ProfesorMateriaController::class, 'edit'])->name('profesor_materia.edit');
+Route::put('profesor-materia/{id}',         [ProfesorMateriaController::class, 'update'])->name('profesor_materia.update');
+Route::delete('profesor-materia/{id}',      [ProfesorMateriaController::class, 'destroy'])->name('profesor_materia.destroy');
+ });
     /*
     |-------------------------------------------------------------------------
     | HORARIOS DE GRADO
