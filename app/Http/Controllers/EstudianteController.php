@@ -275,16 +275,23 @@ class EstudianteController extends Controller
     public function historial()
     {
         $user = auth()->user();
+
+        // Buscamos al estudiante por el correo del usuario autenticado
         $estudiante = \App\Models\Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])
             ->where('email', $user->email)
-            ->firstOrFail();
+            ->first();
+
+        if (!$estudiante) {
+            // Si no encuentra al estudiante, redirige al dashboard con error en lugar de tirar 403/404
+            return redirect()->route('estudiante.dashboard')->with('error', 'No se encontró tu perfil de estudiante.');
+        }
 
         $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
         $historialAgrupado = $estudiante->calificaciones->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
 
-        // Pasamos una variable 'readonly' para ocultar botones de edición en la vista
-        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))->with('readonly', true);
-    }
+        // IMPORTANTE: Asegúrate de que la ruta de la vista sea la correcta
+        // Si tu archivo se llama 'historial.blade.php' y está dentro de 'views/estudiante/':
+        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))->with('readonly', true);    }
 
     /* ============================================================
        HISTORIAL PARA ADMIN (Lectura y Edición)
