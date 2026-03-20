@@ -365,6 +365,7 @@ class EstudianteController extends Controller
             return redirect()
                 ->route('superadmin.estudiantes.historial.show', $id)
                 ->with('success', '¡Éxito! Los cambios se han guardado correctamente.');
+
         } else {
             return redirect()
                 ->route('superadmin.estudiantes.historial.show', $id)

@@ -22,14 +22,14 @@
         }
 
         /* =========================================
-           CONFIGURACIÓN MODO OSCURO (UNIFICADA)
+           CONFIGURACIÓN MODO OSCURO (CORREGIDA)
            ========================================= */
         body.dark-mode {
             background-color: #0f172a !important;
             color: #f1f5f9;
         }
 
-        /* Layout Elements */
+        /* Elementos del Layout */
         body.dark-mode .sidebar {
             background: linear-gradient(180deg, #020617 0%, #0f172a 100%) !important;
             box-shadow: 4px 0 15px rgba(0,0,0,0.5);
@@ -40,13 +40,13 @@
         }
         body.dark-mode .main-content { background: #0f172a !important; }
 
-        /* UNIFICACIÓN DE TARJETAS (Cards) - Cubre TODAS las tarjetas */
+        /* UNIFICACIÓN DE TARJETAS (Cards) */
         body.dark-mode .card,
         body.dark-mode .welcome-card,
         body.dark-mode .adm-card,
         body.dark-mode .adm-stat,
         body.dark-mode .stat-card,
-        body.dark-mode .action-card, /* Esta es la clave para Gestión Académica */
+        body.dark-mode .action-card,
         body.dark-mode .modal-content,
         body.dark-mode .adm-toolbar {
             background-color: #1e293b !important;
@@ -54,40 +54,67 @@
             color: #f1f5f9 !important;
         }
 
-        /* Forzar visibilidad de textos principales (Números y Títulos) */
+        /* TEXTOS PRINCIPALES (Forzar Blanco Puro) */
         body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
         body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
         body.dark-mode .welcome-title,
         body.dark-mode .stat-value,
         body.dark-mode .adm-stat-num,
-        body.dark-mode .action-title, /* Títulos en Gestión Académica */
+        body.dark-mode .action-title,
         body.dark-mode .card-title,
         body.dark-mode .fw-bold,
-        body.dark-mode .text-dark {
+        body.dark-mode .text-dark,
+        body.dark-mode strong {
             color: #ffffff !important;
         }
 
-        /* Color gris claro para subtítulos y etiquetas secundarias */
+        /* DATOS CRÍTICOS (DNI, Nombres en tabla, Celdas) */
+        body.dark-mode .table td,
+        body.dark-mode .table th,
+        body.dark-mode .text-primary,
+        body.dark-mode .dni-text {
+            color: #ffffff !important;
+        }
+
+        /* TEXTOS SECUNDARIOS (Gris claro para legibilidad) */
         body.dark-mode .welcome-subtitle,
         body.dark-mode .stat-label,
-        body.dark-mode .action-subtitle, /* Subtítulos en Gestión Académica */
+        body.dark-mode .action-subtitle,
         body.dark-mode .adm-stat-lbl,
         body.dark-mode .text-muted,
         body.dark-mode label,
-        body.dark-mode p,
-        body.dark-mode span:not(.badge) {
+        body.dark-mode p {
             color: #cbd5e1 !important;
         }
 
-        /* Ajustes específicos para elementos dentro de las action-cards */
+        /* CORRECCIÓN PARA SPANS (Evita el tono transparente) */
+        body.dark-mode span:not(.badge):not(.text-white) {
+            color: inherit;
+        }
+
+        /* TABLAS Y BUSCADORES */
+        body.dark-mode .table, body.dark-mode .adm-tbl { color: #f1f5f9 !important; }
+        body.dark-mode .table thead th {
+            background: #1e293b !important;
+            color: #4ec7d2 !important;
+            border-bottom: 2px solid #334155 !important;
+        }
+        body.dark-mode .table td { border-bottom-color: #334155 !important; }
+
+        body.dark-mode .form-control {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #ffffff !important;
+        }
+        body.dark-mode .form-control::placeholder { color: #475569 !important; }
+
+        /* Ajustes específicos para action-cards */
         body.dark-mode .action-card-header {
             background: rgba(255,255,255,0.03) !important;
             border-bottom-color: #334155 !important;
         }
-        body.dark-mode .action-icon {
-            opacity: 0.9;
-        }
-        /* Corregir botones outline dentro de tarjetas oscuras */
+        body.dark-mode .action-icon { opacity: 0.9; }
+
         body.dark-mode .action-card-body .btn-outline-primary {
             color: #4ec7d2;
             border-color: #4ec7d2;
@@ -96,11 +123,6 @@
             background-color: #4ec7d2;
             color: #0f172a;
         }
-
-        /* Tablas en modo oscuro */
-        body.dark-mode .table, body.dark-mode .adm-tbl { color: #f1f5f9 !important; }
-        body.dark-mode .adm-tbl thead th { background: #0f172a !important; color: #94a3b8 !important; }
-        body.dark-mode .adm-tbl td { border-bottom-color: #334155 !important; color: #f1f5f9 !important; }
 
         /* Botón de Modo Oscuro */
         .btn-toggle-dark {

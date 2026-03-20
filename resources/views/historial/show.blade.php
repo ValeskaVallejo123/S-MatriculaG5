@@ -36,9 +36,22 @@
 
         {{-- BOTONES DE ACCIÓN --}}
         <div class="no-print" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <a href="{{ auth()->user()->id_rol == 3 ? url('/estudiante/dashboard') : url()->previous() }}" style="text-decoration: none; color: #00508f; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+
+            @php
+                // Definimos a dónde regresará el usuario según su rol
+                if (auth()->user()->id_rol == 3) {
+                    $urlDestino = url('/estudiante/dashboard');
+                } else {
+                    // AJUSTA ESTA RUTA: Pon aquí el nombre de tu ruta del índice de estudiantes
+                    // Ejemplo: route('superadmin.estudiantes.index') o url('/admin/estudiantes')
+                    $urlDestino = route('superadmin.estudiantes.index');
+                }
+            @endphp
+
+            <a href="{{ $urlDestino }}" style="text-decoration: none; color: #00508f; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
                 <i class="fas fa-chevron-left"></i> VOLVER AL PANEL
             </a>
+
             <button onclick="window.print();" style="background: #4ec7d2; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(78, 199, 210, 0.2);">
                 <i class="fas fa-print me-1"></i> IMPRIMIR REPORTE
             </button>
@@ -48,6 +61,14 @@
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show no-print" role="alert" style="border-radius: 12px; font-weight: 600;">
                 <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        {{-- NUEVO BLOQUE PARA MENSAJES DE INFORMACIÓN --}}
+        @if(session('info'))
+            <div class="alert alert-info alert-dismissible fade show no-print" role="alert" style="border-radius: 12px; font-weight: 600; background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">
+                <i class="fas fa-info-circle me-2"></i> {{ session('info') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
