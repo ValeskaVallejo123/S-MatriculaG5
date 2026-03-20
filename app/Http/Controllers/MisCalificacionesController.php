@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Calificacion;
 use App\Models\Estudiante;
-use App\Models\RegistrarCalificacion;
 use App\Models\PeriodoAcademico;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,14 +11,12 @@ class MisCalificacionesController extends Controller
 {
     /**
      * Vista de calificaciones para el estudiante logueado.
-     * Solo muestra sus propias notas.
+     * Solo muestra sus propias notas (read-only).
      */
     public function index()
     {
-        $user = Auth::user();
-
-        // Obtener el registro de estudiante vinculado al usuario
-        $estudiante = Estudiante::where('user_id', $user->id)->first();
+        $user       = Auth::user();
+        $estudiante = Estudiante::where('user_id', $user->id)->with('gradoAsignado')->first();
 
         if (!$estudiante) {
             return view('estudiante.calificaciones', [
@@ -30,34 +28,34 @@ class MisCalificacionesController extends Controller
             ]);
         }
 
-        // Todas las calificaciones del estudiante
-        $calificaciones = RegistrarCalificacion::with(['materia', 'periodoAcademico', 'profesor', 'grado'])
+        // Calificaciones del estudiante desde la tabla calificaciones (registradas por el profesor)
+        $calificaciones = Calificacion::with(['materia', 'periodo', 'profesor'])
             ->where('estudiante_id', $estudiante->id)
-            ->orderBy('periodo_academico_id')
+            ->orderBy('periodo_id')
             ->orderBy('materia_id')
             ->get();
 
-        $periodos = PeriodoAcademico::all()->keyBy('id');
+        $periodos = PeriodoAcademico::orderBy('id')->get()->keyBy('id');
 
         // Agrupar por período
-        $porPeriodo = $calificaciones->groupBy('periodo_academico_id');
+        $porPeriodo = $calificaciones->groupBy('periodo_id');
 
-        // Resumen por materia (promedio de todos los períodos)
+        // Resumen por materia
         $resumenMaterias = $calificaciones
             ->groupBy('materia_id')
             ->map(function ($notas) {
-                $conNota = $notas->whereNotNull('nota');
+                $conNota = $notas->whereNotNull('nota_final');
                 return [
                     'materia'  => $notas->first()->materia,
-                    'promedio' => $conNota->isNotEmpty() ? round($conNota->avg('nota'), 2) : null,
-                    'aprobado' => $conNota->isNotEmpty() && $conNota->avg('nota') >= 60,
+                    'promedio' => $conNota->isNotEmpty() ? round($conNota->avg('nota_final'), 2) : null,
+                    'aprobado' => $conNota->isNotEmpty() && $conNota->avg('nota_final') >= 60,
                     'notas'    => $notas,
                 ];
             });
 
         // Promedio general
-        $conNota = $calificaciones->whereNotNull('nota');
-        $promedioGeneral = $conNota->isNotEmpty() ? round($conNota->avg('nota'), 2) : null;
+        $conNota         = $calificaciones->whereNotNull('nota_final');
+        $promedioGeneral = $conNota->isNotEmpty() ? round($conNota->avg('nota_final'), 2) : null;
 
         return view('estudiante.calificaciones', compact(
             'estudiante',

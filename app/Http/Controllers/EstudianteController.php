@@ -34,15 +34,31 @@ class EstudianteController extends Controller
     /* ============================================================
        LISTAR ESTUDIANTES
        ============================================================ */
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        $perPage = in_array($perPage, [10, 25, 50]) ? $perPage : 10;
+
         $estudiantes = Estudiante::orderBy('apellido1')
             ->orderBy('apellido2')
             ->orderBy('nombre1')
             ->orderBy('nombre2')
-            ->paginate(10);
+            ->paginate($perPage)
+            ->withQueryString();
 
-        return view('estudiantes.index', compact('estudiantes'));
+        // Conteos reales sobre toda la tabla (no solo la página actual)
+        $totalEstudiantes = Estudiante::count();
+        $totalActivos     = Estudiante::where('estado', 'activo')->count();
+        $totalInactivos   = Estudiante::where('estado', '!=', 'activo')->count();
+        $nuevosHoy        = Estudiante::whereDate('created_at', today())->count();
+
+        return view('estudiantes.index', compact(
+            'estudiantes',
+            'totalEstudiantes',
+            'totalActivos',
+            'totalInactivos',
+            'nuevosHoy'
+        ));
     }
 
     /* ============================================================

@@ -100,15 +100,10 @@ class User extends Authenticatable
         return Profesor::where('email', $this->email)->first();
     }
 
-    /**
-     * La tabla `estudiantes` NO tiene columna user_id.
-     * Los estudiantes acceden a través del padre/tutor.
-     *
-     * public function estudiante()
-     * {
-     *     return $this->hasOne(Estudiante::class, 'user_id');
-     * }
-     */
+    public function estudiante()
+    {
+        return $this->hasOne(Estudiante::class, 'user_id');
+    }
 
     public function notificaciones()
     {

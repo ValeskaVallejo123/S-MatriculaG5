@@ -268,7 +268,7 @@
             <div class="est-stat-icon"><i class="fas fa-users"></i></div>
             <div>
                 <div class="est-stat-lbl">Total</div>
-                <div class="est-stat-num">{{ $estudiantes->total() }}</div>
+                <div class="est-stat-num">{{ $totalEstudiantes }}</div>
                 <div class="est-stat-sub">Estudiantes</div>
             </div>
         </div>
@@ -276,7 +276,7 @@
             <div class="est-stat-icon"><i class="fas fa-check-circle"></i></div>
             <div>
                 <div class="est-stat-lbl">Activos</div>
-                <div class="est-stat-num">{{ $estudiantes->getCollection()->where('estado','activo')->count() }}</div>
+                <div class="est-stat-num">{{ $totalActivos }}</div>
                 <div class="est-stat-sub">En el sistema</div>
             </div>
         </div>
@@ -284,7 +284,7 @@
             <div class="est-stat-icon"><i class="fas fa-user-slash"></i></div>
             <div>
                 <div class="est-stat-lbl">Inactivos</div>
-                <div class="est-stat-num">{{ $estudiantes->getCollection()->where('estado','inactivo')->count() }}</div>
+                <div class="est-stat-num">{{ $totalInactivos }}</div>
                 <div class="est-stat-sub">Suspendidos</div>
             </div>
         </div>
@@ -292,7 +292,7 @@
             <div class="est-stat-icon"><i class="fas fa-user-plus"></i></div>
             <div>
                 <div class="est-stat-lbl">Nuevos Hoy</div>
-                <div class="est-stat-num">{{ $estudiantes->getCollection()->filter(fn($e) => $e->created_at && $e->created_at->isToday())->count() }}</div>
+                <div class="est-stat-num">{{ $nuevosHoy }}</div>
                 <div class="est-stat-sub">Registrados</div>
             </div>
         </div>
@@ -308,13 +308,13 @@
         <div class="est-badge-info">
             <span>
                 <i class="fas fa-users" style="color:var(--blue-mid);"></i>
-                <strong id="visibleCount" style="color:var(--blue-mid);">{{ $estudiantes->total() }}</strong>
+                <strong id="visibleCount" style="color:var(--blue-mid);">{{ $totalEstudiantes }}</strong>
                 <span style="color:var(--text-muted);">Total</span>
             </span>
             <span>
                 <i class="fas fa-check-circle" style="color:var(--teal);"></i>
-                <strong style="color:var(--teal);">{{ $estudiantes->getCollection()->where('estado','activo')->count() }}</strong>
-                <span style="color:var(--text-muted);">Activos (esta página)</span>
+                <strong style="color:var(--teal);">{{ $totalActivos }}</strong>
+                <span style="color:var(--text-muted);">Activos</span>
             </span>
         </div>
         <div class="est-perpage">

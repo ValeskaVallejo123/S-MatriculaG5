@@ -93,14 +93,10 @@ class CalificacionController extends Controller
         $periodos  = PeriodoAcademico::orderBy('nombre_periodo')->get();
         $periodoId = $request->periodo_id ?? $periodos->first()?->id;
 
-        /*
-         * Los estudiantes se filtran por el campo "grado" (string, ej: "1ro Primaria")
-         * y "seccion" (string, ej: "A") del modelo Estudiante.
-         * El nombre del grado viene de la relación $asignacion->grado->nombre.
-         */
-        $nombreGrado = $asignacion->grado->nombre; // ej: "1ro Primaria"
+        // Buscar estudiantes por grado_id (FK directo, más confiable que el campo texto)
+        $nombreGrado = $asignacion->grado->nombre;
 
-        $estudiantes = Estudiante::where('grado',   $nombreGrado)
+        $estudiantes = Estudiante::where('grado_id', $gradoId)
             ->where('seccion', $seccion)
             ->where('estado',  'activo')
             ->orderBy('apellido1')

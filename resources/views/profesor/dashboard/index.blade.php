@@ -263,7 +263,7 @@
                 <span>Mis Cursos</span>
             </div>
         </a>
-        <a href="{{ route('registrarcalificaciones.index') }}" class="pd-qcard qc-3">
+        <a href="{{ route('profesor.calificaciones.index') }}" class="pd-qcard qc-3">
             <div class="pd-qcard-inner">
                 <i class="fas fa-clipboard-check"></i>
                 <span>Calificaciones</span>
@@ -348,7 +348,11 @@
                             {{ $est->nombre1 }} {{ $est->apellido1 }}
                         </div>
                         <div class="pd-est-sub">
-                            {{ $est->estado ?? 'Activo' }}
+                            @isset($est->grado_numero)
+                                {{ $est->grado_numero }}° {{ ucfirst($est->grado_nivel) }} — Sec. {{ $est->grado_seccion }}
+                            @else
+                                {{ $est->estado ?? 'Activo' }}
+                            @endisset
                         </div>
                     </div>
                 </div>

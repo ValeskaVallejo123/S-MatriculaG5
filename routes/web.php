@@ -45,6 +45,7 @@ use App\Http\Controllers\CupoMaximoController;
 use App\Http\Controllers\PublicoPlanEstudiosController;
 use App\Http\Controllers\RegistrarCalificacionController;
 use App\Http\Controllers\MisCalificacionesController;
+use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\ConsultaestudiantexcursoController;
 use App\Http\Controllers\H20CursoController;
 use App\Http\Controllers\ProfesorDashboardController;
@@ -513,6 +514,16 @@ Route::get('/consultaestudiantesxcurso/{grado}/{seccion}',  [Consultaestudiantex
 
         Route::get('/mis-cursos',                            [ProfesorGradosController::class,    'index'])->name('mis-cursos');
         Route::get('/mis-estudiantes/{grado}/{seccion}',     [ProfesorEstudianteController::class, 'index'])->name('mis-estudiantes');
+
+        // ── Calificaciones del profesor ──
+        Route::prefix('calificaciones')->name('calificaciones.')->group(function () {
+            Route::get('/',                                              [CalificacionController::class, 'index'])->name('index');
+            Route::get('/{gradoId}/{seccion}/{materiaId}',              [CalificacionController::class, 'listar'])->name('listar');
+            Route::post('/{gradoId}/{seccion}/{materiaId}/guardar',     [CalificacionController::class, 'guardarMasivo'])->name('guardar');
+            Route::get('/{calificacion}/editar',                        [CalificacionController::class, 'edit'])->name('editar');
+            Route::put('/{calificacion}',                               [CalificacionController::class, 'update'])->name('update');
+            Route::delete('/{calificacion}',                            [CalificacionController::class, 'destroy'])->name('destroy');
+        });
 
         Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
             Route::get('/',               [SolicitudAdminController::class, 'index'])->name('index');

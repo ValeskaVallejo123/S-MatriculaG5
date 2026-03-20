@@ -7,6 +7,7 @@ use App\Models\Estudiante;
 use App\Models\Matricula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 class PadreController extends Controller
@@ -70,10 +71,32 @@ class PadreController extends Controller
         $validated = $this->validarPadre($request);
         $validated['estado'] = $validated['estado'] ?? 'activo';
 
-        Padre::create($validated);
+        $padre = Padre::create($validated);
 
-        return redirect()->route('padres.index')
-            ->with('success', 'Padre/tutor registrado exitosamente.');
+        // Crear cuenta de usuario si el padre tiene correo y no existe ya un usuario con ese email
+        $correoPadre = $padre->correo ?? null;
+        $padreRolId  = DB::table('roles')->where('nombre', 'Padre')->value('id');
+        if ($padreRolId && $correoPadre && !DB::table('users')->where('email', $correoPadre)->exists()) {
+            DB::table('users')->insert([
+                'name'              => $padre->nombre . ' ' . $padre->apellido,
+                'email'             => $correoPadre,
+                'password'          => Hash::make('Padre2025!'),
+                'id_rol'            => $padreRolId,
+                'activo'            => true,
+                'is_super_admin'    => false,
+                'is_protected'      => false,
+                'email_verified_at' => now(),
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+        }
+
+        $msg = 'Padre/tutor registrado exitosamente.';
+        if ($correoPadre) {
+            $msg .= " Contraseña inicial: Padre2025!";
+        }
+
+        return redirect()->route('padres.index')->with('success', $msg);
     }
 
     /**

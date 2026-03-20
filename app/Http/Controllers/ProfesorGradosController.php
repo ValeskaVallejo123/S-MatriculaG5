@@ -20,6 +20,7 @@ class ProfesorGradosController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $anio = date('Y');
 
         // Buscar el profesor por email del usuario autenticado
         $profesor = DB::table('profesores')
@@ -31,12 +32,14 @@ class ProfesorGradosController extends Controller
                 ->with('error', 'No tienes perfil de profesor asignado.');
         }
 
-        // Obtener todos los grados y materias asignados al profesor
-        $cursos = DB::table('profesor_materia_grados')
-            ->join('grados', 'profesor_materia_grados.grado_id', '=', 'grados.id')
-            ->join('materias', 'profesor_materia_grados.materia_id', '=', 'materias.id')
-            ->where('profesor_materia_grados.profesor_id', $profesor->id)
-
+        // Obtener grados y materias asignados al profesor en el año actual
+        $cursos = DB::table('profesor_materia_grados as pmg')
+            ->join('grados', function ($j) use ($anio) {
+                $j->on('pmg.grado_id', '=', 'grados.id')
+                  ->where('grados.anio_lectivo', $anio);
+            })
+            ->join('materias', 'pmg.materia_id', '=', 'materias.id')
+            ->where('pmg.profesor_id', $profesor->id)
             ->select(
                 'grados.id as grado_id',
                 'grados.nivel',
@@ -51,11 +54,10 @@ class ProfesorGradosController extends Controller
             ->orderBy('grados.seccion')
             ->get();
 
-        // Contar estudiantes activos por grado
+        // Contar estudiantes activos por grado usando grado_id
         foreach ($cursos as $curso) {
             $curso->total_estudiantes = DB::table('estudiantes')
-                ->where('grado', $curso->numero)
-                ->where('seccion', $curso->seccion)
+                ->where('grado_id', $curso->grado_id)
                 ->where('estado', 'activo')
                 ->count();
         }

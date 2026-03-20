@@ -152,52 +152,7 @@
         </div>
     </div>
 
-    {{-- ══ Stats ══ --}}
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="stat-stripe" style="background:var(--cyan);"></div>
-            <div class="stat-icon" style="background:var(--cyan-light);">
-                <i class="fas fa-book" style="color:var(--blue-mid);"></i>
-            </div>
-            <div>
-                <div class="stat-label">Mis Materias</div>
-                <div class="stat-value">{{ $totalMaterias ?? '—' }}</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-stripe" style="background:var(--blue-mid);"></div>
-            <div class="stat-icon" style="background:#e8f1f9;">
-                <i class="fas fa-clipboard-check" style="color:var(--blue-dark);"></i>
-            </div>
-            <div>
-                <div class="stat-label">Calificaciones</div>
-                <div class="stat-value">{{ $totalCalificaciones ?? '—' }}</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-stripe" style="background:var(--blue-dark);"></div>
-            <div class="stat-icon" style="background:#eef2ff;">
-                <i class="fas fa-calendar-alt" style="color:#4f46e5;"></i>
-            </div>
-            <div>
-                <div class="stat-label">Horario</div>
-                <div class="stat-value">{{ $totalHoras ?? '—' }}</div>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-stripe" style="background:#f59e0b;"></div>
-            <div class="stat-icon" style="background:#fefce8;">
-                <i class="fas fa-bell" style="color:#d97706;"></i>
-            </div>
-            <div>
-                <div class="stat-label">Sin leer</div>
-                <div class="stat-value">{{ $noLeidas }}</div>
-            </div>
-        </div>
-    </div>
+    
 
     {{-- ══ Tarjetas resumen (clicables) ══ --}}
     <div class="row g-3 mb-4">
