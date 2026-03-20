@@ -9,17 +9,26 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::table('estudiantes', function (Blueprint $table) {
-        $table->string('seccion')->nullable()->change();
-    });
-}
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            // Verificar si la columna 'role' no existe antes de crearla
+            if (!Schema::hasColumn('users', 'role')) {
+                $table->string('role')->default('user');
+            }
+        });
+    }
 
-public function down(): void
-{
-    Schema::table('estudiantes', function (Blueprint $table) {
-        $table->string('seccion')->nullable(false)->change();
-    });
-}
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            // Solo eliminar si existe
+            if (Schema::hasColumn('users', 'role')) {
+                $table->dropColumn('role');
+            }
+        });
+    }
 };

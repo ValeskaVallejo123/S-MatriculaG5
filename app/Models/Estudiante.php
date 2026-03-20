@@ -159,4 +159,21 @@ class Estudiante extends Model
     {
         return ['A', 'B', 'C'];
     }
+
+    public function matriculas()
+    {
+        return $this->hasMany(Matricula::class, 'estudiante_id');
+    }
+
+
+    public function getHistorialAcademicoAttribute()
+    {
+        return $this->calificaciones()
+            ->with(['materia', 'periodo'])
+            ->get()
+            ->groupBy(function($calificacion) {
+                // Agrupa por el año del periodo académico
+                return $calificacion->periodo->anio ?? 'Sin Año';
+            });
+    }
 }

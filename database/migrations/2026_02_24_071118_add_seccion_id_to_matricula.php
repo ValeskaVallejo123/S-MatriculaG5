@@ -6,27 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('matriculas', function (Blueprint $table) {
-            // Solo agrega si no existe — evita el error de columna duplicada
-            if (!Schema::hasColumn('matriculas', 'seccion_id')) {
-                $table->unsignedBigInteger('seccion_id')->nullable()->after('estudiante_id');
-                $table->foreign('seccion_id')
-                      ->references('id')
-                      ->on('seccion')
-                      ->nullOnDelete();
-            }
+            $table->foreign('seccion_id')
+                ->references('id')
+                ->on('secciones')
+                ->nullOnDelete();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::table('matriculas', function (Blueprint $table) {
-            if (Schema::hasColumn('matriculas', 'seccion_id')) {
-                $table->dropForeign(['seccion_id']);
-                $table->dropColumn('seccion_id');
-            }
+       Schema::table('matriculas', function (Blueprint $table) {
+            $table->dropForeign(['seccion_id']);
+
         });
     }
 };

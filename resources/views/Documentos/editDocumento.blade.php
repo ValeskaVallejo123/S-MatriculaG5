@@ -136,4 +136,6 @@
             img:hover { transform: scale(1.05); }
         </style>
     @endpush
+@endsection
+@endsection
 

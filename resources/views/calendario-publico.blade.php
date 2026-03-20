@@ -137,16 +137,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 'Evento: ' + info.event.title + '\n' +
                 'Tipo: ' + (info.event.extendedProps.type || 'N/A') + '\n' +
                 'Fecha: ' + info.event.start.toLocaleDateString('es-ES') + '\n' +
-                (info.event.extendedProps.description 
-                    ? 'Descripción: ' + info.event.extendedProps.description 
+                (info.event.extendedProps.description
+                    ? 'Descripción: ' + info.event.extendedProps.description
                     : '')
             );
         },
 
         eventMouseEnter: function(info) {
             info.el.title = info.event.title +
-                (info.event.extendedProps.description 
-                    ? '\n' + info.event.extendedProps.description 
+                (info.event.extendedProps.description
+                    ? '\n' + info.event.extendedProps.description
                     : '');
         }
 
@@ -157,4 +157,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 </body>
-</html
+</html>

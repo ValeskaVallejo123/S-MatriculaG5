@@ -14,7 +14,6 @@ class Matricula extends Model
     protected $fillable = [
         'codigo_matricula',
         'estudiante_id',
-        'seccion_id', // Agregado para permitir la asignación masiva
         'padre_id',
         'anio_lectivo',
         'fecha_matricula',
@@ -26,7 +25,6 @@ class Matricula extends Model
         'foto_dni_padre',
         'estado',
         'motivo_rechazo',
-        'motivo_cancelacion', // Asegúrate de que este campo exista en tu migración
         'observaciones',
         'fecha_confirmacion',
     ];
@@ -42,19 +40,10 @@ class Matricula extends Model
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Relación con la sección actual
-     */
-    public function seccion()
-    {
-        return $this->belongsTo(Seccion::class, 'seccion_id');
-    }
-
     public function estudiante()
     {
         return $this->belongsTo(Estudiante::class, 'estudiante_id');
     }
-
 
     public function padre()
     {
@@ -63,7 +52,7 @@ class Matricula extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | MÉTODOS DE ESTADO (Lógica de Negocio)
+    | MÉTODOS DE ESTADO
     |--------------------------------------------------------------------------
     */
 
@@ -85,7 +74,7 @@ class Matricula extends Model
     public function rechazar(string $motivo)
     {
         if ($this->estado === 'aprobada') {
-            return false; 
+            return false; // No puedes rechazar algo ya aprobado
         }
 
         $this->update([
@@ -96,25 +85,17 @@ class Matricula extends Model
         return true;
     }
 
-    public function cancelar(?string $motivo = null): static
+    public function cancelar(string $motivo = null)
     {
-        if (in_array($this->estado, ['cancelada', 'rechazada'])) {
-            throw new \LogicException(
-                "No se puede cancelar una matrícula con estado '{$this->estado}'."
-            );
-        }
-
         $this->update([
-            'estado'           => 'cancelada',
-            'motivo_cancelacion' => $motivo,
+            'estado' => 'cancelada',
+            'motivo_rechazo' => $motivo,
         ]);
-
-        return $this;
     }
 
     /*
     |--------------------------------------------------------------------------
-    | ACCESSORS (Formato para la Vista)
+    | ACCESSORS
     |--------------------------------------------------------------------------
     */
 
@@ -134,5 +115,9 @@ class Matricula extends Model
         return $this->estudiante
             ? $this->estudiante->nombre_completo
             : 'N/A';
+    }
+
+    public function seccion() {
+        return $this->belongsTo(Seccion::class, 'seccion_id');
     }
 }

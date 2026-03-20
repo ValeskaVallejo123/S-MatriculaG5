@@ -16,7 +16,7 @@ use Carbon\Carbon;
 class MatriculaController extends Controller
 {
     // ── Grados disponibles (definidos una sola vez) ──────────────────────────
-   
+
     private const GRADOS = [
         '1er Grado', '2do Grado', '3er Grado',
         '4to Grado', '5to Grado', '6to Grado',

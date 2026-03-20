@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('seccion', function (Blueprint $table) {
-            $table->string('grado')->after('id'); // O el tipo de dato que necesites
+        Schema::table('estudiantes', function (Blueprint $table) {
+            $table->string('genero')->nullable()->after('fecha_nacimiento');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('seccion', function (Blueprint $table) {
+        Schema::table('estudiantes', function (Blueprint $table) {
             //
         });
     }
