@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Estudiante extends Model
 {
@@ -26,11 +27,8 @@ class Estudiante extends Model
         'seccion',
         'estado',
         'observaciones',
-        'nombre_padre',
-        'telefono_padre',
-        'email_padre',
         'foto',
-        'dni_doc',
+        'padre_id', // Para la relación directa con la tabla padres
         'curso_id',
     ];
 
@@ -39,11 +37,12 @@ class Estudiante extends Model
     ];
 
     /*
-    |--------------------------------------------------------------------------
-    | ACCESORES
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
+    | ACCESSORS (Atributos Calculados)
+    |----------------------------------------------------------------------
     */
 
+    // Nombre completo: {{ $estudiante->nombre_completo }}
     public function getNombreCompletoAttribute()
     {
         $nombre = trim("{$this->nombre1} {$this->nombre2}");
@@ -51,107 +50,68 @@ class Estudiante extends Model
         return trim("{$nombre} {$apellido}");
     }
 
+    // URL de la foto: {{ $estudiante->url_foto }}
+    // Sincronizado con la carpeta de expedientes que usas
+    // Dentro de App\Models\Estudiante.php
+
+    public function getUrlFotoAttribute()
+    {
+        if ($this->foto) {
+            // basename limpia cualquier ruta antigua y deja solo el nombre del archivo
+            $nombreArchivo = basename($this->foto);
+            return asset('storage/expedientes/fotos/' . $nombreArchivo);
+        }
+        return null;
+    }
+
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | RELACIONES
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     */
 
-    /**
-     * Estudiante pertenece a un curso
-     */
+    // Relación directa con el Padre principal (según tu migración)
+    public function padre()
+    {
+        return $this->belongsTo(Padre::class, 'padre_id');
+    }
+
+    // Documentos del expediente (Muchos a Muchos o Uno a Muchos)
+    public function documentos()
+    {
+        return $this->hasMany(Documento::class, 'estudiante_id');
+    }
+
+    // Si quieres obtener específicamente el documento que es la foto de perfil
+    public function documentoFoto()
+    {
+        return $this->hasOne(Documento::class, 'estudiante_id')->where('tipo', 'perfil');
+    }
+
+    // Relación con el curso/grado
     public function curso()
     {
         return $this->belongsTo(Curso::class, 'curso_id');
     }
 
-    /**
-     * Documentos del estudiante
-     */
-    public function documentos()
-    {
-        return $this->hasOne(Documento::class, 'estudiante_id');
-    }
-
-    /**
-     * Calificaciones
-     */
-    public function calificaciones()
-    {
-        return $this->hasMany(Calificacion::class, 'estudiante_id');
-    }
-
-    /**
-     * Usuario del sistema
-     */
+    // Relación con el usuario del sistema (si aplica)
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class);
-    }
-
-    /**
-     * Permisos individuales de padres
-     */
-    public function permisosPadres()
-    {
-        return $this->hasMany(PadrePermiso::class, 'estudiante_id');
-    }
-
-    /**
-     * Padres con permisos
-     */
-    public function padresConPermisos()
-    {
-        return $this->belongsToMany(
-            Padre::class,
-            'padre_permisos',
-            'estudiante_id',
-            'padre_id'
-        )->withPivot([
-            'ver_calificaciones',
-            'ver_asistencias',
-            'ver_comportamiento',
-            'ver_tareas',
-            'descargar_boletas',
-            'recibir_notificaciones',
-            'comunicarse_profesores',
-            'autorizar_salidas',
-            'subir_documentos_matricula',
-            'notas_adicionales'
-        ])->withTimestamps();
-    }
-
-    /**
-     * Padres vía matrícula
-     */
-    public function padres()
-    {
-        return $this->belongsToMany(
-            Padre::class,
-            'matriculas',
-            'estudiante_id',
-            'padre_id'
-        );
+        return $this->belongsTo(User::class);
     }
 
     /*
-    |--------------------------------------------------------------------------
-    | LISTAS ESTÁTICAS
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
+    | MÉTODOS ESTÁTICOS PARA FORMULARIOS (SELECTS)
+    |----------------------------------------------------------------------
     */
 
     public static function grados()
     {
         return [
-            '1ro Primaria',
-            '2do Primaria',
-            '3ro Primaria',
-            '4to Primaria',
-            '5to Primaria',
-            '6to Primaria',
-            '1ro Secundaria',
-            '2do Secundaria',
-            '3ro Secundaria',
+            '1ro Primaria', '2do Primaria', '3ro Primaria',
+            '4to Primaria', '5to Primaria', '6to Primaria',
+            '1ro Secundaria', '2do Secundaria', '3ro Secundaria',
         ];
     }
 

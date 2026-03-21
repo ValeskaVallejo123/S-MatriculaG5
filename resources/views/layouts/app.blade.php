@@ -402,7 +402,7 @@
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('admins.permisos.index') }}"
+            <a href="{{ route('permisos.index') }}"
                class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
                 <i class="fas fa-user-lock"></i><span>Permisos de Padres</span>
             </a>
