@@ -9,18 +9,18 @@ use Illuminate\Support\Facades\Storage;
 
 class DocumentoController extends Controller
 {
-    /**
-     * Muestra la lista de documentos con sus estudiantes relacionados.
-     */
     public function index()
     {
+        // Carga los documentos con sus estudiantes para la tabla
         $documentos = Documento::with('estudiante')->get();
-        return view('Documentos.indexDocumento', compact('documentos'));
+
+        // Carga TODOS los estudiantes para el modal de búsqueda
+        $estudiantes = Estudiante::all();
+
+        // IMPORTANTE: Asegúrate de pasar 'estudiantes' en el compact
+        return view('Documentos.indexDocumento', compact('documentos', 'estudiantes'));
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo expediente.
-     */
     public function create()
     {
         $estudiantes = Estudiante::all();
@@ -28,11 +28,10 @@ class DocumentoController extends Controller
     }
 
     /**
-     * Guarda el expediente y los archivos físicos en el storage.
+     * GUARDAR EXPEDIENTE (Corregido)
      */
     public function store(Request $request)
     {
-        // 1. Validación estricta de archivos y relación
         $request->validate([
             'estudiante_id'    => 'required|exists:estudiantes,id',
             'foto'             => 'required|image|mimes:jpg,jpeg,png|max:5120',
@@ -43,11 +42,18 @@ class DocumentoController extends Controller
         $documento = new Documento();
         $documento->estudiante_id = $request->estudiante_id;
 
-        // 2. Procesamiento de archivos (Usa el disco 'public')
+        // 1. Procesar la Foto
         if ($request->hasFile('foto')) {
-            $documento->foto = $request->file('foto')->store('expedientes/fotos', 'public');
+            // Guardamos el archivo
+            $rutaFoto = $request->file('foto')->store('expedientes/fotos', 'public');
+            $documento->foto = $rutaFoto;
+
+            // 🔹 CRUCIAL: Actualizar la tabla estudiantes para que aparezca en la lista
+            $estudiante = Estudiante::find($request->estudiante_id);
+            $estudiante->update(['foto' => $rutaFoto]);
         }
 
+        // 2. Procesar Acta y Notas
         if ($request->hasFile('acta_nacimiento')) {
             $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('expedientes/actas', 'public');
         }
@@ -59,12 +65,9 @@ class DocumentoController extends Controller
         $documento->save();
 
         return redirect()->route('documentos.index')
-            ->with('success', 'Expediente creado y documentos guardados correctamente.');
+            ->with('success', 'Expediente creado y foto de perfil actualizada correctamente.');
     }
 
-    /**
-     * Muestra el formulario de edición.
-     */
     public function edit($id)
     {
         $documento = Documento::findOrFail($id);
@@ -73,7 +76,7 @@ class DocumentoController extends Controller
     }
 
     /**
-     * Actualiza el expediente y reemplaza archivos si es necesario.
+     * ACTUALIZAR EXPEDIENTE (Corregido y Limpiado)
      */
     public function update(Request $request, $id)
     {
@@ -88,33 +91,40 @@ class DocumentoController extends Controller
 
         $documento->estudiante_id = $request->estudiante_id;
 
-        // Actualizar Foto (y eliminar la anterior para no llenar el servidor de basura)
+        // Actualizar Foto
         if ($request->hasFile('foto')) {
+            // Borrar vieja del storage
             if ($documento->foto) {
                 Storage::disk('public')->delete($documento->foto);
             }
-            $documento->foto = $request->file('foto')->store('expedientes/fotos', 'public');
+
+            $rutaFoto = $request->file('foto')->store('expedientes/fotos', 'public');
+            $documento->foto = $rutaFoto;
+
+            // 🔹 Actualizar también la ficha del estudiante
+            $estudiante = Estudiante::find($request->estudiante_id);
+            $estudiante->update(['foto' => $rutaFoto]);
         }
 
-        // Actualizar Acta
         if ($request->hasFile('acta_nacimiento')) {
-            if ($documento->acta_nacimiento) {
-                Storage::disk('public')->delete($documento->acta_nacimiento);
-            }
+            if ($documento->acta_nacimiento) { Storage::disk('public')->delete($documento->acta_nacimiento); }
             $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('expedientes/actas', 'public');
+        }
+
+        if ($request->hasFile('calificaciones')) {
+            if ($documento->calificaciones) { Storage::disk('public')->delete($documento->calificaciones); }
+            $documento->calificaciones = $request->file('calificaciones')->store('expedientes/notas', 'public');
         }
 
         $documento->save();
 
         return redirect()->route('documentos.index')
-            ->with('success', 'Expediente actualizado correctamente.');
+            ->with('success', 'Expediente y foto de perfil actualizados.');
     }
+
     public function show(Documento $documento, Request $request)
     {
-        // 1. Recibimos el tipo de archivo por la URL (ej: ?tipo=foto)
         $tipo = $request->query('tipo');
-
-        // 2. Mapeamos el tipo con la columna real de la tabla 'documentos'
         $path = match($tipo) {
             'foto'            => $documento->foto,
             'acta'            => $documento->acta_nacimiento,
@@ -122,24 +132,21 @@ class DocumentoController extends Controller
             default           => null
         };
 
-        // 3. Verificamos si existe la ruta y el archivo físico
         if (!$path || !Storage::disk('public')->exists($path)) {
-            return back()->with('error', 'El archivo solicitado no existe o no ha sido cargado.');
+            return back()->with('error', 'El archivo no existe.');
         }
 
-        // 4. Servimos el archivo directamente al navegador
-        $fullPath = Storage::disk('public')->path($path);
-        return response()->file($fullPath);
+        return response()->file(Storage::disk('public')->path($path));
     }
 
-    /**
-     * Elimina el registro y sus archivos físicos.
-     */
     public function destroy($id)
     {
         $documento = Documento::findOrFail($id);
 
-        // Borrar archivos del storage antes de eliminar el registro
+        // Al borrar el expediente, opcionalmente limpiamos la foto del estudiante
+        $estudiante = Estudiante::find($documento->estudiante_id);
+        if($estudiante) { $estudiante->update(['foto' => null]); }
+
         Storage::disk('public')->delete([
             $documento->foto,
             $documento->acta_nacimiento,
@@ -148,7 +155,6 @@ class DocumentoController extends Controller
 
         $documento->delete();
 
-        return redirect()->route('documentos.index')
-            ->with('success', 'Expediente eliminado por completo.');
+        return redirect()->route('documentos.index')->with('success', 'Expediente eliminado.');
     }
 }

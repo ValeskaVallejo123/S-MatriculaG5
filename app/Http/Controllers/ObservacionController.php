@@ -61,24 +61,24 @@ class ObservacionController extends Controller
     // ────────────────────────────────────────────────────────────────────────
     // CREATE
     // ────────────────────────────────────────────────────────────────────────
-   public function create()
-{
-    $estudiantes = Estudiante::orderBy('apellido1')->orderBy('nombre1')->get();
-    $profesores  = Profesor::orderBy('nombre')->get();
+    public function create()
+    {
+        $estudiantes = Estudiante::orderBy('apellido1')->orderBy('nombre1')->get();
+        $profesores  = Profesor::orderBy('nombre')->get();
 
-    $estudiantesJS = $estudiantes->map(function ($e) {
-        return [
-            'id'      => $e->id,
-            'nombre'  => $e->nombreCompleto ?? ($e->nombre1 . ' ' . $e->apellido1),
-            'grado'   => $e->grado   ?? '',
-            'seccion' => $e->seccion ?? '',
-            'dni'     => $e->dni     ?? '',
-            'foto'    => $e->foto    ? '/storage/' . $e->foto : null,
-        ];
-    });
+        $estudiantesJS = $estudiantes->map(function ($e) {
+            return [
+                'id'      => $e->id,
+                'nombre'  => $e->nombreCompleto ?? ($e->nombre1 . ' ' . $e->apellido1),
+                'grado'   => $e->grado   ?? '',
+                'seccion' => $e->seccion ?? '',
+                'dni'     => $e->dni     ?? '',
+                'foto'    => $e->foto    ? '/storage/' . $e->foto : null,
+            ];
+        });
 
-    return view('observaciones.createObservacion', compact('estudiantes', 'profesores', 'estudiantesJS'));
-}
+        return view('observaciones.createObservacion', compact('estudiantes', 'profesores', 'estudiantesJS'));
+    }
 
     // ────────────────────────────────────────────────────────────────────────
     // STORE
@@ -102,7 +102,7 @@ class ObservacionController extends Controller
             $validated['profesor_id'] = $request->input('profesor_id') ?: null;
         }
 
-        Observacion::create($validated);
+        //Observacion::create($validated);
 
         return redirect()->route('observaciones.index')
             ->with('success', 'Observación guardada correctamente.');
@@ -120,26 +120,26 @@ class ObservacionController extends Controller
     // ────────────────────────────────────────────────────────────────────────
     // EDIT
     // ────────────────────────────────────────────────────────────────────────
-   public function edit(Observacion $observacion)
-{
-    $this->autorizarModificacion($observacion);
+    public function edit(Observacion $observacion)
+    {
+        $this->autorizarModificacion($observacion);
 
-    $estudiantes = Estudiante::orderBy('apellido1')->orderBy('nombre1')->get();
-    $profesores  = Profesor::orderBy('nombre')->get();
+        $estudiantes = Estudiante::orderBy('apellido1')->orderBy('nombre1')->get();
+        $profesores  = Profesor::orderBy('nombre')->get();
 
-    $estudiantesJS = $estudiantes->map(function ($e) {
-        return [
-            'id'      => $e->id,
-            'nombre'  => $e->nombreCompleto ?? ($e->nombre1 . ' ' . $e->apellido1),
-            'grado'   => $e->grado   ?? '',
-            'seccion' => $e->seccion ?? '',
-            'dni'     => $e->dni     ?? '',
-            'foto'    => $e->foto    ? '/storage/' . $e->foto : null,
-        ];
-    });
+        $estudiantesJS = $estudiantes->map(function ($e) {
+            return [
+                'id'      => $e->id,
+                'nombre'  => $e->nombreCompleto ?? ($e->nombre1 . ' ' . $e->apellido1),
+                'grado'   => $e->grado   ?? '',
+                'seccion' => $e->seccion ?? '',
+                'dni'     => $e->dni     ?? '',
+                'foto'    => $e->foto    ? '/storage/' . $e->foto : null,
+            ];
+        });
 
-    return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores', 'estudiantesJS'));
-}
+        return view('observaciones.editObservacion', compact('observacion', 'estudiantes', 'profesores', 'estudiantesJS'));
+    }
     // ────────────────────────────────────────────────────────────────────────
     // UPDATE
     // ────────────────────────────────────────────────────────────────────────
