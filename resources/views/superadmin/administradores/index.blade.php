@@ -4,30 +4,16 @@
 @section('page-title', 'Gestión de Administradores')
 
 @section('topbar-actions')
-
     <a href="{{ route('superadmin.administradores.permisos') }}" class="adm-btn-outline">
         <i class="fas fa-shield-alt"></i> Permisos y Roles
     </a>
     <a href="{{ route('superadmin.administradores.create') }}" class="adm-btn-solid">
         <i class="fas fa-plus"></i> Nuevo Administrador
-
-    <a href="{{ route('superadmin.administradores.permisos') }}"
-       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem; margin-right: 0.5rem;">
-        <i class="fas fa-shield-alt"></i>
-        Permisos y Roles
-    </a>
-    <a href="{{ route('superadmin.administradores.create') }}"
-       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; font-size: 0.9rem;">
-        <i class="fas fa-plus"></i>
-        Nuevo Administrador
-
     </a>
 @endsection
 
 @push('styles')
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 .adm-wrap { font-family: 'Inter', sans-serif; }
 
 .adm-btn-outline {
@@ -37,6 +23,7 @@
     text-decoration: none; margin-right: .4rem; transition: background .15s;
 }
 .adm-btn-outline:hover { background: #e8f8f9; }
+
 .adm-btn-solid {
     display: inline-flex; align-items: center; gap: .4rem;
     padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
@@ -46,10 +33,10 @@
 .adm-btn-solid:hover { opacity: .88; color: #fff; }
 
 .adm-stats {
-    display: grid; grid-template-columns: repeat(3,1fr);
+    display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 1rem; margin-bottom: 1.5rem;
 }
-@media(max-width:640px){ .adm-stats { grid-template-columns: 1fr; } }
+@media(max-width: 640px) { .adm-stats { grid-template-columns: 1fr; } }
 
 .adm-stat {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
@@ -61,21 +48,49 @@
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .adm-stat-icon i { font-size: 1.15rem; color: #fff; }
-.adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
-.adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
+.adm-stat-lbl  { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
+.adm-stat-num  { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
 
 .adm-toolbar {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
     padding: .85rem 1.25rem; margin-bottom: 1.25rem;
-    display: flex; align-items: center; justify-content: flex-end;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05); gap: 1rem; flex-wrap: wrap;
 }
+
+.adm-search-wrap {
+    position: relative; flex: 1; max-width: 360px;
+}
+.adm-search-wrap i {
+    position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; font-size: .82rem; pointer-events: none;
+}
+.adm-search {
+    width: 100%; padding: .42rem .75rem .42rem 2.1rem;
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: .82rem; color: #0f172a; background: #f8fafc;
+    outline: none; transition: border-color .15s;
+}
+.adm-search:focus { border-color: #4ec7d2; background: #fff; }
+.adm-search-clear {
+    position: absolute; right: .6rem; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: #94a3b8; cursor: pointer;
+    font-size: .8rem; padding: 2px; display: none; line-height: 1;
+}
+.adm-search-clear:hover { color: #475569; }
+
 .adm-perpage { display: flex; align-items: center; gap: .5rem; font-size: .8rem; color: #64748b; }
 .adm-perpage select {
     padding: .3rem .6rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
     font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
 }
 .adm-perpage select:focus { border-color: #4ec7d2; }
+
+.adm-search-info {
+    font-size: .78rem; color: #64748b; padding: .3rem .5rem;
+    background: #f0f9ff; border-radius: 6px; display: none; white-space: nowrap;
+}
+.adm-search-info.visible { display: inline-block; }
 
 .adm-card {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
@@ -85,7 +100,7 @@
     background: #003b73; padding: .85rem 1.25rem;
     display: flex; align-items: center; gap: .6rem;
 }
-.adm-card-head i { color: #4ec7d2; font-size: 1rem; }
+.adm-card-head i    { color: #4ec7d2; font-size: 1rem; }
 .adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
 
 .adm-tbl { width: 100%; border-collapse: collapse; }
@@ -103,6 +118,7 @@
 .adm-tbl tbody td.tc { text-align: center; }
 .adm-tbl tbody tr:last-child td { border-bottom: none; }
 .adm-tbl tbody tr:hover { background: #fafbfc; }
+.adm-tbl tbody tr.hidden-row { display: none; }
 
 .adm-num {
     width: 28px; height: 28px; border-radius: 6px;
@@ -136,14 +152,20 @@
     cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
 }
 .act-btn:hover { transform: translateY(-1px); }
-.act-edit { background: #e8f8f9; color: #00508f; }
+.act-edit       { background: #e8f8f9; color: #00508f; }
 .act-edit:hover { background: #4ec7d2; color: #fff; }
-.act-del  { background: #fef2f2; color: #ef4444; }
+.act-del        { background: #fef2f2; color: #ef4444; }
 .act-del:hover  { background: #ef4444; color: #fff; }
 
 .adm-empty { padding: 3.5rem 1rem; text-align: center; }
 .adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
 .adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
+
+.adm-no-results {
+    display: none; padding: 3rem 1rem; text-align: center;
+}
+.adm-no-results i { font-size: 1.8rem; color: #cbd5e1; margin-bottom: .6rem; display: block; }
+.adm-no-results p { color: #94a3b8; font-size: .85rem; margin: 0; }
 
 .adm-footer {
     padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
@@ -164,47 +186,30 @@
     border-color: #4ec7d2; color: #fff;
 }
 .pagination .page-item.disabled .page-link { opacity: .45; }
+
+mark.hl {
+    background: #fef08a; color: inherit; border-radius: 2px;
+    padding: 0 1px;
+}
 </style>
 @endpush
 
 @section('content')
 <div class="adm-wrap">
 
-    {{-- Stats --}}
+    {{-- ══ Stats ══ --}}
     <div class="adm-stats">
         <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
+            <div class="adm-stat-icon" style="background: linear-gradient(135deg, #4ec7d2, #00508f);">
                 <i class="fas fa-users"></i>
             </div>
             <div>
                 <div class="adm-stat-lbl">Total</div>
-
-                <div class="adm-stat-num">{{ $administradores->count() }}</div>
-
-<div class="container-fluid">
-    <!-- Estadísticas en Cards -->
-    <div class="row g-4 mb-4">
-        <!-- Total -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(78, 199, 210, 0.3);">
-                            <i class="fas fa-users" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="mb-1" style="color: #64748b; font-size: 0.875rem; font-weight: 600;">Total Administradores</p>
-                            <h3 class="mb-0" style="color: #003b73; font-weight: 700; font-size: 1.875rem;">{{ $administradores->count() }}</h3>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="adm-stat-num">{{ $administradores->total() }}</div>
-
             </div>
         </div>
         <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#f87171,#dc2626);">
+            <div class="adm-stat-icon" style="background: linear-gradient(135deg, #f87171, #dc2626);">
                 <i class="fas fa-crown"></i>
             </div>
             <div>
@@ -213,7 +218,7 @@
             </div>
         </div>
         <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
+            <div class="adm-stat-icon" style="background: linear-gradient(135deg, #34d399, #059669);">
                 <i class="fas fa-user-shield"></i>
             </div>
             <div>
@@ -223,28 +228,44 @@
         </div>
     </div>
 
-    {{-- Toolbar --}}
+    {{-- ══ Toolbar ══ --}}
     <div class="adm-toolbar">
-        <div class="adm-perpage">
-            <label>Mostrar:</label>
-            <select onchange="cambiarPerPage(this.value)">
-                @foreach([10, 25, 50] as $op)
-                    <option value="{{ $op }}" {{ request('per_page', 10) == $op ? 'selected' : '' }}>
-                        {{ $op }} por página
-                    </option>
-                @endforeach
-            </select>
+        {{-- Búsqueda en tiempo real --}}
+        <div class="adm-search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text"
+                   id="adm-search-input"
+                   class="adm-search"
+                   placeholder="Buscar por nombre o correo..."
+                   autocomplete="off">
+            <button class="adm-search-clear" id="adm-search-clear" title="Limpiar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+            <span class="adm-search-info" id="adm-search-info"></span>
+            <div class="adm-perpage">
+                <label>Mostrar:</label>
+                <select onchange="cambiarPerPage(this.value)">
+                    @foreach([10, 25, 50] as $op)
+                        <option value="{{ $op }}" {{ request('per_page', 10) == $op ? 'selected' : '' }}>
+                            {{ $op }} por página
+                        </option>
+                    @endforeach
+                </select>
+            </div>
         </div>
     </div>
 
-    {{-- Tabla --}}
+    {{-- ══ Tabla ══ --}}
     <div class="adm-card">
         <div class="adm-card-head">
             <i class="fas fa-user-shield"></i>
             <span>Lista de Administradores</span>
         </div>
-        <div style="overflow-x:auto;">
-            <table class="adm-tbl">
+        <div style="overflow-x: auto;">
+            <table class="adm-tbl" id="adm-table">
                 <thead>
                     <tr>
                         <th class="tc">#</th>
@@ -256,26 +277,27 @@
                         <th class="tc">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="adm-tbody">
                     @forelse($administradores as $index => $admin)
-                    <tr>
+                    <tr data-name="{{ strtolower($admin->name) }}"
+                        data-email="{{ strtolower($admin->email) }}">
                         <td class="tc">
                             <span class="adm-num">{{ $administradores->firstItem() + $index }}</span>
                         </td>
                         <td>
-                            <div style="display:flex;align-items:center;gap:.65rem;">
-                                <div class="adm-av">{{ strtoupper(substr($admin->name,0,1)) }}</div>
+                            <div style="display: flex; align-items: center; gap: .65rem;">
+                                <div class="adm-av">{{ strtoupper(substr($admin->name, 0, 1)) }}</div>
                                 <div>
-                                    <div class="adm-name">{{ $admin->name }}</div>
+                                    <div class="adm-name" data-searchable="name">{{ $admin->name }}</div>
                                     @if($admin->is_protected)
-                                        <span class="bpill b-amber" style="margin-top:.2rem;">
+                                        <span class="bpill b-amber" style="margin-top: .2rem;">
                                             <i class="fas fa-lock"></i> Protegido
                                         </span>
                                     @endif
                                 </div>
                             </div>
                         </td>
-                        <td class="adm-email">{{ $admin->email }}</td>
+                        <td class="adm-email" data-searchable="email">{{ $admin->email }}</td>
                         <td class="tc">
                             @if($admin->is_super_admin)
                                 <span class="bpill b-red"><i class="fas fa-crown"></i> Super Admin</span>
@@ -293,12 +315,12 @@
                         </td>
                         <td class="tc">
                             <span class="bpill b-green">
-                                <i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle;"></i> Activo
+                                <i class="fas fa-circle" style="font-size: .45rem; vertical-align: middle;"></i> Activo
                             </span>
                         </td>
                         <td class="tc">
                             @if(!$admin->is_protected)
-                                <div style="display:inline-flex;gap:.4rem;align-items:center;">
+                                <div style="display: inline-flex; gap: .4rem; align-items: center;">
                                     <a href="{{ route('superadmin.administradores.edit', $admin->id) }}"
                                        class="act-btn act-edit" title="Editar">
                                         <i class="fas fa-edit"></i>
@@ -314,14 +336,14 @@
                                     </button>
                                 </div>
                             @else
-                                <span style="color:#cbd5e1;font-size:.75rem;font-weight:600;">
+                                <span style="color: #cbd5e1; font-size: .75rem; font-weight: 600;">
                                     <i class="fas fa-lock"></i> Protegido
                                 </span>
                             @endif
                         </td>
                     </tr>
                     @empty
-                    <tr>
+                    <tr id="adm-empty-row">
                         <td colspan="7">
                             <div class="adm-empty">
                                 <i class="fas fa-users"></i>
@@ -332,10 +354,16 @@
                     @endforelse
                 </tbody>
             </table>
+
+            {{-- Mensaje sin resultados de búsqueda --}}
+            <div class="adm-no-results" id="adm-no-results">
+                <i class="fas fa-search"></i>
+                <p>No se encontraron resultados para "<span id="adm-query-text"></span>"</p>
+            </div>
         </div>
 
         @if($administradores->hasPages())
-        <div class="adm-footer">
+        <div class="adm-footer" id="adm-footer">
             <span class="adm-pages">
                 Mostrando {{ $administradores->firstItem() }}–{{ $administradores->lastItem() }}
                 de {{ $administradores->total() }} registros
@@ -343,32 +371,9 @@
             {{ $administradores->appends(request()->query())->links() }}
         </div>
         @endif
-
     </div>
+
 </div>
-
-@push('styles')
-<style>
-    .table tbody tr:hover {
-        background-color: #f8fafc;
-        transform: scale(1.001);
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    @media (max-width: 768px) {
-        .table {
-            font-size: 0.875rem;
-        }
-        .card-body {
-            padding: 1rem !important;
-        }
-    }
-</style>
-@endpush
 @endsection
 
 @push('scripts')
@@ -379,6 +384,85 @@ function cambiarPerPage(valor) {
     url.searchParams.set('page', 1);
     window.location.href = url.toString();
 }
+
+(function () {
+    const input      = document.getElementById('adm-search-input');
+    const clearBtn   = document.getElementById('adm-search-clear');
+    const tbody      = document.getElementById('adm-tbody');
+    const noResults  = document.getElementById('adm-no-results');
+    const queryText  = document.getElementById('adm-query-text');
+    const info       = document.getElementById('adm-search-info');
+    const footer     = document.getElementById('adm-footer');
+    const rows       = tbody ? Array.from(tbody.querySelectorAll('tr[data-name]')) : [];
+
+    // Guarda el texto original de cada celda buscable antes de modificarla
+    rows.forEach(row => {
+        row.querySelectorAll('[data-searchable]').forEach(el => {
+            el.dataset.original = el.textContent.trim();
+        });
+    });
+
+    function highlight(text, query) {
+        if (!query) return text;
+        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark class="hl">$1</mark>');
+    }
+
+    function search(query) {
+        const q = query.trim().toLowerCase();
+        let visible = 0;
+
+        rows.forEach(row => {
+            const name  = row.dataset.name  || '';
+            const email = row.dataset.email || '';
+            const match = !q || name.includes(q) || email.includes(q);
+
+            row.classList.toggle('hidden-row', !match);
+            if (match) visible++;
+
+            // Resaltar coincidencias
+            row.querySelectorAll('[data-searchable]').forEach(el => {
+                el.innerHTML = q
+                    ? highlight(el.dataset.original, q)
+                    : el.dataset.original;
+            });
+        });
+
+        // Mostrar/ocultar "sin resultados"
+        const noMatch = rows.length > 0 && visible === 0;
+        noResults.style.display = noMatch ? 'block' : 'none';
+        if (noMatch) queryText.textContent = query.trim();
+
+        // Info contador
+        if (q && rows.length > 0) {
+            info.textContent = `${visible} de ${rows.length} resultados`;
+            info.classList.add('visible');
+        } else {
+            info.classList.remove('visible');
+        }
+
+        // Ocultar paginación mientras se filtra
+        if (footer) footer.style.display = q ? 'none' : '';
+
+        // Botón limpiar
+        clearBtn.style.display = q ? 'block' : 'none';
+    }
+
+    input.addEventListener('input', () => search(input.value));
+
+    clearBtn.addEventListener('click', () => {
+        input.value = '';
+        search('');
+        input.focus();
+    });
+
+    // Atajo teclado: Escape limpia
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            input.value = '';
+            search('');
+        }
+    });
+})();
 </script>
 @endpush
-
