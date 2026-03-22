@@ -24,46 +24,129 @@ class EstudianteController extends Controller
             return $next($request);
         });
     }
-      private function normalizarTexto(string $texto): string
+
+    /* ============================================================
+       NORMALIZAR TEXTO (quitar tildes, espacios, caracteres especiales)
+       ============================================================ */
+    private function normalizarTexto(string $texto): string
     {
         $texto = mb_strtolower($texto, 'UTF-8');
 
-        // Quitar tildes
-        $buscar  = ['á','é','í','ó','ú','ñ','ü'];
-        $reempl  = ['a','e','i','o','u','n','u'];
-        $texto = str_replace($buscar, $reempl, $texto);
+        $buscar  = ['á','é','í','ó','ú','ñ','ü','Á','É','Í','Ó','Ú','Ñ','Ü'];
+        $reempl  = ['a','e','i','o','u','n','u','a','e','i','o','u','n','u'];
+        $texto   = str_replace($buscar, $reempl, $texto);
 
-        // Dejar solo letras
         return preg_replace('/[^a-z]/', '', $texto);
+    }
+
+    /* ============================================================
+       GENERAR EMAIL ÚNICO
+       Estrategia:
+         1. nombre1.apellido1
+         2. nombre1.nombre2.apellido1
+         3. nombre1.apellido1.apellido2
+         4. nombre1.nombre2.apellido1.apellido2
+         5. nombre1.apellido1.2, .3, .4 ... (incremental)
+       ============================================================ */
+    private function generarEmailUnico(
+        string $nombre1,
+        ?string $nombre2,
+        string $apellido1,
+        ?string $apellido2
+    ): string {
+        $n1 = $this->normalizarTexto($nombre1);
+        $n2 = $nombre2  ? $this->normalizarTexto($nombre2)  : null;
+        $a1 = $this->normalizarTexto($apellido1);
+        $a2 = $apellido2 ? $this->normalizarTexto($apellido2) : null;
+
+        $dominio = '@egm.edu.hn';
+
+        // Candidatos en orden de preferencia
+        $candidatos = [
+            "{$n1}.{$a1}",
+        ];
+
+        if ($n2) {
+            $candidatos[] = "{$n1}.{$n2}.{$a1}";
+        }
+        if ($a2) {
+            $candidatos[] = "{$n1}.{$a1}.{$a2}";
+        }
+        if ($n2 && $a2) {
+            $candidatos[] = "{$n1}.{$n2}.{$a1}.{$a2}";
+        }
+
+        // Intentar cada combinación
+        foreach ($candidatos as $base) {
+            $email = $base . $dominio;
+            if (!\App\Models\User::where('email', $email)->exists()) {
+                return $email;
+            }
+        }
+
+        // Si todos existen → incremental: nombre1.apellido1.2@, .3@, ...
+        $baseIncremental = "{$n1}.{$a1}";
+        $contador = 2;
+        do {
+            $email = "{$baseIncremental}.{$contador}{$dominio}";
+            $contador++;
+        } while (\App\Models\User::where('email', $email)->exists());
+
+        return $email;
     }
 
     /* ============================================================
        LISTAR ESTUDIANTES
        ============================================================ */
-    public function index()
-    {
-        // Paginación para que funcionen ->total(), ->links(), etc.
-        $estudiantes = Estudiante::orderBy('apellido1')
-            ->orderBy('apellido2')
-            ->orderBy('nombre1')
-            ->orderBy('nombre2')
-            ->paginate(10);
+public function index(Request $request)
+{
+    $perPage = in_array((int) $request->get('per_page'), [10, 25, 50])
+        ? (int) $request->get('per_page')
+        : 10;
 
-        return view('estudiantes.index', compact('estudiantes'));
+    $query = Estudiante::orderBy('apellido1')->orderBy('apellido2')
+                       ->orderBy('nombre1')->orderBy('nombre2');
+
+    if ($request->filled('buscar')) {
+        $buscar = $request->buscar;
+        $query->where(function ($q) use ($buscar) {
+            $q->where('nombre1',   'like', "%{$buscar}%")
+              ->orWhere('nombre2',   'like', "%{$buscar}%")
+              ->orWhere('apellido1', 'like', "%{$buscar}%")
+              ->orWhere('apellido2', 'like', "%{$buscar}%")
+              ->orWhere('dni',       'like', "%{$buscar}%")
+              ->orWhere('grado',     'like', "%{$buscar}%")
+              ->orWhere('email',     'like', "%{$buscar}%");
+        });
     }
 
+    $estudiantes = $query->paginate($perPage)->withQueryString();
+
+    if ($request->ajax()) {
+        return response()->json([
+            'html'       => view('estudiantes.partials.tabla', compact('estudiantes'))->render(),
+            'pagination' => view('estudiantes.partials.paginacion', compact('estudiantes'))->render(),
+            'total'      => $estudiantes->total(),
+            'desde'      => $estudiantes->firstItem() ?? 0,
+            'hasta'      => $estudiantes->lastItem()  ?? 0,
+        ]);
+    }
+
+    return view('estudiantes.index', compact('estudiantes'));
+
+}
     /* ============================================================
        FORMULARIO DE CREACIÓN
        ============================================================ */
     public function create()
     {
-        $grados = Estudiante::grados();
+        $grados    = Estudiante::grados();
         $secciones = Estudiante::secciones();
 
         return view('estudiantes.create', compact('grados', 'secciones'));
     }
 
-        /* ============================================================
+    /* ============================================================
        GUARDAR ESTUDIANTE
        ============================================================ */
     public function store(Request $request)
@@ -84,40 +167,49 @@ class EstudianteController extends Controller
             'observaciones'    => 'nullable|string|max:500',
             'foto'             => 'nullable|image|max:2048',
             'acta_nacimiento'  => 'required|file|mimes:jpg,png,pdf|max:5120',
-            'calificaciones'   => 'required|file|mimes:jpg,png,pdf|max:5120', 'nullable|file|mimes:jpg,png,pdf|max:5120',
+            'calificaciones'   => 'required|file|mimes:jpg,png,pdf|max:5120',
         ]);
 
-        /* ============================================================
-           1. Preparar datos reales de estudiante
-        ============================================================ */
+        /* ------------------------------------------------------------
+           1. Preparar datos del estudiante
+        ------------------------------------------------------------ */
         $data = $request->only([
             'nombre1', 'nombre2', 'apellido1', 'apellido2', 'dni',
             'fecha_nacimiento', 'sexo', 'telefono', 'direccion',
-            'grado', 'seccion', 'estado', 'observaciones'
+            'grado', 'seccion', 'estado', 'observaciones',
         ]);
 
         if (empty($data['estado'])) {
             $data['estado'] = 'activo';
         }
 
-        /* ============================================================
-           2. GENERAR CORREO AUTOMÁTICO
-        ============================================================ */
-        $nombreNorm = $this->normalizarTexto($data['nombre1']);
-        $apellidoNorm = $this->normalizarTexto($data['apellido1']);
+        /* ------------------------------------------------------------
+           2. Generar correo único automático
+        ------------------------------------------------------------ */
+        $email = $this->generarEmailUnico(
+            $data['nombre1'],
+            $data['nombre2']  ?? null,
+            $data['apellido1'],
+            $data['apellido2'] ?? null
+        );
 
-        $email = "{$nombreNorm}.{$apellidoNorm}@egm.edu.hn";
         $data['email'] = $email;
 
-        /* ============================================================
+        /* ------------------------------------------------------------
            3. Subir foto del estudiante (opcional)
-        ============================================================ */
+        ------------------------------------------------------------ */
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('estudiantes', 'public');
         }
 
+        /* ------------------------------------------------------------
+           4. Crear estudiante
+        ------------------------------------------------------------ */
         $estudiante = Estudiante::create($data);
 
+        /* ------------------------------------------------------------
+           5. Crear documentos asociados
+        ------------------------------------------------------------ */
         Documento::create([
             'estudiante_id'   => $estudiante->id,
             'foto'            => $estudiante->foto ?? null,
@@ -129,6 +221,9 @@ class EstudianteController extends Controller
                 : null,
         ]);
 
+        /* ------------------------------------------------------------
+           6. Crear usuario del sistema para el estudiante
+        ------------------------------------------------------------ */
         \App\Models\User::create([
             'name'     => $estudiante->nombre_completo,
             'email'    => $email,
@@ -139,8 +234,7 @@ class EstudianteController extends Controller
 
         return redirect()
             ->route('estudiantes.show', $estudiante->id)
-            ->with('success', "Estudiante registrado correctamente.
-             Correo: $email | Contraseña: egm2025");
+            ->with('success', "Estudiante registrado correctamente. Correo: {$email} | Contraseña: egm2025");
     }
 
     /* ============================================================
@@ -157,12 +251,11 @@ class EstudianteController extends Controller
        ============================================================ */
     public function edit(Estudiante $estudiante)
     {
-        $grados = Estudiante::grados();
+        $grados    = Estudiante::grados();
         $secciones = Estudiante::secciones();
 
         return view('estudiantes.edit', compact('estudiante', 'grados', 'secciones'));
     }
-
 
     /* ============================================================
        ACTUALIZAR ESTUDIANTE
@@ -194,9 +287,6 @@ class EstudianteController extends Controller
             'estado', 'observaciones',
         ]);
 
-        /* ============================================================
-           Actualizar FOTO si viene una nueva
-        ============================================================ */
         if ($request->hasFile('foto')) {
             if ($estudiante->foto && Storage::disk('public')->exists($estudiante->foto)) {
                 Storage::disk('public')->delete($estudiante->foto);
@@ -211,18 +301,15 @@ class EstudianteController extends Controller
             ->with('success', 'Estudiante actualizado correctamente.');
     }
 
-
     /* ============================================================
        ELIMINAR ESTUDIANTE
        ============================================================ */
     public function destroy(Estudiante $estudiante)
     {
-        // Eliminar foto
         if ($estudiante->foto && Storage::disk('public')->exists($estudiante->foto)) {
             Storage::disk('public')->delete($estudiante->foto);
         }
 
-        // Eliminar documentos asociados
         if ($estudiante->documentos) {
             $docs = $estudiante->documentos;
 
@@ -242,7 +329,6 @@ class EstudianteController extends Controller
             ->with('success', 'Estudiante eliminado correctamente.');
     }
 
-
     /* ============================================================
        VER NOTIFICACIONES DEL ESTUDIANTE
        ============================================================ */
@@ -257,7 +343,6 @@ class EstudianteController extends Controller
         return view('estudiantes.notificaciones', compact('estudiante', 'notificaciones'));
     }
 
-
     /* ============================================================
        MARCAR NOTIFICACIÓN COMO LEÍDA
        ============================================================ */
@@ -270,28 +355,28 @@ class EstudianteController extends Controller
     }
 
     /* ============================================================
-   HISTORIAL PARA EL ESTUDIANTE (Solo Lectura)
-   ============================================================ */
+       HISTORIAL PARA EL ESTUDIANTE (Solo Lectura)
+       ============================================================ */
     public function historial()
     {
         $user = auth()->user();
 
-        // Buscamos al estudiante por el correo del usuario autenticado
         $estudiante = \App\Models\Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])
             ->where('email', $user->email)
             ->first();
 
         if (!$estudiante) {
-            // Si no encuentra al estudiante, redirige al dashboard con error en lugar de tirar 403/404
-            return redirect()->route('estudiante.dashboard')->with('error', 'No se encontró tu perfil de estudiante.');
+            return redirect()->route('estudiante.dashboard')
+                ->with('error', 'No se encontró tu perfil de estudiante.');
         }
 
-        $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
-        $historialAgrupado = $estudiante->calificaciones->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
+        $promedio          = $estudiante->calificaciones->avg('nota_final') ?? 0;
+        $historialAgrupado = $estudiante->calificaciones
+            ->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
 
-        // IMPORTANTE: Asegúrate de que la ruta de la vista sea la correcta
-        // Si tu archivo se llama 'historial.blade.php' y está dentro de 'views/estudiante/':
-        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))->with('readonly', true);    }
+        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))
+            ->with('readonly', true);
+    }
 
     /* ============================================================
        HISTORIAL PARA ADMIN (Lectura y Edición)
@@ -301,39 +386,34 @@ class EstudianteController extends Controller
         $estudiante = \App\Models\Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])
             ->findOrFail($id);
 
-        $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
-        $historialAgrupado = $estudiante->calificaciones->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
+        $promedio          = $estudiante->calificaciones->avg('nota_final') ?? 0;
+        $historialAgrupado = $estudiante->calificaciones
+            ->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
 
-        // Aquí NO enviamos 'readonly', por lo que el admin verá los botones de editar notas
-        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))->with('readonly', false);
+        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))
+            ->with('readonly', false);
     }
 
     public function editHistorialAdmin($id)
     {
-        // 1. Buscamos al estudiante o lanzamos error 404 si no existe
-        $estudiante = \App\Models\Estudiante::findOrFail($id);
-
-        // 2. Cargamos sus calificaciones actuales
+        $estudiante     = \App\Models\Estudiante::findOrFail($id);
         $calificaciones = \App\Models\Calificacion::where('estudiante_id', $id)
-            ->with('materia') // Asegúrate de tener la relación 'materia' en tu modelo Calificacion
+            ->with('materia')
             ->get();
 
-        // 3. Retornamos la vista de edición (Asegúrate de que esta vista exista)
         return view('historial.edit', compact('estudiante', 'calificaciones'));
     }
+
     public function updateHistorialAdmin(Request $request, $id)
     {
-        // 1. Validar al estudiante
-        $estudiante = \App\Models\Estudiante::findOrFail($id);
+        $estudiante        = \App\Models\Estudiante::findOrFail($id);
         $cambiosRealizados = false;
 
-        // 2. Procesar las notas si vienen en el request
         if ($request->has('notas')) {
             foreach ($request->notas as $calificacionId => $nuevoValor) {
                 $calificacion = \App\Models\Calificacion::find($calificacionId);
 
                 if ($calificacion && $calificacion->estudiante_id == $id) {
-                    // Comparamos el valor actual con el nuevo
                     if ($calificacion->nota != $nuevoValor) {
                         $calificacion->update(['nota' => $nuevoValor]);
                         $cambiosRealizados = true;
@@ -342,16 +422,12 @@ class EstudianteController extends Controller
             }
         }
 
-        // 3. Respuesta condicional según si hubo cambios o no
-        if ($cambiosRealizados) {
-            return redirect()
-                ->route('superadmin.estudiantes.historial.show', $id)
-                ->with('success', '¡Éxito! Los cambios se han guardado correctamente.');
+        $mensaje = $cambiosRealizados
+            ? ['success' => '¡Éxito! Los cambios se han guardado correctamente.']
+            : ['info'    => 'No se realizaron cambios en el historial académico.'];
 
-        } else {
-            return redirect()
-                ->route('superadmin.estudiantes.historial.show', $id)
-                ->with('info', 'No se realizaron cambios en el historial académico.');
-        }
+        return redirect()
+            ->route('superadmin.estudiantes.historial.show', $id)
+            ->with($mensaje);
     }
 }
