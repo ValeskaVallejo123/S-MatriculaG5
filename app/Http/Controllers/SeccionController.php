@@ -16,38 +16,60 @@ class SeccionController extends Controller
     ];
 
     public const GRADO_MAP = [
-        // Variantes textuales
-        'Primero'   => '1er Grado',
-        'Segundo'   => '2do Grado',
-        'Tercero'   => '3er Grado',
-        'Cuarto'    => '4to Grado',
-        'Quinto'    => '5to Grado',
-        'Sexto'     => '6to Grado',
-        'Séptimo'   => '7mo Grado',
-        'Octavo'    => '8vo Grado',
-        'Noveno'    => '9no Grado',
-        // Variantes numéricas
-        '1'         => '1er Grado',
-        '2'         => '2do Grado',
-        '3'         => '3er Grado',
-        '4'         => '4to Grado',
-        '5'         => '5to Grado',
-        '6'         => '6to Grado',
-        '7'         => '7mo Grado',
-        '8'         => '8vo Grado',
-        '9'         => '9no Grado',
-        // Identidades (ya normalizados)
-        '1er Grado' => '1er Grado',
-        '2do Grado' => '2do Grado',
-        '3er Grado' => '3er Grado',
-        '4to Grado' => '4to Grado',
-        '5to Grado' => '5to Grado',
-        '6to Grado' => '6to Grado',
-        '7mo Grado' => '7mo Grado',
-        '8vo Grado' => '8vo Grado',
-        '9no Grado' => '9no Grado',
-    ];
+    // Formato actual en secciones (identidades)
+    '1er Grado' => '1er Grado',
+    '2do Grado' => '2do Grado',
+    '3er Grado' => '3er Grado',
+    '4to Grado' => '4to Grado',
+    '5to Grado' => '5to Grado',
+    '6to Grado' => '6to Grado',
+    '7mo Grado' => '7mo Grado',
+    '8vo Grado' => '8vo Grado',
+    '9no Grado' => '9no Grado',
 
+    // Variantes "Primaria" — las que tienen tus estudiantes
+    '1ro Primaria' => '1er Grado',
+    '2do Primaria' => '2do Grado',
+    '3ro Primaria' => '3er Grado',
+    '4to Primaria' => '4to Grado',
+    '5to Primaria' => '5to Grado',
+    '6to Primaria' => '6to Grado',
+
+    // Variantes "Secundaria"
+    '1ro Secundaria' => '7mo Grado',
+    '2do Secundaria' => '8vo Grado',
+    '3ro Secundaria' => '9no Grado',
+
+    // Variantes escritas
+    'Primero'       => '1er Grado',
+    'Segundo'       => '2do Grado',
+    'Tercero'       => '3er Grado',
+    'Cuarto'        => '4to Grado',
+    'Quinto'        => '5to Grado',
+    'Sexto'         => '6to Grado',
+    'Séptimo'       => '7mo Grado',
+    'Octavo'        => '8vo Grado',
+    'Noveno'        => '9no Grado',
+
+    // Variante "Quinto Grado" y similares
+    'Primero Grado'  => '1er Grado',
+    'Segundo Grado'  => '2do Grado',
+    'Tercero Grado'  => '3er Grado',
+    'Cuarto Grado'   => '4to Grado',
+    'Quinto Grado'   => '5to Grado',
+    'Sexto Grado'    => '6to Grado',
+
+    // Variantes numéricas
+    '1' => '1er Grado',
+    '2' => '2do Grado',
+    '3' => '3er Grado',
+    '4' => '4to Grado',
+    '5' => '5to Grado',
+    '6' => '6to Grado',
+    '7' => '7mo Grado',
+    '8' => '8vo Grado',
+    '9' => '9no Grado',
+];
     /** Normaliza cualquier variante al formato canónico */
     public static function normalizarGrado(?string $grado): string
     {

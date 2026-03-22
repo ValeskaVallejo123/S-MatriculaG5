@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('_h20_cursos', function (Blueprint $table) {
+       Schema::create('h20_cursos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre'); // Séptimo, Octavo, Noveno
             $table->integer('cupo_maximo')->default(30);
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('_h20_cursos');
+         Schema::dropIfExists('_h20_cursos'); 
     }
 };

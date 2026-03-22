@@ -83,15 +83,8 @@ class MatriculaController extends Controller
     // CREATE
     // ────────────────────────────────────────────────────────────────────────
 
-    public function create()
+   public function create()
 {
-    $grados = [
-        'Primero', 'Segundo', 'Tercero',
-        'Cuarto', 'Quinto', 'Sexto'
-    ];
-
-    $secciones = ['A', 'B', 'C', 'D'];
-
     $parentescos = [
         'padre'   => 'Padre',
         'madre'   => 'Madre',
@@ -102,7 +95,11 @@ class MatriculaController extends Controller
         'otro'    => 'Otro',
     ];
 
-    return view('matriculas.create', compact('grados', 'secciones', 'parentescos'));
+    // Secciones agrupadas por grado normalizado para el selector dinámico
+    $seccionesPorGrado = \App\Models\Seccion::orderBy('nombre')->get()
+        ->groupBy(fn($s) => \App\Http\Controllers\SeccionController::normalizarGrado($s->grado));
+
+   return view('matriculas.create-public', compact('parentescos', 'seccionesPorGrado'));
 }
     // ────────────────────────────────────────────────────────────────────────
     // STORE
