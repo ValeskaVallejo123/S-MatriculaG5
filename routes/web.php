@@ -248,6 +248,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{matricula}/cancelar',  [MatriculaController::class, 'cancelar'])->name('cancelar');
         Route::post('/{matricula}/pdf',       [MatriculaController::class, 'exportarPdf'])->name('pdf');
         Route::patch('/{matricula}/aprobar',  [MatriculaController::class, 'aprobar'])->name('aprobar');
+        Route::get('/matricula-publica', [MatriculaController::class, 'create'])->name('matriculas.public.create');
     });
 
     /*
