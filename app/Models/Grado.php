@@ -24,12 +24,12 @@ class Grado extends Model
     ];
 
     // Relación con materias a través de grado_materia
-    public function materias()
-    {
-        return $this->belongsToMany(Materia::class, 'grado_materia')
-                    ->withTimestamps();
-    }
-
+   public function materias()
+{
+    return $this->belongsToMany(Materia::class, 'grado_materia')
+        ->withPivot('horas_semanales', 'profesor_id')  // ← agregar profesor_id
+        ->withTimestamps();
+}
     // Accesor para nombre completo del grado
     public function getNombreCompletoAttribute()
     {

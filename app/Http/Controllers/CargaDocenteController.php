@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-//use App\Models\Profesor;
 use App\Models\Grado;
-//use App\Models\Estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,12 +12,10 @@ class CargaDocenteController extends Controller
     {
         $anio = $request->get('anio', date('Y'));
 
-        // Obtener carga docente: por cada profesor, cuántos grados y materias tiene
-        // y cuántos estudiantes hay en esos grados
         $profesores = DB::table('profesores')
-            ->leftJoin('profesor_materia_grados', 'profesores.id', '=', 'profesor_materia_grados.profesor_id')
-            ->leftJoin('grados', 'profesor_materia_grados.grado_id', '=', 'grados.id')
-            ->leftJoin('materias', 'profesor_materia_grados.materia_id', '=', 'materias.id')
+            ->leftJoin('profesor_materia', 'profesores.id', '=', 'profesor_materia.profesor_id')
+            ->leftJoin('grados', 'profesor_materia.grado_id', '=', 'grados.id')
+            ->leftJoin('materias', 'profesor_materia.materia_id', '=', 'materias.id')
             ->where('profesores.estado', 'activo')
             ->when($anio, function ($q) use ($anio) {
                 $q->where(function ($q2) use ($anio) {
@@ -33,8 +29,8 @@ class CargaDocenteController extends Controller
                 'profesores.apellido',
                 'profesores.especialidad',
                 'profesores.tipo_contrato',
-                DB::raw('COUNT(DISTINCT profesor_materia_grados.materia_id) as total_materias'),
-                DB::raw('COUNT(DISTINCT profesor_materia_grados.grado_id) as total_grados'),
+                DB::raw('COUNT(DISTINCT profesor_materia.materia_id) as total_materias'),
+                DB::raw('COUNT(DISTINCT profesor_materia.grado_id) as total_grados'),
                 DB::raw('GROUP_CONCAT(DISTINCT materias.nombre ORDER BY materias.nombre SEPARATOR ", ") as nombres_materias'),
                 DB::raw('GROUP_CONCAT(DISTINCT CONCAT(grados.numero, "° ", grados.seccion) ORDER BY grados.numero SEPARATOR ", ") as nombres_grados')
             )
@@ -50,7 +46,7 @@ class CargaDocenteController extends Controller
 
         // Calcular total de estudiantes por profesor según los grados asignados
         foreach ($profesores as $profesor) {
-            $gradoIds = DB::table('profesor_materia_grados')
+            $gradoIds = DB::table('profesor_materia')
                 ->where('profesor_id', $profesor->id)
                 ->pluck('grado_id')
                 ->unique()

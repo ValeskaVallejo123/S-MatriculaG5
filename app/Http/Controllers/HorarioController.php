@@ -150,12 +150,12 @@ class HorarioController extends Controller
         $user       = Auth::user();
         $estudiante = \App\Models\Estudiante::where('user_id', $user->id)->first();
 
-        if (!$estudiante) {
-            return view('estudiantes.mi-horario', [
-                'horarioGrado' => null,
-                'estudiante'   => null,
-            ]);
-        }
+       if (!$estudiante) {
+    return view('estudiantes.mihorario', [  // ← quitar el guión
+        'horarioGrado' => null,
+        'estudiante'   => null,
+    ]);
+}
 
         $mapaGrados = [
             'primero'        => ['nivel' => 'primaria',   'numero' => 1],

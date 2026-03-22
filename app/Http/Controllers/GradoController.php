@@ -40,13 +40,13 @@ class GradoController extends Controller
         foreach ($ids as $id) {
             $syncData[$id] = ['horas_semanales' => 4, 'profesor_id' => null];
         }
-    
+
         $grado->materias()->syncWithoutDetaching($syncData);
     }
 
-    /**
-     * Listar todos los grados
-     */
+    /* ============================================================
+       LISTAR GRADOS
+       ============================================================ */
     public function index()
     {
         $grados = Grado::with('materias')
@@ -57,79 +57,95 @@ class GradoController extends Controller
         return view('grados.index', compact('grados'));
     }
 
-    /**
-     * Mostrar formulario de creación
-     */
+    /* ============================================================
+       FORMULARIO DE CREACIÓN
+       ============================================================ */
     public function create()
     {
         return view('grados.create');
     }
 
+    /* ============================================================
+       GUARDAR GRADO
+       ============================================================ */
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'nivel'        => 'required|in:primaria,secundaria',
-        'numero'       => 'required|integer|min:1|max:12',
-        'seccion'      => 'required|in:A,B,C,D',
-        'anio_lectivo' => 'required|integer|min:2020|max:2100',
-        'activo'       => 'nullable|boolean',
-        'capacidad'    => 'required|integer|min:1|max:60',
-    ]);
+    {
+        $validated = $request->validate([
+            'nivel'        => 'required|in:primaria,secundaria',
+            'numero'       => 'required|integer|min:1|max:12',
+            'seccion'      => 'required|in:A,B,C,D',
+            'anio_lectivo' => 'required|integer|min:2020|max:2100',
+            'activo'       => 'nullable|boolean',
+            'capacidad'    => 'required|integer|min:1|max:60',
+        ]);
 
-    // ── 1. Verificar duplicado de grado ─────────────────────────────────────
-    $existe = Grado::where('nivel',        $validated['nivel'])
-                   ->where('numero',       $validated['numero'])
-                   ->where('seccion',      $validated['seccion'])
-                   ->where('anio_lectivo', $validated['anio_lectivo'])
-                   ->exists();
+        $existe = Grado::where('nivel',        $validated['nivel'])
+                       ->where('numero',       $validated['numero'])
+                       ->where('seccion',      $validated['seccion'])
+                       ->where('anio_lectivo', $validated['anio_lectivo'])
+                       ->exists();
 
-    if ($existe) {
-        return back()
-            ->withInput()
-            ->with('error', '¡El grado ya existe para este nivel, sección y año lectivo!');
+        if ($existe) {
+            return back()
+                ->withInput()
+                ->with('error', '¡El grado ya existe para este nivel, sección y año lectivo!');
+        }
+
+        $grado = Grado::create([
+            'nivel'        => $validated['nivel'],
+            'numero'       => $validated['numero'],
+            'seccion'      => $validated['seccion'],
+            'anio_lectivo' => $validated['anio_lectivo'],
+            'activo'       => $request->boolean('activo', true),
+        ]);
+
+        $nombresGrado = [
+            1 => '1er Grado', 2 => '2do Grado', 3 => '3er Grado',
+            4 => '4to Grado', 5 => '5to Grado', 6 => '6to Grado',
+            7 => '7mo Grado', 8 => '8vo Grado', 9 => '9no Grado',
+        ];
+        $nombreGradoTexto = $nombresGrado[$validated['numero']]
+                            ?? $validated['numero'] . '° Grado';
+
+        Seccion::firstOrCreate(
+            [
+                'grado'  => $nombreGradoTexto,
+                'nombre' => $validated['seccion'],
+            ],
+            [
+                'capacidad' => $validated['capacidad'],
+            ]
+        );
+
+        if ($grado->nivel === 'primaria') {
+            $this->asignarMateriasPorDefecto($grado);
+        }
+
+        return redirect()
+            ->route('grados.index')
+            ->with('success', 'Grado y sección creados correctamente.');
     }
 
-    // ── 2. Crear el Grado ────────────────────────────────────────────────────
-    $grado = Grado::create([
-        'nivel'        => $validated['nivel'],
-        'numero'       => $validated['numero'],
-        'seccion'      => $validated['seccion'],
-        'anio_lectivo' => $validated['anio_lectivo'],
-        'activo'       => $request->boolean('activo', true),
-    ]);
-
-    // ── 3. Construir el nombre del grado para la tabla seccion ───────────────
-    $nombresGrado = [
-        1 => '1er Grado', 2 => '2do Grado', 3 => '3er Grado',
-        4 => '4to Grado', 5 => '5to Grado', 6 => '6to Grado',
-        7 => '7mo Grado', 8 => '8vo Grado', 9 => '9no Grado',
-    ];
-
-    $nombreGradoTexto = $nombresGrado[$validated['numero']]
-                        ?? $validated['numero'] . '° Grado';
-
-    // ── 4. Crear la Sección (columna "nombre", NO "letra") ───────────────────
-    //       "letra" es solo un accessor del modelo, no existe en BD
-    Seccion::firstOrCreate(
-        [
-            'grado'  => $nombreGradoTexto,   // ej. "1er Grado"
-            'nombre' => $validated['seccion'], // ej. "A"  ← columna real en BD
-        ],
-        [
-            'capacidad' => $validated['capacidad'],
-        ]
-    );
-
-    // ── 5. Materias por defecto solo para Primaria ───────────────────────────
-    if ($grado->nivel === 'primaria') {
-        $this->asignarMateriasPorDefecto($grado);
+    /* ============================================================
+       VER DETALLE DE GRADO
+       ============================================================ */
+    public function show(Grado $grado)
+    {
+        $grado->load('materias');
+        return view('grados.show', compact('grado'));
     }
 
-    return redirect()
-        ->route('grados.index')
-        ->with('success', 'Grado y sección creados correctamente.');
-}
+    /* ============================================================
+       FORMULARIO DE EDICIÓN
+       ============================================================ */
+    public function edit(Grado $grado)
+    {
+        return view('grados.edit', compact('grado'));
+    }
 
+    /* ============================================================
+       ACTUALIZAR GRADO
+       ============================================================ */
     public function update(Request $request, Grado $grado)
     {
         $validated = $request->validate([
@@ -138,7 +154,6 @@ class GradoController extends Controller
             'seccion'      => 'required|in:A,B,C,D',
             'anio_lectivo' => 'required|integer|min:2020|max:2100',
             'activo'       => 'nullable|boolean',
-            // Si el update también permite editar capacidad, deberías agregarlo aquí y actualizar la Sección vinculada
         ]);
 
         $grado->update([
@@ -154,87 +169,88 @@ class GradoController extends Controller
             ->with('success', 'Grado actualizado exitosamente.');
     }
 
-    /**
-     * Eliminar un grado
-     */
+    /* ============================================================
+       ELIMINAR GRADO
+       ============================================================ */
     public function destroy(Grado $grado): RedirectResponse
     {
-        // Verificar si tiene estudiantes asignados antes de eliminar
-        // if ($grado->estudiantes()->count() > 0) {
-        //     return back()->with('error', 'No se puede eliminar el grado porque tiene estudiantes asignados.');
-        // }
-
+        $grado->materias()->detach();
         $grado->delete();
 
         return redirect()
             ->route('grados.index')
-            ->with('success', 'Grado eliminado exitosamente.');
+            ->with('success', 'Grado eliminado correctamente.');
     }
 
-    /**
-     * Mostrar formulario de asignación de materias
-     */
+    /* ============================================================
+       FORMULARIO ASIGNAR MATERIAS
+       ============================================================ */
     public function asignarMaterias(Grado $grado)
     {
-        $materias = Materia::where('nivel', $grado->nivel)
-            ->where('activo', true)
-            ->get();
-$profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')->get();
-        $materiasAsignadas = $grado->materias->pluck('id')->toArray();
+        $materiasAsignadas = $grado->materias;
+        $materias          = Materia::where('activo', 1)->orderBy('nombre')->get();
+        $profesores        = \App\Models\Profesor::orderBy('apellido')->orderBy('nombre')->get();
 
-        return view('grados.asignar-materias', compact('grado'));
+        return view('grados.asignar-materias', compact(
+            'grado',
+            'materiasAsignadas',
+            'materias',
+            'profesores'
+        ));
     }
 
-    /**
-     * Guardar materias asignadas a un grado
-     */
+    /* ============================================================
+       GUARDAR MATERIAS ASIGNADAS
+       ============================================================ */
     public function guardarMaterias(Request $request, Grado $grado): RedirectResponse
     {
-        $validated = $request->validate([
-            'materias'   => 'required|array|min:1',
-            'materias.*' => 'exists:materias,id',
-            'profesores' => 'nullable|array',
-            'horas'      => 'nullable|array',
+        $request->validate([
+            'materias.*'   => 'exists:materias,id',
+            'horas.*'      => 'nullable|integer|min:1|max:40',
+            'profesores.*' => 'nullable|exists:profesores,id',
         ]);
 
-        $syncData = [];
 
-        foreach ($validated['materias'] as $materiaId) {
-    $syncData[$materiaId] = [
-        'profesor_id' => $request->profesores[$materiaId] ?? null,
-        'seccion'     => $request->seccion ?? $grado->seccion,
-    ];
-}
+        $syncData = [];
+        foreach ($request->input('materias', []) as $materiaId) {
+            $syncData[$materiaId] = [
+                'horas_semanales' => $request->input("horas.{$materiaId}", 4),
+                'profesor_id'     => $request->input("profesores.{$materiaId}") ?: null,
+            ];
+        }
 
         $grado->materias()->sync($syncData);
 
         return redirect()
             ->route('grados.show', $grado)
-            ->with('success', 'Materias asignadas exitosamente.');
+            ->with('success', 'Materias actualizadas correctamente.');
     }
 
-    /**
-     * Mostrar formulario de creación masiva
-     */
+    /* ============================================================
+       FORMULARIO CREACIÓN MASIVA
+       ============================================================ */
     public function crearMasivo()
     {
         return view('grados.crear-masivo');
     }
 
+    /* ============================================================
+       GENERAR GRADOS MASIVAMENTE
+       ============================================================ */
     public function generarMasivo(Request $request)
     {
         $validated = $request->validate([
-            'capacidad_maxima' => 'required|integer|min:1|max:60', // Actualizado a 60 para coincidir
+            'capacidad_maxima' => 'required|integer|min:1|max:60',
             'activo'           => 'nullable|boolean',
         ]);
 
         $gradosData = [
-            ['nivel' => 'primaria',  'numero' => 1],
-            ['nivel' => 'primaria',  'numero' => 2],
-            ['nivel' => 'primaria',  'numero' => 3],
-            ['nivel' => 'primaria',  'numero' => 4],
-            ['nivel' => 'primaria',  'numero' => 5],
-            ['nivel' => 'primaria',  'numero' => 6],
+            ['nivel' => 'primaria',   'numero' => 1],
+            ['nivel' => 'primaria',   'numero' => 2],
+            ['nivel' => 'primaria',   'numero' => 3],
+            ['nivel' => 'primaria',   'numero' => 4],
+            ['nivel' => 'primaria',   'numero' => 5],
+            ['nivel' => 'primaria',   'numero' => 6],
             ['nivel' => 'secundaria', 'numero' => 7],
             ['nivel' => 'secundaria', 'numero' => 8],
             ['nivel' => 'secundaria', 'numero' => 9],
@@ -251,7 +267,6 @@ $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')
 
         foreach ($gradosData as $data) {
             foreach ($secciones as $letra) {
-                // Crear/Actualizar Grado
                 $grado = Grado::updateOrCreate(
                     [
                         'nivel'        => $data['nivel'],
@@ -259,83 +274,24 @@ $profesores = \App\Models\Profesor::where('estado', 'activo')->orderBy('nombre')
                         'seccion'      => $letra,
                         'anio_lectivo' => 2026,
                     ],
-                    ['activo' => $request->boolean('activo', true)]);
+                    ['activo' => $request->boolean('activo', true)]
+                );
 
-                // Crear/Asegurar Sección para el proceso masivo
                 Seccion::firstOrCreate(
-    ['grado' => $nombresGrado[$data['numero']], 'nombre' => $letra], // ← 'nombre'
-    ['capacidad' => $validated['capacidad_maxima']]
-);
+                    ['grado' => $nombresGrado[$data['numero']], 'nombre' => $letra],
+                    ['capacidad' => $validated['capacidad_maxima']]
+                );
 
                 if ($data['nivel'] === 'primaria' && $grado->wasRecentlyCreated) {
                     $this->asignarMateriasPorDefecto($grado);
                 }
+
                 $contador++;
             }
         }
 
-        return redirect()->route('grados.index')->with('success', "Se han procesado {$contador} grados y sus respectivas secciones.");
+        return redirect()
+            ->route('grados.index')
+            ->with('success', "Se han procesado {$contador} grados y sus respectivas secciones.");
     }
-    public function show(Grado $grado)
-{
-    $grado->load('materias');
-    return view('grados.show', compact('grado'));
-}
-
-public function edit(Grado $grado)
-{
-    return view('grados.edit', compact('grado'));
-}
-
-/**
- * Eliminar un grado y sus materias asociadas
- *
- * @param Grado $grado Grado a eliminar
- * @return RedirectResponse
- */
-public function destroy(Grado $grado): RedirectResponse
-{
-    $grado->materias()->detach();
-    $grado->delete();
-
-    return redirect()
-        ->route('superadmin.grados.index')
-        ->with('success', 'Grado eliminado correctamente.');
-}
-
-public function asignarMaterias(Grado $grado)
-{
-    $grado->load('materias');
-    $materias          = Materia::where('activo', true)->orderBy('nombre')->get();
-    $materiasAsignadas = $grado->materias->pluck('id')->toArray(); // ← IDs como array
-
-    return view('grados.asignar-materias', compact('grado', 'materias', 'materiasAsignadas'));
-}
-
-public function guardarMaterias(Request $request, Grado $grado)
-{
-    $validated = $request->validate([
-        'materias'                => 'nullable|array',
-        'materias.*'              => 'exists:materias,id',
-        'horas.*'                 => 'nullable|integer|min:1|max:40',
-        'profesor.*'              => 'nullable|exists:users,id',
-    ]);
-
-    $syncData = [];
-    foreach ($request->input('materias', []) as $materiaId) {
-        $syncData[$materiaId] = [
-            'horas_semanales' => $request->input("horas.{$materiaId}", 4),
-            'profesor_id'     => $request->input("profesor.{$materiaId}") ?: null,
-        ];
-    }
-
-    $grado->materias()->sync($syncData);
-
-    return redirect()
-        ->route('superadmin.grados.show', $grado)
-        ->with('success', 'Materias actualizadas correctamente.');
-}
-
-// Los demás métodos (show, edit, destroy, asignarMaterias, guardarMaterias, crearMasivo) permanecen igual.
-    // Los demás métodos (show, edit, destroy, asignarMaterias, guardarMaterias, crearMasivo) permanecen igual.
 }
