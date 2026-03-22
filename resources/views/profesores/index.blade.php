@@ -152,11 +152,11 @@
 .b-amber  { background: #fffbeb; color: #92400e; }
 .b-gray   { background: #f1f5f9; color: #64748b; }
 
-/* Acciones */
+/* Acciones — botones más pequeños */
 .act-btn {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 30px; height: 30px; border-radius: 7px; border: none;
-    cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
+    width: 26px; height: 26px; border-radius: 6px; border: none;
+    cursor: pointer; font-size: .72rem; text-decoration: none; transition: all .15s;
 }
 .act-btn:hover { transform: translateY(-1px); }
 .act-view { background: #f1f5f9; color: #475569; }
@@ -380,7 +380,7 @@
                             @endif
                         </td>
                         <td class="tc">
-                            <div style="display:inline-flex;gap:.4rem;align-items:center;">
+                            <div style="display:inline-flex;gap:3px;align-items:center;">
                                 <a href="{{ route('profesores.show', $profesor->id) }}"
                                    class="act-btn act-view" title="Ver">
                                     <i class="fas fa-eye"></i>
