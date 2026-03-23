@@ -4,11 +4,6 @@
 @section('page-title', 'Información del Administrador')
 
 @section('topbar-actions')
-    <a href="{{ route('superadmin.administradores.index') }}" 
-       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
-    </a>
     @if(!$administrador->is_protected)
     <a href="{{ route('superadmin.administradores.edit', $administrador->id) }}" 
        style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">

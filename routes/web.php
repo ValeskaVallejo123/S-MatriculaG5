@@ -344,38 +344,57 @@ Route::middleware(['auth'])->group(function () {
     | HORARIOS DE GRADO
     |-------------------------------------------------------------------------
     */
-    Route::get('horarios_grado/{grado}/{jornada}/pdf',    [HorarioGradoController::class, 'exportarPdf'])->name('horarios_grado.pdf');
-    Route::get('horarios_grado/{grado}/{jornada}/editar', [HorarioGradoController::class, 'edit'])->name('horarios_grado.edit');
-    Route::put('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'update'])->name('horarios_grado.update');
-    Route::get('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'show'])->name('horarios_grado.show');
-    Route::get('horarios_grado',                          [HorarioGradoController::class, 'index'])->name('horarios_grado.index');
+    Route::get('horarios/{grado}/{jornada}/pdf',       [HorarioGradoController::class, 'exportarPdf'])->name('horarios_grado.pdf');
+    Route::get('horarios/{grado}/{jornada}/editar',    [HorarioGradoController::class, 'edit'])->name('horarios_grado.edit');
+    Route::get('horarios/{grado}/{jornada}/conflicto', [HorarioGradoController::class, 'verificarConflicto'])->name('horarios_grado.conflicto');
+    Route::put('horarios/{grado}/{jornada}',           [HorarioGradoController::class, 'update'])->name('horarios_grado.update');
+    Route::get('horarios/{grado}/{jornada}',           [HorarioGradoController::class, 'show'])->name('horarios_grado.show');
+    Route::get('horarios',                             [HorarioGradoController::class, 'index'])->name('horarios_grado.index');
+    // Compatibilidad con URLs anteriores
+    Route::get('horarios_grado', fn () => redirect()->route('horarios_grado.index', [], 301));
+    Route::get('horarios_grado/{grado}/{jornada}', fn ($g, $j) => redirect()->route('horarios_grado.show', [$g, $j], 301));
 
     /*
     |-------------------------------------------------------------------------
     | CONSULTA DE ESTUDIANTES POR CURSO Y SECCIÓN
     |-------------------------------------------------------------------------
     */
-    Route::get('/consultaestudiantesxcurso',                    [ConsultaestudiantexcursoController::class, 'index'])->name('consultaestudiantesxcurso.index');
-Route::get('/consultaestudiantesxcurso/{grado}/{seccion}',  [ConsultaestudiantexcursoController::class, 'show'])->name('consultaestudiantesxcurso.show');
+    Route::get('/cursos/estudiantes',                    [ConsultaestudiantexcursoController::class, 'index'])->name('consultaestudiantesxcurso.index');
+    Route::get('/cursos/estudiantes/{grado}/{seccion}',  [ConsultaestudiantexcursoController::class, 'show'])->name('consultaestudiantesxcurso.show');
+    // Compatibilidad con URLs anteriores
+    Route::get('/consultaestudiantesxcurso', fn () => redirect()->route('consultaestudiantesxcurso.index', [], 301));
+    Route::get('/consultaestudiantesxcurso/{grado}/{seccion}', fn ($g, $s) => redirect()->route('consultaestudiantesxcurso.show', [$g, $s], 301));
 
     /*
     |-------------------------------------------------------------------------
     | CURSOS DE SECUNDARIA (H2O)
     |-------------------------------------------------------------------------
     */
-    Route::resource('h20cursos', H20CursoController::class);
+    Route::resource('secundaria', H20CursoController::class)->names([
+        'index'   => 'h20cursos.index',
+        'create'  => 'h20cursos.create',
+        'store'   => 'h20cursos.store',
+        'show'    => 'h20cursos.show',
+        'edit'    => 'h20cursos.edit',
+        'update'  => 'h20cursos.update',
+        'destroy' => 'h20cursos.destroy',
+    ]);
+    // Compatibilidad con URLs anteriores
+    Route::get('/h20cursos', fn () => redirect()->route('h20cursos.index', [], 301));
 
     /*
     |-------------------------------------------------------------------------
     | CALIFICACIONES
     |-------------------------------------------------------------------------
     */
-    Route::get('registrar-calificaciones',                     [RegistrarCalificacionController::class, 'create'])->name('registrarcalificaciones.create');
-    Route::post('registrar-calificaciones',                    [RegistrarCalificacionController::class, 'store'])->name('registrarcalificaciones.store');
-    Route::get('calificaciones',                               [RegistrarCalificacionController::class, 'index'])->name('registrarcalificaciones.index');
-    Route::get('registrar-calificaciones/estudiantes/{curso}', [RegistrarCalificacionController::class, 'obtenerEstudiantes'])->name('registrarcalificaciones.estudiantes');
-    Route::get('registrar-calificaciones/ver',                 [RegistrarCalificacionController::class, 'ver'])->name('registrarcalificaciones.ver');
-    Route::get('registrar-calificaciones/notas-existentes',   [RegistrarCalificacionController::class, 'notasExistentes'])->name('registrarcalificaciones.notas-existentes');
+    Route::get('calificaciones',                                    [RegistrarCalificacionController::class, 'index'])->name('registrarcalificaciones.index');
+    Route::get('calificaciones/registrar',                          [RegistrarCalificacionController::class, 'create'])->name('registrarcalificaciones.create');
+    Route::post('calificaciones/registrar',                         [RegistrarCalificacionController::class, 'store'])->name('registrarcalificaciones.store');
+    Route::get('calificaciones/registrar/estudiantes/{curso}',      [RegistrarCalificacionController::class, 'obtenerEstudiantes'])->name('registrarcalificaciones.estudiantes');
+    Route::get('calificaciones/registrar/ver',                      [RegistrarCalificacionController::class, 'ver'])->name('registrarcalificaciones.ver');
+    Route::get('calificaciones/notas-existentes',                   [RegistrarCalificacionController::class, 'notasExistentes'])->name('registrarcalificaciones.notas-existentes');
+    // Compatibilidad con URLs anteriores
+    Route::get('registrar-calificaciones', fn () => redirect()->route('registrarcalificaciones.create', [], 301));
 
     /*
     |-------------------------------------------------------------------------
@@ -455,13 +474,14 @@ Route::get('/consultaestudiantesxcurso/{grado}/{seccion}',  [Consultaestudiantex
             'destroy' => 'materias.destroy',
         ]);
 
-        Route::get('horarios_grado/{grado}/{jornada}/pdf',    [HorarioGradoController::class, 'exportarPdf'])->name('horarios_grado.pdf');
-        Route::get('horarios_grado/{grado}/{jornada}/editar', [HorarioGradoController::class, 'edit'])->name('horarios_grado.edit');
-        Route::put('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'update'])->name('horarios_grado.update');
-        Route::get('horarios_grado/{grado}/{jornada}',        [HorarioGradoController::class, 'show'])->name('horarios_grado.show');
-        Route::get('horarios_grado',                          [HorarioGradoController::class, 'index'])->name('horarios_grado.index');
+        Route::get('horarios/{grado}/{jornada}/pdf',       [HorarioGradoController::class, 'exportarPdf'])->name('horarios_grado.pdf');
+        Route::get('horarios/{grado}/{jornada}/editar',    [HorarioGradoController::class, 'edit'])->name('horarios_grado.edit');
+        Route::get('horarios/{grado}/{jornada}/conflicto', [HorarioGradoController::class, 'verificarConflicto'])->name('horarios_grado.conflicto');
+        Route::put('horarios/{grado}/{jornada}',           [HorarioGradoController::class, 'update'])->name('horarios_grado.update');
+        Route::get('horarios/{grado}/{jornada}',           [HorarioGradoController::class, 'show'])->name('horarios_grado.show');
+        Route::get('horarios',                             [HorarioGradoController::class, 'index'])->name('horarios_grado.index');
 
-        Route::resource('cupos_maximos', CupoMaximoController::class)->names([
+        Route::resource('cupos-maximos', CupoMaximoController::class)->names([
             'index'   => 'cupos_maximos.index',
             'create'  => 'cupos_maximos.create',
             'store'   => 'cupos_maximos.store',
@@ -470,6 +490,8 @@ Route::get('/consultaestudiantesxcurso/{grado}/{seccion}',  [Consultaestudiantex
             'update'  => 'cupos_maximos.update',
             'destroy' => 'cupos_maximos.destroy',
         ]);
+        // Compatibilidad con URLs anteriores
+        Route::get('cupos_maximos', fn () => redirect()->route('superadmin.cupos_maximos.index', [], 301));
 
     }); // fin superadmin
 

@@ -3,12 +3,6 @@
 @section('title', 'Editar Asignación')
 @section('page-title', 'Editar Asignación Docente')
 
-@section('topbar-actions')
-    <a href="{{ route('profesor_materia_grado.index') }}"
-       style="background:white;color:#00508f;padding:0.5rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:2px solid #00508f;font-size:0.9rem;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @section('content')
 <div class="container" style="max-width: 680px;">

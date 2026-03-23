@@ -3,17 +3,6 @@
 @section('title', 'Crear Estudiante')
 @section('page-title', 'Nuevo Estudiante')
 
-@section('topbar-actions')
-    <a href="{{ route('estudiantes.index') }}"
-       style="background:white; color:#00508f;
-              padding:.6rem .75rem;
-              border-radius:9px;
-              text-decoration:none; font-weight:600; display:inline-flex; align-items:center;
-              gap:0.4rem; transition:all 0.2s ease; border:1.5px solid #00508f;
-              font-size:.83rem;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
 <style>

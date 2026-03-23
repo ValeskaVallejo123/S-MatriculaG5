@@ -19,9 +19,9 @@ use Carbon\Carbon;
 class MatriculaController extends Controller
 {
     private const GRADOS = [
-        '1er Grado', '2do Grado', '3er Grado',
-        '4to Grado', '5to Grado', '6to Grado',
-        'I curso',   'II curso',  'III curso',
+        'Primer Grado', 'Segundo Grado', 'Tercer Grado',
+        'Cuarto Grado', 'Quinto Grado',  'Sexto Grado',
+        'Séptimo Grado', 'Octavo Grado', 'Noveno Grado',
     ];
 
     private const PARENTESCOS = [
@@ -85,8 +85,9 @@ class MatriculaController extends Controller
     public function create()
     {
         $grados = [
-            'Primero', 'Segundo', 'Tercero',
-            'Cuarto',  'Quinto',  'Sexto',
+            'Primer Grado',  'Segundo Grado', 'Tercer Grado',
+            'Cuarto Grado',  'Quinto Grado',  'Sexto Grado',
+            'Séptimo Grado', 'Octavo Grado',  'Noveno Grado',
         ];
 
         $secciones = ['A', 'B', 'C', 'D'];
@@ -289,11 +290,12 @@ class MatriculaController extends Controller
 
             if ($esPublico) {
                 return redirect()->route('matriculas.success')
-                    ->with('success',   '¡Matrícula registrada exitosamente!')
-                    ->with('codigo',    $codigoMatricula)
-                    ->with('email',     $validated['padre_email'] ?? null)
-                    ->with('identidad', $validated['padre_dni'])
-                    ->with('estado',    'pendiente');
+                    ->with('success',           '¡Matrícula registrada exitosamente!')
+                    ->with('codigo',            $codigoMatricula)
+                    ->with('nombre_estudiante', trim($validated['estudiante_nombre'] . ' ' . $validated['estudiante_apellido']))
+                    ->with('email',             $validated['padre_email'] ?? null)
+                    ->with('identidad',         $validated['padre_dni'])
+                    ->with('estado',            'pendiente');
             }
 
             return redirect()->route('matriculas.index')
@@ -544,9 +546,19 @@ class MatriculaController extends Controller
 
     public function aprobar(Matricula $matricula)
     {
-        $matricula->update(['estado' => 'aprobada']);
+        $estadoAnterior = $matricula->estado;
 
-        return back()->with('success', 'Matrícula aprobada correctamente.');
+        $matricula->update([
+            'estado'             => 'aprobada',
+            'fecha_confirmacion' => now(),
+            'motivo_rechazo'     => null,
+        ]);
+
+        if ($estadoAnterior !== 'aprobada') {
+            $this->procesarAprobacion($matricula->fresh(['padre', 'estudiante']));
+        }
+
+        return back()->with('success', 'Matrícula aprobada y acceso creado para el padre/tutor.');
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -562,6 +574,7 @@ class MatriculaController extends Controller
             return;
         }
 
+        // ── Usuario del Padre ─────────────────────────────────────────────
         if (!$padre->user_id) {
 
             $rolPadre = Rol::where('nombre', 'like', '%adre%')
@@ -569,19 +582,19 @@ class MatriculaController extends Controller
                            ->first();
 
             if ($padre->correo && !User::where('email', $padre->correo)->exists()) {
-                $email = $padre->correo;
+                $emailPadre = $padre->correo;
             } else {
-                $base  = Str::slug($padre->nombre . '.' . $padre->apellido) . '.' . $padre->id;
-                $email = $base . '@escuela.edu';
+                $base       = Str::slug($padre->nombre . '.' . $padre->apellido) . '.' . $padre->id;
+                $emailPadre = $base . '@escuela.edu';
 
-                if (User::where('email', $email)->exists()) {
-                    $email = 'padre.' . $padre->id . '.' . time() . '@escuela.edu';
+                if (User::where('email', $emailPadre)->exists()) {
+                    $emailPadre = 'padre.' . $padre->id . '.' . time() . '@escuela.edu';
                 }
             }
 
-            $user = User::create([
+            $userPadre = User::create([
                 'name'              => $padre->nombre . ' ' . $padre->apellido,
-                'email'             => $email,
+                'email'             => $emailPadre,
                 'password'          => Hash::make($padre->dni),
                 'user_type'         => 'padre',
                 'id_rol'            => $rolPadre?->id ?? 5,
@@ -593,13 +606,52 @@ class MatriculaController extends Controller
                 ]),
             ]);
 
-            $padre->update(['user_id' => $user->id]);
+            $padre->update(['user_id' => $userPadre->id]);
 
         } else {
             User::where('id', $padre->user_id)->update(['activo' => true]);
         }
 
-        $padre->update(['estado' => 'activo']);
+        // ── Usuario del Estudiante ────────────────────────────────────────
+        if (!$estudiante->user_id) {
+
+            $rolEstudiante = Rol::where('nombre', 'like', '%studiante%')
+                               ->orWhere('nombre', 'like', '%lumno%')
+                               ->first();
+
+            // Email: usar el del estudiante si existe y no está tomado
+            if ($estudiante->email && !User::where('email', $estudiante->email)->exists()) {
+                $emailEst = $estudiante->email;
+            } else {
+                $base     = Str::slug($estudiante->nombre1 . '.' . $estudiante->apellido1) . '.' . $estudiante->id;
+                $emailEst = $base . '@escuela.edu';
+
+                if (User::where('email', $emailEst)->exists()) {
+                    $emailEst = 'estudiante.' . $estudiante->id . '.' . time() . '@escuela.edu';
+                }
+            }
+
+            $userEstudiante = User::create([
+                'name'              => trim("{$estudiante->nombre1} {$estudiante->nombre2} {$estudiante->apellido1} {$estudiante->apellido2}"),
+                'email'             => $emailEst,
+                'password'          => Hash::make($estudiante->dni),
+                'user_type'         => 'estudiante',
+                'id_rol'            => $rolEstudiante?->id ?? 4,
+                'activo'            => true,
+                'email_verified_at' => now(),
+                'permissions'       => json_encode([
+                    'ver_calificaciones' => true,
+                    'ver_asistencias'    => true,
+                ]),
+            ]);
+
+            $estudiante->update(['user_id' => $userEstudiante->id]);
+
+        } else {
+            User::where('id', $estudiante->user_id)->update(['activo' => true]);
+        }
+
+        $padre->update(['estado' => 1]);
         $estudiante->update(['estado' => 'activo']);
 
         // Asignar grado_id al estudiante si aún no tiene uno
@@ -614,19 +666,15 @@ class MatriculaController extends Controller
     private static function mapaGrados(): array
     {
         return [
-            'Primero'        => [1, 'primaria'],
-            'Segundo'        => [2, 'primaria'],
-            'Tercero'        => [3, 'primaria'],
-            'Cuarto'         => [4, 'primaria'],
-            'Quinto'         => [5, 'primaria'],
-            'Sexto'          => [6, 'primaria'],
-            '6to Grado'      => [6, 'primaria'],
-            'I curso'        => [7, 'secundaria'],
-            'Séptimo'        => [7, 'secundaria'],
-            'II curso'       => [8, 'secundaria'],
-            'Octavo'         => [8, 'secundaria'],
-            'III curso'      => [9, 'secundaria'],
-            'Noveno'         => [9, 'secundaria'],
+            'Primer Grado'   => [1, 'primaria'],
+            'Segundo Grado'  => [2, 'primaria'],
+            'Tercer Grado'   => [3, 'primaria'],
+            'Cuarto Grado'   => [4, 'primaria'],
+            'Quinto Grado'   => [5, 'primaria'],
+            'Sexto Grado'    => [6, 'primaria'],
+            'Séptimo Grado'  => [7, 'secundaria'],
+            'Octavo Grado'   => [8, 'secundaria'],
+            'Noveno Grado'   => [9, 'secundaria'],
         ];
     }
 

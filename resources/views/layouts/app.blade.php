@@ -135,6 +135,20 @@
         }
         .btn-logout:hover { opacity: .9; transform: translateY(-1px); }
 
+        .btn-back-topbar {
+            background: white; color: #00508f;
+            border: 1.5px solid #00508f;
+            padding: .6rem .75rem; border-radius: 7px;
+            font-size: .83rem; font-weight: 600;
+            display: flex; align-items: center; gap: .4rem;
+            cursor: pointer; transition: all .2s ease;
+            white-space: nowrap;
+        }
+        .btn-back-topbar:hover {
+            background: #00508f; color: white;
+            transform: translateY(-1px);
+        }
+
         /* ══════════════════════════════════════════════
            CONTENT WRAPPER
            — Con sidebar: padding normal
@@ -489,6 +503,23 @@
                 </div>
                 <div class="topbar-divider"></div>
             @endif
+
+            {{-- Botón Volver — oculto en dashboards e índices principales --}}
+            @php
+                $esDashboard = request()->routeIs(
+                    '*.dashboard', 'superadmin.dashboard', 'admin.dashboard',
+                    'profesor.dashboard', 'estudiante.dashboard', 'padre.dashboard',
+                    'admins.dashboard'
+                );
+            @endphp
+            @unless($esDashboard)
+            <button type="button" onclick="history.back()" class="btn-back-topbar"
+                    title="Volver a la página anterior">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            <div class="topbar-divider"></div>
+            @endunless
+
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn-logout">

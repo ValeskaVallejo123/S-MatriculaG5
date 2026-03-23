@@ -237,7 +237,7 @@
                     <label class="filter-label"><i class="fas fa-graduation-cap"></i> Grado</label>
                     <select name="grado" class="filter-select">
                         <option value="">Todos</option>
-                        @foreach(['1°','2°','3°','4°','5°','6°'] as $g)
+                        @foreach(['Primer Grado','Segundo Grado','Tercer Grado','Cuarto Grado','Quinto Grado','Sexto Grado','Séptimo Grado','Octavo Grado','Noveno Grado'] as $g)
                         <option value="{{ $g }}" {{ request('grado') === $g ? 'selected' : '' }}>{{ $g }}</option>
                         @endforeach
                     </select>

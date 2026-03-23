@@ -9,9 +9,6 @@
         <a href="{{ route('padres.edit', $padre->id) }}" class="pd-btn-edit">
             <i class="fas fa-edit"></i> Editar
         </a>
-        <a href="{{ route('padres.index') }}" class="pd-btn-back">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
     </div>
 @endsection
 

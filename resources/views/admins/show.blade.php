@@ -3,11 +3,6 @@
 @section('title', 'Detalles del Administrador')
 @section('page-title', 'Detalles del Administrador')
 
-@section('topbar-actions')
-    <a href="{{ route('admins.index') }}" class="btn btn-outline-secondary btn-sm">
-        <i class="fas fa-arrow-left me-1"></i> Administradores
-    </a>
-@endsection
 
 @section('content')
 <div class="w-100">

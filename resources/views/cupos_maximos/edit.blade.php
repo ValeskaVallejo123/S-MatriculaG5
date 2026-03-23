@@ -3,11 +3,6 @@
 @section('title', 'Actualizar Cupo')
 @section('page-title', 'Cupos Máximos')
 
-@section('topbar-actions')
-    <a href="{{ route('superadmin.cupos_maximos.index') }}" class="adm-btn-outline">
-        <i class="fas fa-arrow-left"></i> Volver al listado
-    </a>
-@endsection
 
 @push('styles')
 <style>

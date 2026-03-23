@@ -21,11 +21,6 @@
                   color:white;border:none;border-radius:8px;font-weight:600;">
             <i class="fas fa-eye me-1"></i> Ver Calificaciones
         </a>
-        <a href="{{ $rutaDashboard }}"
-           class="btn btn-sm"
-           style="border:2px solid #00508f;color:#00508f;border-radius:8px;font-weight:600;">
-            <i class="fas fa-arrow-left me-1"></i> Volver
-        </a>
     </div>
 
 @endsection

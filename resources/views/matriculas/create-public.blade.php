@@ -15,7 +15,10 @@
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #003b73 0%, #00508f 40%, #07196b 100%);
             min-height: 100vh;
-            padding: 40px 15px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 15px;
         }
         body::before {
             content: '';
@@ -29,39 +32,55 @@
 
         .form-wrapper { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
 
-        /* ── Header ── */
-        .form-header { text-align: center; color: white; margin-bottom: 36px; }
-        .form-header .logo-icon {
-            width: 80px; height: 80px;
-            background: rgba(78,199,210,.25); border: 2px solid #4ec7d2;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 2.2rem; color: #4ec7d2; margin: 0 auto 18px;
-        }
-        .form-header h1 { font-size: 2rem; font-weight: 800; }
-        .form-header p  { color: #bfd9ea; font-size: 1rem; margin-top: 6px; }
-
-        /* ── Steps ── */
-        .steps-bar { display: flex; justify-content: center; align-items: center; margin-bottom: 36px; }
-        .step { display: flex; flex-direction: column; align-items: center; }
-        .step-circle {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.3);
-            color: rgba(255,255,255,.5);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: .95rem; transition: all .3s;
-        }
-        .step.active .step-circle { background: #4ec7d2; border-color: #4ec7d2; color: #003b73; }
-        .step.done   .step-circle { background: #003b73; border-color: #4ec7d2; color: #4ec7d2; }
-        .step-label  { font-size: .72rem; color: rgba(255,255,255,.5); margin-top: 6px; text-align: center; max-width: 80px; }
-        .step.active .step-label, .step.done .step-label { color: #4ec7d2; }
-        .step-line   { width: 70px; height: 2px; background: rgba(255,255,255,.15); margin-bottom: 22px; transition: background .3s; }
-        .step-line.done { background: #4ec7d2; }
-
         /* ── Card ── */
-        .card-form { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 70px rgba(0,0,0,.25); }
+        .card-form {
+            background: white; border-radius: 24px; overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0,0,0,.25);
+            display: flex; flex-direction: row;
+        }
+        .card-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+        /* ── Sidebar derecho de pasos ── */
+        .card-sidebar {
+            width: 190px; flex-shrink: 0;
+            background: linear-gradient(175deg, #002d5a 0%, #003b73 55%, #00508f 100%);
+            padding: 36px 20px;
+            display: flex; flex-direction: column; align-items: center;
+            border-left: 1px solid rgba(78,199,210,.15);
+        }
+        .sidebar-logo {
+            width: 58px; height: 58px;
+            background: rgba(78,199,210,.2); border: 2px solid rgba(78,199,210,.6);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: #4ec7d2; margin-bottom: 10px;
+        }
+        .sidebar-title-main { color: white; font-size: 1rem; font-weight: 800; text-align: center; margin-bottom: 6px; line-height: 1.3; }
+        .sidebar-heading { color: #4ec7d2; font-size: .7rem; font-weight: 600; text-align: center; margin-bottom: 3px; }
+        .sidebar-sub { color: rgba(255,255,255,.45); font-size: .62rem; text-align: center; margin-bottom: 24px; line-height: 1.5; }
+        .sidebar-divider { width: 40px; height: 2px; background: rgba(78,199,210,.4); border-radius: 2px; margin-bottom: 24px; }
+
+        /* ── Pasos verticales ── */
+        .vsteps { width: 100%; }
+        .vstep-item { display: flex; align-items: center; gap: 12px; }
+        .vstep-circle {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            background: rgba(255,255,255,.08); border: 2px solid rgba(255,255,255,.2);
+            color: rgba(255,255,255,.35);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: .82rem; transition: all .3s;
+        }
+        .vstep-item.active .vstep-circle { background: #4ec7d2; border-color: #4ec7d2; color: #003b73; }
+        .vstep-item.done   .vstep-circle { background: rgba(78,199,210,.15); border-color: #4ec7d2; color: #4ec7d2; }
+        .vstep-label { font-size: .73rem; color: rgba(255,255,255,.35); font-weight: 600; transition: color .3s; line-height: 1.3; }
+        .vstep-item.active .vstep-label,
+        .vstep-item.done   .vstep-label { color: #4ec7d2; }
+        .vstep-line { width: 2px; height: 28px; background: rgba(255,255,255,.1); margin: 5px 0 5px 17px; border-radius: 2px; transition: background .3s; }
+        .vstep-line.done { background: #4ec7d2; }
+
+        @media(max-width:720px){ .card-sidebar { display: none; } }
 
         /* ── Secciones wizard ── */
-        .form-section { display: none; padding: 40px 50px; animation: fadeSlide .4s ease; }
+        .form-section { display: none; padding: 36px 40px; animation: fadeSlide .4s ease; flex: 1; }
         .form-section.active { display: block; }
         @keyframes fadeSlide { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
 
@@ -110,7 +129,8 @@
         /* ── Nav bar inferior ── */
         .form-nav {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 24px 50px; border-top: 1px solid #f0f0f0; background: #fafbfc;
+            padding: 20px 40px; border-top: 1px solid #f0f0f0; background: #fafbfc;
+            margin-top: auto;
         }
 
         /* ── Resumen paso 4 ── */
@@ -122,10 +142,37 @@
 
         .alert-form { border-radius: 12px; border: none; padding: 14px 18px; font-size: .875rem; }
 
+        /* ── Email auto-generado ── */
+        .email-autogen-wrap { position: relative; }
+        .email-autogen-badge {
+            display: none; align-items: center; gap: 5px;
+            margin-top: 5px; font-size: .72rem; font-weight: 600;
+            color: #00508f; background: rgba(78,199,210,.12);
+            border: 1px solid rgba(78,199,210,.35);
+            padding: 4px 10px; border-radius: 20px;
+            width: fit-content;
+        }
+        .email-autogen-badge.visible { display: inline-flex; }
+        .email-autogen-badge i { color: #4ec7d2; font-size: .7rem; }
+        .form-control.autogenerado { border-color: #4ec7d2; background: rgba(78,199,210,.04); }
+
+        /* ── Credenciales en resumen ── */
+        .cred-box {
+            background: linear-gradient(135deg, rgba(0,59,115,.05), rgba(78,199,210,.08));
+            border: 1.5px solid rgba(78,199,210,.3); border-radius: 12px;
+            padding: 16px 20px; margin-top: 16px;
+        }
+        .cred-box h6 { color: #003b73; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+        .cred-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+        .cred-row:last-child { margin-bottom: 0; }
+        .cred-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg,#4ec7d2,#003b73); display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+        .cred-icon i { color: white; font-size: .75rem; }
+        .cred-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #94a3b8; }
+        .cred-val { font-size: .83rem; font-weight: 700; color: #003b73; }
+
         @media(max-width:600px){
-            .form-section { padding: 26px 18px; }
-            .form-nav { padding: 16px 18px; }
-            .step-line { width: 28px; }
+            .form-section { padding: 22px 16px; }
+            .form-nav { padding: 14px 16px; }
             .form-header h1 { font-size: 1.5rem; }
         }
     </style>
@@ -133,37 +180,10 @@
 <body>
 <div class="form-wrapper">
 
-    {{-- Encabezado --}}
-    <div class="form-header">
-        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
-        <h1>Matrícula en Línea {{ date('Y') }}</h1>
-        <p>Centro de Educación Básico Gabriela Mistral · Danlí, El Paraíso</p>
-    </div>
-
-    {{-- Barra de pasos --}}
-    <div class="steps-bar">
-        <div class="step active" id="step-ind-1">
-            <div class="step-circle">1</div>
-            <div class="step-label">Estudiante</div>
-        </div>
-        <div class="step-line" id="line-1"></div>
-        <div class="step" id="step-ind-2">
-            <div class="step-circle">2</div>
-            <div class="step-label">Padre / Tutor</div>
-        </div>
-        <div class="step-line" id="line-2"></div>
-        <div class="step" id="step-ind-3">
-            <div class="step-circle">3</div>
-            <div class="step-label">Documentos</div>
-        </div>
-        <div class="step-line" id="line-3"></div>
-        <div class="step" id="step-ind-4">
-            <div class="step-circle">4</div>
-            <div class="step-label">Confirmar</div>
-        </div>
-    </div>
-
     <div class="card-form">
+
+        {{-- ── Contenido principal ── --}}
+        <div class="card-main">
 
         {{-- Errores del servidor --}}
         @if ($errors->any())
@@ -297,7 +317,7 @@
                         <select name="estudiante_grado"
                                 class="form-select @error('estudiante_grado') is-invalid @enderror" required>
                             <option value="">Seleccionar grado...</option>
-                            @foreach(['Primero','Segundo','Tercero','Cuarto','Quinto','Sexto','I curso','II curso','III curso'] as $g)
+                            @foreach(['Primer Grado','Segundo Grado','Tercer Grado','Cuarto Grado','Quinto Grado','Sexto Grado','Séptimo Grado','Octavo Grado','Noveno Grado'] as $g)
                                 <option value="{{ $g }}" {{ old('estudiante_grado')==$g?'selected':'' }}>
                                     {{ $g }}
                                 </option>
@@ -320,9 +340,15 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Correo del Estudiante</label>
-                        <input type="email" name="estudiante_email"
-                               class="form-control @error('estudiante_email') is-invalid @enderror"
-                               value="{{ old('estudiante_email') }}" placeholder="correo@ejemplo.com">
+                        <div class="email-autogen-wrap">
+                            <input type="email" name="estudiante_email" id="est_email_field"
+                                   class="form-control @error('estudiante_email') is-invalid @enderror"
+                                   value="{{ old('estudiante_email') }}"
+                                   placeholder="Se genera automáticamente">
+                            <span class="email-autogen-badge" id="badge_est_email">
+                                <i class="fas fa-magic"></i> Correo de acceso generado
+                            </span>
+                        </div>
                         @error('estudiante_email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -447,11 +473,17 @@
                     <div class="col-md-6">
                         <label class="form-label">
                             Correo Electrónico
-                            <small class="text-muted fw-normal">(recomendado para notificaciones)</small>
+                            <small class="text-muted fw-normal">(será su usuario de acceso)</small>
                         </label>
-                        <input type="email" name="padre_email"
-                               class="form-control @error('padre_email') is-invalid @enderror"
-                               value="{{ old('padre_email') }}" placeholder="correo@ejemplo.com">
+                        <div class="email-autogen-wrap">
+                            <input type="email" name="padre_email" id="padre_email_field"
+                                   class="form-control @error('padre_email') is-invalid @enderror"
+                                   value="{{ old('padre_email') }}"
+                                   placeholder="Se genera automáticamente">
+                            <span class="email-autogen-badge" id="badge_padre_email">
+                                <i class="fas fa-magic"></i> Correo de acceso generado
+                            </span>
+                        </div>
                         @error('padre_email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -569,6 +601,14 @@
                     <div id="resumen-docs"></div>
                 </div>
 
+                <div class="summary-block" id="resumen-credenciales-block" style="display:none;border:1.5px solid rgba(78,199,210,.5);background:rgba(78,199,210,.06);">
+                    <h6 style="color:#4ec7d2"><i class="fas fa-key me-1"></i> Acceso futuro al sistema</h6>
+                    <p style="font-size:.78rem;color:#6c757d;margin-bottom:.6rem">
+                        Cuando tu matrícula sea aprobada, podrás ingresar al sistema con las siguientes credenciales:
+                    </p>
+                    <div id="resumen-credenciales"></div>
+                </div>
+
                 <div class="alert alert-warning alert-form">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Al enviar, un administrador revisará tu solicitud y te contactará para continuar el proceso.
@@ -597,14 +637,48 @@
             </div>
 
         </form>
-    </div>{{-- /card-form --}}
+        </div>{{-- /card-main --}}
 
-    <p class="text-center mt-4" style="color:rgba(255,255,255,.6);font-size:.82rem">
-        ¿Ya enviaste tu solicitud?
-        <a href="{{ route('matriculas.index') }}" style="color:#4ec7d2;font-weight:600">
-            Consultar estado aquí
-        </a>
-    </p>
+        {{-- ── Sidebar derecho con pasos ── --}}
+        <div class="card-sidebar">
+            <div class="sidebar-logo"><i class="fas fa-graduation-cap"></i></div>
+            <div class="sidebar-title-main">Matrícula en Línea {{ date('Y') }}</div>
+            <div class="sidebar-heading">C.E.B. Gabriela Mistral</div>
+            <div class="sidebar-sub">Danlí, El Paraíso</div>
+            <div class="sidebar-divider"></div>
+
+            <div class="vsteps">
+                <div class="vstep-item active" id="step-ind-1">
+                    <div class="vstep-circle">1</div>
+                    <div class="vstep-label">Estudiante</div>
+                </div>
+                <div class="vstep-line" id="line-1"></div>
+                <div class="vstep-item" id="step-ind-2">
+                    <div class="vstep-circle">2</div>
+                    <div class="vstep-label">Padre / Tutor</div>
+                </div>
+                <div class="vstep-line" id="line-2"></div>
+                <div class="vstep-item" id="step-ind-3">
+                    <div class="vstep-circle">3</div>
+                    <div class="vstep-label">Documentos</div>
+                </div>
+                <div class="vstep-line" id="line-3"></div>
+                <div class="vstep-item" id="step-ind-4">
+                    <div class="vstep-circle">4</div>
+                    <div class="vstep-label">Confirmar</div>
+                </div>
+            </div>
+
+            <div style="margin-top:auto;padding-top:24px;text-align:center;">
+                <p style="color:rgba(255,255,255,.4);font-size:.6rem;margin-bottom:6px;">¿Ya enviaste tu solicitud?</p>
+                <a href="{{ route('matriculas.index') }}"
+                   style="color:#4ec7d2;font-weight:700;font-size:.65rem;text-decoration:none;">
+                    Consultar estado →
+                </a>
+            </div>
+        </div>{{-- /card-sidebar --}}
+
+    </div>{{-- /card-form --}}
 
 </div>{{-- /form-wrapper --}}
 
@@ -672,6 +746,95 @@ function validarPaso(paso) {
 document.getElementById('parentescoSelect').addEventListener('change', function () {
     document.getElementById('wrap-parentesco-otro').style.display =
         this.value === 'otro' ? '' : 'none';
+});
+
+// ── Auto-generación de emails ────────────────────────────────────────────────
+function slugifyEmail(str) {
+    return (str || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')   // quitar tildes
+        .replace(/ñ/g, 'n')
+        .replace(/[^a-z0-9\s]/g, '')
+        .trim()
+        .replace(/\s+/g, '.');
+}
+
+function generarEmail(nombre, apellido) {
+    const n = slugifyEmail(nombre);
+    const a = slugifyEmail(apellido);
+    if (!n || !a) return '';
+    return `${n}.${a}@escuela.edu`;
+}
+
+// Campos que disparan la generación del email del estudiante
+['ui_nombre1', 'ui_apellido1'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => {
+        const email = generarEmail(
+            document.getElementById('ui_nombre1').value,
+            document.getElementById('ui_apellido1').value
+        );
+        const campo = document.getElementById('est_email_field');
+        const badge = document.getElementById('badge_est_email');
+        if (email && !campo._editadoManual) {
+            campo.value = email;
+            campo.classList.add('autogenerado');
+            badge.classList.add('visible');
+        }
+    });
+});
+
+// Permitir edición manual del email del estudiante
+document.getElementById('est_email_field')?.addEventListener('input', function () {
+    this._editadoManual = true;
+    this.classList.remove('autogenerado');
+    document.getElementById('badge_est_email').classList.remove('visible');
+});
+
+// Campos que disparan la generación del email del padre
+['padre_nombre_input', 'padre_apellido_input'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => {
+        const email = generarEmail(
+            document.querySelector('[name="padre_nombre"]').value,
+            document.querySelector('[name="padre_apellido"]').value
+        );
+        const campo = document.getElementById('padre_email_field');
+        const badge = document.getElementById('badge_padre_email');
+        if (email && !campo._editadoManual) {
+            campo.value = email;
+            campo.classList.add('autogenerado');
+            badge.classList.add('visible');
+        }
+    });
+});
+
+// Disparar desde los inputs reales del padre
+document.querySelector('[name="padre_nombre"]')?.addEventListener('input', function() {
+    const email = generarEmail(this.value, document.querySelector('[name="padre_apellido"]').value);
+    const campo = document.getElementById('padre_email_field');
+    const badge = document.getElementById('badge_padre_email');
+    if (email && !campo._editadoManual) {
+        campo.value = email;
+        campo.classList.add('autogenerado');
+        badge.classList.add('visible');
+    }
+});
+document.querySelector('[name="padre_apellido"]')?.addEventListener('input', function() {
+    const email = generarEmail(document.querySelector('[name="padre_nombre"]').value, this.value);
+    const campo = document.getElementById('padre_email_field');
+    const badge = document.getElementById('badge_padre_email');
+    if (email && !campo._editadoManual) {
+        campo.value = email;
+        campo.classList.add('autogenerado');
+        badge.classList.add('visible');
+    }
+});
+
+// Permitir edición manual del email del padre
+document.getElementById('padre_email_field')?.addEventListener('input', function () {
+    this._editadoManual = true;
+    this.classList.remove('autogenerado');
+    document.getElementById('badge_padre_email').classList.remove('visible');
 });
 
 // ── Mostrar nombre del archivo ──────────────────────────────────────────────
@@ -742,6 +905,44 @@ function construirResumen() {
                             <span class="val">${d}</span>
                          </div>`).join('')
         : '<div class="summary-row"><span class="lbl">Sin documentos adjuntos</span></div>';
+
+    // ── Credenciales generadas ───────────────────────────────────────────────
+    const estEmail  = (document.getElementById('est_email_field')?.value || '').trim();
+    const padEmail  = (document.getElementById('padre_email_field')?.value || '').trim();
+    const estDni    = (document.getElementById('estudiante_dni')?.value || leer('estudiante_dni')).trim();
+    const padDni    = (document.getElementById('padre_dni')?.value || leer('padre_dni')).trim();
+
+    const credBlock = document.getElementById('resumen-credenciales-block');
+    const credDiv   = document.getElementById('resumen-credenciales');
+
+    let credHtml = '';
+
+    if (estEmail) {
+        credHtml += `<div style="margin-bottom:.7rem">
+            <div style="font-size:.72rem;font-weight:600;color:#003b73;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.25rem">
+                <i class="fas fa-user-graduate me-1" style="color:#4ec7d2"></i> Estudiante
+            </div>
+            ${fila('Usuario / Correo', estEmail)}
+            ${estDni ? fila('Contraseña inicial', estDni + ' <span style="font-size:.7rem;color:#6c757d">(tu número de identidad)</span>') : ''}
+        </div>`;
+    }
+
+    if (padEmail) {
+        credHtml += `<div>
+            <div style="font-size:.72rem;font-weight:600;color:#003b73;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.25rem">
+                <i class="fas fa-user me-1" style="color:#4ec7d2"></i> Padre / Tutor
+            </div>
+            ${fila('Usuario / Correo', padEmail)}
+            ${padDni ? fila('Contraseña inicial', padDni + ' <span style="font-size:.7rem;color:#6c757d">(tu número de identidad)</span>') : ''}
+        </div>`;
+    }
+
+    if (credHtml) {
+        credDiv.innerHTML = credHtml;
+        credBlock.style.display = '';
+    } else {
+        credBlock.style.display = 'none';
+    }
 }
 </script>
 </body>

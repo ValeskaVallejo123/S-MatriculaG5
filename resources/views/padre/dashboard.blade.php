@@ -22,8 +22,8 @@
 
 .portal-wrap {
     font-family: 'Inter', sans-serif;
-    max-width: 960px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;

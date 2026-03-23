@@ -3,13 +3,6 @@
 @section('title', 'Detalle del Curso')
 @section('page-title', 'Estudiantes del Curso')
 
-@section('topbar-actions')
-    <a href="{{ route('consultaestudiantesxcurso.index') }}"
-       class="btn"
-       style="border:2px solid #00508f;color:#00508f;border-radius:8px;font-weight:600;">
-        <i class="fas fa-arrow-left me-1"></i> Volver
-    </a>
-@endsection
 
 @section('content')
 <div class="container-fluid px-4 py-3">

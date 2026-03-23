@@ -3,11 +3,6 @@
 @section('title', 'Perfil del Estudiante')
 @section('page-title', 'Perfil del Estudiante')
 
-@section('topbar-actions')
-    <a href="{{ route('estudiantes.index') }}" class="pf-btn b-back">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
 <style>

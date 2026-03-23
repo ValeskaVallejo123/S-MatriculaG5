@@ -3,13 +3,6 @@
 @section('title', 'Mis Calificaciones')
 @section('page-title', 'Mis Calificaciones')
 
-@section('topbar-actions')
-    <a href="{{ route('estudiante.dashboard') }}"
-       class="btn btn-sm"
-       style="border:2px solid #00508f;color:#00508f;border-radius:8px;font-weight:600;">
-        <i class="fas fa-arrow-left me-1"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
 <style>

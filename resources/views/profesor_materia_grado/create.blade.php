@@ -3,11 +3,6 @@
 @section('title', 'Nueva Asignación')
 @section('page-title', 'Nueva Asignación Docente')
 
-@section('topbar-actions')
-    <a href="{{ route('profesor_materia_grado.index') }}" class="pmg-btn-back">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
 <style>

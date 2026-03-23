@@ -3,15 +3,6 @@
 @section('title', 'Lista de usuarios')
 @section('page-title', 'Usuarios del Sistema')
 
-@section('topbar-actions')
-    <a href="{{ route('superadmin.dashboard') }}"
-       style="background:white; color:#00508f;
-              padding:.6rem .75rem; border-radius:9px; font-size:.83rem; font-weight:600;
-              display:inline-flex; align-items:center; gap:.4rem;
-              text-decoration:none; border:1.5px solid #00508f; transition:all .2s;">
-        <i class="fas fa-arrow-left"></i> Volver al Dashboard
-    </a>
-@endsection
 
 @push('styles')
 <style>

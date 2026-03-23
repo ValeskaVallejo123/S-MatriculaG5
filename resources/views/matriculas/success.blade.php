@@ -100,7 +100,7 @@
 
     <div class="codigo-box">
         <p>Tu código de seguimiento es:</p>
-        <div class="codigo">{{ session('codigo_matricula') }}</div>
+        <div class="codigo">{{ session('codigo') }}</div>
         <p class="mt-2" style="font-size:.78rem">
             <i class="fas fa-exclamation-circle text-warning me-1"></i>
             Guarda este código para consultar el estado de tu matrícula.

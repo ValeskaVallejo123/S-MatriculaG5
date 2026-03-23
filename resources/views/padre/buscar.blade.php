@@ -12,11 +12,6 @@
                   color:white;border:none;border-radius:8px;font-weight:600;">
             <i class="fas fa-plus me-1"></i> Nuevo Padre/Tutor
         </a>
-        <a href="{{ isset($estudiante) ? route('estudiantes.show', $estudiante->id) : route('padres.index') }}"
-           class="btn btn-sm"
-           style="border:2px solid #00508f;color:#00508f;border-radius:8px;font-weight:600;">
-            <i class="fas fa-arrow-left me-1"></i> Volver
-        </a>
     </div>
 @endsection
 
