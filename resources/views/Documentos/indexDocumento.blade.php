@@ -147,7 +147,7 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('documentos.destroy', $doc->id) }}" method="POST" class="d-inline"
-                                      onsubmit="return confirm('¿Eliminar este expediente?')">
+                                      data-confirm="¿Eliminar este expediente?">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="act-btn act-del" title="Eliminar">
                                         <i class="fas fa-trash"></i>

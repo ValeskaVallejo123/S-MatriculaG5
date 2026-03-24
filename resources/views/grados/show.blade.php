@@ -449,7 +449,7 @@
                             <i class="fas fa-book"></i> Ver Materias
                         </a>
                         <form action="{{ route('grados.destroy', $grado) }}" method="POST"
-                              onsubmit="return confirm('¿Está seguro de eliminar este grado?')">
+                              data-confirm="¿Está seguro de eliminar este grado?">
                             @csrf @method('DELETE')
                             <button type="submit" class="gs-action-btn gs-action-outline-red">
                                 <i class="fas fa-trash"></i> Eliminar Grado

@@ -341,12 +341,12 @@
                           </span>
                              @elseif($matricula->estado === 'pendiente')
                               <form action="{{ route('matriculas.aprobar', $matricula->id) }}" method="POST"
-                               style="display:inline;">
+                               style="display:inline;"
+                               data-confirm="¿Aprobar esta matrícula?">
                                @csrf
                                @method('PATCH')
                                <button type="submit" class="bpill b-yellow"
                                 style="border:none;cursor:pointer;font-family:inherit;"
-                                onclick="return confirm('¿Aprobar esta matrícula?')"
                                 title="Clic para aprobar">
                                  <i class="fas fa-clock"></i> Pendiente
                                 <i class="fas fa-arrow-right" style="font-size:.6rem;margin-left:.2rem;opacity:.6;"></i>

@@ -82,13 +82,6 @@
 @section('content')
 <div style="width:100%;">
 
-    @if(session('success'))
-        <div style="background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #16a34a;
-                    border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;
-                    font-size:.85rem;color:#15803d;display:flex;align-items:center;gap:.5rem;">
-            <i class="fas fa-check-circle"></i> {{ session('success') }}
-        </div>
-    @endif
 
     @if($errors->any())
         <div style="background:#fef2f2;border:1px solid #fca5a5;border-left:4px solid #dc2626;
@@ -273,24 +266,22 @@
                                     <td>
                                         @if($cal)
                                             <div style="display:flex;align-items:center;justify-content:center;gap:.35rem;">
-                                                <a href="{{ route('profesor.calificaciones.edit', $cal->id) }}"
+                                                <a href="{{ route('profesor.calificaciones.editar', $cal->id) }}"
                                                    class="btn-accion"
                                                    title="Editar"
                                                    style="background:rgba(78,199,210,.1);color:#00508f;border-color:#4ec7d2;">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form method="POST"
-                                                      action="{{ route('profesor.calificaciones.destroy', $cal->id) }}"
-                                                      onsubmit="return confirm('¿Eliminar la calificación de {{ addslashes($estudiante->nombre1 ?? $estudiante->nombre_completo) }}?')"
-                                                      style="margin:0;">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                            class="btn-accion"
-                                                            title="Eliminar"
-                                                            style="background:rgba(220,38,38,.08);color:#dc2626;border-color:#fca5a5;cursor:pointer;">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button"
+                                                        class="btn-accion"
+                                                        title="Eliminar"
+                                                        style="background:rgba(220,38,38,.08);color:#dc2626;border-color:#fca5a5;cursor:pointer;"
+                                                        onclick="eliminarCal(
+                                                            '{{ route('profesor.calificaciones.destroy', $cal->id) }}',
+                                                            '{{ addslashes($estudiante->nombre1 ?? $estudiante->nombre_completo) }}'
+                                                        )">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                             </div>
                                         @else
                                             <span style="font-size:.72rem;color:#94a3b8;font-style:italic;">Nueva</span>
@@ -321,10 +312,25 @@
 
     </div>
 </div>
+
+{{-- Form de borrado fuera del form principal para evitar anidamiento --}}
+<form id="form-delete-cal" method="POST" style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
+
 @endsection
 
 @push('scripts')
 <script>
+function eliminarCal(url, nombre) {
+    sysConfirm('¿Eliminar la calificación de ' + nombre + '?', () => {
+        const f = document.getElementById('form-delete-cal');
+        f.action = url;
+        f.submit();
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('tbody tr').forEach(row => {
         row.querySelectorAll('.nota-input').forEach(input => {

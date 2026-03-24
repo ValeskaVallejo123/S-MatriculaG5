@@ -400,12 +400,12 @@
                             </div>
                         </div>
                     </div>
-                    <form action="{{ route('padres.desvincular') }}" method="POST" style="display:inline;flex-shrink:0;">
+                    <form action="{{ route('padres.desvincular') }}" method="POST" style="display:inline;flex-shrink:0;"
+                          data-confirm="¿Desvincular a este padre/tutor?">
                         @csrf
                         <input type="hidden" name="padre_id"      value="{{ $padre->id }}">
                         <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
-                        <button type="submit" class="btn-desvincular"
-                                onclick="return confirm('¿Desvincular a {{ addslashes($padre->nombre) }} {{ addslashes($padre->apellido) }}?')">
+                        <button type="submit" class="btn-desvincular">
                             <i class="fas fa-unlink"></i> Desvincular
                         </button>
                     </form>

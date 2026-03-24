@@ -154,7 +154,7 @@
                                         </a>
                                         <form method="POST"
                                               action="{{ route('profesor_materia_grado.destroy', $asignacion->id) }}"
-                                              onsubmit="return confirm('¿Eliminar esta asignación?')"
+                                              data-confirm="¿Eliminar esta asignación?"
                                               class="m-0">
                                             @csrf
                                             @method('DELETE')

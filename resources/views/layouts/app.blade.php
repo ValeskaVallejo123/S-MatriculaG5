@@ -670,6 +670,93 @@
 
 @stack('scripts')
 
+{{-- ── Modal de confirmación del sistema ── --}}
+<div id="sys-modal"
+     style="display:none;position:fixed;inset:0;z-index:9999;
+            background:rgba(0,45,90,.5);backdrop-filter:blur(4px);
+            align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:16px;padding:2rem 1.8rem;
+                max-width:400px;width:90%;
+                box-shadow:0 24px 60px rgba(0,45,90,.35);
+                animation:sysModalIn .18s ease;">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;">
+            <div style="width:50px;height:50px;border-radius:13px;flex-shrink:0;
+                        background:linear-gradient(135deg,#002d5a,#00508f);
+                        display:flex;align-items:center;justify-content:center;
+                        box-shadow:0 4px 14px rgba(0,80,143,.3);">
+                <i class="fas fa-question" style="color:white;font-size:1.2rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;
+                            letter-spacing:.09em;color:#4ec7d2;margin-bottom:.25rem;">
+                    Confirmación
+                </div>
+                <p id="sys-modal-msg"
+                   style="font-size:.9rem;font-weight:600;color:#003b73;margin:0;line-height:1.4;">
+                </p>
+            </div>
+        </div>
+        <div style="display:flex;gap:.65rem;justify-content:flex-end;">
+            <button id="sys-modal-cancel"
+                    style="padding:.5rem 1.3rem;border-radius:8px;font-size:.82rem;font-weight:600;
+                           border:1.5px solid #d1d9e6;background:white;color:#64748b;cursor:pointer;
+                           transition:all .15s;">
+                <i class="fas fa-times me-1"></i>Cancelar
+            </button>
+            <button id="sys-modal-ok"
+                    style="padding:.5rem 1.3rem;border-radius:8px;font-size:.82rem;font-weight:700;
+                           border:none;background:linear-gradient(135deg,#002d5a,#00508f);
+                           color:white;cursor:pointer;transition:all .15s;">
+                <i class="fas fa-check me-1"></i>Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+<style>
+@keyframes sysModalIn {
+    from { transform:scale(.92);opacity:0; }
+    to   { transform:scale(1);opacity:1; }
+}
+</style>
+<script>
+function sysConfirm(msg, onOk) {
+    const modal  = document.getElementById('sys-modal');
+    const okBtn  = document.getElementById('sys-modal-ok');
+    const canBtn = document.getElementById('sys-modal-cancel');
+    document.getElementById('sys-modal-msg').textContent = msg;
+    modal.style.display = 'flex';
+
+    function cleanup() {
+        modal.style.display = 'none';
+        okBtn.removeEventListener('click', yes);
+        canBtn.removeEventListener('click', no);
+        modal.removeEventListener('click', backdrop);
+    }
+    function yes()      { cleanup(); onOk(); }
+    function no()       { cleanup(); }
+    function backdrop(e){ if (e.target === modal) no(); }
+
+    okBtn.addEventListener('click', yes);
+    canBtn.addEventListener('click', no);
+    modal.addEventListener('click', backdrop);
+}
+
+// Interceptar forms con data-confirm
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            if (this._sysOk) return;
+            e.preventDefault();
+            const f = this;
+            sysConfirm(f.dataset.confirm, function () {
+                f._sysOk = true;
+                HTMLFormElement.prototype.submit.call(f);
+            });
+        });
+    });
+});
+</script>
+
 {{-- ── Preservar página en formularios de vistas paginadas ── --}}
 <script>
 (function () {

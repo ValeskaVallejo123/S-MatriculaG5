@@ -242,7 +242,7 @@
                     <form action="{{ route('superadmin.administradores.destroy', $administrador->id) }}" 
                           method="POST" 
                           class="d-inline"
-                          onsubmit="return confirm('¿Estás seguro de eliminar este administrador? Esta acción no se puede deshacer.');">
+                          data-confirm="¿Eliminar este administrador? Esta acción no se puede deshacer.">
                         @csrf
                         @method('DELETE')
                         <button type="submit" 

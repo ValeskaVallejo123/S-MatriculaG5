@@ -112,7 +112,7 @@
                                             <i class="fas fa-edit" style="font-size: 0.75rem;"></i>
                                         </a>
                                         <form method="POST" action="{{ route('calificaciones.destroy', $cal) }}"
-                                              onsubmit="return confirm('¿Eliminar esta calificación?')" class="m-0">
+                                              data-confirm="¿Eliminar esta calificación?" class="m-0">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-sm" title="Eliminar"
                                                     style="background: rgba(244,67,54,0.08); color: #d32f2f; border: 1px solid #ef9a9a; border-radius: 6px; padding: 0.25rem 0.5rem;">

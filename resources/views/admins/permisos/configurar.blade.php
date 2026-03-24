@@ -368,9 +368,9 @@ function desactivarTodos(estudianteId) {
 }
 
 function establecerDefecto(padreId, estudianteId) {
-    if (confirm('¿Establecer los permisos por defecto? Esto sobrescribirá la configuración actual.')) {
+    sysConfirm('¿Establecer los permisos por defecto? Esto sobrescribirá la configuración actual.', () => {
         window.location.href = `/admins/permisos/${padreId}/${estudianteId}/defecto`;
-    }
+    });
 }
 </script>
 @endpush

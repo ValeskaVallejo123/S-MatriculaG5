@@ -266,7 +266,7 @@
                                     </a>
                                     <form method="POST"
                                           action="{{ route('periodos-academicos.destroy', $periodo->id) }}"
-                                          onsubmit="return confirm('¿Eliminar el período {{ $periodo->nombre_periodo }}? Las calificaciones vinculadas a él también se verán afectadas.')">
+                                          data-confirm="¿Eliminar este período? Las calificaciones vinculadas también se verán afectadas.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-del-sm">

@@ -104,7 +104,7 @@
     {{-- Eliminar --}}
     <div class="d-flex justify-content-end">
         <form method="POST" action="{{ route('calificaciones.destroy', $calificacion) }}"
-              onsubmit="return confirm('¿Eliminar esta calificación definitivamente?')">
+              data-confirm="¿Eliminar esta calificación definitivamente?">
             @csrf @method('DELETE')
             <button type="submit" class="btn btn-sm fw-semibold"
                     style="background: rgba(244,67,54,0.08); color: #d32f2f; border: 1px solid #ef9a9a; border-radius: 8px; padding: 0.4rem 1rem;">
