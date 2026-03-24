@@ -123,4 +123,5 @@ class Matricula extends Model
             ? $this->estudiante->nombre_completo
             : 'N/A';
     }
+
 }

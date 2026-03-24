@@ -28,7 +28,7 @@
     border-radius: 14px; padding: 1.6rem 1.75rem;
     display: flex; align-items: center; gap: 1.25rem;
     box-shadow: 0 4px 20px rgba(0,59,115,.2);
-    position: relative; overflow: hidden;
+    position: relative; overflow: hidden; flex-wrap: wrap;
 }
 .welcome-card::before {
     content:''; position:absolute; top:-40%; right:-4%;
@@ -44,7 +44,7 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 1.6rem; color: #fff; position: relative; z-index: 1;
 }
-.welcome-info { position: relative; z-index: 1; flex: 1; }
+.welcome-info { position: relative; z-index: 1; flex: 1; min-width: 200px; }
 .welcome-info h4 { color: #fff; font-weight: 700; margin: 0 0 .2rem; font-size: 1.15rem; }
 .welcome-info p  { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0 0 .6rem; }
 .welcome-badges  { display: flex; flex-wrap: wrap; gap: .4rem; }
@@ -56,6 +56,8 @@
 .w-badge-navy  { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); }
 .w-badge-green { background: rgba(16,185,129,.25); color: #fff; border: 1px solid rgba(16,185,129,.5); }
 .w-badge-warn  { background: rgba(234,179,8,.2); color: #fde047; border: 1px solid rgba(234,179,8,.4); }
+.welcome-actions { display: flex; flex-direction: column; gap: .5rem; z-index: 1; position: relative; flex-shrink: 0; }
+@media(max-width:600px){ .welcome-actions { flex-direction: row; flex-wrap: wrap; } }
 
 /* ── Stats ── */
 .stats-row {
@@ -110,16 +112,44 @@
 
 .info-card { transition: transform .15s, box-shadow .15s; }
 .info-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,59,115,.12) !important; }
+
+/* ── Dark mode fixes (Brian) ── */
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode .fw-bold {
+    color: #ffffff !important;
+}
+body.dark-mode .badge {
+    background-color: rgba(78, 199, 210, 0.2) !important;
+    color: #4ec7d2 !important;
+    border: 1px solid #4ec7d2 !important;
+}
+body.dark-mode .btn.text-start {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+body.dark-mode .notif-item span,
+body.dark-mode .notif-item p {
+    color: #f1f5f9 !important;
+}
+body.dark-mode .notif-item.leida {
+    background: rgba(255, 255, 255, 0.05) !important;
+    opacity: 0.7;
+}
+body.dark-mode .info-card i {
+    color: #4ec7d2 !important;
+}
 </style>
 @endpush
 
 @section('content')
-@php
-    $user       = auth()->user();
-    $estudiante = $user->estudiante;
-    $noLeidas   = $user->total_notificaciones_no_leidas;
-    $notificaciones = $user->notificacionesPermitidas()->take(5)->get();
-@endphp
+    @php
+        $user       = auth()->user();
+        $estudiante = $user->estudiante;
+        $noLeidas   = $user->total_notificaciones_no_leidas;
+        $notificaciones = $user->notificacionesPermitidas()->take(5)->get();
+    @endphp
 
 <div class="est-portal">
 
@@ -150,9 +180,17 @@
                 </span>
             @endif
         </div>
+        <div class="welcome-actions">
+            <a href="{{ route('estudiante.historial') }}" class="btn fw-bold shadow-sm"
+               style="background:#4ec7d2; color:#003b73; border: 1px solid #4ec7d2; padding: 8px 18px; white-space:nowrap; font-size:.82rem;">
+                <i class="fas fa-history me-1"></i>Historial Académico
+            </a>
+            <a href="{{ route('estado-solicitud') }}" class="btn fw-bold shadow-sm"
+               style="background:rgba(255,255,255,.15); color:#fff; border: 1px solid rgba(255,255,255,.3); padding: 8px 18px; white-space:nowrap; font-size:.82rem;">
+                <i class="fas fa-question-circle me-1"></i>Estado de Solicitud
+            </a>
+        </div>
     </div>
-
-    
 
     {{-- ══ Tarjetas resumen (clicables) ══ --}}
     <div class="row g-3 mb-4">
@@ -282,9 +320,7 @@
                                                     @default
                                                         <i class="fas fa-info-circle" style="color:#4ec7d2;font-size:0.85rem;"></i>
                                                 @endswitch
-                                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
-                                                    {{ $notif->titulo }}
-                                                </span>
+                                                <span class="notif-title">{{ $notif->titulo }}</span>
                                                 @if(!$notif->leida)
                                                     <span class="badge-nueva">Nueva</span>
                                                 @endif
@@ -338,6 +374,16 @@
                             <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
                                 <i class="fas fa-clipboard-check" style="color:#4ec7d2;width:20px;text-align:center;"></i>
                                 <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Mis Calificaciones</span>
+                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('estudiante.historial') }}" class="text-decoration-none">
+                        <div class="card border-0 info-card" style="background:rgba(78,199,210,0.06);border:1px solid #4ec7d2 !important;border-radius:8px;">
+                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
+                                <i class="fas fa-history" style="color:#4ec7d2;width:20px;text-align:center;"></i>
+                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Historial Académico</span>
                                 <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
                             </div>
                         </div>

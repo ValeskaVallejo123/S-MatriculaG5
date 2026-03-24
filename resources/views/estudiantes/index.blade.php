@@ -5,6 +5,10 @@
 
 @section('topbar-actions')
 <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+    <a href="{{ url()->previous() }}"
+       style="background:white;color:#00508f;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:1.5px solid #00508f;font-size:0.83rem;transition:all .2s;">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
     <a href="{{ route('estudiantes.create') }}"
        style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);color:white;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:none;box-shadow:0 2px 8px rgba(78,199,210,0.3);font-size:0.83rem;">
         <i class="fas fa-plus"></i> Agregar Nuevo Estudiante
@@ -13,37 +17,37 @@
 @endsection
 
 @push('styles')
-<style>
-/* ── Variables ── */
-:root {
-    --blue-dark:   #003b73;
-    --blue-mid:    #00508f;
-    --teal:        #4ec7d2;
-    --teal-light:  rgba(78,199,210,0.12);
-    --border:      #e8edf4;
-    --surface:     #f5f8fc;
-    --text-main:   #0d2137;
-    --text-muted:  #6b7a90;
-    --green:       #10b981;
-    --amber:       #f59e0b;
-    --red:         #ef4444;
-    --purple:      #8b5cf6;
-    --radius-lg:   14px;
-    --radius-md:   10px;
-    --radius-sm:   7px;
-    --shadow-sm:   0 1px 4px rgba(0,59,115,0.07);
-    --shadow-md:   0 4px 16px rgba(0,59,115,0.10);
-}
+    <style>
+        /* ── Variables ── */
+        :root {
+            --blue-dark:   #003b73;
+            --blue-mid:    #00508f;
+            --teal:        #4ec7d2;
+            --teal-light:  rgba(78,199,210,0.12);
+            --border:      #e8edf4;
+            --surface:     #f5f8fc;
+            --text-main:   #0d2137;
+            --text-muted:  #6b7a90;
+            --green:       #10b981;
+            --amber:       #f59e0b;
+            --red:         #ef4444;
+            --purple:      #8b5cf6;
+            --radius-lg:   14px;
+            --radius-md:   10px;
+            --radius-sm:   7px;
+            --shadow-sm:   0 1px 4px rgba(0,59,115,0.07);
+            --shadow-md:   0 4px 16px rgba(0,59,115,0.10);
+        }
 
-/* ── Stats ── */
-.est-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-@media(max-width:900px){ .est-stats { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:540px){ .est-stats { grid-template-columns: 1fr 1fr; gap:.75rem; } }
+        /* ── Stats ── */
+        .est-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media(max-width:900px){ .est-stats { grid-template-columns: repeat(2,1fr); } }
+        @media(max-width:540px){ .est-stats { grid-template-columns: 1fr 1fr; gap:.75rem; } }
 
 .est-stat {
     background: white;
@@ -202,6 +206,14 @@
 .act-edit:hover  { background: var(--teal);     color: white; transform: translateY(-1px); }
 .act-del:hover   { background: var(--red);      color: white; transform: translateY(-1px); }
 
+/* Botón historial */
+.act-btn.act-historial {
+    border-color: var(--blue-mid); color: var(--blue-mid);
+}
+.act-btn.act-historial:hover {
+    background: var(--blue-mid); color: white; transform: translateY(-1px);
+}
+
 .est-empty { padding: 4rem 1rem; text-align: center; }
 .est-empty i  { font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: 1rem; }
 .est-empty h6 { color: var(--blue-dark); font-weight: 600; margin-bottom: .4rem; }
@@ -355,18 +367,18 @@
                             <span class="row-num">{{ $estudiantes->firstItem() + $i }}</span>
                         </td>
 
-                        {{-- Foto --}}
+                        {{-- Foto de Perfil --}}
                         <td>
                             <div class="est-av">
                                 @if($estudiante->foto)
                                     <img src="{{ asset('storage/' . $estudiante->foto) }}" alt="Foto">
                                 @else
-                                    {{ strtoupper(substr($estudiante->nombre1 ?? 'E', 0, 1)) }}{{ strtoupper(substr($estudiante->apellido1 ?? '', 0, 1)) }}
+                                    <span class="av-txt">{{ strtoupper(substr($estudiante->nombre1 ?? 'E', 0, 1)) }}{{ strtoupper(substr($estudiante->apellido1 ?? '', 0, 1)) }}</span>
                                 @endif
                             </div>
                         </td>
 
-                        {{-- Nombre --}}
+                        {{-- Información Personal --}}
                         <td>
                             <div class="est-name">{{ $estudiante->nombre_completo }}</div>
                             @if($estudiante->email)
@@ -374,20 +386,14 @@
                             @endif
                         </td>
 
-                        {{-- DNI --}}
+                        {{-- Documento Identidad --}}
                         <td><span class="est-dni">{{ $estudiante->dni }}</span></td>
 
-                        {{-- Grado --}}
-                        <td class="tc">
-                            <span class="chip chip-teal">{{ $estudiante->grado }}</span>
-                        </td>
+                        {{-- Datos Académicos --}}
+                        <td class="tc"><span class="chip chip-teal">{{ $estudiante->grado }}</span></td>
+                        <td class="tc"><span class="chip chip-blue">{{ $estudiante->seccion }}</span></td>
 
-                        {{-- Sección --}}
-                        <td class="tc">
-                            <span class="chip chip-blue">{{ $estudiante->seccion }}</span>
-                        </td>
-
-                        {{-- Estado --}}
+                        {{-- Estado del Estudiante --}}
                         <td class="tc">
                             @if($estudiante->estado === 'activo')
                                 <span class="badge-estado badge-activo">
@@ -400,61 +406,67 @@
                             @endif
                         </td>
 
-                        {{-- Acciones --}}
+                        {{-- Bloque de Acciones --}}
                         <td class="tc">
                             <div style="display:inline-flex;gap:.35rem;align-items:center;">
+                                {{-- GESTIONAR HISTORIAL (Acceso Admin/SuperAdmin) --}}
+                                <a href="{{ route('superadmin.estudiantes.historial.show', $estudiante->id) }}"
+                                   class="act-btn act-historial" title="Gestionar Historial Académico">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </a>
+
                                 <a href="{{ route('estudiantes.show', $estudiante->id) }}"
-                                   class="act-btn act-view" title="Ver detalle">
+                                   class="act-btn act-view" title="Ver Perfil">
                                     <i class="fas fa-eye"></i>
                                 </a>
+
                                 <a href="{{ route('estudiantes.edit', $estudiante->id) }}"
-                                   class="act-btn act-edit" title="Editar">
+                                   class="act-btn act-edit" title="Editar Datos">
                                     <i class="fas fa-pen"></i>
                                 </a>
+
                                 <button type="button"
                                         class="act-btn act-del" title="Eliminar"
                                         onclick="mostrarModalDelete(
-                                            '{{ route('estudiantes.destroy', $estudiante->id) }}',
-                                            '¿Está seguro de eliminar este estudiante? Esta acción no se puede deshacer.',
-                                            '{{ addslashes($estudiante->nombre_completo) }}'
-                                        )">
+                                        '{{ route('estudiantes.destroy', $estudiante->id) }}',
+                                        '¿Está seguro de eliminar a este estudiante?',
+                                        '{{ addslashes($estudiante->nombre_completo) }}'
+                                    )">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
                     @empty
-                    <tr>
-                        <td colspan="8">
-                            <div class="est-empty">
-                                <i class="fas fa-user-graduate"></i>
-                                <h6>No hay estudiantes registrados</h6>
-                                <p>Comienza agregando el primer estudiante al sistema</p>
-                                <a href="{{ route('estudiantes.create') }}"
-                                   style="display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.3rem;background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border-radius:9px;text-decoration:none;font-weight:600;font-size:.85rem;box-shadow:0 2px 8px rgba(78,199,210,.3);">
-                                    <i class="fas fa-plus"></i> Registrar Estudiante
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="8">
+                                <div class="est-empty">
+                                    <i class="fas fa-user-graduate"></i>
+                                    <h6>No hay estudiantes registrados</h6>
+                                    <p>Comienza agregando el primer estudiante al sistema</p>
+                                    <a href="{{ route('estudiantes.create') }}" class="btn-create-empty">
+                                        <i class="fas fa-plus"></i> Registrar Estudiante
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
                     @endforelse
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
 
-        {{-- Footer / paginación --}}
-        @if($estudiantes->hasPages())
-        <div class="est-footer">
-            <span class="est-footer-info">
-                Mostrando {{ $estudiantes->firstItem() }}–{{ $estudiantes->lastItem() }}
-                de {{ $estudiantes->total() }} estudiantes
-            </span>
-            {{ $estudiantes->links() }}
+            {{-- Paginación --}}
+            @if($estudiantes->hasPages())
+                <div class="est-footer">
+                    <span class="est-footer-info">
+                        Mostrando {{ $estudiantes->firstItem() }}–{{ $estudiantes->lastItem() }}
+                        de {{ $estudiantes->total() }} estudiantes
+                    </span>
+                    {{ $estudiantes->links() }}
+                </div>
+            @endif
         </div>
-        @endif
     </div>
-
-</div>
 @endsection
 
 @push('scripts')

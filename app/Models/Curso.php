@@ -89,4 +89,10 @@ class Curso extends Model
     {
         return "{$this->grado}° {$this->seccion} - " . ucfirst($this->jornada);
     }
+
+
+    public function historiales()
+    {
+        return $this->hasMany(HistorialAcademico::class, 'curso_id');
+    }
 }

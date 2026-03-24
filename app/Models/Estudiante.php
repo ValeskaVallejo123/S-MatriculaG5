@@ -84,7 +84,7 @@ class Estudiante extends Model
     }
 
     /**
-     * Matrículas del estudiante ← AGREGADA
+     * Matrículas del estudiante
      */
     public function matriculas()
     {
@@ -176,5 +176,19 @@ class Estudiante extends Model
     public static function secciones()
     {
         return ['A', 'B', 'C'];
+    }
+
+    /**
+     * Accesor: historial académico agrupado por año del período
+     */
+    public function getHistorialAcademicoAttribute()
+    {
+        return $this->calificaciones()
+            ->with(['materia', 'periodo'])
+            ->get()
+            ->groupBy(function($calificacion) {
+                // Agrupa por el año del periodo académico
+                return $calificacion->periodo->anio ?? 'Sin Año';
+            });
     }
 }

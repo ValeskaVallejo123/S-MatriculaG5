@@ -5,115 +5,113 @@
 
 
 @push('styles')
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-.adm-wrap { font-family: 'Inter', sans-serif; }
+        .adm-wrap { font-family: 'Inter', sans-serif; }
 
-.adm-btn-outline {
-    display: inline-flex; align-items: center; gap: .4rem;
-    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: #fff; color: #00508f; border: 1.5px solid #4ec7d2;
-    text-decoration: none; transition: background .15s;
-}
-.adm-btn-outline:hover { background: #e8f8f9; color: #00508f; }
+        .adm-btn-outline {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+            background: #fff; color: #00508f; border: 1.5px solid #4ec7d2;
+            text-decoration: none; transition: background .15s;
+        }
+        .adm-btn-outline:hover { background: #e8f8f9; color: #00508f; }
 
-/* Hero banner */
-.adm-hero {
-    background: linear-gradient(135deg, #4ec7d2 0%, #00508f 60%, #003b73 100%);
-    border-radius: 14px; padding: 1.6rem 1.75rem; margin-bottom: 1.5rem;
-    display: flex; align-items: center; gap: 1.25rem;
-    box-shadow: 0 4px 18px rgba(0,59,115,.18);
-}
-.adm-hero-icon {
-    width: 56px; height: 56px; border-radius: 14px;
-    background: rgba(255,255,255,.18); backdrop-filter: blur(6px);
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.adm-hero-icon i { font-size: 1.5rem; color: #fff; }
-.adm-hero-title { font-size: 1.35rem; font-weight: 700; color: #fff; margin: 0; line-height: 1.2; }
-.adm-hero-sub { font-size: .82rem; color: rgba(255,255,255,.78); margin-top: .25rem; }
-.adm-hero-meta {
-    display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem;
-}
-.adm-hero-pill {
-    display: inline-flex; align-items: center; gap: .3rem;
-    background: rgba(255,255,255,.18); color: #fff;
-    border-radius: 999px; padding: .18rem .7rem; font-size: .75rem; font-weight: 600;
-}
+        /* Hero banner */
+        .adm-hero {
+            background: linear-gradient(135deg, #4ec7d2 0%, #00508f 60%, #003b73 100%);
+            border-radius: 14px; padding: 1.6rem 1.75rem; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 1.25rem;
+            box-shadow: 0 4px 18px rgba(0,59,115,.18);
+        }
+        .adm-hero-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: rgba(255,255,255,.18); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .adm-hero-icon i { font-size: 1.5rem; color: #fff; }
+        .adm-hero-title { font-size: 1.35rem; font-weight: 700; color: #fff; margin: 0; line-height: 1.2; }
+        .adm-hero-sub { font-size: .82rem; color: rgba(255,255,255,.78); margin-top: .25rem; }
+        .adm-hero-meta { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+        .adm-hero-pill {
+            display: inline-flex; align-items: center; gap: .3rem;
+            background: rgba(255,255,255,.18); color: #fff;
+            border-radius: 999px; padding: .18rem .7rem; font-size: .75rem; font-weight: 600;
+        }
 
-/* Card */
-.adm-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
-}
-.adm-card-head {
-    background: #003b73; padding: .85rem 1.25rem;
-    display: flex; align-items: center; gap: .6rem;
-}
-.adm-card-head i { color: #4ec7d2; font-size: 1rem; }
-.adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
-.adm-card-body { padding: 1.5rem 1.25rem; }
+        /* Card */
+        .adm-card {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+            overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+        }
+        .adm-card-head {
+            background: #003b73; padding: .85rem 1.25rem;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .adm-card-head i { color: #4ec7d2; font-size: 1rem; }
+        .adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+        .adm-card-body { padding: 1.5rem 1.25rem; }
 
-.frm-label {
-    display: block; font-size: .75rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .05em;
-    color: #64748b; margin-bottom: .4rem;
-}
-.frm-label i { color: #4ec7d2; margin-right: .3rem; }
+        .frm-label {
+            display: block; font-size: .75rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .05em;
+            color: #64748b; margin-bottom: .4rem;
+        }
+        .frm-label i { color: #4ec7d2; margin-right: .3rem; }
 
-.frm-control {
-    width: 100%; padding: .45rem .75rem;
-    border: 1.5px solid #e2e8f0; border-radius: 8px;
-    font-size: .82rem; color: #0f172a;
-    background: #f8fafc; outline: none;
-    transition: border-color .15s, box-shadow .15s;
-    font-family: 'Inter', sans-serif;
-}
-.frm-control:focus {
-    border-color: #4ec7d2;
-    box-shadow: 0 0 0 3px rgba(78,199,210,.12);
-    background: #fff;
-}
-.frm-hint { font-size: .72rem; color: #94a3b8; margin-top: .3rem; }
-.frm-divider { border: none; border-top: 1px solid #f1f5f9; margin: 1.25rem 0; }
+        .frm-control {
+            width: 100%; padding: .45rem .75rem;
+            border: 1.5px solid #e2e8f0; border-radius: 8px;
+            font-size: .82rem; color: #0f172a;
+            background: #f8fafc; outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .frm-control:focus {
+            border-color: #4ec7d2;
+            box-shadow: 0 0 0 3px rgba(78,199,210,.12);
+            background: #fff;
+        }
+        .frm-hint { font-size: .72rem; color: #94a3b8; margin-top: .3rem; }
+        .frm-divider { border: none; border-top: 1px solid #f1f5f9; margin: 1.25rem 0; }
 
-.frm-actions {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: .75rem; flex-wrap: wrap;
-}
+        .frm-actions {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: .75rem; flex-wrap: wrap;
+        }
 
-.btn-cancel {
-    display: inline-flex; align-items: center; gap: .35rem;
-    padding: .45rem 1.1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: #fff; color: #64748b; border: 1.5px solid #e2e8f0;
-    text-decoration: none; cursor: pointer; transition: all .15s;
-    font-family: 'Inter', sans-serif;
-}
-.btn-cancel:hover { border-color: #94a3b8; color: #334155; background: #f8fafc; }
+        .btn-cancel {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .45rem 1.1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+            background: #fff; color: #64748b; border: 1.5px solid #e2e8f0;
+            text-decoration: none; cursor: pointer; transition: all .15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-cancel:hover { border-color: #94a3b8; color: #334155; background: #f8fafc; }
 
-.btn-save {
-    display: inline-flex; align-items: center; gap: .35rem;
-    padding: .45rem 1.25rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: linear-gradient(135deg, #4ec7d2, #00508f);
-    color: #fff; border: none; cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,80,143,.25);
-    transition: opacity .15s; font-family: 'Inter', sans-serif;
-}
-.btn-save:hover { opacity: .88; }
+        .btn-save {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .45rem 1.25rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+            background: linear-gradient(135deg, #4ec7d2, #00508f);
+            color: #fff; border: none; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,80,143,.25);
+            transition: opacity .15s; font-family: 'Inter', sans-serif;
+        }
+        .btn-save:hover { opacity: .88; }
 
-.btn-delete {
-    display: inline-flex; align-items: center; gap: .35rem;
-    padding: .45rem 1.1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: #fff; color: #ef4444; border: 1.5px solid #fecaca;
-    cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif;
-}
-.btn-delete:hover { background: #fef2f2; border-color: #ef4444; }
+        .btn-delete {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .45rem 1.1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+            background: #fff; color: #ef4444; border: 1.5px solid #fecaca;
+            cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif;
+        }
+        .btn-delete:hover { background: #fef2f2; border-color: #ef4444; }
 
-.frm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-@media(max-width:540px){ .frm-row { grid-template-columns: 1fr; } }
-.frm-group { display: flex; flex-direction: column; }
-</style>
+        .frm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media(max-width:540px){ .frm-row { grid-template-columns: 1fr; } }
+        .frm-group { display: flex; flex-direction: column; }
+    </style>
 @endpush
 
 @section('content')
@@ -226,15 +224,20 @@
                     </button>
 
                     <button type="button" class="btn-delete"
-                            data-route="{{ route('superadmin.cupos_maximos.destroy', $curso->id) }}"
-                            data-message="¿Seguro que deseas eliminar el cupo de {{ addslashes($curso->nombre) }}? Esta acción no se puede deshacer."
-                            data-name="{{ $curso->nombre }}"
-                            onclick="mostrarModalDeleteData(this)">
+                            onclick="sysConfirm('¿Eliminar el cupo de {{ addslashes($curso->nombre) }}? Esta acción no se puede deshacer.', () => document.getElementById('form-delete').submit())">
                         <i class="fas fa-trash-alt"></i> Eliminar
                     </button>
                 </div>
 
             </form>
+
+            {{-- Form oculto para eliminar --}}
+            <form id="form-delete" method="POST"
+                  action="{{ route('superadmin.cupos_maximos.destroy', $curso->id) }}"
+                  style="display:none;">
+                @csrf @method('DELETE')
+            </form>
+
         </div>
     </div>
 

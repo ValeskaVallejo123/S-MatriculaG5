@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Ejecutar la migración.
+     */
     public function up(): void
     {
         Schema::table('matriculas', function (Blueprint $table) {
@@ -17,9 +20,12 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Revertir la migración.
+     */
     public function down(): void
     {
-        Schema::table('matriculas', function (Blueprint $table) {
+       Schema::table('matriculas', function (Blueprint $table) {
             $table->dropForeign(['seccion_id']);
         });
     }

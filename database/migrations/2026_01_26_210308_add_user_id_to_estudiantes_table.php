@@ -19,12 +19,12 @@ return new class extends Migration
                   ->cascadeOnDelete();
         });*/
         Schema::table('estudiantes', function (Blueprint $table) {
-    //$table->unsignedBigInteger('user_id')->nullable()->after('id');
-    $table->foreign('user_id')
-          ->references('id')
-          ->on('users')
-          ->nullOnDelete();
-});
+            $table->unsignedBigInteger('user_id')->nullable()->after('id');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->nullOnDelete();
+        });
     }
 
     /**
@@ -32,9 +32,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('estudiantes', function (Blueprint $table) {
+       Schema::table('estudiantes', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
-            //$table->dropColumn('user_id');
-        });
+            $table->dropColumn('user_id');
+             });
     }
 };

@@ -8,6 +8,6 @@ class PermisoController extends Controller
 {
     public function index()
     {
-        return view('admins.permisos.index');
+        return view('admin.permisos.index');
     }
 }

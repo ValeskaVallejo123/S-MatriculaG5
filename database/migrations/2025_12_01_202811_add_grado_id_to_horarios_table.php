@@ -16,7 +16,7 @@ return new class extends Migration
               ->after('materia_id')
               ->constrained('grados')
               ->onDelete('cascade');
-    });
+   });
 }
 
 public function down(): void

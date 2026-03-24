@@ -42,8 +42,8 @@ class MatriculaController extends Controller
             $buscar = $request->buscar;
             $query->whereHas('estudiante', function ($q) use ($buscar) {
                 $q->where('nombre1',    'like', "%{$buscar}%")
-                  ->orWhere('apellido1','like', "%{$buscar}%")
-                  ->orWhere('dni',      'like', "%{$buscar}%");
+                    ->orWhere('apellido1','like', "%{$buscar}%")
+                    ->orWhere('dni',      'like', "%{$buscar}%");
             });
         }
 
@@ -272,7 +272,7 @@ class MatriculaController extends Controller
                 if ($request->hasFile($campo)) {
                     $archivo    = $request->file($campo);
                     $nombreArch = $campo . '_' . $estudiante->id . '_' . time()
-                                . '.' . $archivo->getClientOriginalExtension();
+                        . '.' . $archivo->getClientOriginalExtension();
                     $documentosRutas[$campo] = $archivo->storeAs($carpeta, $nombreArch, 'public');
                 }
             }

@@ -450,12 +450,6 @@
                                     <option value="inactivo" {{ old('estado', $profesor->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
                                     <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>En Licencia</option>
                                 </select>
-<<<<<<< HEAD
-=======
-                                @error('estado')
-                                    <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
->>>>>>> origin/main
                             </div>
                             @error('estado')
                                 <div class="f-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>

@@ -8,6 +8,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SuperAdminController;
@@ -437,6 +438,22 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/perfil',          [SuperAdminController::class, 'actualizarPerfil'])->name('perfil.actualizar');
         Route::put('/perfil/password', [SuperAdminController::class, 'cambiarPassword'])->name('perfil.password');
 
+        /* --- HISTORIAL Y ESTUDIANTES (SUPERADMIN) --- */
+
+// 1. Ver Historial (El que usa el botón CANCELAR)
+        Route::get('estudiantes/{id}/historial-academico', [EstudianteController::class, 'verHistorialAdmin'])
+            ->name('estudiantes.historial.show');
+
+// 2. Editar Historial (La ruta donde estás ahora)
+        Route::get('estudiantes/{id}/historial-academico/editar', [EstudianteController::class, 'editHistorialAdmin'])
+            ->name('estudiantes.historial.edit');
+
+// 3. Guardar Cambios (El que usa el action del FORMULARIO)
+        Route::put('estudiantes/{id}/historial-academico', [EstudianteController::class, 'updateHistorialAdmin'])
+            ->name('estudiantes.historial.update');
+
+// El resource debe ir después
+        Route::resource('estudiantes', EstudianteController::class);
         Route::get('/cambiarcontrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
         Route::put('/cambiarcontrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
 
@@ -505,11 +522,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
 
         Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
-            Route::get('/',               [SolicitudController::class, 'index'])->name('index');
-            Route::get('/{id}',           [SolicitudController::class, 'show'])->name('show');
-            Route::post('/{id}/aprobar',  [SolicitudController::class, 'aprobar'])->name('aprobar');
-            Route::post('/{id}/rechazar', [SolicitudController::class, 'rechazar'])->name('rechazar');
-            Route::post('/{id}/pendiente',[SolicitudController::class, 'pendiente'])->name('pendiente');
+            Route::get('estudiantes/{id}/historial-academico', [EstudianteController::class, 'verHistorialAdmin'])->name('estudiantes.historial');
+            Route::get('/',                [SolicitudAdminController::class, 'index'])->name('index');
+            Route::get('/{id}',            [SolicitudAdminController::class, 'show'])->name('show');
+            Route::post('/{id}/aprobar',   [SolicitudAdminController::class, 'aprobar'])->name('aprobar');
+            Route::post('/{id}/rechazar',  [SolicitudAdminController::class, 'rechazar'])->name('rechazar');
+            Route::post('/{id}/pendiente', [SolicitudAdminController::class, 'pendiente'])->name('pendiente');
         });
 
         Route::get('/permisos',                              [PadrePermisoController::class, 'index'])->name('permisos.index');
@@ -561,11 +579,9 @@ Route::middleware(['auth'])->group(function () {
     | ESTUDIANTE
     |----------------------------------------------------------------------
     */
-    Route::prefix('estudiante')->name('estudiante.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('estudiante.dashboard.index');
-        })->name('dashboard');
-
+    Route::prefix('estudiante')->name('estudiante.')->middleware('role:estudiante')->group(function () {
+        Route::get('/dashboard',      fn () => view('estudiante.dashboard.index'))->name('dashboard');
+        Route::get('/mi-historial',   [EstudianteController::class,              'historial'])->name('historial');
         Route::get('/mi-horario',     [HorarioController::class,                 'miHorario'])->name('miHorario');
         Route::get('/calificaciones', [MisCalificacionesController::class,       'index'])->name('calificaciones');
         Route::get('/notificaciones', [NotificacionPreferenciaController::class, 'index'])->name('notificaciones.index');
@@ -593,4 +609,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/carga-docente', [CargaDocenteController::class, 'index'])->name('carga-docente.index');
     });
 
+
 }); // fin middleware auth
+

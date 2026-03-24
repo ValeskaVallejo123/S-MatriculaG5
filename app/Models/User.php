@@ -420,4 +420,5 @@ class User extends Authenticatable
             'padre_id'      => $this->padre?->id,
         ];
     }
+
 }
