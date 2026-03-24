@@ -970,5 +970,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 })();
 </script>
+
+{{-- ── Preservar posición del sidebar al navegar entre páginas ── --}}
+<script>
+(function () {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+
+    // Restaurar posición guardada
+    const saved = sessionStorage.getItem('sidebar_scroll');
+    if (saved) sidebar.scrollTop = parseInt(saved, 10);
+
+    // Guardar posición antes de salir de la página
+    window.addEventListener('beforeunload', function () {
+        sessionStorage.setItem('sidebar_scroll', sidebar.scrollTop);
+    });
+})();
+</script>
 </body>
 </html>

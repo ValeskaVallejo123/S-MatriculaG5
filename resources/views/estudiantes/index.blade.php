@@ -4,20 +4,28 @@
 @section('page-title', 'Gestión de Estudiantes')
 
 @section('topbar-actions')
-<div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-    <a href="{{ url()->previous() }}"
-       style="background:white;color:#00508f;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:1.5px solid #00508f;font-size:0.83rem;transition:all .2s;">
-        <i class="fas fa-arrow-left"></i> Volver
+    <a href="{{ route('estudiantes.create') }}" class="est-topbar-btn">
+        <i class="fas fa-plus"></i>
+        <span class="est-btn-text">Agregar Nuevo Estudiante</span>
     </a>
-    <a href="{{ route('estudiantes.create') }}"
-       style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);color:white;padding:.6rem .75rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:none;box-shadow:0 2px 8px rgba(78,199,210,0.3);font-size:0.83rem;">
-        <i class="fas fa-plus"></i> Agregar Nuevo Estudiante
-    </a>
-</div>
 @endsection
 
 @push('styles')
     <style>
+        /* ── Botón topbar responsivo ── */
+        .est-topbar-btn {
+            display: inline-flex; align-items: center; gap: .45rem;
+            background: linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
+            color: white; padding: .5rem .9rem; border-radius: 8px;
+            text-decoration: none; font-weight: 600; font-size: .83rem;
+            box-shadow: 0 2px 8px rgba(78,199,210,0.3); white-space: nowrap;
+        }
+        .est-topbar-btn:hover { opacity: .88; color: white; }
+        @media(max-width: 600px) {
+            .est-btn-text { display: none; }
+            .est-topbar-btn { padding: .5rem .65rem; }
+        }
+
         /* ── Variables ── */
         :root {
             --blue-dark:   #003b73;
