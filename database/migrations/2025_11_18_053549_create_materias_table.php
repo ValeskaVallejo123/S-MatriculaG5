@@ -15,15 +15,15 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->enum('nivel', ['primaria', 'secundaria']); // primaria: 1-6, secundaria: 7-9
             $table->enum('area', [
-                'Matemáticas', 
-                'Español', 
-                'Ciencias Naturales', 
-                'Ciencias Sociales', 
+                'Matemáticas',
+                'Español',
+                'Ciencias Naturales',
+                'Ciencias Sociales',
                 'Educación Física',
                 'Educación Artística',
                 'Inglés',
                 'Informática',
-            
+
             ])->default('Matemáticas');
             $table->boolean('activo')->default(true);
             $table->timestamps();

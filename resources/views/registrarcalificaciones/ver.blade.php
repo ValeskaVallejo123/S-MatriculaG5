@@ -112,7 +112,7 @@
                                         $nota = $calificacion->nota;
                                     @endphp
 
-                                    @if($nota < 60)
+                                    @if($nota < 65)
 
                                         <span class="badge"
                                               style="background:#ffe6e6;color:#7a1a1a;font-size:0.9rem;padding:6px 10px;">
