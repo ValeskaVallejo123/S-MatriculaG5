@@ -340,7 +340,7 @@
                             <i class="fas fa-check-circle"></i> Aprobada
                           </span>
                              @elseif($matricula->estado === 'pendiente')
-                              <form action="{{ route('matriculas.aprobar', $matricula->id) }}" method="POST"
+                              <form action="{{ route('matriculas.confirmar', $matricula->id) }}" method="POST"
                                style="display:inline;">
                                @csrf
                                @method('PATCH')

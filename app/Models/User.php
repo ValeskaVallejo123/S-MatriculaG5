@@ -11,6 +11,9 @@ use App\Models\NotificacionPreferencia;
 use App\Models\Padre;
 use App\Models\Estudiante;
 use App\Models\Profesor;
+use App\Models\AsignacionAcademica;
+use Illuminate\Support\Facades\Schema;
+use App\Models\Observacion; 
 
 /**
  * @method static \App\Models\User|null find($id)
@@ -101,6 +104,11 @@ class User extends Authenticatable
         return Profesor::where('email', $this->email)->first();
     }
 
+
+    public function asignaciones()
+{
+    return $this->hasMany(AsignacionAcademica::class, 'user_id');
+}
     /**
      * NOTA: La tabla `estudiantes` NO tiene columna user_id.
      * Los estudiantes no tienen cuenta propia en users;
@@ -194,7 +202,7 @@ class User extends Authenticatable
     public function infoParaObservaciones(): array
     {
         // Verificamos si la columna existe físicamente en la tabla para evitar el error 1054
-        $tieneColumnaPadre = \Schema::hasColumn('padres', 'user_id');
+        $tieneColumnaPadre = Schema::hasColumn('padres', 'user_id');
 
         return [
             'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
@@ -208,24 +216,25 @@ class User extends Authenticatable
     // =========================================================================
 
     public function infoParaSistema(): array
-    {
-        $tieneColumnaPadre = \Schema::hasColumn('padres', 'user_id');
+{
+    $docente = $this->docente; // usa el accessor ya definido
+    $tieneColumnaPadre = Schema::hasColumn('padres', 'user_id');
 
-        return [
-            'id'            => $this->id,
-            'nombre'        => $this->name,
-            'email'         => $this->email,
-            'rol'           => $this->rol?->nombre,
-            'es_superadmin' => $this->isSuperAdmin(),
-            'es_admin'      => $this->isAdmin(),
-            'es_docente'    => $this->isDocente(),
-            'es_estudiante' => $this->isEstudiante(),
-            'es_padre'      => $this->isPadre(),
-            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
-            'estudiante_id' => null,
-            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
-        ];
-    }
+    return [
+        'id'            => $this->id,
+        'nombre'        => $this->name,
+        'email'         => $this->email,
+        'rol'           => $this->rol?->nombre,
+        'es_superadmin' => $this->isSuperAdmin(),
+        'es_admin'      => $this->isAdmin(),
+        'es_docente'    => $this->isDocente(),
+        'es_estudiante' => $this->isEstudiante(),
+        'es_padre'      => $this->isPadre(),
+        'profesor_id'   => $docente?->id, // ✅ sin query extra
+        'estudiante_id' => null,
+        'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
+    ];
+}
 
     // =========================================================================
     // PERMISOS
@@ -390,6 +399,6 @@ class User extends Authenticatable
             );
         }
 
-        return array_values(array_unique(array_filter($lista)));
+        return array_values(array: array_unique(array_filter($lista)));
     }
 }

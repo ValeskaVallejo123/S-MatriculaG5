@@ -55,7 +55,6 @@ class Matricula extends Model
         return $this->belongsTo(Estudiante::class, 'estudiante_id');
     }
 
-
     public function padre()
     {
         return $this->belongsTo(Padre::class, 'padre_id');

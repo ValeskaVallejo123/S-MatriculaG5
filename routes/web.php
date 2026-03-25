@@ -143,14 +143,16 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('profesor-materia/{id}',    [ProfesorMateriaController::class, 'destroy'])->name('profesor_materia.destroy');
     Route::delete('profesor-materia/asignacion/{id}',      [ProfesorMateriaController::class, 'destroyAsignacion'])->name('profesor_materia.destroyAsignacion');
 
-
+    // routes/web.php — dentro de tu grupo de rutas autenticadas
+Route::post('padres/desvincular', [App\Http\Controllers\PadreController::class, 'desvincular'])
+    ->name('padres.desvincular');
 
     Route::get('/profesor-grado',                    [ProfesorGradoAsignacionController::class, 'index'])->name('profesor_grado.index');
     Route::get('/profesor-grado/{id}/edit',          [ProfesorGradoAsignacionController::class, 'edit'])->name('profesor_grado.edit');
     Route::post('/profesor-grado/{id}',              [ProfesorGradoAsignacionController::class, 'store'])->name('profesor_grado.store');
     Route::delete('/profesor-grado/asignacion/{id}', [ProfesorGradoAsignacionController::class, 'destroy'])->name('profesor_grado.destroy');
 
-    Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar'); // ✅ Agregar aquí
+    Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar'); 
 
     Route::resource('padres', PadreController::class);
 

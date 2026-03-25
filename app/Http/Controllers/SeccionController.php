@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Grado;
 use App\Models\Matricula;
 use App\Models\Seccion;
+use App\Helpers\GradoHelper;
 use Illuminate\Http\Request;
+
 
 class SeccionController extends Controller
 {
@@ -51,8 +53,7 @@ class SeccionController extends Controller
     /** Normaliza cualquier variante al formato canónico */
     public static function normalizarGrado(?string $grado): string
     {
-        if ($grado === null) return 'Sin Grado';
-        return self::GRADO_MAP[$grado] ?? $grado;
+       return GradoHelper::normalizar($grado);
     }
 
     public function index(Request $request)
@@ -60,25 +61,18 @@ class SeccionController extends Controller
         // Todas las secciones de la BD
         $secciones = Seccion::orderBy('grado')->orderBy('nombre')->get();
 
-        $nombresGrado = [
-            1 => '1er Grado', 2 => '2do Grado', 3 => '3er Grado',
-            4 => '4to Grado', 5 => '5to Grado', 6 => '6to Grado',
-            7 => '7mo Grado', 8 => '8vo Grado', 9 => '9no Grado',
-        ];
-
-        $grados = Grado::where('activo', true)
-                    ->orderBy('numero')->get()
-                    ->pluck('numero')->unique()
-                    ->map(fn($n) => $nombresGrado[$n] ?? "{$n}° Grado");
+        
+            $grados = Grado::where('activo', true)->orderBy('numero')->get()->pluck('numero')->unique()
+            ->map(fn($n) => GradoHelper::GRADOS[$n - 1] ?? "{$n}° Grado");
 
         $letras = Seccion::orderBy('nombre')->pluck('nombre')->unique()->values();
 
         // ── Índice de secciones por grado NORMALIZADO ────────────────────────
         // Normaliza TAMBIÉN el lado de secciones.grado para que el match
         // funcione sin importar cómo esté guardado en la BD.
-        $seccionesPorGrado = $secciones->groupBy(
-            fn($s) => self::normalizarGrado($s->grado)
-        );
+       $seccionesPorGrado = $secciones->groupBy(fn($s) =>
+    \App\Helpers\GradoHelper::normalizar($s->grado)
+    );
 
         // ── Query de matrículas ──────────────────────────────────────────────
         $query = Matricula::with(['estudiante', 'seccion'])->whereHas('estudiante');
@@ -93,14 +87,8 @@ class SeccionController extends Controller
         }
 
         if ($request->filled('grado')) {
-            // El filtro envía "1er Grado"; buscamos TODAS sus variantes en BD
-            $gradoBuscado = $request->grado;
-            $variantes    = array_unique(array_merge(
-                array_keys(self::GRADO_MAP, $gradoBuscado),
-                [$gradoBuscado]
-            ));
-            $query->whereHas('estudiante', fn($q) => $q->whereIn('grado', $variantes));
-        }
+    $query->whereHas('estudiante', fn($q) => $q->where('grado', $request->grado));
+}
 
         if ($request->filled('estado')) {
             if ($request->estado === 'sin_asignar') {
@@ -117,22 +105,23 @@ class SeccionController extends Controller
         $conSeccion = Matricula::whereNotNull('seccion_id')->count();
         $sinSeccion = Matricula::whereNull('seccion_id')->count();
 
-        $gradosSecciones = Seccion::with(['matriculas.estudiante'])
-                            ->orderBy('grado')->orderBy('nombre')
-                            ->get()->groupBy('grado');
+       $gradosSecciones = Seccion::with(['matriculas.estudiante'])
+    ->orderBy('grado')
+    ->orderBy('nombre')
+    ->get()
+    ->groupBy(fn($s) => GradoHelper::normalizar($s->grado));
 
         // Agrupar con grado NORMALIZADO → claves "1er Grado", "2do Grado", etc.
-        $matriculasSinSeccionPorGrado = Matricula::with('estudiante')
-                            ->whereNull('seccion_id')->get()
-                            ->groupBy(fn($m) => self::normalizarGrado($m->estudiante->grado ?? null));
-
-        $gradoMap = self::GRADO_MAP;
+       $matriculasSinSeccionPorGrado = Matricula::with('estudiante')
+        ->whereNull('seccion_id')->get()
+        ->groupBy(fn($m) => GradoHelper::normalizar($m->estudiante->grado ?? null));
 
         return view('secciones.index', compact(
-            'matriculas', 'secciones', 'grados', 'letras',
-            'gradosSecciones', 'matriculasSinSeccionPorGrado',
-            'conSeccion', 'sinSeccion', 'gradoMap', 'seccionesPorGrado'
-        ));
+        'matriculas', 'secciones', 'grados', 'letras',
+        'gradosSecciones', 'matriculasSinSeccionPorGrado',
+        'conSeccion', 'sinSeccion', 'seccionesPorGrado'
+    ));
+        //$gradoMap = self::GRADO_MAP;
     }
 
     public function create()

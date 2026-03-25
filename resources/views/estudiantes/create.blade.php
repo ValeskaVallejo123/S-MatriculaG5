@@ -166,7 +166,20 @@ textarea.form-control {
 
         <form action="{{ route('estudiantes.store') }}" method="POST">
             @csrf
-
+        @if ($errors->any())
+    <div style="padding:1rem 1.7rem 0;">
+        <div style="background:#fef2f2; border:1px solid #fca5a5;
+                    border-radius:10px; padding:.9rem 1.1rem;
+                    color:#991b1b; font-size:.83rem;">
+            <strong>Errores:</strong>
+            <ul style="margin:.3rem 0 0 1rem;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif
             {{-- ══════════════════════════════════════
                  SECCIÓN 1 · INFORMACIÓN PERSONAL
             ══════════════════════════════════════ --}}

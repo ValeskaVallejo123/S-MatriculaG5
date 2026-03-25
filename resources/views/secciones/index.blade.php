@@ -163,17 +163,19 @@
                                     <th class="th-style">Grado</th>
                                     <th class="th-style">Sección actual</th>
                                     <th class="th-style">Asignar sección</th>
-                                    <th class="th-style text-center">Modal</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($matriculas as $matricula)
 
-                                {{-- Normalizar UNA vez, usado en dropdown e modal --}}
+                                {{-- Normalizar UNA vez, usado en dropdown --}}
                                 @php
-                                    $gradoNorm    = \App\Http\Controllers\SeccionController::normalizarGrado($matricula->estudiante->grado);
-                                    $secsDelGrado = $seccionesPorGrado[$gradoNorm] ?? collect();
-                                @endphp
+    $gradoNorm = \App\Helpers\GradoHelper::normalizar($matricula->estudiante->grado);
+
+    $secsDelGrado = $secciones->filter(function($s) use ($gradoNorm) {
+        return \App\Helpers\GradoHelper::normalizar($s->grado) === $gradoNorm;
+    });
+@endphp
 
                                 <tr class="matricula-row">
                                     <td>
@@ -236,88 +238,11 @@
                                             </button>
                                         </form>
                                     </td>
-
-                                    {{-- Botón modal ──────────────────────────────────────────────────── --}}
-                                    <td class="text-center">
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-modal"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalAsignar{{ $matricula->id }}"
-                                                title="{{ $matricula->seccion ? 'Cambiar sección' : 'Asignar sección' }}">
-                                            <i class="fas {{ $matricula->seccion ? 'fa-exchange-alt' : 'fa-user-check' }}"></i>
-                                        </button>
-                                    </td>
                                 </tr>
-
-                                {{-- Modal por fila ───────────────────────────────────────────────────── --}}
-                                <div class="modal fade" id="modalAsignar{{ $matricula->id }}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content modal-custom">
-                                            <div class="modal-header modal-header-custom">
-                                                <h5 class="modal-title text-white">
-                                                    <i class="fas fa-user-check me-2"></i>Asignar Sección
-                                                </h5>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <form action="{{ route('secciones.asignar') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="matricula_id" value="{{ $matricula->id }}">
-                                                <div class="modal-body p-4">
-                                                    <div class="mb-3">
-                                                        <label class="form-label fw-semibold" style="color:#003b73;">
-                                                            <i class="fas fa-user me-1"></i>Alumno
-                                                        </label>
-                                                        <input type="text" class="form-control"
-                                                               value="{{ $matricula->estudiante->nombre1 }} {{ $matricula->estudiante->apellido1 }}"
-                                                               disabled style="background:#f8f9fa; border-radius:8px;">
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label fw-semibold" style="color:#003b73;">
-                                                            <i class="fas fa-graduation-cap me-1"></i>Grado
-                                                        </label>
-                                                        <input type="text" class="form-control"
-                                                               value="{{ $matricula->estudiante->grado }}"
-                                                               disabled style="background:#f8f9fa; border-radius:8px;">
-                                                    </div>
-                                                    <div class="mb-1">
-                                                        <label class="form-label fw-semibold" style="color:#003b73;">
-                                                            <i class="fas fa-chalkboard me-1"></i>Sección *
-                                                        </label>
-                                                        <select name="seccion_id" class="form-select" required
-                                                                style="border-radius:8px; border:1.5px solid #e0e0e0;">
-                                                            <option value="">— Seleccione una sección —</option>
-                                                            @foreach($secsDelGrado as $sec)
-                                                                <option value="{{ $sec->id }}"
-                                                                    {{ $matricula->seccion_id == $sec->id ? 'selected' : '' }}>
-                                                                    {{ $sec->grado }} — Sección {{ $sec->nombre }}
-                                                                    ({{ $sec->cupo_disponible }} cupos)
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                        @if($secsDelGrado->isEmpty())
-                                                        <small class="text-warning d-block mt-1">
-                                                            <i class="fas fa-exclamation-triangle me-1"></i>
-                                                            No hay secciones para el grado "{{ $matricula->estudiante->grado }}".
-                                                        </small>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer" style="border-top:1px solid #e0e0e0; padding:1rem 1.5rem;">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius:8px;">
-                                                        <i class="fas fa-times"></i> Cancelar
-                                                    </button>
-                                                    <button type="submit" class="btn btn-confirmar">
-                                                        <i class="fas fa-check"></i> Confirmar
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
+                                    <td colspan="5" class="text-center py-5 text-muted">
                                         <i class="fas fa-inbox fa-2x d-block mb-2 opacity-50"></i>
                                         No hay matrículas que coincidan con los filtros.
                                     </td>
@@ -446,7 +371,6 @@
                                     <div class="card-footer border-0 p-3"
                                          style="background:#f8fafc; border-top:1px solid #e8f0f8;">
                                         @if($seccion->cupo_disponible > 0)
-                                        {{-- $grado es la clave del groupBy (secciones.grado, ya normalizado) --}}
                                         @php
                                             $gradoNormSec      = \App\Http\Controllers\SeccionController::normalizarGrado($grado);
                                             $alumnosSinSeccion = $matriculasSinSeccionPorGrado[$gradoNormSec] ?? collect();
@@ -584,8 +508,6 @@
 .badge-sin-asignar { background:rgba(255,193,7,0.12); color:#b45309; border:1px solid #ffc107; padding:0.28rem 0.6rem; border-radius:20px; font-size:0.74rem; font-weight:600; }
 .btn-guardar { width:32px; height:32px; border-radius:7px; flex-shrink:0; background:linear-gradient(135deg,#4ec7d2,#00508f); color:white; border:none; font-size:0.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
 .btn-guardar:hover { transform:scale(1.08); box-shadow:0 3px 10px rgba(0,80,143,0.3); }
-.btn-outline-modal { border:1.5px solid #00508f; color:#00508f; background:white; border-radius:7px; padding:0.3rem 0.6rem; font-size:0.8rem; transition:all .2s; }
-.btn-outline-modal:hover { background:#00508f; color:white; }
 .modal-custom { border-radius:12px; border:none; box-shadow:0 4px 24px rgba(0,0,0,0.15); }
 .modal-header-custom { background:linear-gradient(135deg,#4ec7d2,#00508f); border-radius:12px 12px 0 0; border:none; }
 .btn-confirmar { background:linear-gradient(135deg,#4ec7d2,#00508f); color:white; border:none; border-radius:8px; padding:0.5rem 1.2rem; font-weight:600; box-shadow:0 2px 8px rgba(78,199,210,0.3); transition:all .2s; }
