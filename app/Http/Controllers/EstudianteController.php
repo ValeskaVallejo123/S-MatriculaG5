@@ -282,9 +282,3 @@ class EstudianteController extends Controller
         return back()->with('success', 'Notificación marcada como leída.');
     }
 }
-
-
-
-
-
-

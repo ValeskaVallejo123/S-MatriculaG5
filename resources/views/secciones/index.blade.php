@@ -205,7 +205,6 @@
                                     <td>
                                         @if($matricula->seccion)
                                             <span class="badge-seccion-ok">
-                                                <i class="fas fa-chalkboard me-1"></i>
                                                 {{ $matricula->seccion->grado }} — {{ $matricula->seccion->nombre }}
                                             </span>
                                         @else

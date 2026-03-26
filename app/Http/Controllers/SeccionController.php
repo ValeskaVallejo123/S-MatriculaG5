@@ -57,72 +57,81 @@ class SeccionController extends Controller
     }
 
     public function index(Request $request)
-    {
-        // Todas las secciones de la BD
-        $secciones = Seccion::orderBy('grado')->orderBy('nombre')->get();
-
-        
-            $grados = Grado::where('activo', true)->orderBy('numero')->get()->pluck('numero')->unique()
-            ->map(fn($n) => GradoHelper::GRADOS[$n - 1] ?? "{$n}° Grado");
-
-        $letras = Seccion::orderBy('nombre')->pluck('nombre')->unique()->values();
-
-        // ── Índice de secciones por grado NORMALIZADO ────────────────────────
-        // Normaliza TAMBIÉN el lado de secciones.grado para que el match
-        // funcione sin importar cómo esté guardado en la BD.
-       $seccionesPorGrado = $secciones->groupBy(fn($s) =>
-    \App\Helpers\GradoHelper::normalizar($s->grado)
+{
+    // ── DEBUG TEMPORAL — quitar después ─────────────────────────────────
+    $debugSecs = Seccion::orderBy('grado')->orderBy('nombre')->get();
+    \Illuminate\Support\Facades\Log::debug('=== SECCIONES EN BD ===', 
+        $debugSecs->map(fn($s) => [
+            'id'          => $s->id,
+            'grado_raw'   => $s->getRawOriginal('grado'),
+            'grado_norm'  => $s->grado,
+            'nombre'      => $s->nombre,
+        ])->toArray()
     );
+    \Illuminate\Support\Facades\Log::debug('=== GRADOS ACTIVOS EN BD ===',
+        Grado::where('activo', true)
+            ->get(['id','numero','seccion','activo'])
+            ->toArray()
+    );
+    // ── FIN DEBUG ────────────────────────────────────────────────────────
+    
+    $secciones = Seccion::orderBy('grado')->orderBy('nombre')->get();
 
-        // ── Query de matrículas ──────────────────────────────────────────────
-        $query = Matricula::with(['estudiante', 'seccion'])->whereHas('estudiante');
+    $grados = Grado::where('activo', true)->orderBy('numero')->get()->pluck('numero')->unique()
+        ->map(fn($n) => GradoHelper::GRADOS[$n - 1] ?? "{$n}° Grado");
 
-        if ($request->filled('buscar')) {
-            $buscar = $request->buscar;
-            $query->whereHas('estudiante', function ($q) use ($buscar) {
-                $q->where('nombre1',   'like', "%{$buscar}%")
-                  ->orWhere('apellido1', 'like', "%{$buscar}%")
-                  ->orWhere('dni',       'like', "%{$buscar}%");
-            });
+    $letras = Seccion::orderBy('nombre')->pluck('nombre')->unique()->values();
+
+    $seccionesPorGrado = $secciones->groupBy(fn($s) =>
+    GradoHelper::normalizar($s->grado)
+);
+
+    $query = Matricula::with(['estudiante', 'seccion'])->whereHas('estudiante');
+
+    if ($request->filled('buscar')) {
+        $buscar = $request->buscar;
+        $query->whereHas('estudiante', function ($q) use ($buscar) {
+            $q->where('nombre1',    'like', "%{$buscar}%")
+              ->orWhere('apellido1', 'like', "%{$buscar}%")
+              ->orWhere('dni',       'like', "%{$buscar}%");
+        });
+    }
+
+    if ($request->filled('grado')) {
+        $query->whereHas('estudiante', fn($q) => $q->where('grado', $request->grado));
+    }
+
+    if ($request->filled('estado')) {
+        if ($request->estado === 'sin_asignar') {
+            $query->whereNull('seccion_id');
+        } elseif ($request->estado === 'asignada') {
+            $query->whereNotNull('seccion_id');
+        } else {
+            $query->where('seccion_id', $request->estado);
         }
+    }
 
-        if ($request->filled('grado')) {
-    $query->whereHas('estudiante', fn($q) => $q->where('grado', $request->grado));
-}
+    $matriculas = $query->paginate(20);
 
-        if ($request->filled('estado')) {
-            if ($request->estado === 'sin_asignar') {
-                $query->whereNull('seccion_id');
-            } elseif ($request->estado === 'asignada') {
-                $query->whereNotNull('seccion_id');
-            } else {
-                $query->where('seccion_id', $request->estado);
-            }
-        }
+    $conSeccion = Matricula::whereNotNull('seccion_id')->count();
+    $sinSeccion = Matricula::whereNull('seccion_id')->count();
 
-        $matriculas = $query->paginate(20);
+    $gradosSecciones = Seccion::with(['matriculas.estudiante'])
+        ->orderBy('grado')
+        ->orderBy('nombre')
+        ->get()
+        ->groupBy(fn($s) => GradoHelper::normalizar($s->grado));
 
-        $conSeccion = Matricula::whereNotNull('seccion_id')->count();
-        $sinSeccion = Matricula::whereNull('seccion_id')->count();
-
-       $gradosSecciones = Seccion::with(['matriculas.estudiante'])
-    ->orderBy('grado')
-    ->orderBy('nombre')
-    ->get()
-    ->groupBy(fn($s) => GradoHelper::normalizar($s->grado));
-
-        // Agrupar con grado NORMALIZADO → claves "1er Grado", "2do Grado", etc.
-       $matriculasSinSeccionPorGrado = Matricula::with('estudiante')
+    $matriculasSinSeccionPorGrado = Matricula::with('estudiante')
         ->whereNull('seccion_id')->get()
         ->groupBy(fn($m) => GradoHelper::normalizar($m->estudiante->grado ?? null));
 
-        return view('secciones.index', compact(
+    return view('secciones.index', compact(
         'matriculas', 'secciones', 'grados', 'letras',
         'gradosSecciones', 'matriculasSinSeccionPorGrado',
         'conSeccion', 'sinSeccion', 'seccionesPorGrado'
     ));
-        //$gradoMap = self::GRADO_MAP;
-    }
+}
 
     public function create()
     {

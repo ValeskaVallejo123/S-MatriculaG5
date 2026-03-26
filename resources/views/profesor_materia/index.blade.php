@@ -5,7 +5,7 @@
 @section('page-title', 'Asignación de Maestros')
 
 @section('content')
-    <div class="container" style="max-width: 1400px;">
+<div class="container" style="max-width: 1400px;">
 
         {{-- Barra de búsqueda y resumen --}}
         <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px;">
@@ -36,6 +36,33 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #4ec7d2 !important;">
+                <div class="card-body p-3 d-flex align-items-center gap-3">
+                    <div style="width:42px;height:42px;background:rgba(78,199,210,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-list-alt" style="color:#4ec7d2;"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted">Total asignaciones</div>
+                        <div class="fw-bold fs-4" style="color:#4ec7d2;">{{ $totalAsignaciones }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #003b73 !important;">
+                <div class="card-body p-3 d-flex align-items-center gap-3">
+                    <div style="width:42px;height:42px;background:rgba(0,59,115,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-school" style="color:#003b73;"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted">Grupos cubiertos</div>
+                        <div class="fw-bold fs-4" style="color:#003b73;">{{ $asignaciones->sum(fn($g) => $g->count()) }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
         {{-- Tabla de Asignaciones --}}
         <div class="card border-0 shadow-sm" style="border-radius: 10px;">

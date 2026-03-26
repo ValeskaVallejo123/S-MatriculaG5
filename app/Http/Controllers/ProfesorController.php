@@ -25,7 +25,7 @@ class ProfesorController extends Controller
             ->when($busqueda, function ($query, $busqueda) {
                 $query->where(function ($q) use ($busqueda) {
                     $q->where('nombre', 'like', "%{$busqueda}%")
-                        ->orWhere('apellido', 'like', "%{$busqueda}%")
+                        ->orWhere(column: 'apellido', 'like', "%{$busqueda}%")
                         ->orWhere('dni', 'like', "%{$busqueda}%")
                         ->orWhere('email', 'like', "%{$busqueda}%")
                         ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
