@@ -2,118 +2,156 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Documento;
 use Illuminate\Http\Request;
+use App\Models\Documento;
+use App\Models\Estudiante;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentoController extends Controller
 {
+    /**
+     * Muestra la lista de documentos con sus estudiantes relacionados.
+     */
     public function index()
     {
-        $documentos = Documento::all();
-        return view('Documentos.indexDocumento', compact('documentos'));
+        $estudiantes = Estudiante::all();
+        $documentos = Documento::with('estudiante')->get();
+       return view('Documentos.indexDocumento', compact('documentos', 'estudiantes'));
+
+        
     }
 
+    /**
+     * Muestra el formulario para crear un nuevo expediente.
+     */
     public function create()
     {
-        return view('Documentos.createDocumento');
+        $estudiantes = Estudiante::all();
+        return view('Documentos.createDocumento', compact('estudiantes'));
     }
 
+    /**
+     * Guarda el expediente y los archivos físicos en el storage.
+     */
     public function store(Request $request)
     {
-        // Validación de datos y archivos
+        // 1. Validación estricta de archivos y relación
         $request->validate([
-            'nombre_estudiante' => 'required|string|max:255',
-            'acta_nacimiento'   => 'required|file|mimes:jpg,png,pdf|max:5120', // 5 MB
-            'calificaciones'    => 'required|file|mimes:jpg,png,pdf|max:5120',
+            'estudiante_id'    => 'required|exists:estudiantes,id',
+            'foto'             => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'acta_nacimiento'  => 'nullable|file|mimes:pdf,jpg,png|max:5120',
+            'calificaciones'   => 'nullable|file|mimes:pdf,jpg,png|max:5120',
         ]);
 
-        // Guardar archivos en carpetas separadas
-        $actaPath = $request->file('acta_nacimiento')->store('documentos/actas', 'public');
-        $calificacionesPath = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
+        $documento = new Documento();
+        $documento->estudiante_id = $request->estudiante_id;
 
-        Documento::create([
-            'nombre_estudiante' => $request->nombre_estudiante,
-            'acta_nacimiento'   => $actaPath,
-            'calificaciones'    => $calificacionesPath,
-        ]);
+        // 2. Procesamiento de archivos (Usa el disco 'public')
+        if ($request->hasFile('foto')) {
+            $documento->foto = $request->file('foto')->store('expedientes/fotos', 'public');
+        }
 
-        return redirect()->route('documentos.index')->with('success', 'Documentos guardados correctamente.');
+        if ($request->hasFile('acta_nacimiento')) {
+            $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('expedientes/actas', 'public');
+        }
+
+        if ($request->hasFile('calificaciones')) {
+            $documento->calificaciones = $request->file('calificaciones')->store('expedientes/notas', 'public');
+        }
+
+        $documento->save();
+
+        return redirect()->route('documentos.index')
+            ->with('success', 'Expediente creado y documentos guardados correctamente.');
     }
 
+    /**
+     * Muestra el formulario de edición.
+     */
     public function edit($id)
     {
         $documento = Documento::findOrFail($id);
-        return view('Documentos.editDocumento', compact('documento'));
+        $estudiantes = Estudiante::all();
+        return view('Documentos.editDocumento', compact('documento', 'estudiantes'));
     }
 
+    /**
+     * Actualiza el expediente y reemplaza archivos si es necesario.
+     */
     public function update(Request $request, $id)
     {
         $documento = Documento::findOrFail($id);
 
-        // Validación: archivos opcionales pero con restricciones
         $request->validate([
-            'nombre_estudiante' => 'required|string|max:255',
-            'acta_nacimiento'   => 'nullable|file|mimes:jpg,png,pdf|max:5120',
-            'calificaciones'    => 'nullable|file|mimes:jpg,png,pdf|max:5120',
-            'acta_nacimiento' => 'required|file|mimes:jpg,png,pdf|max:5120', // 5 MB
-            'calificaciones'  => 'required|file|mimes:jpg,png,pdf|max:5120',
-
-
+            'estudiante_id'    => 'required|exists:estudiantes,id',
+            'foto'             => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'acta_nacimiento'  => 'nullable|file|mimes:pdf,jpg,png|max:5120',
+            'calificaciones'   => 'nullable|file|mimes:pdf,jpg,png|max:5120',
         ]);
 
-        // Actualizar acta si se sube un nuevo archivo
+        $documento->estudiante_id = $request->estudiante_id;
+
+        // Actualizar Foto (y eliminar la anterior para no llenar el servidor de basura)
+        if ($request->hasFile('foto')) {
+            if ($documento->foto) {
+                Storage::disk('public')->delete($documento->foto);
+            }
+            $documento->foto = $request->file('foto')->store('expedientes/fotos', 'public');
+        }
+
+        // Actualizar Acta
         if ($request->hasFile('acta_nacimiento')) {
             if ($documento->acta_nacimiento) {
                 Storage::disk('public')->delete($documento->acta_nacimiento);
             }
-            $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('documentos/actas', 'public');
+            $documento->acta_nacimiento = $request->file('acta_nacimiento')->store('expedientes/actas', 'public');
         }
 
-        // Actualizar calificaciones si se sube un nuevo archivo
-        if ($request->hasFile('calificaciones')) {
-            if ($documento->calificaciones) {
-                Storage::disk('public')->delete($documento->calificaciones);
-            }
-            $documento->calificaciones = $request->file('calificaciones')->store('documentos/calificaciones', 'public');
-        }
-
-        $documento->nombre_estudiante = $request->nombre_estudiante;
         $documento->save();
 
-        return redirect()->route('documentos.index')->with('success', 'Documentos actualizados correctamente.');
+        return redirect()->route('documentos.index')
+            ->with('success', 'Expediente actualizado correctamente.');
+    }
+    public function show(Documento $documento, Request $request)
+    {
+        // 1. Recibimos el tipo de archivo por la URL (ej: ?tipo=foto)
+        $tipo = $request->query('tipo');
+
+        // 2. Mapeamos el tipo con la columna real de la tabla 'documentos'
+        $path = match($tipo) {
+            'foto'            => $documento->foto,
+            'acta'            => $documento->acta_nacimiento,
+            'calificaciones'  => $documento->calificaciones,
+            default           => null
+        };
+
+        // 3. Verificamos si existe la ruta y el archivo físico
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            return back()->with('error', 'El archivo solicitado no existe o no ha sido cargado.');
+        }
+
+        // 4. Servimos el archivo directamente al navegador
+        $fullPath = Storage::disk('public')->path($path);
+        return response()->file($fullPath);
     }
 
+    /**
+     * Elimina el registro y sus archivos físicos.
+     */
     public function destroy($id)
     {
         $documento = Documento::findOrFail($id);
 
-        // Eliminar archivos del storage
-        Storage::disk('public')->delete([$documento->acta_nacimiento, $documento->calificaciones]);
+        // Borrar archivos del storage antes de eliminar el registro
+        Storage::disk('public')->delete([
+            $documento->foto,
+            $documento->acta_nacimiento,
+            $documento->calificaciones
+        ]);
+
         $documento->delete();
 
-        return redirect()->route('documentos.index')->with('success', 'Documentos eliminados correctamente.');
+        return redirect()->route('documentos.index')
+            ->with('success', 'Expediente eliminado por completo.');
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

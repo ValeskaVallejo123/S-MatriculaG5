@@ -1,149 +1,83 @@
 @extends('layouts.app')
 
-@section('title', 'Subir Documentos')
-
 @section('content')
-    <div class="max-w-4xl mx-auto my-10">
-        <div class="bg-white rounded-lg shadow p-8">
-            <h1 class="text-3xl font-bold mb-6 text-gray-800"><i class="bi bi-file-earmark-arrow-up"></i> Subir Documentos del Estudiante</h1>
+    <div class="container py-5" style="max-width: 900px;">
+        <div class="card shadow-sm border-0" style="border-radius: 12px;">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="fas fa-folder-plus me-2"></i>Subir Nuevo Expediente Digital
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                {{-- Formulario apuntando al método store del controlador --}}
+                <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
 
-            <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                @csrf
+                    {{-- Selección de Estudiante --}}
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-primary">Seleccionar Estudiante *</label>
+                        <select name="estudiante_id" id="estudiante_id" required
+                                class="form-select @error('estudiante_id') is-invalid @enderror"
+                                style="border: 2px solid #bfd9ea; border-radius: 8px; height: 45px;">
+                            <option value="" selected disabled>Seleccione al alumno de la lista...</option>
 
-                <!-- Información del Estudiante -->
-                <div class="border-b pb-4">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Información del Estudiante</h2>
+                            @forelse($estudiantes as $est)
+                                <option value="{{ $est->id }}" {{ old('estudiante_id') == $est->id ? 'selected' : '' }}>
+                                    {{-- Usamos las columnas nombre1, nombre2, apellido1, apellido2 --}}
+                                    {{ $est->nombre1 }} {{ $est->nombre2 }} {{ $est->apellido1 }} {{ $est->apellido2 }}
+                                </option>
+                            @empty
+                                <option value="" disabled>⚠️ No hay estudiantes registrados en el sistema</option>
+                            @endforelse
+                        </select>
+                        @error('estudiante_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold mb-2">Nombre del Estudiante *</label>
-                            <input
-                                type="text"
-                                name="nombre_estudiante"
-                                value="{{ old('nombre_estudiante') }}"
-                                class="w-full px-4 py-2 border rounded @error('nombre_estudiante') border-red-500 @enderror"
-                                required
-                            >
-                            @error('nombre_estudiante')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                    <div class="row g-3 mb-4">
+                        {{-- Foto del Estudiante --}}
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Foto Estudiante (JPG/PNG) *</label>
+                            <input type="file" name="foto" class="form-control @error('foto') is-invalid @enderror"
+                                   accept="image/*" required style="border: 2px solid #bfd9ea;">
+                            @error('foto') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Acta de Nacimiento --}}
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Acta Nacimiento (PDF/JPG)</label>
+                            <input type="file" name="acta_nacimiento" class="form-control"
+                                   accept=".pdf,.jpg,.png" required style="border: 2px solid #bfd9ea;">
+                        </div>
+
+                        {{-- Calificaciones --}}
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Calificaciones (PDF/JPG)</label>
+                            <input type="file" name="calificaciones" class="form-control"
+                                   accept=".pdf,.jpg,.png" required style="border: 2px solid #bfd9ea;">
                         </div>
                     </div>
-                </div>
 
-                <!-- Archivos -->
-                <div class="border-b pb-4">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Documentos</h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold mb-2">Acta de Nacimiento *</label>
-                            <input
-                                type="file"
-                                name="acta_nacimiento"
-                                id="acta_nacimiento"
-                                accept=".jpg,.png,.pdf"
-                                class="w-full px-4 py-2 border rounded @error('acta_nacimiento') border-red-500 @enderror"
-                                required
-                            >
-                            <p class="text-gray-500 text-sm mt-1">JPG, PNG o PDF (máx. 5 MB)</p>
-                            @error('acta_nacimiento')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label class="block font-semibold mb-2">Calificaciones *</label>
-                            <input
-                                type="file"
-                                name="calificaciones"
-                                id="calificaciones"
-                                accept=".jpg,.png,.pdf"
-                                class="w-full px-4 py-2 border rounded @error('calificaciones') border-red-500 @enderror"
-                                required
-                            >
-                            <p class="text-gray-500 text-sm mt-1">JPG, PNG o PDF (máx. 5 MB)</p>
-                            @error('calificaciones')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary py-3 fw-bold shadow-sm"
+                                style="background: linear-gradient(to right, #4ec7d2, #00508f); border: none; border-radius: 8px;">
+                            <i class="fas fa-cloud-upload-alt me-2"></i>GUARDAR EXPEDIENTE
+                        </button>
+                        <a href="{{ route('documentos.index') }}" class="btn btn-light border py-2 fw-bold" style="border-radius: 8px;">
+                            CANCELAR
+                        </a>
                     </div>
-                </div>
-
-                <!-- Botones -->
-                <div class="flex gap-4 pt-4">
-                    <button type="submit" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">
-                        Subir Documentos
-                    </button>
-                    <a href="{{ route('documentos.index') }}" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center leading-[3rem]">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
-    {{-- Validación frontend de archivos --}}
+    {{-- Script para asegurar que el selector funcione si usas librerías de terceros --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                const maxSize = 5 * 1024 * 1024;
-                const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-
-                const acta = document.getElementById('acta_nacimiento').files[0];
-                const calif = document.getElementById('calificaciones').files[0];
-
-                let errorMessage = '';
-
-                if (acta && (!allowedTypes.includes(acta.type) || acta.size > maxSize)) {
-                    errorMessage = 'El Acta de Nacimiento debe ser JPG, PNG o PDF y no superar 5 MB.';
-                } else if (calif && (!allowedTypes.includes(calif.type) || calif.size > maxSize)) {
-                    errorMessage = 'Las Calificaciones deben ser JPG, PNG o PDF y no superar 5 MB.';
-                }
-
-                if (errorMessage) {
-                    e.preventDefault();
-                    alert(errorMessage); // Puedes reemplazar por modal si quieres
-                }
-            });
+        document.addEventListener("DOMContentLoaded", function() {
+            var select = document.getElementById('estudiante_id');
+            if (window.jQuery && jQuery.fn.select2) {
+                $(select).select2('destroy');
+            }
         });
     </script>
-
-    <style>
-        body {
-            background-color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        input[type="file"] {
-            padding: 0.5rem 0.5rem;
-        }
-    </style>
 @endsection
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
