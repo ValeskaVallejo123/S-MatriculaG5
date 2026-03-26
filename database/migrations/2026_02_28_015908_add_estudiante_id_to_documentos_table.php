@@ -6,24 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up()
-{
-   Schema::table('documentos', function (Blueprint $table) {
-        $table->foreignId('estudiante_id')->nullable()->after('id')
-              ->constrained('estudiantes')->onDelete('cascade');
-    });
-}
+    public function up(): void
+    {
+        // La columna estudiante_id y su foreign key ya existen en documentos
+        // No se requiere ninguna acción
+    }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('documentos', function (Blueprint $table) {
-            //
-        });
+        // Nada que revertir
     }
 };

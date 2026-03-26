@@ -19,13 +19,6 @@
                   text-decoration:none;border:1.5px solid #ef4444;transition:all .2s;">
             <i class="fas fa-file-pdf"></i> Exportar PDF
         </a>
-        <a href="{{ url()->previous() }}"
-           style="background:white;color:#00508f;
-                  padding:.6rem .75rem;border-radius:9px;font-size:.83rem;font-weight:600;
-                  display:inline-flex;align-items:center;gap:.4rem;
-                  text-decoration:none;border:1.5px solid #00508f;transition:all .2s;">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
     </div>
 @endsection
 
@@ -220,6 +213,21 @@
                         </thead>
                         <tbody>
                             @foreach($horas as $hora)
+                                @if(str_starts_with($hora, 'RECREO'))
+                                <tr>
+                                    <td class="td-hora" style="color:#1d4ed8;background:linear-gradient(135deg,rgba(219,234,254,.6),rgba(147,197,253,.3));">
+                                        <i class="fas fa-coffee" style="color:#3b82f6;margin-right:.3rem;"></i>
+                                        {{ str_replace('RECREO ', '', $hora) }}
+                                    </td>
+                                    <td colspan="{{ count($dias) }}"
+                                        style="background:linear-gradient(135deg,rgba(219,234,254,.5),rgba(147,197,253,.2));
+                                               text-align:center;font-size:.78rem;font-weight:800;
+                                               color:#1d4ed8;letter-spacing:.25em;
+                                               border:1px solid #bfdbfe;">
+                                        R &nbsp; E &nbsp; C &nbsp; R &nbsp; E &nbsp; O
+                                    </td>
+                                </tr>
+                                @else
                                 <tr>
                                     <td class="td-hora">
                                         <i class="fas fa-circle"
@@ -251,6 +259,7 @@
                                         </td>
                                     @endforeach
                                 </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>

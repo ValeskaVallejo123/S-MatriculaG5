@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Solicitud;
 use App\Models\Estudiante;
+use App\Models\Matricula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -112,27 +113,35 @@ class SolicitudController extends Controller
     }
 
     /**
-     * Consultar por DNI (método antiguo - redirige al nuevo login)
+     * Consultar por DNI del estudiante — busca en solicitudes y matrículas
      */
     public function consultarPorDNI(Request $request)
     {
         $request->validate([
-            'dni' => 'required',
+            'dni' => 'required|string',
         ]);
 
-        // Buscar solicitud por DNI del estudiante
-        $solicitud = Solicitud::whereHas('estudiante', function($query) use ($request) {
-            $query->where('dni', $request->dni);
-        })->first();
+        $dni = trim($request->dni);
 
+        // 1. Buscar en solicitudes (flujo antiguo)
+        $solicitud = Solicitud::with('estudiante')
+            ->whereHas('estudiante', fn($q) => $q->where('dni', $dni))
+            ->latest()
+            ->first();
+
+        // 2. Buscar en matrículas (flujo nuevo)
+        $matricula = null;
         if (!$solicitud) {
-            return back()->withErrors([
-                'dni' => 'No se encontró ninguna solicitud con ese DNI'
-            ]);
+            $matricula = Matricula::with(['estudiante', 'padre'])
+                ->whereHas('estudiante', fn($q) => $q->where('dni', $dni))
+                ->latest()
+                ->first();
         }
 
-        // Redirigir al nuevo sistema de login
-        return redirect()->route('padres.login')
-            ->with('info', 'Use su código de matrícula o email para consultar el estado');
+        if (!$solicitud && !$matricula) {
+            return back()->withInput()->with('sin_resultado', true);
+        }
+
+        return view('solicitudes.estado', compact('solicitud', 'matricula', 'dni'));
     }
 }

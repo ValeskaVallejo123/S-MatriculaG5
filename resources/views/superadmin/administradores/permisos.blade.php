@@ -3,11 +3,6 @@
 @section('title', 'Roles y Permisos')
 @section('page-title', 'Roles y Permisos')
 
-@section('topbar-actions')
-    <a href="{{ route('superadmin.administradores.index') }}" class="btn btn-outline-secondary btn-sm">
-        <i class="fas fa-arrow-left me-1"></i> Administradores
-    </a>
-@endsection
 
 @push('styles')
 <style>

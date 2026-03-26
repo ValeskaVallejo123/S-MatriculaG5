@@ -150,50 +150,19 @@ class HorarioController extends Controller
         $user       = Auth::user();
         $estudiante = \App\Models\Estudiante::where('user_id', $user->id)->first();
 
-       if (!$estudiante) {
-    return view('estudiantes.mihorario', [  // ← quitar el guión
-        'horarioGrado' => null,
-        'estudiante'   => null,
-    ]);
-}
+        if (!$estudiante) {
+            return view('estudiantes.mihorario', [
+                'horarioGrado' => null,
+                'estudiante'   => null,
+            ]);
+        }
 
-        $mapaGrados = [
-            'primero'        => ['nivel' => 'primaria',   'numero' => 1],
-            'segundo'        => ['nivel' => 'primaria',   'numero' => 2],
-            'tercero'        => ['nivel' => 'primaria',   'numero' => 3],
-            'cuarto'         => ['nivel' => 'primaria',   'numero' => 4],
-            'quinto'         => ['nivel' => 'primaria',   'numero' => 5],
-            'sexto'          => ['nivel' => 'primaria',   'numero' => 6],
-            '6to grado'      => ['nivel' => 'primaria',   'numero' => 6],
-            'séptimo'        => ['nivel' => 'secundaria', 'numero' => 7],
-            'septimo'        => ['nivel' => 'secundaria', 'numero' => 7],
-            'octavo'         => ['nivel' => 'secundaria', 'numero' => 8],
-            '1ro secundaria' => ['nivel' => 'secundaria', 'numero' => 7],
-            '2do secundaria' => ['nivel' => 'secundaria', 'numero' => 8],
-            '3ro secundaria' => ['nivel' => 'secundaria', 'numero' => 9],
-        ];
-
-        $gradoTexto   = strtolower(trim($estudiante->grado ?? ''));
-        $mapa         = $mapaGrados[$gradoTexto] ?? null;
         $horarioGrado = null;
 
-        if ($mapa) {
-            $grado = \App\Models\Grado::where('nivel', $mapa['nivel'])
-                ->where('numero', $mapa['numero'])
-                ->where('seccion', $estudiante->seccion)
+        if ($estudiante->grado_id) {
+            $horarioGrado = \App\Models\HorarioGrado::where('grado_id', $estudiante->grado_id)
+                ->with('grado')
                 ->first();
-
-            if (!$grado) {
-                $grado = \App\Models\Grado::where('nivel', $mapa['nivel'])
-                    ->where('numero', $mapa['numero'])
-                    ->first();
-            }
-
-            if ($grado) {
-                $horarioGrado = \App\Models\HorarioGrado::where('grado_id', $grado->id)
-                    ->with('grado')
-                    ->first();
-            }
         }
 
         return view('estudiantes.mihorario', compact('horarioGrado', 'estudiante'));

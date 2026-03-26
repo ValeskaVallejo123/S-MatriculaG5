@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ProfesorController extends Controller
 {
@@ -78,10 +80,27 @@ class ProfesorController extends Controller
 
         $validated = array_filter($validated, fn($v) => $v !== null && $v !== '');
 
-        Profesor::create($validated);
+        $profesor = Profesor::create($validated);
+
+        // Crear cuenta de usuario si no existe ya uno con ese email
+        $maestroRolId = DB::table('roles')->where('nombre', 'Maestro')->value('id');
+        if ($maestroRolId && !DB::table('users')->where('email', $profesor->email)->exists()) {
+            DB::table('users')->insert([
+                'name'              => $profesor->nombre . ' ' . $profesor->apellido,
+                'email'             => $profesor->email,
+                'password'          => Hash::make('Docente2025!'),
+                'id_rol'            => $maestroRolId,
+                'activo'            => true,
+                'is_super_admin'    => false,
+                'is_protected'      => false,
+                'email_verified_at' => now(),
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+        }
 
         return redirect()->route('profesores.index')
-            ->with('success', 'Profesor creado exitosamente.');
+            ->with('success', 'Profesor creado exitosamente. Contraseña inicial: Docente2025!');
     }
 
     /**
@@ -142,11 +161,11 @@ class ProfesorController extends Controller
     /**
      * Eliminar profesor
      */
-    public function destroy(Profesor $profesor): RedirectResponse
+    public function destroy(Request $request, Profesor $profesor): RedirectResponse
     {
         $profesor->delete();
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesores.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Profesor eliminado exitosamente.');
     }
 

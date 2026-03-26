@@ -5,10 +5,6 @@
 @section('page-title', 'Calificaciones')
 
 @section('topbar-actions')
-    <a href="{{ route('calificaciones.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
-    </a>
     <a href="{{ route('calificaciones.edit', $calificacion) }}" class="btn fw-semibold ms-2"
        style="background: rgba(78,199,210,0.1); color: #00508f; border: 1.5px solid #4ec7d2; padding: 0.5rem 1.2rem; border-radius: 8px; font-size: 0.9rem;">
         <i class="fas fa-edit me-1"></i> Editar
@@ -108,7 +104,7 @@
     {{-- Eliminar --}}
     <div class="d-flex justify-content-end">
         <form method="POST" action="{{ route('calificaciones.destroy', $calificacion) }}"
-              onsubmit="return confirm('¿Eliminar esta calificación definitivamente?')">
+              data-confirm="¿Eliminar esta calificación definitivamente?">
             @csrf @method('DELETE')
             <button type="submit" class="btn btn-sm fw-semibold"
                     style="background: rgba(244,67,54,0.08); color: #d32f2f; border: 1px solid #ef9a9a; border-radius: 8px; padding: 0.4rem 1rem;">

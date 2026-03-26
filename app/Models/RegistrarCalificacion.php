@@ -9,7 +9,7 @@ class RegistrarCalificacion extends Model
 {
     use HasFactory;
 
-    protected $table = 'registrarcalificaciones';
+    protected $table = 'registro_calificaciones';
 
     protected $fillable = [
         'profesor_id',

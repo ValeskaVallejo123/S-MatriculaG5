@@ -7,6 +7,7 @@ use App\Models\Estudiante;
 use App\Models\Matricula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 class PadreController extends Controller
@@ -26,15 +27,25 @@ class PadreController extends Controller
                 $buscar = $request->buscar;
                 $query->where(function ($q) use ($buscar) {
                     $q->where('nombre', 'like', "%{$buscar}%")
-                        ->orWhere('apellido', 'like', "%{$buscar}%")
-                        ->orWhere('dni', 'like', "%{$buscar}%")
-                        ->orWhere('correo', 'like', "%{$buscar}%");
+                      ->orWhere('apellido', 'like', "%{$buscar}%")
+                      ->orWhere('dni', 'like', "%{$buscar}%")
+                      ->orWhere('correo', 'like', "%{$buscar}%");
                 });
             }
 
             $padres = $query->orderBy('nombre')->paginate($perPage)->withQueryString();
 
-            return view('padre.admin-index', compact('padres'));
+            // ── Conteos globales (sin paginación) ─────────────────────
+            $totalPadres   = Padre::count();
+            $totalActivos  = Padre::where('estado', 1)->count();
+            $totalConHijos = Padre::has('estudiantes')->count();
+
+            return view('padre.admin-index', compact(
+                'padres',
+                'totalPadres',
+                'totalActivos',
+                'totalConHijos'
+            ));
         }
 
         // Vista para padre/tutor
@@ -60,10 +71,32 @@ class PadreController extends Controller
         $validated = $this->validarPadre($request);
         $validated['estado'] = $validated['estado'] ?? 'activo';
 
-        Padre::create($validated);
+        $padre = Padre::create($validated);
 
-        return redirect()->route('padres.index')
-            ->with('success', 'Padre/tutor registrado exitosamente.');
+        // Crear cuenta de usuario si el padre tiene correo y no existe ya un usuario con ese email
+        $correoPadre = $padre->correo ?? null;
+        $padreRolId  = DB::table('roles')->where('nombre', 'Padre')->value('id');
+        if ($padreRolId && $correoPadre && !DB::table('users')->where('email', $correoPadre)->exists()) {
+            DB::table('users')->insert([
+                'name'              => $padre->nombre . ' ' . $padre->apellido,
+                'email'             => $correoPadre,
+                'password'          => Hash::make('Padre2025!'),
+                'id_rol'            => $padreRolId,
+                'activo'            => true,
+                'is_super_admin'    => false,
+                'is_protected'      => false,
+                'email_verified_at' => now(),
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+        }
+
+        $msg = 'Padre/tutor registrado exitosamente.';
+        if ($correoPadre) {
+            $msg .= " Contraseña inicial: Padre2025!";
+        }
+
+        return redirect()->route('padres.index')->with('success', $msg);
     }
 
     /**
@@ -71,7 +104,7 @@ class PadreController extends Controller
      */
     public function show($id)
     {
-        $padre = Padre::with(['estudiantes'])->findOrFail($id);
+        $padre = Padre::with(['estudiantes.gradoAsignado'])->findOrFail($id);
         return view('padre.show', compact('padre'));
     }
 
@@ -103,7 +136,7 @@ class PadreController extends Controller
     /**
      * Eliminar padre
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $this->authorizeRol();
         $padre = Padre::findOrFail($id);
@@ -114,7 +147,7 @@ class PadreController extends Controller
 
         $padre->delete();
 
-        return redirect()->route('padres.index')
+        return redirect()->route('padres.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Padre/tutor eliminado correctamente.');
     }
 
@@ -125,7 +158,6 @@ class PadreController extends Controller
     {
         $query = Padre::query();
 
-        // Filtros
         foreach (['nombre','apellido','dni','correo','telefono'] as $campo) {
             if ($request->filled($campo)) {
                 $query->where($campo, 'like', '%' . $request->$campo . '%');
@@ -133,13 +165,13 @@ class PadreController extends Controller
         }
 
         $padres = $request->anyFilled(['nombre','apellido','dni','correo','telefono'])
-            ? $query->with('estudiantes')->paginate(15)->withQueryString()
+            ? $query->orderBy('apellido')->with('estudiantes')->paginate(15)->withQueryString()
             : collect();
 
         $estudianteId = $request->input('estudiante_id');
-        $estudiante = $estudianteId ? Estudiante::find($estudianteId) : null;
+        $estudiante   = $estudianteId ? Estudiante::find($estudianteId) : null;
 
-        return view('padre.buscar', compact('padres','estudiante'));
+        return view('padre.buscar', compact('padres', 'estudiante'));
     }
 
     /**
@@ -164,7 +196,7 @@ class PadreController extends Controller
                 return back()->with('error', 'Este padre ya está vinculado con el estudiante.');
             }
 
-            $ultimoId = Matricula::max('id') + 1;
+            $ultimoId        = Matricula::max('id') + 1;
             $codigoMatricula = 'MAT-' . date('Y') . '-' . str_pad($ultimoId, 4, '0', STR_PAD_LEFT);
 
             Matricula::create([
@@ -194,8 +226,8 @@ class PadreController extends Controller
     {
         $this->authorizeRol();
         $request->validate([
-            'padre_id' => 'required|exists:padres,id',
-            'estudiante_id' => 'required|exists:estudiantes,id',
+            'padre_id'     => 'required|exists:padres,id',
+            'estudiante_id'=> 'required|exists:estudiantes,id',
         ]);
 
         try {
@@ -226,38 +258,38 @@ class PadreController extends Controller
     private function validarPadre(Request $request, $id = null)
     {
         return $request->validate([
-            'nombre' => 'required|string|min:2|max:50',
-            'apellido' => 'required|string|min:2|max:50',
-            'dni' => [
+            'nombre'              => 'required|string|min:2|max:50',
+            'apellido'            => 'required|string|min:2|max:50',
+            'dni'                 => [
                 'nullable','string','max:20',
-                function($attribute, $value, $fail) use ($id) {
+                function ($attribute, $value, $fail) use ($id) {
                     if (!empty($value)) {
                         $query = Padre::where('dni', $value);
-                        if ($id) $query->where('id','!=',$id);
+                        if ($id) $query->where('id', '!=', $id);
                         if ($query->exists()) $fail('Este DNI ya está registrado.');
                     }
-                }
+                },
             ],
-            'parentesco' => 'required|string|in:padre,madre,tutor_legal,abuelo,abuela,tio,tia,otro',
-            'parentesco_otro' => 'nullable|required_if:parentesco,otro|string|max:50',
-            'correo' => [
+            'parentesco'          => 'required|string|in:padre,madre,tutor_legal,abuelo,abuela,tio,tia,otro',
+            'parentesco_otro'     => 'nullable|required_if:parentesco,otro|string|max:50',
+            'correo'              => [
                 'nullable','email','max:100',
-                function($attribute, $value, $fail) use ($id) {
+                function ($attribute, $value, $fail) use ($id) {
                     if (!empty($value)) {
                         $query = Padre::where('correo', $value);
-                        if ($id) $query->where('id','!=',$id);
+                        if ($id) $query->where('id', '!=', $id);
                         if ($query->exists()) $fail('Este correo ya está registrado.');
                     }
-                }
+                },
             ],
-            'telefono' => 'nullable|string|max:15',
+            'telefono'            => 'nullable|string|max:15',
             'telefono_secundario' => 'nullable|string|max:15',
-            'direccion' => 'nullable|string|max:255',
-            'ocupacion' => 'nullable|string|max:100',
-            'lugar_trabajo' => 'nullable|string|max:100',
-            'telefono_trabajo' => 'nullable|string|max:15',
-            'estado' => 'nullable|string|in:activo,inactivo',
-            'observaciones' => 'nullable|string|max:500',
+            'direccion'           => 'nullable|string|max:255',
+            'ocupacion'           => 'nullable|string|max:100',
+            'lugar_trabajo'       => 'nullable|string|max:100',
+            'telefono_trabajo'    => 'nullable|string|max:15',
+            'estado'              => 'nullable|string|in:activo,inactivo',
+            'observaciones'       => 'nullable|string|max:500',
         ]);
     }
 

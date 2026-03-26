@@ -2,15 +2,6 @@
 
 @section('title', 'Registrar Matrícula')
 
-@section('topbar-actions')
-    <a href="{{ route('matriculas.index') }}"
-       style="background:white; color:#00508f;
-              padding:.6rem .75rem; border-radius:9px; font-size:.83rem; font-weight:600;
-              display:inline-flex; align-items:center; gap:.4rem;
-              text-decoration:none; border:1.5px solid #00508f; transition:all .2s;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
     <style>
@@ -809,5 +800,4 @@
         }
     </script>
 @endpush
-
 

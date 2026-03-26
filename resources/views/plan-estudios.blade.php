@@ -199,7 +199,7 @@
                     </div>
 
                     <div class="gcard-actions">
-                        <a href="{{ route('plan-estudios.show', $grado) }}" class="action-btn view-btn">
+                        <a href="{{ route('portal.plan-estudios.show', $grado) }}" class="action-btn view-btn">
     <i class="fas fa-eye"></i> Ver
 </a>
                         <a href="{{ route('superadmin.grados.edit', $grado) }}" class="action-btn edit-btn"><i class="fas fa-edit"></i> Editar</a>

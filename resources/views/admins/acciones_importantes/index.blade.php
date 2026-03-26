@@ -3,23 +3,6 @@
 @section('title', 'Acciones Importantes')
 @section('page-title', 'Acciones Importantes del Sistema')
 
-@section('topbar-actions')
-    @php
-        $usuario = auth()->user();
-        $rutaDashboard = match($usuario->rol->nombre ?? '') {
-            'Administrador'       => route('admin.dashboard'),
-            'Super Administrador' => route('superadmin.dashboard'),
-            'Profesor'            => route('profesor.dashboard'),
-            'Estudiante'          => route('estudiante.dashboard'),
-            'Padre'               => route('padre.dashboard'),
-            default               => route('home'),
-        };
-    @endphp
-    <a href="{{ $rutaDashboard }}" class="btn btn-sm fw-semibold"
-       style="background:white;color:#00508f;border:2px solid #00508f;border-radius:8px;">
-        <i class="fas fa-arrow-left me-1"></i> Volver
-    </a>
-@endsection
 
 @section('content')
     <div class="container" style="max-width: 1100px;">

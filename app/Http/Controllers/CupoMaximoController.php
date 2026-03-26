@@ -15,11 +15,28 @@ class CupoMaximoController extends Controller
     /**
      * Listado de cupos máximos.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $cursos = CupoMaximo::orderBy('nombre')->get();
+        $perPage = in_array($request->per_page, [10, 25, 50]) ? $request->per_page : 15;
 
-        return view('cupos_maximos.index', compact('cursos'));
+        $query = CupoMaximo::orderBy('nombre');
+
+        if ($request->filled('buscar')) {
+            $query->where('nombre', 'like', '%' . $request->buscar . '%');
+        }
+        if ($request->filled('jornada')) {
+            $query->where('jornada', $request->jornada);
+        }
+        if ($request->filled('seccion')) {
+            $query->where('seccion', $request->seccion);
+        }
+
+        $cursos          = $query->paginate($perPage)->withQueryString();
+        $totalCupos      = CupoMaximo::count();
+        $totalMatutina   = CupoMaximo::where('jornada', 'Matutina')->count();
+        $totalVespertina = CupoMaximo::where('jornada', 'Vespertina')->count();
+
+        return view('cupos_maximos.index', compact('cursos', 'totalCupos', 'totalMatutina', 'totalVespertina'));
     }
 
     /**
@@ -111,13 +128,13 @@ class CupoMaximoController extends Controller
     /**
      * Eliminar un cupo de la BD.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
         $curso = CupoMaximo::findOrFail($id);
         $curso->delete();
 
         return redirect()
-            ->route('superadmin.cupos_maximos.index')
+            ->route('superadmin.cupos_maximos.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Cupo eliminado correctamente.');
     }
 }

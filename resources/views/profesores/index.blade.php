@@ -145,18 +145,17 @@
     padding: .22rem .65rem; border-radius: 999px;
     font-size: .7rem; font-weight: 600; white-space: nowrap;
 }
-.b-red    { background: #fef2f2; color: #dc2626; }
 .b-blue   { background: #e8f8f9; color: #00508f; }
 .b-green  { background: #ecfdf5; color: #059669; }
 .b-indigo { background: #eef2ff; color: #4f46e5; }
 .b-amber  { background: #fffbeb; color: #92400e; }
-.b-gray   { background: #f1f5f9; color: #64748b; }
+.b-red    { background: #fef2f2; color: #dc2626; }
 
-/* Acciones — botones más pequeños */
+/* Acciones */
 .act-btn {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 26px; height: 26px; border-radius: 6px; border: none;
-    cursor: pointer; font-size: .72rem; text-decoration: none; transition: all .15s;
+    width: 30px; height: 30px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
 }
 .act-btn:hover { transform: translateY(-1px); }
 .act-view { background: #f1f5f9; color: #475569; }
@@ -210,7 +209,7 @@
 @section('content')
 <div class="adm-wrap">
 
-    {{-- Stats --}}
+    {{-- ══ Stats ══ --}}
     <div class="adm-stats">
         <div class="adm-stat">
             <div class="adm-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
@@ -250,7 +249,7 @@
         </div>
     </div>
 
-    {{-- Toolbar --}}
+    {{-- ══ Toolbar ══ --}}
     <div class="adm-toolbar">
         <form action="{{ route('profesores.index') }}" method="GET" class="adm-search-wrap">
             <div class="search-inner">
@@ -265,11 +264,12 @@
                 </a>
             @endif
         </form>
+
         <div class="adm-perpage">
             <label>Mostrar:</label>
             <select onchange="cambiarPerPage(this.value)">
                 @foreach([10,25,50] as $op)
-                    <option value="{{ $op }}" {{ request('per_page',10)==$op ? 'selected' : '' }}>
+                    <option value="{{ $op }}" {{ request('per_page',10)==$op?'selected':'' }}>
                         {{ $op }} por página
                     </option>
                 @endforeach
@@ -277,7 +277,7 @@
         </div>
     </div>
 
-    {{-- Search result info --}}
+    {{-- ══ Resultado de búsqueda ══ --}}
     @if(request('busqueda'))
     <div class="search-result-bar">
         <i class="fas fa-filter"></i>
@@ -293,7 +293,7 @@
     </div>
     @endif
 
-    {{-- Tabla --}}
+    {{-- ══ Tabla ══ --}}
     <div class="adm-card">
         <div class="adm-card-head">
             <div class="adm-card-head-left">
@@ -380,7 +380,7 @@
                             @endif
                         </td>
                         <td class="tc">
-                            <div style="display:inline-flex;gap:3px;align-items:center;">
+                            <div style="display:inline-flex;gap:.4rem;align-items:center;">
                                 <a href="{{ route('profesores.show', $profesor->id) }}"
                                    class="act-btn act-view" title="Ver">
                                     <i class="fas fa-eye"></i>
@@ -391,7 +391,7 @@
                                 </a>
                                 <button type="button"
                                         class="act-btn act-del"
-                                        onclick="confirmDelete('{{ $profesor->id }}', '{{ $profesor->nombre_completo }}')"
+                                        onclick="confirmDelete('{{ $profesor->id }}','{{ $profesor->nombre_completo }}')"
                                         title="Eliminar">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -403,6 +403,7 @@
                             </div>
                         </td>
                     </tr>
+
                     @empty
                     <tr>
                         <td colspan="7">
@@ -447,7 +448,7 @@
 
 </div>
 
-{{-- Modal Eliminar --}}
+{{-- ══ Modal eliminar ══ --}}
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
         <div class="modal-content" style="border-radius:14px;border:none;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.15);">
@@ -458,7 +459,7 @@
                         <i class="fas fa-exclamation-triangle" style="color:#ef4444;font-size:1.1rem;"></i>
                     </div>
                     <div>
-                        <h6 class="mb-0 fw-bold" style="color:#003b73;font-size:.93rem;">Confirmar Eliminación</h6>
+                        <h6 class="mb-0 fw-bold" style="color:#0f172a;font-size:.93rem;">Confirmar Eliminación</h6>
                         <p class="mb-0 small" style="color:#64748b;">Esta acción no se puede deshacer</p>
                     </div>
                 </div>

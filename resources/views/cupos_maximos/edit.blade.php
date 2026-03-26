@@ -3,11 +3,6 @@
 @section('title', 'Actualizar Cupo')
 @section('page-title', 'Cupos Máximos')
 
-@section('topbar-actions')
-    <a href="{{ route('superadmin.cupos_maximos.index') }}" class="adm-btn-outline">
-        <i class="fas fa-arrow-left"></i> Volver al listado
-    </a>
-@endsection
 
 @push('styles')
     <style>
@@ -23,6 +18,29 @@
         }
         .adm-btn-outline:hover { background: #e8f8f9; color: #00508f; }
 
+        /* Hero banner */
+        .adm-hero {
+            background: linear-gradient(135deg, #4ec7d2 0%, #00508f 60%, #003b73 100%);
+            border-radius: 14px; padding: 1.6rem 1.75rem; margin-bottom: 1.5rem;
+            display: flex; align-items: center; gap: 1.25rem;
+            box-shadow: 0 4px 18px rgba(0,59,115,.18);
+        }
+        .adm-hero-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: rgba(255,255,255,.18); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .adm-hero-icon i { font-size: 1.5rem; color: #fff; }
+        .adm-hero-title { font-size: 1.35rem; font-weight: 700; color: #fff; margin: 0; line-height: 1.2; }
+        .adm-hero-sub { font-size: .82rem; color: rgba(255,255,255,.78); margin-top: .25rem; }
+        .adm-hero-meta { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+        .adm-hero-pill {
+            display: inline-flex; align-items: center; gap: .3rem;
+            background: rgba(255,255,255,.18); color: #fff;
+            border-radius: 999px; padding: .18rem .7rem; font-size: .75rem; font-weight: 600;
+        }
+
+        /* Card */
         .adm-card {
             background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
             overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
@@ -93,130 +111,135 @@
         .frm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         @media(max-width:540px){ .frm-row { grid-template-columns: 1fr; } }
         .frm-group { display: flex; flex-direction: column; }
-
-        .adm-curso-badge {
-            display: inline-flex; align-items: center; gap: .4rem;
-            background: #f0f9ff; border: 1px solid #bae6fd;
-            color: #0369a1; border-radius: 8px;
-            padding: .4rem .85rem; font-size: .8rem; font-weight: 600;
-            margin-bottom: 1.25rem;
-        }
     </style>
 @endpush
 
 @section('content')
-    <div class="adm-wrap">
+<div class="adm-wrap container-fluid px-4">
 
-        <div class="adm-card">
-            <div class="adm-card-head">
-                <i class="fas fa-pen"></i>
-                <span>Actualizar Cupo — {{ $curso->nombre }}</span>
+    {{-- Hero --}}
+    <div class="adm-hero">
+        <div class="adm-hero-icon">
+            <i class="fas fa-pen"></i>
+        </div>
+        <div>
+            <div class="adm-hero-title">{{ $curso->nombre }}</div>
+            <div class="adm-hero-sub">Editando cupo máximo</div>
+            <div class="adm-hero-meta">
+                <span class="adm-hero-pill"><i class="fas fa-tag"></i> Sección {{ $curso->seccion ?? '—' }}</span>
+                <span class="adm-hero-pill"><i class="fas fa-clock"></i> {{ $curso->jornada ?? '—' }}</span>
+                <span class="adm-hero-pill"><i class="fas fa-users"></i> {{ $curso->cupo_maximo }} cupos</span>
             </div>
-            <div class="adm-card-body">
+        </div>
+    </div>
 
-                {{-- Badge informativo --}}
-                <div class="adm-curso-badge">
-                    <i class="fas fa-info-circle"></i>
-                    Editando el cupo para <strong>{{ $curso->nombre }}</strong>
-                    &nbsp;·&nbsp; Sección <strong>{{ $curso->seccion ?? '—' }}</strong>
-                    &nbsp;·&nbsp; Jornada <strong>{{ $curso->jornada ?? '—' }}</strong>
+    <div class="adm-card">
+        <div class="adm-card-head">
+            <i class="fas fa-pen"></i>
+            <span>Actualizar Cupo — {{ $curso->nombre }}</span>
+        </div>
+        <div class="adm-card-body">
+
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert"
+                     style="border-left:4px solid #ef4444;border-radius:8px;font-size:.82rem;">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Corrige los siguientes errores:</strong>
+                    <ul class="mb-0 mt-1 ps-3">
+                        @foreach (collect($errors->all())->unique() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <form id="cursoForm" method="POST" action="{{ route('superadmin.cupos_maximos.update', $curso->id) }}">
+                @csrf
+                @method('PUT')
+
+                {{-- Nombre --}}
+                <div class="frm-group mb-3">
+                    <label for="nombre" class="frm-label">
+                        <i class="fas fa-book-open"></i> Nombre del curso
+                    </label>
+                    <select name="nombre" id="nombre" class="frm-control" required>
+                        <option value="">Seleccione un curso...</option>
+                        @foreach(['1ro Primaria','2do Primaria','3ro Primaria','4to Primaria','5to Primaria','6to Primaria','1ro Secundaria','2do Secundaria','3ro Secundaria'] as $grado)
+                            <option value="{{ $grado }}" {{ old('nombre', $curso->nombre) == $grado ? 'selected' : '' }}>
+                                {{ $grado }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
-                @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert"
-                         style="border-left:4px solid #ef4444;border-radius:8px;font-size:.82rem;">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <strong>Corrige los siguientes errores:</strong>
-                        <ul class="mb-0 mt-1 ps-3">
-                            @foreach (collect($errors->all())->unique() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
+                {{-- Cupo --}}
+                <div class="frm-group mb-3">
+                    <label for="cupo_maximo" class="frm-label">
+                        <i class="fas fa-users"></i> Cupo de estudiantes
+                    </label>
+                    <input type="number" name="cupo_maximo" id="cupo_maximo" class="frm-control"
+                           value="{{ old('cupo_maximo', $curso->cupo_maximo) }}"
+                           min="1" max="35" required>
+                    <p class="frm-hint">Máximo 35 estudiantes por sección.</p>
+                </div>
 
-                <form id="cursoForm" method="POST" action="{{ route('superadmin.cupos_maximos.update', $curso->id) }}">
-                    @csrf
-                    @method('PUT')
-
-                    {{-- Nombre --}}
-                    <div class="frm-group mb-3">
-                        <label for="nombre" class="frm-label">
-                            <i class="fas fa-book-open"></i> Nombre del curso
+                {{-- Jornada y Sección --}}
+                <div class="frm-row mb-3">
+                    <div class="frm-group">
+                        <label for="jornada" class="frm-label">
+                            <i class="fas fa-clock"></i> Jornada
                         </label>
-                        <select name="nombre" id="nombre" class="frm-control" required>
-                            <option value="">Seleccione un curso...</option>
-                            @foreach(['1ro Primaria','2do Primaria','3ro Primaria','4to Primaria','5to Primaria','6to Primaria','1ro Secundaria','2do Secundaria','3ro Secundaria'] as $grado)
-                                <option value="{{ $grado }}" {{ old('nombre', $curso->nombre) == $grado ? 'selected' : '' }}>
-                                    {{ $grado }}
+                        <select name="jornada" id="jornada" class="frm-control" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Matutina"   {{ old('jornada', $curso->jornada) == 'Matutina'   ? 'selected' : '' }}>Matutina</option>
+                            <option value="Vespertina" {{ old('jornada', $curso->jornada) == 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
+                        </select>
+                    </div>
+                    <div class="frm-group">
+                        <label for="seccion" class="frm-label">
+                            <i class="fas fa-tag"></i> Sección
+                        </label>
+                        <select name="seccion" id="seccion" class="frm-control" required>
+                            <option value="">Seleccione...</option>
+                            @foreach(['A','B','C','D'] as $sec)
+                                <option value="{{ $sec }}" {{ old('seccion', $curso->seccion) == $sec ? 'selected' : '' }}>
+                                    {{ $sec }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
+                </div>
 
-                    {{-- Cupo --}}
-                    <div class="frm-group mb-3">
-                        <label for="cupo_maximo" class="frm-label">
-                            <i class="fas fa-users"></i> Cupo de estudiantes
-                        </label>
-                        <input type="number" name="cupo_maximo" id="cupo_maximo" class="frm-control"
-                               value="{{ old('cupo_maximo', $curso->cupo_maximo) }}"
-                               min="1" max="35" required>
-                        <p class="frm-hint">Máximo 35 estudiantes por sección.</p>
-                    </div>
+                <hr class="frm-divider">
 
-                    {{-- Jornada y Sección --}}
-                    <div class="frm-row mb-3">
-                        <div class="frm-group">
-                            <label for="jornada" class="frm-label">
-                                <i class="fas fa-clock"></i> Jornada
-                            </label>
-                            <select name="jornada" id="jornada" class="frm-control" required>
-                                <option value="">Seleccione...</option>
-                                <option value="Matutina"   {{ old('jornada', $curso->jornada) == 'Matutina'   ? 'selected' : '' }}>Matutina</option>
-                                <option value="Vespertina" {{ old('jornada', $curso->jornada) == 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
-                            </select>
-                        </div>
-                        <div class="frm-group">
-                            <label for="seccion" class="frm-label">
-                                <i class="fas fa-tag"></i> Sección
-                            </label>
-                            <select name="seccion" id="seccion" class="frm-control" required>
-                                <option value="">Seleccione...</option>
-                                @foreach(['A','B','C','D'] as $sec)
-                                    <option value="{{ $sec }}" {{ old('seccion', $curso->seccion) == $sec ? 'selected' : '' }}>
-                                        {{ $sec }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+                {{-- Botones --}}
+                <div class="frm-actions">
+                    <a href="{{ route('superadmin.cupos_maximos.index') }}" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
 
-                    <hr class="frm-divider">
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i> Guardar cambios
+                    </button>
 
-                    {{-- Botones --}}
-                    <div class="frm-actions">
-                        <a href="{{ route('superadmin.cupos_maximos.index') }}" class="btn-cancel">
-                            <i class="fas fa-times"></i> Cancelar
-                        </a>
+                    <button type="button" class="btn-delete"
+                            onclick="sysConfirm('¿Eliminar el cupo de {{ addslashes($curso->nombre) }}? Esta acción no se puede deshacer.', () => document.getElementById('form-delete').submit())">
+                        <i class="fas fa-trash-alt"></i> Eliminar
+                    </button>
+                </div>
 
-                        <button type="submit" class="btn-save">
-                            <i class="fas fa-save"></i> Guardar cambios
-                        </button>
+            </form>
 
-                        <button type="button" class="btn-delete"
-                                data-route="{{ route('superadmin.cupos_maximos.destroy', $curso->id) }}"
-                                data-message="¿Seguro que deseas eliminar el cupo de {{ addslashes($curso->nombre) }}? Esta acción no se puede deshacer."
-                                data-name="{{ $curso->nombre }}"
-                                onclick="mostrarModalDeleteData(this)">
-                            <i class="fas fa-trash-alt"></i> Eliminar
-                        </button>
-                    </div>
+            {{-- Form oculto para eliminar --}}
+            <form id="form-delete" method="POST"
+                  action="{{ route('superadmin.cupos_maximos.destroy', $curso->id) }}"
+                  style="display:none;">
+                @csrf @method('DELETE')
+            </form>
 
-                </form>
-            </div>
         </div>
-
     </div>
+
+</div>
 @endsection

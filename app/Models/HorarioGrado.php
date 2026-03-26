@@ -22,7 +22,17 @@ class HorarioGrado extends Model
         return $this->belongsTo(\App\Models\Grado::class);
     }
 
-    // ── Accessor: obtiene el horario ordenado por días ──
+    // Orden canónico de horas (MySQL JSON reordena claves alfabéticamente)
+    private static array $ordenHoras = [
+        '07:00-07:40', '07:40-08:20', '08:20-09:00',
+        'RECREO 09:00-09:20',
+        '09:20-10:00', '10:00-10:40', '10:40-11:20', '11:20-12:00', '12:00-12:40',
+        '13:00-13:40', '13:40-14:20', '14:20-15:00',
+        'RECREO 15:00-15:20',
+        '15:20-16:00', '16:00-16:40', '16:40-17:20',
+    ];
+
+    // ── Accessor: obtiene el horario ordenado por días y horas ──
     public function getHorarioAttribute($value)
     {
         $data = json_decode($value, true);
@@ -32,16 +42,25 @@ class HorarioGrado extends Model
         $ordenado  = [];
 
         foreach ($ordenDias as $dia) {
-            if (isset($data[$dia])) {
-                $ordenado[$dia] = $data[$dia];
-            }
-        }
+            if (!isset($data[$dia])) continue;
 
-        // Agregar días que no estén en el orden definido (por si acaso)
-        foreach ($data as $dia => $horas) {
-            if (!isset($ordenado[$dia])) {
-                $ordenado[$dia] = $horas;
+            $horasData    = $data[$dia];
+            $horasOrdenadas = [];
+
+            // Insertar horas en el orden canónico
+            foreach (self::$ordenHoras as $h) {
+                if (array_key_exists($h, $horasData)) {
+                    $horasOrdenadas[$h] = $horasData[$h];
+                }
             }
+            // Cualquier hora no contemplada va al final
+            foreach ($horasData as $h => $v) {
+                if (!isset($horasOrdenadas[$h])) {
+                    $horasOrdenadas[$h] = $v;
+                }
+            }
+
+            $ordenado[$dia] = $horasOrdenadas;
         }
 
         return $ordenado;
@@ -58,18 +77,25 @@ class HorarioGrado extends Model
     {
         if ($jornada === 'matutina') {
             $horas = [
-                '07:00-08:00',
-                '08:00-09:00',
-                '09:00-10:00',
-                '10:00-11:00',
-                '11:00-12:00',
+                '07:00-07:40',
+                '07:40-08:20',
+                '08:20-09:00',
+                'RECREO 09:00-09:20',
+                '09:20-10:00',
+                '10:00-10:40',
+                '10:40-11:20',
+                '11:20-12:00',
+                '12:00-12:40',
             ];
         } else {
             $horas = [
-                '13:00-14:00',
-                '14:00-15:00',
-                '15:00-16:00',
-                '16:00-17:00',
+                '13:00-13:40',
+                '13:40-14:20',
+                '14:20-15:00',
+                'RECREO 15:00-15:20',
+                '15:20-16:00',
+                '16:00-16:40',
+                '16:40-17:20',
             ];
         }
 

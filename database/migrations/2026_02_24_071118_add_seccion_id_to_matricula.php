@@ -7,26 +7,26 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecutar la migración.
      */
     public function up(): void
     {
         Schema::table('matriculas', function (Blueprint $table) {
+            // La columna seccion_id ya existe, solo agregamos la foreign key
             $table->foreign('seccion_id')
-                ->references('id')
-                ->on('secciones')
-                ->nullOnDelete();
+                  ->references('id')
+                  ->on('seccion')
+                  ->nullOnDelete();
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Revertir la migración.
      */
     public function down(): void
     {
        Schema::table('matriculas', function (Blueprint $table) {
             $table->dropForeign(['seccion_id']);
-
         });
     }
 };

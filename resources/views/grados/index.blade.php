@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Grados')
-
 @section('page-title', 'Gestión de Grados y Secciones')
 
 @section('topbar-actions')
@@ -217,11 +216,11 @@
         </div>
         <div class="adm-stat">
             <div class="adm-stat-icon" style="background:linear-gradient(135deg,#fb923c,#ea580c);">
-                <i class="fas fa-book-open"></i>
+                <i class="fas fa-user-graduate"></i>
             </div>
             <div>
-                <div class="adm-stat-lbl">Total Materias</div>
-                <div class="adm-stat-num">{{ $grados->getCollection()->sum(fn($g) => $g->materias->count()) }}</div>
+                <div class="adm-stat-lbl">Total Estudiantes</div>
+                <div class="adm-stat-num">{{ $grados->getCollection()->sum(fn($g) => $g->estudiantes->count()) }}</div>
             </div>
         </div>
     </div>
@@ -294,6 +293,10 @@
                 <span class="grado-meta">
                     <i class="fas fa-book"></i> {{ $grado->materias->count() }} materias
                 </span>
+                <span class="grado-meta" style="background:#f0fdf4;color:#059669;">
+                    <i class="fas fa-user-graduate"></i> {{ $grado->estudiantes->count() }} alumnos
+                </span>
+                {{-- Estado activo/inactivo --}}
                 @if(isset($grado->activo))
                     <span class="{{ $grado->activo ? 'badge-activo' : 'badge-inactivo' }}">
                         <i class="fas fa-circle" style="font-size:.5rem;"></i>
@@ -315,6 +318,7 @@
                    class="act-btn act-edit" title="Editar">
                     <i class="fas fa-edit"></i>
                 </a>
+                {{-- Eliminar (nuevo del main) --}}
                 <button type="button" class="act-btn act-delete" title="Eliminar"
                     onclick="mostrarModalDelete(
                         '{{ route('superadmin.grados.destroy', $grado) }}',
@@ -351,9 +355,9 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('searchInput');
-    const filterNivel = document.getElementById('filterNivel');
-    const cards       = document.querySelectorAll('.grado-card');
+    const searchInput  = document.getElementById('searchInput');
+    const filterNivel  = document.getElementById('filterNivel');
+    const cards        = document.querySelectorAll('.grado-card');
     let   currentNivel = '';
 
     function filterCards() {

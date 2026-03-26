@@ -19,13 +19,6 @@
                   text-decoration:none;border:1.5px solid #00508f;transition:all .2s;">
             <i class="fas fa-eye"></i> Ver Horario
         </a>
-        <a href="{{ url()->previous() }}"
-           style="background:white;color:#00508f;
-                  padding:.6rem .75rem;border-radius:9px;font-size:.83rem;font-weight:600;
-                  display:inline-flex;align-items:center;gap:.4rem;
-                  text-decoration:none;border:1.5px solid #00508f;transition:all .2s;">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
     </div>
 @endsection
 
@@ -245,6 +238,26 @@
                 <i class="fas fa-table"></i> Haz clic en una celda para editar la clase
             </div>
 
+            {{-- Errores de conflicto del servidor --}}
+            @if(session('conflictos'))
+            <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;
+                        padding:1rem 1.25rem;margin-bottom:1.1rem;">
+                <div style="display:flex;align-items:center;gap:.5rem;
+                            font-size:.82rem;font-weight:700;color:#991b1b;margin-bottom:.5rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    No se guardó el horario — se detectaron conflictos de profesor:
+                </div>
+                <ul style="margin:0;padding-left:1.3rem;font-size:.78rem;color:#7f1d1d;line-height:1.7;">
+                    @foreach(session('conflictos') as $c)
+                        <li>{{ $c }}</li>
+                    @endforeach
+                </ul>
+                <p style="margin:.6rem 0 0;font-size:.72rem;color:#b91c1c;">
+                    Corrija los conflictos antes de guardar.
+                </p>
+            </div>
+            @endif
+
             @if(!$horarioGrado || empty($horarioGrado->horario))
 
                 <div class="empty-state">
@@ -275,6 +288,22 @@
                         </thead>
                         <tbody>
                             @foreach($horas as $hora)
+                                @if(str_starts_with($hora, 'RECREO'))
+                                {{-- ── Fila de RECREO ── --}}
+                                <tr>
+                                    <td class="td-hora" style="color:#1d4ed8;background:linear-gradient(135deg,rgba(219,234,254,.6),rgba(147,197,253,.3));">
+                                        <i class="fas fa-coffee" style="color:#3b82f6;margin-right:.3rem;"></i>
+                                        {{ str_replace('RECREO ', '', $hora) }}
+                                    </td>
+                                    <td colspan="{{ count($dias) }}"
+                                        style="background:linear-gradient(135deg,rgba(219,234,254,.5),rgba(147,197,253,.2));
+                                               text-align:center;font-size:.78rem;font-weight:800;
+                                               color:#1d4ed8;letter-spacing:.25em;
+                                               border:1px solid #bfdbfe;">
+                                        R &nbsp; E &nbsp; C &nbsp; R &nbsp; E &nbsp; O
+                                    </td>
+                                </tr>
+                                @else
                                 <tr>
                                     <td class="td-hora">
                                         <i class="fas fa-circle"
@@ -302,6 +331,7 @@
                                         </td>
                                     @endforeach
                                 </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
@@ -416,6 +446,14 @@
                     <input id="m_salon" class="modal-input" placeholder="Ej: 2B">
                 </div>
 
+                {{-- Aviso de conflicto --}}
+                <div id="conflicto-aviso" style="display:none;margin-top:.85rem;
+                     background:#fef9c3;border:1.5px solid #fde047;border-radius:8px;
+                     padding:.65rem .9rem;font-size:.76rem;color:#854d0e;">
+                    <i class="fas fa-exclamation-triangle" style="color:#d97706;margin-right:.35rem;"></i>
+                    <span id="conflicto-texto"></span>
+                </div>
+
             </div>
 
             {{-- Footer modal --}}
@@ -440,13 +478,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const modal = new bootstrap.Modal(document.getElementById('modalCelda'));
 
-    let estructura = {!! json_encode($estructura ?? []) !!};
+    // Restaurar horario rechazado por conflictos (si existe en sesión)
+    let estructura = {!! session('horario_rechazado')
+        ? session('horario_rechazado')
+        : json_encode($estructura ?? []) !!};
+
     let celdaSeleccionada = null;
+
+    // Si hay horario rechazado, repintar celdas con los datos rechazados
+    @if(session('horario_rechazado'))
+    repintarTodasLasCeldas();
+    @endif
+
+    function repintarTodasLasCeldas() {
+        document.querySelectorAll('.celda-horario').forEach(td => {
+            const dia  = td.dataset.dia;
+            const hora = td.dataset.hora;
+            const c    = estructura[dia]?.[hora] ?? null;
+            repintarCelda(td, c);
+        });
+    }
+
+    function repintarCelda(td, c) {
+        if (c && (c.materia_id || c.profesor_id)) {
+            const matOpt  = document.querySelector(`#m_materia option[value="${c.materia_id}"]`);
+            const profOpt = document.querySelector(`#m_profesor option[value="${c.profesor_id}"]`);
+            const matNombre  = matOpt  ? matOpt.textContent  : '—';
+            const profNombre = profOpt ? profOpt.textContent : '—';
+            td.innerHTML = `<span class="materia">${matNombre}</span>
+                            <span class="meta">${profNombre} · Aula: ${c.salon ?? '—'}</span>`;
+        } else {
+            td.innerHTML = `<span class="td-vacia">Clic para asignar</span>`;
+        }
+    }
 
     // ── Abrir modal al hacer clic en celda ──
     document.querySelectorAll('.celda-horario').forEach(td => {
         td.addEventListener('click', () => {
-
             const dia  = td.dataset.dia;
             const hora = td.dataset.hora;
             const c    = estructura[dia]?.[hora] ?? null;
@@ -459,14 +527,51 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('m_profesor').value = c?.profesor_id ?? '';
             document.getElementById('m_salon').value    = c?.salon       ?? '';
             document.getElementById('modal-subtitle').textContent = `${dia} · ${hora}`;
+            ocultarConflicto();
 
             modal.show();
         });
     });
 
+    // ── Verificar conflicto al cambiar profesor ──
+    document.getElementById('m_profesor').addEventListener('change', function () {
+        const profesorId = this.value;
+        const dia  = document.getElementById('m_dia').value;
+        const hora = document.getElementById('m_hora').value;
+
+        if (!profesorId) { ocultarConflicto(); return; }
+
+        const url = `{{ route('horarios_grado.conflicto', [$grado->id, $jornada]) }}`
+            .split('?')[0]
+            + `?profesor_id=${encodeURIComponent(profesorId)}`
+            + `&dia=${encodeURIComponent(dia)}`
+            + `&hora=${encodeURIComponent(hora)}`;
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(data => {
+                if (data.conflicto) {
+                    mostrarConflicto(
+                        `Este profesor ya está asignado en ${dia} ${hora} para: ${data.grados.join(', ')}`
+                    );
+                } else {
+                    ocultarConflicto();
+                }
+            })
+            .catch(() => ocultarConflicto());
+    });
+
+    function mostrarConflicto(msg) {
+        document.getElementById('conflicto-texto').textContent = msg;
+        document.getElementById('conflicto-aviso').style.display = 'block';
+    }
+    function ocultarConflicto() {
+        document.getElementById('conflicto-aviso').style.display = 'none';
+        document.getElementById('conflicto-texto').textContent   = '';
+    }
+
     // ── Guardar celda ──
     document.getElementById('btnGuardarCelda').addEventListener('click', function () {
-
         const dia  = document.getElementById('m_dia').value;
         const hora = document.getElementById('m_hora').value;
 
@@ -498,7 +603,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Eliminar celda ──
     document.getElementById('btnEliminarCelda').addEventListener('click', function () {
-
         const dia  = document.getElementById('m_dia').value;
         const hora = document.getElementById('m_hora').value;
 

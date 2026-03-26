@@ -19,8 +19,14 @@ class PeriodoAcademicoController extends Controller
      */
     public function index()
     {
-        $periodos = PeriodoAcademico::orderBy('fecha_inicio')->get();
-        return view('definirperiodosacademicos.index', compact('periodos'));
+        $periodos  = PeriodoAcademico::orderBy('fecha_inicio')->get();
+        $enCurso   = $periodos->filter(fn($p) => $p->estaActivo())->count();
+        $proximos  = $periodos->filter(fn($p) => $p->fecha_inicio->isFuture())->count();
+        $finalizados = $periodos->filter(fn($p) => $p->fecha_fin->isPast())->count();
+
+        return view('definirperiodosacademicos.index', compact(
+            'periodos', 'enCurso', 'proximos', 'finalizados'
+        ));
     }
 
     /**
