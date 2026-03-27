@@ -116,7 +116,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
     Route::get('/plan-estudios',         [PublicoPlanEstudiosController::class, 'index'])->name('plan-estudios.index');
     Route::get('/plan-estudios/{grado}', [PublicoPlanEstudiosController::class, 'show'])->name('plan-estudios.show');
 
-    // ⚠️  ELIMINADAS las 3 rutas de matrícula que estaban aquí duplicadas.
+    //   ELIMINADAS las 3 rutas de matrícula que estaban aquí duplicadas.
     //     Ya están definidas arriba (fuera del portal) con los nombres correctos.
     //     Si algún link usa route('portal.matriculas.public.create'), cámbialo
     //     a route('matriculas.public.create').
@@ -149,7 +149,38 @@ Route::view('/password/recuperar',          'recuperarcontrasenia.recuperar_cont
 */
 Route::middleware(['auth'])->group(function () {
 
-    // Dashboard con redirección por rol
+    Route::get('/buscar-registro', [BuscarEstudianteController::class, 'index'])->name('buscarregistro');
+
+    Route::middleware('role:admin,superadmin')->group(function () {
+
+        Route::get('/calendario/eventos', [CalendarioController::class, 'obtenerEventos']);
+        Route::post('/calendario/eventos', [CalendarioController::class, 'store']);
+        Route::put('/calendario/eventos/{id}', [CalendarioController::class, 'actualizar']);
+        Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar']);
+
+    });
+    
+    Route::get   ('profesor-materia',         [ProfesorMateriaController::class, 'index'])  ->name('profesor_materia.index');
+    Route::get   ('profesor-materia/create',  [ProfesorMateriaController::class, 'create']) ->name('profesor_materia.create');
+    Route::post  ('profesor-materia',         [ProfesorMateriaController::class, 'store'])  ->name('profesor_materia.store');
+    Route::get   ('profesor-materia/{id}/edit',[ProfesorMateriaController::class, 'edit'])  ->name('profesor_materia.edit');
+    Route::put   ('profesor-materia/{id}',    [ProfesorMateriaController::class, 'update']) ->name('profesor_materia.update');
+    Route::delete('profesor-materia/{id}',    [ProfesorMateriaController::class, 'destroy'])->name('profesor_materia.destroy');
+    Route::delete('profesor-materia/asignacion/{id}',      [ProfesorMateriaController::class, 'destroyAsignacion'])->name('profesor_materia.destroyAsignacion');
+
+    // routes/web.php — dentro de tu grupo de rutas autenticadas
+Route::post('padres/desvincular', [App\Http\Controllers\PadreController::class, 'desvincular'])
+    ->name('padres.desvincular');
+
+    Route::get('/profesor-grado',                    [ProfesorGradoAsignacionController::class, 'index'])->name('profesor_grado.index');
+    Route::get('/profesor-grado/{id}/edit',          [ProfesorGradoAsignacionController::class, 'edit'])->name('profesor_grado.edit');
+    Route::post('/profesor-grado/{id}',              [ProfesorGradoAsignacionController::class, 'store'])->name('profesor_grado.store');
+    Route::delete('/profesor-grado/asignacion/{id}', [ProfesorGradoAsignacionController::class, 'destroy'])->name('profesor_grado.destroy');
+
+    Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar'); 
+
+    Route::resource('padres', PadreController::class);
+
     Route::get('/dashboard', function () {
         /** @var \App\Models\User $user */
         $user = Auth::user();

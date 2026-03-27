@@ -6,7 +6,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sistema Escolar') - Escuela Gabriela Mistral</title>
 
-    {{-- Oscuro por defecto — solo cambia a claro si el usuario lo eligió explícitamente --}}
     <script>if(localStorage.getItem('theme')!=='light'){document.documentElement.setAttribute('data-theme','dark');}</script>
     <style>[data-theme="dark"]{background:#0f172a;}</style>
 
@@ -17,16 +16,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /*
-        ╔══════════════════════════════════════════════════════════════╗
-        ║   TAMAÑO DE LETRA GLOBAL — afecta TODO el sitio            ║
-        ║  Cambia el número para hacer todo más grande o pequeño.      ║
-        ║  • 14px → más compacto                                       ║
-        ║  • 16px → estándar                                           ║
-        ║  • 17px → valor actual                                       ║
-        ║  • 18px → más grande                                         ║
-        ╚══════════════════════════════════════════════════════════════╝
-        */
         html { font-size: 17px; }
         body {
             font-family: 'Inter', sans-serif;
@@ -36,17 +25,15 @@
             transition: background 0.3s ease;
         }
 
-        /* Botón de Modo Oscuro */
         .btn-toggle-dark {
             background: #f1f5f9; color: #003b73; border: 1px solid #e5e7eb;
             padding: .5rem .8rem; border-radius: 8px; font-size: .85rem; font-weight: 700;
             display: flex; align-items: center; gap: .5rem; cursor: pointer; transition: 0.3s;
+            white-space: nowrap;
         }
         body.dark-mode .btn-toggle-dark { background: #334155; color: #fbbf24; border-color: #475569; }
 
-        /* =========================================
-           ESTILOS ORIGINALES DEL SIDEBAR
-           ========================================= */
+        /* ── SIDEBAR ── */
         .sidebar {
             position: fixed; top: 0; left: 0;
             height: 100vh; width: 280px;
@@ -85,9 +72,7 @@
             font-size: .80rem; font-weight: 700;
             text-transform: uppercase; letter-spacing: 1.2px;
         }
-
         .menu-item { margin: 0; }
-
         .menu-link {
             display: flex; align-items: center; gap: 12px;
             padding: .75rem 1.2rem;
@@ -104,18 +89,49 @@
         .main-content.no-sidebar { margin-left: 0; }
 
         /* ══════════════════════════════════════════════
-           TOPBAR
+           TOPBAR — botones siempre a la derecha
         ══════════════════════════════════════════════ */
         .topbar {
-            background: white; padding: 0 1.5rem;
+            background: white;
+            padding: .75rem 1.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,.06);
             border-bottom: 1px solid #e5e7eb;
             position: sticky; top: 0; z-index: 100;
-            min-height: 64px; display: flex; align-items: center; justify-content: space-between;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            flex-wrap: wrap;
         }
-        .topbar-left { display: flex; align-items: center; gap: .75rem; }
-        .topbar-left h5 { margin: 0; color: #003b73; font-weight: 700; font-size: 1.15rem; }
-        .topbar-right { display: flex; align-items: center; gap: .6rem; flex-wrap: nowrap; }
+
+        .topbar-left {
+            display: flex; align-items: center; gap: .75rem;
+            flex-shrink: 0;
+        }
+        .topbar-left h5 {
+            margin: 0; color: #003b73; font-weight: 700;
+            font-size: 1.15rem; white-space: nowrap;
+        }
+
+        /* FIX CLAVE: margin-left:auto empuja todo a la derecha siempre */
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+
+        .topbar-actions-group {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
         .topbar-divider { width: 1px; height: 24px; background: #e2e8f0; flex-shrink: 0; }
 
         .btn-logout {
@@ -124,8 +140,7 @@
             padding: .6rem .75rem; border-radius: 7px;
             font-size: .83rem; font-weight: 600;
             display: flex; align-items: center; gap: .4rem;
-            cursor: pointer; transition: all .2s ease;
-            white-space: nowrap;
+            cursor: pointer; transition: all .2s ease; white-space: nowrap;
         }
         .btn-logout:hover { opacity: .9; transform: translateY(-1px); }
 
@@ -135,19 +150,11 @@
             padding: .6rem .75rem; border-radius: 7px;
             font-size: .83rem; font-weight: 600;
             display: flex; align-items: center; gap: .4rem;
-            cursor: pointer; transition: all .2s ease;
-            white-space: nowrap;
+            cursor: pointer; transition: all .2s ease; white-space: nowrap;
         }
-        .btn-back-topbar:hover {
-            background: #00508f; color: white;
-            transform: translateY(-1px);
-        }
+        .btn-back-topbar:hover { background: #00508f; color: white; transform: translateY(-1px); }
 
-        /* ══════════════════════════════════════════════
-           CONTENT WRAPPER
-           — Con sidebar: padding normal
-           — Sin sidebar: padding lateral más generoso
-        ══════════════════════════════════════════════ */
+        /* ── CONTENT ── */
         .content-wrapper { padding: 2rem; }
 
         /* ── RESPONSIVE ── */
@@ -170,10 +177,9 @@
             .main-content { margin-left: 0 !important; }
             .mobile-menu-btn { display: block !important; }
             .content-wrapper { padding: 1rem; }
-            .no-sidebar .content-wrapper { padding: 1rem; }
             .topbar { padding: .75rem 1rem; }
-            .topbar-date { display: none; }
             .topbar-divider { display: none; }
+            .topbar-left h5 { font-size: .95rem; }
         }
 
         /* ══════════════════════════════════════════════
@@ -213,8 +219,7 @@
             background: linear-gradient(135deg,rgba(239,68,68,.1),rgba(220,38,38,.1));
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 2rem auto 1.5rem;
-            color: #ef4444; font-size: 2.5rem;
+            margin: 2rem auto 1.5rem; color: #ef4444; font-size: 2.5rem;
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
@@ -243,17 +248,14 @@
             border-top: 1px solid #e2e8f0;
         }
         .btn-delete-cancel, .btn-delete-confirm {
-            flex: 1; padding: .75rem 1.25rem;
-            border-radius: 10px; font-weight: 600; font-size: .875rem;
-            border: none; cursor: pointer; transition: all .3s ease;
+            flex: 1; padding: .75rem 1.25rem; border-radius: 10px;
+            font-weight: 600; font-size: .875rem; border: none; cursor: pointer;
+            transition: all .3s ease;
             display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
         }
         .btn-delete-cancel { background: #f1f5f9; color: #64748b; }
         .btn-delete-cancel:hover { background: #e2e8f0; transform: translateY(-2px); }
-        .btn-delete-confirm {
-            background: linear-gradient(135deg,#ef4444,#dc2626);
-            color: white; box-shadow: 0 4px 12px rgba(239,68,68,.3);
-        }
+        .btn-delete-confirm { background: linear-gradient(135deg,#ef4444,#dc2626); color: white; box-shadow: 0 4px 12px rgba(239,68,68,.3); }
         .btn-delete-confirm:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239,68,68,.4); }
 
         @media (max-width: 576px) {
@@ -266,269 +268,116 @@
     </style>
     @stack('styles')
 
-    {{-- ═══════════════════════════════════════════════════════════════
-         MODO OSCURO — cargado SIEMPRE al final, después de todos los
-         estilos de las vistas, para que sus reglas tengan prioridad.
-         ═══════════════════════════════════════════════════════════════ --}}
     <style id="dark-mode-styles">
-        /* ── Layout base ── */
-        body.dark-mode {
-            background-color: #0f172a !important;
-            color: #f1f5f9 !important;
-        }
-        body.dark-mode .sidebar {
-            background: linear-gradient(180deg, #020617 0%, #0f172a 100%) !important;
-            box-shadow: 4px 0 15px rgba(0,0,0,.5);
-        }
-        body.dark-mode .topbar {
-            background: #1e293b !important;
-            border-bottom: 1px solid #334155 !important;
-        }
-        body.dark-mode .main-content,
-        body.dark-mode .content-wrapper { background: #0f172a !important; }
-        body.dark-mode .topbar-divider  { background: #334155 !important; }
+        body.dark-mode { background-color: #0f172a !important; color: #f1f5f9 !important; }
+        body.dark-mode .sidebar { background: linear-gradient(180deg, #020617 0%, #0f172a 100%) !important; box-shadow: 4px 0 15px rgba(0,0,0,.5); }
+        body.dark-mode .topbar { background: #1e293b !important; border-bottom: 1px solid #334155 !important; }
+        body.dark-mode .main-content, body.dark-mode .content-wrapper { background: #0f172a !important; }
+        body.dark-mode .topbar-divider { background: #334155 !important; }
+        body.dark-mode .topbar-left h5 { color: #e2e8f0 !important; }
 
-        /* ── Tarjetas — cubre TODAS las variantes de clase ── */
-        body.dark-mode .card,
-        body.dark-mode .welcome-card,
-        body.dark-mode .adm-card,
-        body.dark-mode .adm-stat,
-        body.dark-mode .est-stat,
-        body.dark-mode .stat-card,
-        body.dark-mode .pub-stat,
-        body.dark-mode .action-card,
-        body.dark-mode .info-card,
-        body.dark-mode .modal-content,
-        body.dark-mode .adm-toolbar,
-        body.dark-mode .pub-card {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
+        body.dark-mode .card, body.dark-mode .welcome-card, body.dark-mode .adm-card,
+        body.dark-mode .adm-stat, body.dark-mode .est-stat, body.dark-mode .stat-card,
+        body.dark-mode .pub-stat, body.dark-mode .action-card, body.dark-mode .info-card,
+        body.dark-mode .modal-content, body.dark-mode .adm-toolbar, body.dark-mode .pub-card {
+            background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important;
         }
-        body.dark-mode .card-header,
-        body.dark-mode .adm-card-head,
+        body.dark-mode .card-header, body.dark-mode .adm-card-head,
         body.dark-mode .pub-card-head { border-color: #334155 !important; }
-        body.dark-mode .card-footer   { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .card-footer { background: #1e293b !important; border-color: #334155 !important; }
 
-        /* ── Textos principales ── */
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
-        body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
-        body.dark-mode .welcome-title, body.dark-mode .stat-value,
-        body.dark-mode .adm-stat-num, body.dark-mode .est-stat-num,
-        body.dark-mode .action-title, body.dark-mode .card-title,
-        body.dark-mode .fw-bold, body.dark-mode .text-dark,
-        body.dark-mode strong { color: #ffffff !important; }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4,
+        body.dark-mode h5, body.dark-mode h6, body.dark-mode .welcome-title,
+        body.dark-mode .stat-value, body.dark-mode .adm-stat-num, body.dark-mode .est-stat-num,
+        body.dark-mode .action-title, body.dark-mode .card-title, body.dark-mode .fw-bold,
+        body.dark-mode .text-dark, body.dark-mode strong { color: #ffffff !important; }
 
-        /* ── Textos secundarios ── */
-        body.dark-mode .text-muted,
-        body.dark-mode .adm-stat-lbl, body.dark-mode .est-stat-lbl,
-        body.dark-mode .est-stat-sub,  body.dark-mode .stat-label,
-        body.dark-mode .welcome-subtitle, body.dark-mode .action-subtitle,
-        body.dark-mode label, body.dark-mode p,
+        body.dark-mode .text-muted, body.dark-mode .adm-stat-lbl, body.dark-mode .est-stat-lbl,
+        body.dark-mode .est-stat-sub, body.dark-mode .stat-label, body.dark-mode .welcome-subtitle,
+        body.dark-mode .action-subtitle, body.dark-mode label, body.dark-mode p,
         body.dark-mode small { color: #cbd5e1 !important; }
 
         body.dark-mode span:not(.badge):not(.text-white):not(.w-badge) { color: inherit; }
 
-        /* ── Tablas ── */
-        body.dark-mode .table,
-        body.dark-mode .adm-tbl       { color: #f1f5f9 !important; background: transparent !important; }
-        body.dark-mode .table td,
-        body.dark-mode .table th,
-        body.dark-mode .text-primary,
-        body.dark-mode .dni-text      { color: #e2e8f0 !important; }
-        body.dark-mode .table thead th {
-            background: #1e293b !important;
-            color: #4ec7d2 !important;
-            border-bottom: 2px solid #334155 !important;
-        }
-        body.dark-mode .table td      { border-bottom-color: #334155 !important; }
-        body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
-            background-color: rgba(255,255,255,.03) !important;
-        }
-        body.dark-mode .table-hover > tbody > tr:hover > * {
-            background-color: rgba(78,199,210,.07) !important;
-        }
+        body.dark-mode .table, body.dark-mode .adm-tbl { color: #f1f5f9 !important; background: transparent !important; }
+        body.dark-mode .table td, body.dark-mode .table th,
+        body.dark-mode .text-primary, body.dark-mode .dni-text { color: #e2e8f0 !important; }
+        body.dark-mode .table thead th { background: #1e293b !important; color: #4ec7d2 !important; border-bottom: 2px solid #334155 !important; }
+        body.dark-mode .table td { border-bottom-color: #334155 !important; }
+        body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * { background-color: rgba(255,255,255,.03) !important; }
+        body.dark-mode .table-hover > tbody > tr:hover > * { background-color: rgba(78,199,210,.07) !important; }
 
-        /* ── Formularios ── */
-        body.dark-mode .form-control,
-        body.dark-mode .form-select,
-        body.dark-mode .input-group-text,
-        body.dark-mode .est-search,
-        body.dark-mode .adm-search {
-            background-color: #0f172a !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
+        body.dark-mode .form-control, body.dark-mode .form-select, body.dark-mode .input-group-text,
+        body.dark-mode .est-search, body.dark-mode .adm-search {
+            background-color: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important;
         }
-        body.dark-mode .form-control::placeholder,
-        body.dark-mode .form-select::placeholder,
+        body.dark-mode .form-control::placeholder, body.dark-mode .form-select::placeholder,
         body.dark-mode .est-search::placeholder { color: #475569 !important; }
-        body.dark-mode .form-control:focus,
-        body.dark-mode .form-select:focus,
-        body.dark-mode .est-search:focus {
-            background-color: #0f172a !important;
-            border-color: #4ec7d2 !important;
-            box-shadow: 0 0 0 3px rgba(78,199,210,.15) !important;
-            color: #f1f5f9 !important;
+        body.dark-mode .form-control:focus, body.dark-mode .form-select:focus, body.dark-mode .est-search:focus {
+            background-color: #0f172a !important; border-color: #4ec7d2 !important;
+            box-shadow: 0 0 0 3px rgba(78,199,210,.15) !important; color: #f1f5f9 !important;
         }
 
-        /* ── Alertas ── */
-        body.dark-mode .alert {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
-        }
+        body.dark-mode .alert { background-color: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
         body.dark-mode .alert-success { border-left-color: #34d399 !important; }
         body.dark-mode .alert-danger  { border-left-color: #f87171 !important; }
         body.dark-mode .alert-warning { border-left-color: #fbbf24 !important; }
         body.dark-mode .alert-info    { border-left-color: #4ec7d2 !important; }
 
-        /* ── Paginación ── */
-        body.dark-mode .page-link {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-            color: #4ec7d2 !important;
-        }
-        body.dark-mode .page-item.active .page-link {
-            background-color: #00508f !important;
-            border-color: #00508f !important;
-            color: #fff !important;
-        }
+        body.dark-mode .page-link { background-color: #1e293b !important; border-color: #334155 !important; color: #4ec7d2 !important; }
+        body.dark-mode .page-item.active .page-link { background-color: #00508f !important; border-color: #00508f !important; color: #fff !important; }
         body.dark-mode .page-item.disabled .page-link { opacity: .4; }
 
-        /* ── Dropdowns ── */
-        body.dark-mode .dropdown-menu {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-        body.dark-mode .dropdown-item          { color: #f1f5f9 !important; }
-        body.dark-mode .dropdown-item:hover    { background-color: #334155 !important; }
-        body.dark-mode .dropdown-divider       { border-color: #334155 !important; }
+        body.dark-mode .dropdown-menu { background-color: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .dropdown-item { color: #f1f5f9 !important; }
+        body.dark-mode .dropdown-item:hover { background-color: #334155 !important; }
+        body.dark-mode .dropdown-divider { border-color: #334155 !important; }
 
-        /* ── Botones ── */
-        body.dark-mode .btn-outline-secondary {
-            color: #94a3b8 !important; border-color: #475569 !important;
-        }
-        body.dark-mode .btn-outline-secondary:hover {
-            background-color: #334155 !important; color: #f1f5f9 !important;
-        }
+        body.dark-mode .btn-outline-secondary { color: #94a3b8 !important; border-color: #475569 !important; }
+        body.dark-mode .btn-outline-secondary:hover { background-color: #334155 !important; color: #f1f5f9 !important; }
         body.dark-mode .btn-toggle-dark { background: #334155 !important; color: #fbbf24 !important; border-color: #475569 !important; }
 
-        /* ── Action cards ── */
-        body.dark-mode .action-card-header {
-            background: rgba(255,255,255,.03) !important;
-            border-bottom-color: #334155 !important;
-        }
-        body.dark-mode .action-card-body .btn-outline-primary {
-            color: #4ec7d2 !important; border-color: #4ec7d2 !important;
-        }
-        body.dark-mode .action-card-body .btn-outline-primary:hover {
-            background-color: #4ec7d2 !important; color: #0f172a !important;
-        }
-
-        /* ── Notificaciones (portal estudiante) ── */
-        body.dark-mode .notif-item {
-            background: #1e293b !important; border-left-color: #4ec7d2 !important;
-        }
-        body.dark-mode .notif-item.leida {
-            background: rgba(255,255,255,.04) !important; border-left-color: #334155 !important;
-        }
-        body.dark-mode .notif-item:hover { background: #263347 !important; }
-        body.dark-mode .badge-nueva {
-            background: rgba(78,199,210,.2) !important; color: #4ec7d2 !important;
-            border-color: rgba(78,199,210,.4) !important;
-        }
-        body.dark-mode .btn-marcar {
-            background: #1e293b !important; border-color: #334155 !important; color: #4ec7d2 !important;
-        }
-
-        /* ── Barra de búsqueda / toolbar (vistas admin) ── */
-        body.dark-mode .adm-toolbar,
-        body.dark-mode .adm-filter-bar,
+        body.dark-mode .adm-toolbar, body.dark-mode .adm-filter-bar,
         body.dark-mode .est-filter-bar { background: #1e293b !important; border-color: #334155 !important; }
 
-        /* ── Leyenda del calendario ── */
         body.dark-mode .legend-wrap { background: #1e293b !important; border-color: #334155 !important; }
         body.dark-mode .legend-item { color: #cbd5e1 !important; }
 
-        /* ── Badges de estado ── */
         body.dark-mode .badge.bg-light { background-color: #334155 !important; color: #e2e8f0 !important; }
         body.dark-mode .badge.bg-white { background-color: #334155 !important; color: #e2e8f0 !important; }
 
-        /* ── Tabla de administradores ── */
-        body.dark-mode .adm-tbl thead th {
-            background: #0f172a !important;
-            color: #4ec7d2 !important;
-            border-bottom-color: #334155 !important;
-        }
-        body.dark-mode .adm-tbl tbody td {
-            color: #e2e8f0 !important;
-            border-bottom-color: #1e293b !important;
-        }
+        body.dark-mode .adm-tbl thead th { background: #0f172a !important; color: #4ec7d2 !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .adm-tbl tbody td { color: #e2e8f0 !important; border-bottom-color: #1e293b !important; }
         body.dark-mode .adm-tbl tbody tr:hover { background: rgba(78,199,210,.06) !important; }
-        body.dark-mode .adm-footer {
-            background: #161f2e !important;
-            border-top-color: #334155 !important;
-        }
-        body.dark-mode .adm-pages { color: #64748b !important; }
-        body.dark-mode .adm-num {
-            background: #334155 !important;
-            color: #94a3b8 !important;
-        }
+        body.dark-mode .adm-footer { background: #161f2e !important; border-top-color: #334155 !important; }
+        body.dark-mode .adm-footer-info { color: #64748b !important; }
+        body.dark-mode .adm-stat-sub { color: #64748b !important; }
+        body.dark-mode .row-num { background: #334155 !important; color: #94a3b8 !important; border-color: #475569 !important; }
         body.dark-mode .adm-name  { color: #f1f5f9 !important; }
         body.dark-mode .adm-email { color: #94a3b8 !important; }
         body.dark-mode .adm-perpage { color: #94a3b8 !important; }
-        body.dark-mode .adm-perpage select {
-            background: #0f172a !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
-        }
+        body.dark-mode .adm-perpage select { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
 
-        /* ── Pills / badges de colores (.bpill) ── */
         body.dark-mode .bpill.b-red    { background: rgba(220,38,38,.15) !important; color: #fca5a5 !important; }
         body.dark-mode .bpill.b-blue   { background: rgba(78,199,210,.12) !important; color: #4ec7d2 !important; }
         body.dark-mode .bpill.b-green  { background: rgba(16,185,129,.12) !important; color: #34d399 !important; }
         body.dark-mode .bpill.b-indigo { background: rgba(99,102,241,.15) !important; color: #a5b4fc !important; }
         body.dark-mode .bpill.b-amber  { background: rgba(245,158,11,.12) !important; color: #fbbf24 !important; }
 
-        /* ── Botones de acción (editar / eliminar) ── */
         body.dark-mode .act-edit { background: rgba(78,199,210,.12) !important; color: #4ec7d2 !important; }
         body.dark-mode .act-edit:hover { background: #4ec7d2 !important; color: #0f172a !important; }
         body.dark-mode .act-del  { background: rgba(239,68,68,.12) !important; color: #f87171 !important; }
         body.dark-mode .act-del:hover  { background: #ef4444 !important; color: #fff !important; }
 
-        /* ── Formularios con clases propias (no Bootstrap) ── */
-        body.dark-mode .search-input,
-        body.dark-mode .filter-select {
-            background: #0f172a !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
-        }
-        body.dark-mode .filtros-card,
-        body.dark-mode .hist-card,
-        body.dark-mode .hist-stat,
-        body.dark-mode .hist-ciclo {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-        }
-        body.dark-mode .hist-ciclo-head {
-            background: #0f172a !important;
-            color: #e2e8f0 !important;
-            border-bottom-color: #334155 !important;
-        }
+        body.dark-mode .search-input, body.dark-mode .filter-select { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .filtros-card, body.dark-mode .hist-card, body.dark-mode .hist-stat,
+        body.dark-mode .hist-ciclo { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .hist-ciclo-head { background: #0f172a !important; color: #e2e8f0 !important; border-bottom-color: #334155 !important; }
         body.dark-mode .hist-table thead tr { background: #1e293b !important; }
-        body.dark-mode .hist-table th {
-            color: #4ec7d2 !important;
-            border-bottom-color: #334155 !important;
-        }
-        body.dark-mode .hist-table td {
-            color: #e2e8f0 !important;
-            border-top-color: #334155 !important;
-        }
+        body.dark-mode .hist-table th { color: #4ec7d2 !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .hist-table td { color: #e2e8f0 !important; border-top-color: #334155 !important; }
         body.dark-mode .hist-table tbody tr:hover { background: rgba(78,199,210,.05) !important; }
-        body.dark-mode .hist-foot {
-            border-top-color: #334155 !important;
-            color: #64748b !important;
-        }
+        body.dark-mode .hist-foot { border-top-color: #334155 !important; color: #64748b !important; }
         body.dark-mode .hist-stat-lbl { color: #64748b !important; }
         body.dark-mode .hist-stat-val { color: #4ec7d2 !important; }
         body.dark-mode .nota-materia  { color: #93c5fd !important; }
@@ -555,195 +404,192 @@
                 <div class="logo-text"><h4>Escuela G.M.</h4><p>Sistema de Gestión</p></div>
             </a>
         </div>
-    <div class="user-info">
-        <div class="user-avatar">{{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}</div>
-        <div class="user-details"><h6>{{ $user->name ?? 'Usuario' }}</h6><p>{{ $roleName }}</p></div>
-    </div>
+        <div class="user-info">
+            <div class="user-avatar">{{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}</div>
+            <div class="user-details"><h6>{{ $user->name ?? 'Usuario' }}</h6><p>{{ $roleName }}</p></div>
+        </div>
 
-    <ul class="sidebar-menu">
+        <ul class="sidebar-menu">
+            <li class="menu-section-title">PRINCIPAL</li>
+            <li class="menu-item">
+                <a href="{{ $isSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}"
+                   class="menu-link {{ request()->routeIs('superadmin.dashboard', 'admin.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i><span>Dashboard</span>
+                </a>
+            </li>
 
-        {{-- ── PRINCIPAL ── --}}
-        <li class="menu-section-title">PRINCIPAL</li>
-        <li class="menu-item">
-            <a href="{{ $isSuperAdmin ? route('superadmin.dashboard') : route('admin.dashboard') }}"
-               class="menu-link {{ request()->routeIs('superadmin.dashboard', 'admin.dashboard') ? 'active' : '' }}">
-                <i class="fas fa-chart-line"></i><span>Dashboard</span>
-            </a>
-        </li>
+            <li class="menu-section-title">USUARIOS</li>
+            @if($isSuperAdmin)
+            <li class="menu-item">
+                <a href="{{ route('superadmin.administradores.index') }}"
+                   class="menu-link {{ request()->routeIs('superadmin.administradores.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-shield"></i><span>Administradores</span>
+                </a>
+            </li>
+            @endif
+            <li class="menu-item">
+                <a href="{{ route('estudiantes.index') }}"
+                   class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-graduate"></i><span>Estudiantes</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('profesores.index') }}"
+                   class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
+                    <i class="fas fa-chalkboard-teacher"></i><span>Profesores</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('padres.index') }}"
+                   class="menu-link {{ request()->routeIs('padres.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-friends"></i><span>Padres / Tutores</span>
+                </a>
+            </li>
 
-        <li class="menu-section-title">USUARIOS</li>
+            <li class="menu-section-title">MATRÍCULAS</li>
+            <li class="menu-item">
+                <a href="{{ route('matriculas.index') }}"
+                   class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i><span>Matrículas</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('admins.permisos.index') }}"
+                   class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-lock"></i><span>Permisos de Padres</span>
+                </a>
+            </li>
 
-        @if($isSuperAdmin)
-        <li class="menu-item">
-            <a href="{{ route('superadmin.administradores.index') }}"
-               class="menu-link {{ request()->routeIs('superadmin.administradores.*') ? 'active' : '' }}">
-                <i class="fas fa-user-shield"></i><span>Administradores</span>
-            </a>
-        </li>
-        @endif
+            <li class="menu-section-title">ACADÉMICO</li>
+            <li class="menu-item">
+                <a href="{{ $isSuperAdmin ? route('superadmin.grados.index') : route('grados.index') }}"
+                   class="menu-link {{ request()->routeIs('grados.*', 'superadmin.grados.*') ? 'active' : '' }}">
+                    <i class="fas fa-layer-group"></i><span>Grados</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ $isSuperAdmin ? route('superadmin.materias.index') : route('materias.index') }}"
+                   class="menu-link {{ request()->routeIs('materias.*', 'superadmin.materias.*') ? 'active' : '' }}">
+                    <i class="fas fa-book"></i><span>Materias</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('profesor_materia_grado.index') }}"
+                   class="menu-link {{ request()->routeIs('profesor_materia.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-tag"></i><span>Asignar Profesor</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                @if($isSuperAdmin)
+                    <a href="{{ route('carga-docente.index') }}"
+                       class="menu-link {{ request()->routeIs('carga-docente.*') ? 'active' : '' }}">
+                        <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
+                    </a>
+                @else
+                    <a href="#" class="menu-link disabled-link" title="Sin acceso">
+                        <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
+                    </a>
+                @endif
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('secciones.index') }}"
+                   class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
+                    <i class="fas fa-sitemap"></i><span>Secciones</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('superadmin.cupos_maximos.index') }}"
+                   class="menu-link {{ request()->routeIs('superadmin.cupos_maximos.*') ? 'active' : '' }}">
+                    <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
+                </a>
+            </li>
 
-        <li class="menu-item">
-            <a href="{{ route('estudiantes.index') }}"
-               class="menu-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}">
-                <i class="fas fa-user-graduate"></i><span>Estudiantes</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('profesores.index') }}"
-               class="menu-link {{ request()->routeIs('profesores.*') ? 'active' : '' }}">
-                <i class="fas fa-chalkboard-teacher"></i><span>Profesores</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('padres.index') }}"
-               class="menu-link {{ request()->routeIs('padres.*') ? 'active' : '' }}">
-                <i class="fas fa-user-friends"></i><span>Padres / Tutores</span>
-            </a>
-        </li>
+            <li class="menu-section-title">CALIFICACIONES</li>
+            <li class="menu-item">
+                <a href="{{ route('registrarcalificaciones.index') }}"
+                   class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-check"></i><span>Registrar Calificaciones</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('consultaestudiantesxcurso.index') }}"
+                   class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i><span>Estudiantes por Curso</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('h20cursos.index') }}"
+                   class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i><span>Cursos Secundaria</span>
+                </a>
+            </li>
 
-        <li class="menu-section-title">MATRÍCULAS</li>
-        <li class="menu-item">
-            <a href="{{ route('matriculas.index') }}"
-               class="menu-link {{ request()->routeIs('matriculas.*') ? 'active' : '' }}">
-                <i class="fas fa-clipboard-list"></i><span>Matrículas</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('admins.permisos.index') }}"
-               class="menu-link {{ request()->routeIs('admins.permisos.*') ? 'active' : '' }}">
-                <i class="fas fa-user-lock"></i><span>Permisos de Padres</span>
-            </a>
-        </li>
+            <li class="menu-section-title">CALENDARIO</li>
+            <li class="menu-item">
+                <a href="{{ route('periodos-academicos.index') }}"
+                   class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i><span>Períodos Académicos</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('calendario') }}"
+                   class="menu-link {{ request()->routeIs('calendario') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-week"></i><span>Calendario Académico</span>
+                </a>
+            </li>
 
-        <li class="menu-section-title">ACADÉMICO</li>
-        <li class="menu-item">
-            <a href="{{ $isSuperAdmin ? route('superadmin.grados.index') : route('grados.index') }}"
-               class="menu-link {{ request()->routeIs('grados.*', 'superadmin.grados.*') ? 'active' : '' }}">
-                <i class="fas fa-layer-group"></i><span>Grados</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ $isSuperAdmin ? route('superadmin.materias.index') : route('materias.index') }}"
-               class="menu-link {{ request()->routeIs('materias.*', 'superadmin.materias.*') ? 'active' : '' }}">
-                <i class="fas fa-book"></i><span>Materias</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('profesor_materia_grado.index') }}"
-   class="menu-link {{ request()->routeIs('profesor_materia.*') ? 'active' : '' }}">
-                <i class="fas fa-user-tag"></i><span>Asignar Profesor</span>
-            </a>
-        </li>
-        <li class="menu-item">
-    @if($isSuperAdmin)
-        <a href="{{ route('carga-docente.index') }}"
-           class="menu-link {{ request()->routeIs('carga-docente.*') ? 'active' : '' }}">
-            <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
-        </a>
-    @else
-        <a href="#" class="menu-link disabled-link" title="Sin acceso">
-            <i class="fas fa-chart-bar"></i><span>Carga Docente</span>
-        </a>
-    @endif
-</li>
-        <li class="menu-item">
-            <a href="{{ route('secciones.index') }}"
-               class="menu-link {{ request()->routeIs('secciones.*') ? 'active' : '' }}">
-                <i class="fas fa-sitemap"></i><span>Secciones</span>
-            </a>
-        </li>
-        <li class="menu-item">
-    <a href="{{ route('superadmin.cupos_maximos.index') }}"
-       class="menu-link {{ request()->routeIs('superadmin.cupos_maximos.*') ? 'active' : '' }}">
-        <i class="fas fa-users-cog"></i><span>Cupos Máximos</span>
-    </a>
-</li>
+            <li class="menu-section-title">DOCUMENTACIÓN</li>
+            <li class="menu-item">
+                <a href="{{ route('observaciones.index') }}"
+                   class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
+                    <i class="fas fa-sticky-note"></i><span>Observaciones</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('documentos.index') }}"
+                   class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
+                    <i class="fas fa-folder-open"></i><span>Documentos</span>
+                </a>
+            </li>
 
-        {{-- ── CALIFICACIONES (NUEVO) ── --}}
-        <li class="menu-section-title">CALIFICACIONES</li>
-        <li class="menu-item">
-            <a href="{{ route('registrarcalificaciones.index') }}"
-               class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
-                <i class="fas fa-clipboard-check"></i><span>Registrar Calificaciones</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('consultaestudiantesxcurso.index') }}"
-               class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
-                <i class="fas fa-users"></i><span>Estudiantes por Curso</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('h20cursos.index') }}"
-               class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
-                <i class="fas fa-graduation-cap"></i><span>Cursos Secundaria</span>
-            </a>
-        </li>
-
-        {{-- ── CALENDARIO ── --}}
-        <li class="menu-section-title">CALENDARIO</li>
-        <li class="menu-item">
-            <a href="{{ route('periodos-academicos.index') }}"
-               class="menu-link {{ request()->routeIs('periodos-academicos.*') ? 'active' : '' }}">
-                <i class="fas fa-calendar-alt"></i><span>Períodos Académicos</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('calendario') }}"
-               class="menu-link {{ request()->routeIs('calendario') ? 'active' : '' }}">
-                <i class="fas fa-calendar-week"></i><span>Calendario Académico</span>
-            </a>
-        </li>
-
-        <li class="menu-section-title">DOCUMENTACIÓN</li>
-        <li class="menu-item">
-            <a href="{{ route('observaciones.index') }}"
-               class="menu-link {{ request()->routeIs('observaciones.*') ? 'active' : '' }}">
-                <i class="fas fa-sticky-note"></i><span>Observaciones</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('documentos.index') }}"
-               class="menu-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}">
-                <i class="fas fa-folder-open"></i><span>Documentos</span>
-            </a>
-        </li>
-
-        <li class="menu-section-title">CONFIGURACIÓN</li>
-        @if($isSuperAdmin)
-        <li class="menu-item">
-            <a href="{{ route('superadmin.perfil') }}"
-               class="menu-link {{ request()->routeIs('superadmin.perfil') ? 'active' : '' }}">
-                <i class="fas fa-user-circle"></i><span>Mi Perfil</span>
-            </a>
-        </li>
-        @endif
-        <li class="menu-item">
-            <a href="{{ route('estado-solicitud') }}"
-               class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
-                <i class="fas fa-question-circle"></i><span>Estado de Solicitud</span>
-            </a>
-        </li>
-        <li class="menu-item">
-            <a href="{{ route('acciones_importantes.index') }}"
-               class="menu-link {{ request()->routeIs('acciones_importantes.*') ? 'active' : '' }}">
-                <i class="fas fa-bell"></i><span>Acciones Recientes</span>
-            </a>
-        </li>
-
-    </ul>
-</aside>
+            <li class="menu-section-title">CONFIGURACIÓN</li>
+            @if($isSuperAdmin)
+            <li class="menu-item">
+                <a href="{{ route('superadmin.perfil') }}"
+                   class="menu-link {{ request()->routeIs('superadmin.perfil') ? 'active' : '' }}">
+                    <i class="fas fa-user-circle"></i><span>Mi Perfil</span>
+                </a>
+            </li>
+            @endif
+            <li class="menu-item">
+                <a href="{{ route('estado-solicitud') }}"
+                   class="menu-link {{ request()->routeIs('estado-solicitud') ? 'active' : '' }}">
+                    <i class="fas fa-question-circle"></i><span>Estado de Solicitud</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('acciones_importantes.index') }}"
+                   class="menu-link {{ request()->routeIs('acciones_importantes.*') ? 'active' : '' }}">
+                    <i class="fas fa-bell"></i><span>Acciones Recientes</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
 @endif
 
 <div class="main-content {{ !$showSidebar ? 'no-sidebar' : '' }}">
     <div class="topbar">
-        <div class="topbar-left d-flex align-items-center gap-3">
+        {{-- Izquierda: solo el título --}}
+        <div class="topbar-left">
             @if($showSidebar)
-                <button class="mobile-menu-btn btn btn-sm btn-primary d-md-none" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <button class="mobile-menu-btn btn btn-sm btn-primary d-md-none" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
             @endif
-            <h5 class="mb-0">@yield('page-title', 'Panel de Control')</h5>
+            <h5>@yield('page-title', 'Panel de Control')</h5>
         </div>
 
+        {{-- Derecha: botones siempre alineados a la derecha --}}
         <div class="topbar-right">
             @hasSection('topbar-actions')
                 <div class="topbar-actions-group">
@@ -752,7 +598,6 @@
                 <div class="topbar-divider"></div>
             @endif
 
-            {{-- Botón Volver — oculto en dashboards e índices principales --}}
             @php
                 $esDashboard = request()->routeIs(
                     '*.dashboard', 'superadmin.dashboard', 'admin.dashboard',
@@ -761,14 +606,12 @@
                 );
             @endphp
             @unless($esDashboard)
-            <button type="button" onclick="history.back()" class="btn-back-topbar"
-                    title="Volver a la página anterior">
-                <i class="fas fa-arrow-left"></i> Volver
-            </button>
-            <div class="topbar-divider"></div>
+                <button type="button" onclick="history.back()" class="btn-back-topbar" title="Volver">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+                <div class="topbar-divider"></div>
             @endunless
 
-            {{-- Botón Modo Oscuro --}}
             <button id="globalDarkModeToggle" class="btn-toggle-dark">
                 <i class="fas fa-moon" id="globalDarkIcon"></i>
                 <span id="globalDarkText" class="d-none d-md-inline">Modo Oscuro</span>
@@ -776,7 +619,10 @@
 
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> <span class="d-none d-md-inline">Cerrar Sesión</span></button>
+                <button type="submit" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="d-none d-md-inline">Cerrar Sesión</span>
+                </button>
             </form>
         </div>
     </div>
@@ -798,9 +644,7 @@
         <button type="button" class="modal-delete-close" onclick="cerrarModalDelete()">
             <i class="fas fa-times"></i>
         </button>
-        <div class="modal-delete-icon">
-            <i class="fas fa-exclamation-triangle"></i>
-        </div>
+        <div class="modal-delete-icon"><i class="fas fa-exclamation-triangle"></i></div>
         <h4 class="modal-delete-title">¿Confirmar Eliminación?</h4>
         <div class="modal-delete-content">
             <p class="modal-delete-message" id="deleteMessage">
@@ -835,22 +679,17 @@
         document.getElementById('sidebar').classList.toggle('active');
     }
 
-    // LÓGICA DE MODO OSCURO GLOBAL
     (function() {
         const btn  = document.getElementById('globalDarkModeToggle');
         const icon = document.getElementById('globalDarkIcon');
         const text = document.getElementById('globalDarkText');
-
         function aplicarTema(isDark) {
             document.body.classList.toggle('dark-mode', isDark);
             document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
             icon.className = isDark ? 'fas fa-sun'  : 'fas fa-moon';
             text.innerText = isDark ? 'Modo Claro'  : 'Modo Oscuro';
         }
-
-        // Oscuro por defecto; claro solo si el usuario lo eligió explícitamente
         aplicarTema(localStorage.getItem('theme') !== 'light');
-
         btn.addEventListener('click', function() {
             const isDark = !document.body.classList.contains('dark-mode');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -860,14 +699,12 @@
 </script>
 @stack('scripts')
 
-{{-- ── Modal de confirmación del sistema ── --}}
 <div id="sys-modal"
      style="display:none;position:fixed;inset:0;z-index:9999;
             background:rgba(0,45,90,.5);backdrop-filter:blur(4px);
             align-items:center;justify-content:center;">
     <div style="background:white;border-radius:16px;padding:2rem 1.8rem;
-                max-width:400px;width:90%;
-                box-shadow:0 24px 60px rgba(0,45,90,.35);
+                max-width:400px;width:90%;box-shadow:0 24px 60px rgba(0,45,90,.35);
                 animation:sysModalIn .18s ease;">
         <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem;">
             <div style="width:50px;height:50px;border-radius:13px;flex-shrink:0;
@@ -878,19 +715,14 @@
             </div>
             <div>
                 <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;
-                            letter-spacing:.09em;color:#4ec7d2;margin-bottom:.25rem;">
-                    Confirmación
-                </div>
-                <p id="sys-modal-msg"
-                   style="font-size:.9rem;font-weight:600;color:#003b73;margin:0;line-height:1.4;">
-                </p>
+                            letter-spacing:.09em;color:#4ec7d2;margin-bottom:.25rem;">Confirmación</div>
+                <p id="sys-modal-msg" style="font-size:.9rem;font-weight:600;color:#003b73;margin:0;line-height:1.4;"></p>
             </div>
         </div>
         <div style="display:flex;gap:.65rem;justify-content:flex-end;">
             <button id="sys-modal-cancel"
                     style="padding:.5rem 1.3rem;border-radius:8px;font-size:.82rem;font-weight:600;
-                           border:1.5px solid #d1d9e6;background:white;color:#64748b;cursor:pointer;
-                           transition:all .15s;">
+                           border:1.5px solid #d1d9e6;background:white;color:#64748b;cursor:pointer;transition:all .15s;">
                 <i class="fas fa-times me-1"></i>Cancelar
             </button>
             <button id="sys-modal-ok"
@@ -915,7 +747,6 @@ function sysConfirm(msg, onOk) {
     const canBtn = document.getElementById('sys-modal-cancel');
     document.getElementById('sys-modal-msg').textContent = msg;
     modal.style.display = 'flex';
-
     function cleanup() {
         modal.style.display = 'none';
         okBtn.removeEventListener('click', yes);
@@ -925,13 +756,10 @@ function sysConfirm(msg, onOk) {
     function yes()      { cleanup(); onOk(); }
     function no()       { cleanup(); }
     function backdrop(e){ if (e.target === modal) no(); }
-
     okBtn.addEventListener('click', yes);
     canBtn.addEventListener('click', no);
     modal.addEventListener('click', backdrop);
 }
-
-// Interceptar forms con data-confirm
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('form[data-confirm]').forEach(function (form) {
         form.addEventListener('submit', function (e) {
@@ -947,12 +775,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-{{-- ── Preservar página en formularios de vistas paginadas ── --}}
 <script>
 (function () {
     const page = new URLSearchParams(window.location.search).get('page');
     if (!page || page === '1') return;
-
     function injectPage(form) {
         if (!form.querySelector('input[name="page"]')) {
             const h = document.createElement('input');
@@ -960,28 +786,19 @@ document.addEventListener('DOMContentLoaded', function () {
             form.appendChild(h);
         }
     }
-
-    // Formularios ya presentes al cargar
     document.querySelectorAll('form').forEach(injectPage);
-
-    // Formularios que aparecen dinámicamente (modales Bootstrap)
     document.addEventListener('show.bs.modal', function (e) {
         e.target.querySelectorAll('form').forEach(injectPage);
     });
 })();
 </script>
 
-{{-- ── Preservar posición del sidebar al navegar entre páginas ── --}}
 <script>
 (function () {
     const sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
-
-    // Restaurar posición guardada
     const saved = sessionStorage.getItem('sidebar_scroll');
     if (saved) sidebar.scrollTop = parseInt(saved, 10);
-
-    // Guardar posición antes de salir de la página
     window.addEventListener('beforeunload', function () {
         sessionStorage.setItem('sidebar_scroll', sidebar.scrollTop);
     });

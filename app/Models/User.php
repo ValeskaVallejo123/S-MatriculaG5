@@ -10,13 +10,13 @@ use App\Models\Notificacion;
 use App\Models\NotificacionPreferencia;
 use App\Models\Padre;
 use App\Models\Profesor;
+use App\Models\AsignacionAcademica;
+use Illuminate\Support\Facades\Schema;
+use App\Models\Observacion;
 
 /**
  * @method static \App\Models\User|null find($id)
  * @method static \Illuminate\Database\Eloquent\Builder with($relations)
- *
- * Estas anotaciones le indican al IDE que auth()->user() retorna este modelo.
- * Sin esto, el IDE marca "Undefined method 'user'" aunque el código funcione.
  *
  * @property int         $id
  * @property string      $name
@@ -83,7 +83,6 @@ class User extends Authenticatable
 
     /**
      * Relación con Padre via user_id.
-     * NOTA: Si la tabla `padres` no tiene columna user_id, retornará null siempre.
      */
     public function padre()
     {
@@ -93,7 +92,6 @@ class User extends Authenticatable
     /**
      * La tabla `profesores` NO tiene columna user_id.
      * Se busca el profesor por coincidencia de email.
-     * Uso: $user->docente  →  retorna Profesor|null
      */
     public function getDocenteAttribute(): ?Profesor
     {
@@ -103,6 +101,11 @@ class User extends Authenticatable
     public function estudiante()
     {
         return $this->hasOne(Estudiante::class, 'user_id');
+    }
+
+    public function asignaciones()
+    {
+        return $this->hasMany(AsignacionAcademica::class, 'user_id');
     }
 
     public function notificaciones()
@@ -351,8 +354,7 @@ class User extends Authenticatable
         return Observacion::whereRaw('0 = 1');
     }
 
-    // BUG CORREGIDO: la versión anterior de padresPermitidos() usaba
-    // Observacion::whereIn() por error. Ahora usa Padre correctamente.
+    // BUG CORREGIDO: la versión anterior usaba Observacion::whereIn() por error.
     public function padresPermitidos()
     {
         if ($this->isSuperAdmin() || $this->isAdmin() || $this->isDocente()) {
@@ -396,15 +398,21 @@ class User extends Authenticatable
 
     public function infoParaObservaciones(): array
     {
+        // Verificamos si la columna existe físicamente en la tabla para evitar el error 1054
+        $tieneColumnaPadre = Schema::hasColumn('padres', 'user_id');
+
         return [
             'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
             'estudiante_id' => null,
-            'padre_id'      => $this->padre?->id,
+            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
         ];
     }
 
     public function infoParaSistema(): array
     {
+        $docente           = $this->docente; // usa el accessor ya definido
+        $tieneColumnaPadre = Schema::hasColumn('padres', 'user_id');
+
         return [
             'id'            => $this->id,
             'nombre'        => $this->name,
@@ -415,10 +423,9 @@ class User extends Authenticatable
             'es_docente'    => $this->isDocente(),
             'es_estudiante' => $this->isEstudiante(),
             'es_padre'      => $this->isPadre(),
-            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
+            'profesor_id'   => $docente?->id,
             'estudiante_id' => null,
-            'padre_id'      => $this->padre?->id,
+            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
         ];
     }
-
 }

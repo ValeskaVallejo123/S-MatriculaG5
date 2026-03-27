@@ -155,7 +155,7 @@
 @section('content')
 <div class="sec-wrap container-fluid px-4">
 
-    {{-- Error alert (success lo maneja el layout) --}}
+    {{-- Error alert --}}
     @if(session('error'))
         <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;color:#991b1b;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;">
             <i class="fas fa-exclamation-triangle"></i>

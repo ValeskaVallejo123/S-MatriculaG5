@@ -26,6 +26,8 @@ class CalendarioController extends Controller
 
     /**
      * Obtiene todos los eventos en formato JSON para FullCalendar.
+     * Usar ->copy()->addDay() para no mutar el objeto original.
+     * Manejo de fecha_fin nula usando fecha_inicio como fallback.
      */
     public function obtenerEventos()
     {
@@ -93,6 +95,7 @@ class CalendarioController extends Controller
 
     /**
      * Actualiza un evento existente.
+     * Primero validar permisos, luego buscar el evento, luego actualizar.
      */
     public function actualizar(Request $request, $id)
     {
@@ -104,15 +107,7 @@ class CalendarioController extends Controller
         }
 
         try {
-            $validado = $request->validate([
-                'titulo'       => 'required|string|max:255',
-                'descripcion'  => 'nullable|string',
-                'fecha_inicio' => 'required|date',
-                'fecha_fin'    => 'required|date|after_or_equal:fecha_inicio',
-                'tipo'         => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
-                'color'        => 'required|string',
-                'todo_el_dia'  => 'boolean',
-            ]);
+            $validado = $this->validarEvento($request);
 
             if ($request->has('todo_el_dia')) {
                 $validado['todo_el_dia'] = $request->boolean('todo_el_dia');
@@ -167,5 +162,20 @@ class CalendarioController extends Controller
                 'mensaje' => 'Error al eliminar: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Validación compartida entre store() y actualizar().
+     */
+    private function validarEvento(Request $request): array
+    {
+        return $request->validate([
+            'titulo'       => 'required|string|max:255',
+            'descripcion'  => 'nullable|string',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin'    => 'required|date|after_or_equal:fecha_inicio',
+            'tipo'         => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
+            'color'        => 'required|string',
+        ]);
     }
 }
