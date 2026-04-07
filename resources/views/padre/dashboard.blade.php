@@ -283,6 +283,60 @@
     cursor: pointer; font-family: 'Inter', sans-serif; transition: background .15s;
 }
 .btn-cancel:hover { background: var(--surface); }
+
+/* ── Grid de Hijos ── */
+.hijos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+/* ── Botón Ver Calificaciones ── */
+.btn-ver-calificaciones {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .6rem;
+    padding: .65rem 2.5rem;
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--blue-mid) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: .88rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all .3s ease;
+    box-shadow: 0 4px 15px rgba(78,199,210,.25);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+}
+.btn-ver-calificaciones:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(78,199,210,.4);
+}
+.btn-ver-calificaciones:active {
+    transform: translateY(-1px);
+}
+
+@media(max-width: 768px) {
+    .hijos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    .btn-ver-calificaciones {
+        padding: .55rem 1.8rem;
+        font-size: .82rem;
+    }
+}
+
+@media(max-width: 500px) {
+    .hijos-grid {
+        grid-template-columns: 1fr;
+    }
+    .btn-ver-calificaciones {
+        width: 100%;
+    }
+}
 </style>
 @endpush
 
@@ -346,7 +400,7 @@
             Hijos / Estudiantes Vinculados
         </div>
         @if($matriculas->count() > 0)
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;">
+            <div class="hijos-grid">
                 @foreach($matriculas as $matricula)
                 @php $estudiante = $matricula->estudiante; @endphp
                 <div class="hijo-card">

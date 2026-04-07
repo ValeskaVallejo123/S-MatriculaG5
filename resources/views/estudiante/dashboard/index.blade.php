@@ -56,33 +56,6 @@
 .w-badge-navy  { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); }
 .w-badge-green { background: rgba(16,185,129,.25); color: #fff; border: 1px solid rgba(16,185,129,.5); }
 .w-badge-warn  { background: rgba(234,179,8,.2); color: #fde047; border: 1px solid rgba(234,179,8,.4); }
-.welcome-actions { display: flex; flex-direction: column; gap: .5rem; z-index: 1; position: relative; flex-shrink: 0; }
-@media(max-width:600px){ .welcome-actions { flex-direction: row; flex-wrap: wrap; } }
-
-/* ── Stats ── */
-.stats-row {
-    display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem;
-}
-@media(max-width:900px){ .stats-row { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:500px){ .stats-row { grid-template-columns: 1fr; } }
-
-.stat-card {
-    background: #fff; border: 1px solid var(--border); border-radius: 12px;
-    padding: 1rem 1.1rem; display: flex; align-items: center; gap: .85rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05); position: relative; overflow: hidden;
-    transition: box-shadow .15s;
-}
-.stat-card:hover { box-shadow: 0 4px 14px rgba(0,80,143,.1); }
-.stat-stripe {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 4px; border-radius: 12px 0 0 12px;
-}
-.stat-icon {
-    width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-size: 1rem;
-}
-.stat-label { font-size: .7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
-.stat-value { font-size: 1.45rem; font-weight: 800; color: var(--blue-dark); line-height: 1; }
 
 .notif-item {
     border-left: 3.5px solid var(--cyan); border-radius: 8px;
@@ -180,14 +153,10 @@ body.dark-mode .info-card i {
                 </span>
             @endif
         </div>
-        <div class="welcome-actions">
-            <a href="{{ route('estudiante.historial') }}" class="btn fw-bold shadow-sm"
-               style="background:#4ec7d2; color:#003b73; border: 1px solid #4ec7d2; padding: 8px 18px; white-space:nowrap; font-size:.82rem;">
-                <i class="fas fa-history me-1"></i>Historial Académico
-            </a>
-            <a href="{{ route('estado-solicitud') }}" class="btn fw-bold shadow-sm"
+        <div style="margin-left: auto; display: flex; flex-direction: column; gap: 0.5rem; z-index: 1; position: relative; flex-shrink: 0;">
+            <a href="{{ route('cambiarcontrasenia.edit') }}" class="btn fw-bold shadow-sm"
                style="background:rgba(255,255,255,.15); color:#fff; border: 1px solid rgba(255,255,255,.3); padding: 8px 18px; white-space:nowrap; font-size:.82rem;">
-                <i class="fas fa-question-circle me-1"></i>Estado de Solicitud
+                <i class="fas fa-key me-1"></i>Cambiar Contraseña
             </a>
         </div>
     </div>
@@ -232,16 +201,16 @@ body.dark-mode .info-card i {
         </div>
 
         <div class="col-md-3">
-            <a href="{{ route('estado-solicitud') }}" class="text-decoration-none">
+            <a href="{{ route('estudiante.historial') }}" class="text-decoration-none">
                 <div class="card border-0 shadow-sm h-100 info-card"
                      style="border-radius:10px;border-left:4px solid #4ec7d2 !important;cursor:pointer;">
                     <div class="card-body d-flex align-items-center gap-3">
                         <div style="width:50px;height:50px;background:rgba(78,199,210,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-file-signature fa-lg" style="color:#4ec7d2;"></i>
+                            <i class="fas fa-history fa-lg" style="color:#4ec7d2;"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <p class="text-muted mb-0 small">Mi Matrícula</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">Estado</h3>
+                            <p class="text-muted mb-0 small">Historial</p>
+                            <h3 class="mb-0 fw-bold" style="color:#003b73;">Académico</h3>
                         </div>
                         <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                     </div>
@@ -274,12 +243,10 @@ body.dark-mode .info-card i {
 
     </div>
 
-    {{-- ══ Notificaciones + Accesos rápidos ══ --}}
+    {{-- ══ Notificaciones recientes ══ --}}
     <div class="row g-4">
-
-        {{-- Notificaciones recientes --}}
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius:12px;">
                 <div class="card-header border-0 py-3 px-4"
                      style="background:linear-gradient(135deg,#00508f 0%,#4ec7d2 100%);border-radius:12px 12px 0 0;">
                     <div class="d-flex justify-content-between align-items-center">
@@ -347,97 +314,6 @@ body.dark-mode .info-card i {
                 </div>
             </div>
         </div>
-
-        {{-- Accesos rápidos --}}
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100" style="border-radius:12px;">
-                <div class="card-header border-0 py-3 px-4"
-                     style="background:linear-gradient(135deg,#003b73 0%,#00508f 100%);border-radius:12px 12px 0 0;">
-                    <h5 class="text-white fw-bold mb-0">
-                        <i class="fas fa-rocket me-2"></i>Accesos Rápidos
-                    </h5>
-                </div>
-                <div class="card-body p-3 d-flex flex-column gap-2">
-
-                    <a href="{{ route('estudiante.miHorario') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(0,80,143,0.06);border:1px solid #00508f !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-calendar-alt" style="color:#00508f;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Mi Horario de Clases</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('estudiante.calificaciones') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(78,199,210,0.06);border:1px solid #4ec7d2 !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-clipboard-check" style="color:#4ec7d2;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Mis Calificaciones</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('estudiante.historial') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(78,199,210,0.06);border:1px solid #4ec7d2 !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-history" style="color:#4ec7d2;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Historial Académico</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('estado-solicitud') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(78,199,210,0.06);border:1px solid #4ec7d2 !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-file-signature" style="color:#4ec7d2;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Estado de mi Matrícula</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('notificaciones.index') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(245,158,11,0.06);border:1px solid #f59e0b !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-bell" style="color:#d97706;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
-                                    Todas mis Notificaciones
-                                    @if($noLeidas > 0)
-                                        <span class="badge bg-danger ms-1" style="font-size:0.65rem;">{{ $noLeidas }}</span>
-                                    @endif
-                                </span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('notificaciones.preferencias') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(0,59,115,0.06);border:1px solid #003b73 !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-sliders-h" style="color:#003b73;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Preferencias de Notificación</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('cambiarcontrasenia.edit') }}" class="text-decoration-none">
-                        <div class="card border-0 info-card" style="background:rgba(124,58,237,0.06);border:1px solid #7c3aed !important;border-radius:8px;">
-                            <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
-                                <i class="fas fa-key" style="color:#7c3aed;width:20px;text-align:center;"></i>
-                                <span class="fw-semibold" style="color:#003b73;font-size:0.9rem;">Cambiar Contraseña</span>
-                                <i class="fas fa-chevron-right ms-auto" style="color:#cbd5e1;font-size:0.75rem;"></i>
-                            </div>
-                        </div>
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
     </div>
 
 </div>

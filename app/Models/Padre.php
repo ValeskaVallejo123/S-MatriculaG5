@@ -102,4 +102,19 @@ class Padre extends Model
         $config = $this->permisosParaEstudiante($estudianteId);
         return $config ? $config->tienePermiso($permiso) : false;
     }
+
+    /**
+     * Obtener calificaciones de los estudiantes vinculados al padre.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function calificacionesEstudiantes()
+    {
+        return $this->estudiantes()
+            ->with('calificaciones') // Carga las calificaciones de cada estudiante
+            ->get()
+            ->flatMap(function ($estudiante) {
+                return $estudiante->calificaciones;
+            });
+    }
 }

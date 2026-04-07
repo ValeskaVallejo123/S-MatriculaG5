@@ -17,16 +17,17 @@
 }
 
 .cc-wrap {
-    max-width: 780px;
+    max-width: 1000px;
     margin: 0 auto;
     font-family: 'Inter', sans-serif;
+    padding: 0 1rem;
 }
 
 /* ── Header ── */
 .cc-header {
     border-radius: var(--r) var(--r) 0 0;
     background: linear-gradient(135deg, #002d5a 0%, #00508f 55%, #0077b6 100%);
-    padding: 1.8rem 1.75rem;
+    padding: 2rem 2.2rem;
     position: relative; overflow: hidden;
 }
 .cc-header::before {
@@ -67,7 +68,7 @@
     border-top: none;
     border-radius: 0 0 var(--r) var(--r);
     box-shadow: 0 4px 20px rgba(0,59,115,.10);
-    padding: 1.75rem;
+    padding: 2rem;
 }
 
 /* ── Section label ── */
@@ -160,10 +161,11 @@
 .cc-error { font-size: .78rem; color: #dc3545; margin-top: .35rem; font-weight: 500; }
 
 @media(max-width: 576px) {
-    .cc-header { padding: 1.3rem 1.1rem; }
-    .cc-body   { padding: 1.2rem 1.1rem; }
-    .cc-icon   { width: 46px; height: 46px; }
-    .cc-icon i { font-size: 1.2rem; }
+    .cc-wrap    { padding: 0 .75rem; }
+    .cc-header  { padding: 1.3rem 1.1rem; }
+    .cc-body    { padding: 1.3rem 1.1rem; }
+    .cc-icon    { width: 46px; height: 46px; }
+    .cc-icon i  { font-size: 1.2rem; }
     .cc-header h2 { font-size: 1rem; }
 }
 </style>

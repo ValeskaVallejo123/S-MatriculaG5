@@ -168,7 +168,6 @@
                 <div class="stat-value">—</div>
             </div>
         </div>
-    </div>
 
     {{-- ── Sección próximamente ── --}}
     <div class="pad-card">
@@ -235,6 +234,5 @@
 
         </div>
     </div>
-
 </div>
 @endsection

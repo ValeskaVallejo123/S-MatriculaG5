@@ -302,4 +302,20 @@ class PadreController extends Controller
             abort(403, 'No autorizado');
         }
     }
+
+    /**
+     * Mostrar calificaciones de los hijos vinculados al padre.
+     */
+    public function calificaciones()
+    {
+        $padre = auth()->user()->padre; // Obtener el padre autenticado
+
+        if (!$padre) {
+            return redirect()->route('padres.login')->withErrors('No se encontró información del padre.');
+        }
+
+        $calificaciones = $padre->calificacionesEstudiantes();
+
+        return view('padres.calificaciones', compact('calificaciones'));
+    }
 }

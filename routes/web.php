@@ -593,11 +593,14 @@ Route::middleware(['auth'])->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('padre')->name('padre.')->middleware('role:padre')->group(function () {
-        Route::get('/dashboard',           [PadreDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [PadreDashboardController::class, 'index'])->name('dashboard');
         Route::get('/hijo/{estudianteId}', [PadreDashboardController::class, 'verHijo'])->name('hijo');
         // Dos nombres para la misma ruta: 'cambiarPassword' (original) y 'cambiar-password' (usado en el blade)
-        Route::put('/password',            [PadreDashboardController::class, 'cambiarPassword'])->name('cambiarPassword');
-        Route::put('/cambiar-password',    [PadreDashboardController::class, 'cambiarPassword'])->name('cambiar-password');
+        Route::put('/password', [PadreDashboardController::class, 'cambiarPassword'])->name('cambiarPassword');
+        Route::put('/cambiar-password', [PadreDashboardController::class, 'cambiarPassword'])->name('cambiar-password');
+
+        // Ruta para que los padres vean las calificaciones de sus hijos
+        Route::get('/calificaciones', [PadreDashboardController::class, 'calificaciones'])->name('calificaciones');
     });
 
     /*
@@ -611,4 +614,9 @@ Route::middleware(['auth'])->group(function () {
 
 
 }); // fin middleware auth
+
+// Ruta para que los padres vean las calificaciones de sus hijos
+Route::middleware(['auth', 'role:Padre'])->group(function () {
+    Route::get('/calificaciones', [PadreDashboardController::class, 'calificaciones'])->name('calificaciones');
+});
 
