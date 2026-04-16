@@ -2,112 +2,122 @@
 
 @section('title', 'Administradores')
 @section('page-title', 'Gestión de Administradores')
-
-@section('topbar-actions')
-    <a href="{{ route('superadmin.administradores.permisos') }}" class="adm-btn-outline">
-        <i class="fas fa-shield-alt"></i> Permisos y Roles
-    </a>
-    <a href="{{ route('superadmin.administradores.create') }}" class="adm-btn-solid">
-        <i class="fas fa-plus"></i> Nuevo Administrador
-    </a>
-@endsection
+@section('content-class', 'p-0')
 
 @push('styles')
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-.adm-wrap { font-family: 'Inter', sans-serif; }
-
-.adm-btn-outline {
-    display: inline-flex; align-items: center; gap: .4rem;
-    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: #fff; color: #00508f; border: 1.5px solid #4ec7d2;
-    text-decoration: none; margin-right: .4rem; transition: background .15s;
+.adm-wrap {
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f0f4f8;
 }
-.adm-btn-outline:hover { background: #e8f8f9; }
 
-.adm-btn-solid {
-    display: inline-flex; align-items: center; gap: .4rem;
-    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-    background: linear-gradient(135deg, #4ec7d2, #00508f);
-    color: #fff; border: none; text-decoration: none; transition: opacity .15s;
+/* Hero */
+.adm-hero {
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #4ec7d2 100%);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
 }
-.adm-btn-solid:hover { opacity: .88; color: #fff; }
-
-.adm-stats {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 1rem; margin-bottom: 1.5rem;
-}
-@media(max-width:640px){ .adm-stats { grid-template-columns: 1fr; } }
-
-.adm-stat {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
-}
-.adm-stat-icon {
-    width: 44px; height: 44px; border-radius: 10px;
+.adm-hero-left { display: flex; align-items: center; gap: 1rem; }
+.adm-hero-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.adm-stat-icon i { font-size: 1.15rem; color: #fff; }
-.adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
-.adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
+.adm-hero-icon i { font-size: 1.3rem; color: white; }
+.adm-hero-title { font-size: 1.2rem; font-weight: 700; color: white; margin: 0 0 .15rem; }
+.adm-hero-sub   { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0; }
 
+.adm-stat {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+    padding: .45rem 1rem;
+    text-align: center;
+    min-width: 80px;
+}
+.adm-stat-num { font-size: 1.2rem; font-weight: 700; color: white; line-height: 1; }
+.adm-stat-lbl { font-size: .7rem; color: rgba(255,255,255,.7); margin-top: .15rem; }
+
+.adm-btn-new {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: white; color: #003b73; border: none;
+    border-radius: 8px; padding: .5rem 1.1rem;
+    font-size: .85rem; font-weight: 700; text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); flex-shrink: 0; transition: all .2s;
+}
+.adm-btn-new:hover { background: #f0f4f8; color: #003b73; transform: translateY(-1px); }
+.adm-btn-outline {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(255,255,255,.15); color: white;
+    border: 1px solid rgba(255,255,255,.4);
+    border-radius: 8px; padding: .5rem 1.1rem;
+    font-size: .85rem; font-weight: 600; text-decoration: none; flex-shrink: 0; transition: all .2s;
+}
+.adm-btn-outline:hover { background: rgba(255,255,255,.25); color: white; }
+
+/* Toolbar */
 .adm-toolbar {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    padding: .85rem 1.25rem; margin-bottom: 1.25rem;
-    display: flex; align-items: center; justify-content: flex-end;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    padding: .9rem 2rem;
+    background: white;
+    border-bottom: 1px solid #e8eef5;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
 }
 .adm-perpage { display: flex; align-items: center; gap: .5rem; font-size: .8rem; color: #64748b; }
 .adm-perpage select {
-    padding: .3rem .6rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
-    font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
+    padding: .35rem .65rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: .8rem; background: #f8fafc; outline: none; cursor: pointer;
 }
 .adm-perpage select:focus { border-color: #4ec7d2; }
 
-.adm-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
-}
-.adm-card-head {
-    background: #003b73; padding: .85rem 1.25rem;
-    display: flex; align-items: center; gap: .6rem;
-}
-.adm-card-head i { color: #4ec7d2; font-size: 1rem; }
-.adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+/* Scrollable body */
+.adm-body { flex: 1; overflow-y: auto; padding: 1.5rem 2rem; }
 
-.adm-tbl { width: 100%; border-collapse: collapse; }
+/* Table card */
+.adm-table-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,59,115,.08);
+    overflow: hidden;
+}
 .adm-tbl thead th {
-    background: #f8fafc; padding: .6rem 1rem;
-    font-size: .7rem; font-weight: 700; letter-spacing: .07em;
-    text-transform: uppercase; color: #64748b;
-    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+    background: #003b73;
+    color: white;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: .75rem 1rem;
+    border: none;
+    white-space: nowrap;
 }
 .adm-tbl thead th.tc { text-align: center; }
-.adm-tbl tbody td {
-    padding: .65rem 1rem; border-bottom: 1px solid #f1f5f9;
-    font-size: .82rem; color: #334155; vertical-align: middle;
-}
+.adm-tbl tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .15s; }
+.adm-tbl tbody tr:hover { background: rgba(78,199,210,.05); }
+.adm-tbl tbody td { padding: .7rem 1rem; vertical-align: middle; font-size: .82rem; color: #334155; }
 .adm-tbl tbody td.tc { text-align: center; }
-.adm-tbl tbody tr:last-child td { border-bottom: none; }
-.adm-tbl tbody tr:hover { background: #fafbfc; }
+.adm-tbl tbody tr:last-child { border-bottom: none; }
 
-.adm-num {
-    width: 28px; height: 28px; border-radius: 6px;
-    background: #f1f5f9; color: #64748b;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: .75rem; font-weight: 700;
-}
+/* Avatar */
 .adm-av {
     width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
     background: linear-gradient(135deg, #4ec7d2, #00508f);
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; color: #fff; font-size: .9rem;
 }
-.adm-name  { font-weight: 600; color: #0f172a; font-size: .82rem; }
-.adm-email { font-size: .75rem; color: #64748b; }
 
+/* Badges */
 .bpill {
     display: inline-flex; align-items: center; gap: .25rem;
     padding: .22rem .65rem; border-radius: 999px;
@@ -119,6 +129,7 @@
 .b-indigo { background: #eef2ff; color: #4f46e5; }
 .b-amber  { background: #fffbeb; color: #92400e; }
 
+/* Action buttons */
 .act-btn {
     display: inline-flex; align-items: center; justify-content: center;
     width: 30px; height: 30px; border-radius: 7px; border: none;
@@ -130,63 +141,62 @@
 .act-del  { background: #fef2f2; color: #ef4444; }
 .act-del:hover  { background: #ef4444; color: #fff; }
 
-.adm-empty { padding: 3.5rem 1rem; text-align: center; }
-.adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
-.adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
-
-.adm-footer {
-    padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
+/* Pagination */
+.adm-pag {
+    padding: .75rem 1.25rem;
+    border-top: 1px solid #f1f5f9;
     display: flex; align-items: center; justify-content: space-between;
-    background: #fafafa; flex-wrap: wrap; gap: .5rem;
 }
-.adm-pages { font-size: .78rem; color: #94a3b8; }
-
-.pagination { margin: 0; gap: 3px; display: flex; }
+.pagination { margin: 0; }
 .pagination .page-link {
-    border-radius: 7px; padding: .3rem .65rem;
-    font-size: .78rem; font-weight: 500;
-    border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
+    border-radius: 6px; margin: 0 2px; border: 1px solid #e2e8f0;
+    color: #00508f; font-size: .82rem; padding: .3rem .65rem; transition: all .2s;
 }
-.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.pagination .page-link:hover { background: #bfd9ea; border-color: #4ec7d2; }
 .pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, #4ec7d2, #00508f);
-    border-color: #4ec7d2; color: #fff;
+    background: linear-gradient(135deg,#4ec7d2,#00508f);
+    border-color: #4ec7d2; color: white;
 }
-.pagination .page-item.disabled .page-link { opacity: .45; }
+
+/* Dark mode */
+body.dark-mode .adm-wrap  { background: #0f172a; }
+body.dark-mode .adm-toolbar { background: #1e293b; border-color: #334155; }
+body.dark-mode .adm-perpage select { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+body.dark-mode .adm-table-card { background: #1e293b; }
+body.dark-mode .adm-tbl tbody tr:hover { background: rgba(78,199,210,.07); }
+body.dark-mode .adm-tbl tbody td { color: #cbd5e1; }
+body.dark-mode .adm-tbl tbody tr { border-color: #334155; }
+body.dark-mode .adm-pag { border-color: #334155; }
 </style>
 @endpush
 
 @section('content')
 <div class="adm-wrap">
 
-    {{-- Stats --}}
-    <div class="adm-stats">
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
-                <i class="fas fa-users"></i>
-            </div>
+    {{-- Hero --}}
+    <div class="adm-hero">
+        <div class="adm-hero-left">
+            <div class="adm-hero-icon"><i class="fas fa-user-shield"></i></div>
             <div>
-                <div class="adm-stat-lbl">Total</div>
+                <h2 class="adm-hero-title">Gestión de Administradores</h2>
+                <p class="adm-hero-sub">Administra los usuarios con acceso al panel de control</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <div class="adm-stat">
                 <div class="adm-stat-num">{{ $administradores->total() }}</div>
+                <div class="adm-stat-lbl">Total</div>
             </div>
-        </div>
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#f87171,#dc2626);">
-                <i class="fas fa-crown"></i>
-            </div>
-            <div>
-                <div class="adm-stat-lbl">Super Admins</div>
+            <div class="adm-stat">
                 <div class="adm-stat-num">{{ $administradores->getCollection()->where('is_super_admin', true)->count() }}</div>
+                <div class="adm-stat-lbl">Super Admins</div>
             </div>
-        </div>
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
-                <i class="fas fa-user-shield"></i>
-            </div>
-            <div>
-                <div class="adm-stat-lbl">Administradores</div>
-                <div class="adm-stat-num">{{ $administradores->getCollection()->where('is_super_admin', false)->count() }}</div>
-            </div>
+            <a href="{{ route('superadmin.administradores.permisos') }}" class="adm-btn-outline">
+                <i class="fas fa-shield-alt"></i> Permisos y Roles
+            </a>
+            <a href="{{ route('superadmin.administradores.create') }}" class="adm-btn-new">
+                <i class="fas fa-plus"></i> Nuevo Administrador
+            </a>
         </div>
     </div>
 
@@ -204,114 +214,131 @@
         </div>
     </div>
 
-    {{-- Tabla --}}
-    <div class="adm-card">
-        <div class="adm-card-head">
-            <i class="fas fa-user-shield"></i>
-            <span>Lista de Administradores</span>
-        </div>
-        <div style="overflow-x:auto;">
-            <table class="adm-tbl">
-                <thead>
-                    <tr>
-                        <th class="tc">#</th>
-                        <th>Administrador</th>
-                        <th>Email</th>
-                        <th class="tc">Rol</th>
-                        <th class="tc">Permisos</th>
-                        <th class="tc">Estado</th>
-                        <th class="tc">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($administradores as $index => $admin)
-                    <tr>
-                        <td class="tc">
-                            <span class="adm-num">{{ $administradores->firstItem() + $index }}</span>
-                        </td>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:.65rem;">
-                                <div class="adm-av">{{ strtoupper(substr($admin->name, 0, 1)) }}</div>
-                                <div>
-                                    <div class="adm-name">{{ $admin->name }}</div>
-                                    @if($admin->is_protected)
-                                        <span class="bpill b-amber" style="margin-top:.2rem;">
-                                            <i class="fas fa-lock"></i> Protegido
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </td>
-                        <td class="adm-email">{{ $admin->email }}</td>
-                        <td class="tc">
-                            @if($admin->is_super_admin)
-                                <span class="bpill b-red"><i class="fas fa-crown"></i> Super Admin</span>
-                            @else
-                                <span class="bpill b-blue"><i class="fas fa-user-shield"></i> Administrador</span>
-                            @endif
-                        </td>
-                        <td class="tc">
-                            @php $perms = is_array($admin->permissions) ? count($admin->permissions) : 0; @endphp
-                            @if($admin->is_super_admin)
-                                <span class="bpill b-green"><i class="fas fa-check-circle"></i> Todos</span>
-                            @else
-                                <span class="bpill b-indigo"><i class="fas fa-list"></i> {{ $perms }}</span>
-                            @endif
-                        </td>
-                        <td class="tc">
-                            <span class="bpill b-green">
-                                <i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle;"></i> Activo
-                            </span>
-                        </td>
-                        <td class="tc">
-                            @if(!$admin->is_protected)
-                                <div style="display:inline-flex;gap:.4rem;align-items:center;">
-                                    <a href="{{ route('superadmin.administradores.edit', $admin->id) }}"
-                                       class="act-btn act-edit" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button type="button"
-                                            class="act-btn act-del"
-                                            data-route="{{ route('superadmin.administradores.destroy', $admin->id) }}"
-                                            data-message="¿Estás seguro de eliminar a este administrador?"
-                                            data-name="{{ $admin->name }}"
-                                            onclick="mostrarModalDeleteData(this)"
-                                            title="Eliminar">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            @else
-                                <span style="color:#cbd5e1;font-size:.75rem;font-weight:600;">
-                                    <i class="fas fa-lock"></i> Protegido
-                                </span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7">
-                            <div class="adm-empty">
-                                <i class="fas fa-users"></i>
-                                <p>No hay administradores registrados</p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+    {{-- Body --}}
+    <div class="adm-body">
 
-        @if($administradores->hasPages())
-        <div class="adm-footer">
-            <span class="adm-pages">
-                Mostrando {{ $administradores->firstItem() }}–{{ $administradores->lastItem() }}
-                de {{ $administradores->total() }} registros
-            </span>
-            {{ $administradores->appends(request()->query())->links() }}
-        </div>
+        {{-- Flash messages --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show mb-3 border-0 shadow-sm" role="alert"
+                 style="border-radius:10px;border-left:4px solid #4ec7d2 !important;">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         @endif
-    </div>
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mb-3 border-0 shadow-sm" role="alert"
+                 style="border-radius:10px;border-left:4px solid #ef4444 !important;">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
+        {{-- Table card --}}
+        <div class="adm-table-card">
+            <div class="table-responsive">
+                <table class="table adm-tbl mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Administrador</th>
+                            <th>Email</th>
+                            <th class="tc">Rol</th>
+                            <th class="tc">Permisos</th>
+                            <th class="tc">Estado</th>
+                            <th class="tc">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($administradores as $index => $admin)
+                        <tr>
+                            <td>
+                                <span style="width:28px;height:28px;border-radius:6px;background:#f1f5f9;color:#64748b;
+                                            display:inline-flex;align-items:center;justify-content:center;
+                                            font-size:.75rem;font-weight:700;">
+                                    {{ $administradores->firstItem() + $index }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="adm-av">{{ strtoupper(substr($admin->name, 0, 1)) }}</div>
+                                    <div>
+                                        <div class="fw-semibold" style="color:#003b73;font-size:.88rem;">{{ $admin->name }}</div>
+                                        @if($admin->is_protected)
+                                            <span class="bpill b-amber" style="margin-top:.2rem;">
+                                                <i class="fas fa-lock"></i> Protegido
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="font-size:.8rem;color:#64748b;">{{ $admin->email }}</td>
+                            <td class="tc">
+                                @if($admin->is_super_admin)
+                                    <span class="bpill b-red"><i class="fas fa-crown"></i> Super Admin</span>
+                                @else
+                                    <span class="bpill b-blue"><i class="fas fa-user-shield"></i> Administrador</span>
+                                @endif
+                            </td>
+                            <td class="tc">
+                                @php $perms = is_array($admin->permissions) ? count($admin->permissions) : 0; @endphp
+                                @if($admin->is_super_admin)
+                                    <span class="bpill b-green"><i class="fas fa-check-circle"></i> Todos</span>
+                                @else
+                                    <span class="bpill b-indigo"><i class="fas fa-list"></i> {{ $perms }}</span>
+                                @endif
+                            </td>
+                            <td class="tc">
+                                <span class="bpill b-green">
+                                    <i class="fas fa-circle" style="font-size:.45rem;vertical-align:middle;"></i> Activo
+                                </span>
+                            </td>
+                            <td class="tc">
+                                @if(!$admin->is_protected)
+                                    <div class="d-inline-flex gap-1">
+                                        <a href="{{ route('superadmin.administradores.edit', $admin->id) }}"
+                                           class="act-btn act-edit" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="act-btn act-del"
+                                                data-route="{{ route('superadmin.administradores.destroy', $admin->id) }}"
+                                                data-message="¿Estás seguro de eliminar a este administrador?"
+                                                data-name="{{ $admin->name }}"
+                                                onclick="mostrarModalDeleteData(this)"
+                                                title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                @else
+                                    <span style="color:#cbd5e1;font-size:.75rem;font-weight:600;">
+                                        <i class="fas fa-lock"></i> Protegido
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="fas fa-users fa-2x mb-3" style="color:#cbd5e1;display:block;"></i>
+                                <div class="fw-semibold" style="color:#003b73;">No hay administradores registrados</div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($administradores->hasPages())
+            <div class="adm-pag">
+                <small class="text-muted">
+                    {{ $administradores->firstItem() }} – {{ $administradores->lastItem() }} de {{ $administradores->total() }} registros
+                </small>
+                {{ $administradores->appends(request()->query())->links() }}
+            </div>
+            @endif
+        </div>
+
+    </div>{{-- /adm-body --}}
 </div>
 @endsection
 
@@ -325,4 +352,3 @@ function cambiarPerPage(valor) {
 }
 </script>
 @endpush
-

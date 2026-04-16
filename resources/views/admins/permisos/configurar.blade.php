@@ -65,20 +65,6 @@
 @section('content')
 <div class="container-fluid" style="max-width:100%;">
 
-    {{-- Mensajes --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-3">
-            <i class="fas fa-check-circle me-1"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mb-3">
-            <i class="fas fa-exclamation-circle me-1"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
     {{-- ══ Hero del Padre ══════════════════════════════════════ --}}
     <div class="card border-0 shadow-sm mb-3" style="border-radius:12px;overflow:hidden;">
         <div style="background:linear-gradient(135deg,#003b73,#00508f);padding:1.25rem 1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">

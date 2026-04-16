@@ -4,12 +4,6 @@
 
 @section('page-title', 'Editar Padre/Tutor')
 
-@section('topbar-actions')
-    <a href="{{ route('padres.show', $padre->id) }}" class="pe-btn-cancel">
-        <i class="fas fa-times"></i> Cancelar
-    </a>
-@endsection
-
 @push('styles')
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -186,8 +180,8 @@
                         <label class="pe-label" for="estado">Estado <span class="req">*</span></label>
                         <select id="estado" name="estado"
                                 class="pe-select @error('estado') is-invalid @enderror" required>
-                            <option value="activo"   {{ old('estado', $padre->estado) == 'activo'   ? 'selected' : '' }}>Activo</option>
-                            <option value="inactivo" {{ old('estado', $padre->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+                            <option value="1" {{ old('estado', $padre->estado) == 1 ? 'selected' : '' }}>Activo</option>
+                            <option value="0" {{ old('estado', $padre->estado) == 0 ? 'selected' : '' }}>Inactivo</option>
                         </select>
                         @error('estado')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>

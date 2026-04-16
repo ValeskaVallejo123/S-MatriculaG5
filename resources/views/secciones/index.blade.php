@@ -2,202 +2,208 @@
 
 @section('title', 'Inscripciones')
 @section('page-title', 'Gestión de Inscripciones')
-
-@section('topbar-actions')
-    <button type="button" class="sec-btn-new"
-            data-bs-toggle="modal" data-bs-target="#nuevaInscripcionModal">
-        <i class="fas fa-plus"></i> Nueva Asignación
-    </button>
-@endsection
+@section('content-class', 'p-0')
 
 @push('styles')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    .sec-wrap { font-family: 'Inter', sans-serif; }
+.sec-wrap {
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f0f4f8;
+}
 
-    /* Topbar */
-    .sec-btn-new {
-        background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
-        color: white; padding: .5rem 1.2rem; border-radius: 8px; font-weight: 600;
-        display: inline-flex; align-items: center; gap: .5rem; border: none;
-        box-shadow: 0 2px 8px rgba(78,199,210,.3); font-size: .9rem; cursor: pointer; transition: all .2s;
-    }
-    .sec-btn-new:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(78,199,210,.45); }
+/* Hero */
+.sec-hero {
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #4ec7d2 100%);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+.sec-hero-left { display: flex; align-items: center; gap: 1rem; }
+.sec-hero-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sec-hero-icon i { font-size: 1.3rem; color: white; }
+.sec-hero-title { font-size: 1.2rem; font-weight: 700; color: white; margin: 0 0 .15rem; }
+.sec-hero-sub   { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0; }
 
-    /* Stats */
-    .sec-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.25rem; }
-    @media(max-width:768px){ .sec-stats { grid-template-columns: 1fr; } }
+.sec-stat {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+    padding: .45rem 1rem;
+    text-align: center;
+    min-width: 80px;
+}
+.sec-stat-num { font-size: 1.2rem; font-weight: 700; color: white; line-height: 1; }
+.sec-stat-lbl { font-size: .7rem; color: rgba(255,255,255,.7); margin-top: .15rem; }
 
-    .sec-stat {
-        background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
-        padding: 1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,.05);
-    }
-    .sec-stat-icon { width: 46px; height: 46px; border-radius: 11px; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center; }
-    .sec-stat-icon i { font-size: 1.15rem; color: #fff; }
-    .sec-stat-lbl { font-size: .7rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .05em; color: #94a3b8; margin-bottom: .15rem; }
-    .sec-stat-num { font-size: 1.6rem; font-weight: 700; color: #0f172a; line-height: 1; }
+.sec-btn-new {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: white; color: #003b73; border: none;
+    border-radius: 8px; padding: .5rem 1.1rem;
+    font-size: .85rem; font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); flex-shrink: 0; transition: all .2s; cursor: pointer;
+}
+.sec-btn-new:hover { background: #f0f4f8; color: #003b73; transform: translateY(-1px); }
 
-    /* Filtros card */
-    .sec-filter-card {
-        background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 1rem 1.25rem; margin-bottom: 1.25rem;
-    }
-    .sec-input, .sec-select {
-        border: 2px solid #bfd9ea; border-radius: 8px; padding: .4rem .8rem;
-        font-size: .88rem; color: #1e293b; background: white; transition: border-color .2s;
-        font-family: 'Inter', sans-serif; width: 100%;
-    }
-    .sec-input:focus, .sec-select:focus { border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.12); outline: none; }
-    .sec-filter-label { font-size: .72rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .5px; color: #003b73; margin-bottom: .35rem; display: block; }
-    .sec-btn-filter {
-        background: linear-gradient(135deg, #4ec7d2, #00508f); color: white;
-        border: none; border-radius: 8px; padding: .45rem 1rem; font-weight: 600;
-        font-size: .88rem; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem;
-        white-space: nowrap; transition: opacity .15s; width: 100%;
-        justify-content: center;
-    }
-    .sec-btn-filter:hover { opacity: .88; }
-    .sec-btn-clear {
-        border: 1.5px solid #e2e8f0; color: #6b7280; background: white;
-        border-radius: 8px; padding: .35rem .9rem; font-size: .82rem; font-weight: 500;
-        text-decoration: none; display: inline-flex; align-items: center; gap: .4rem;
-    }
-    .sec-btn-clear:hover { border-color: #4ec7d2; color: #00508f; }
+/* Toolbar / filters */
+.sec-toolbar {
+    padding: .9rem 2rem;
+    background: white;
+    border-bottom: 1px solid #e8eef5;
+    flex-shrink: 0;
+}
+.sec-input, .sec-select {
+    border: 1.5px solid #e2e8f0; border-radius: 8px; padding: .42rem .8rem;
+    font-size: .88rem; color: #1e293b; background: #f8fafc; transition: border-color .2s;
+    width: 100%;
+}
+.sec-input:focus, .sec-select:focus { border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.12); outline: none; background: white; }
+.sec-filter-label { font-size: .72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .5px; color: #003b73; margin-bottom: .35rem; display: block; }
+.sec-btn-filter {
+    background: linear-gradient(135deg, #4ec7d2, #00508f); color: white;
+    border: none; border-radius: 8px; padding: .45rem 1rem; font-weight: 600;
+    font-size: .82rem; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem;
+    white-space: nowrap; width: 100%; justify-content: center; transition: opacity .15s;
+}
+.sec-btn-filter:hover { opacity: .88; }
+.sec-btn-clear {
+    border: 1.5px solid #e2e8f0; color: #6b7280; background: white;
+    border-radius: 8px; padding: .35rem .9rem; font-size: .82rem; font-weight: 500;
+    text-decoration: none; display: inline-flex; align-items: center; gap: .4rem;
+}
+.sec-btn-clear:hover { border-color: #4ec7d2; color: #00508f; }
 
-    /* Lista */
-    .sec-card {
-        background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: .6rem;
-        transition: transform .18s, box-shadow .18s;
-    }
-    .sec-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,59,115,.1); }
-    .sec-card-body { padding: .85rem 1.25rem; }
+/* Scrollable body */
+.sec-body { flex: 1; overflow-y: auto; padding: 1.5rem 2rem; }
 
-    .sec-avatar {
-        width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
-        background: linear-gradient(135deg, #00508f, #003b73);
-        display: flex; align-items: center; justify-content: center;
-        border: 2px solid #4ec7d2; font-weight: 700; color: white; font-size: .95rem;
-    }
-    .sec-name { font-weight: 600; color: #003b73; font-size: .9rem; }
-    .sec-sub  { font-size: .73rem; color: #94a3b8; margin-top: .1rem; }
+/* Cards */
+.sec-card {
+    background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: .6rem;
+    transition: transform .18s, box-shadow .18s;
+}
+.sec-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,59,115,.1); }
+.sec-card-body { padding: .85rem 1.25rem; }
 
-    .sec-badge-sec  { background: rgba(78,199,210,.12); color: #00508f; border: 1px solid #4ec7d2;
-        border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
-        display: inline-flex; align-items: center; gap: .3rem; }
-    .sec-badge-pend { background: rgba(255,193,7,.12); color: #b45309; border: 1px solid #ffc107;
-        border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
-        display: inline-flex; align-items: center; gap: .3rem; }
-    .sec-badge-ok   { background: rgba(16,185,129,.1); color: #065f46; border: 1px solid #6ee7b7;
-        border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
-        display: inline-flex; align-items: center; gap: .3rem; }
+.sec-avatar {
+    width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(135deg, #00508f, #003b73);
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #4ec7d2; font-weight: 700; color: white; font-size: .95rem;
+}
+.sec-name { font-weight: 600; color: #003b73; font-size: .9rem; }
+.sec-sub  { font-size: .73rem; color: #94a3b8; margin-top: .1rem; }
 
-    .sec-date  { font-size: .8rem; color: #003b73; }
-    .sec-code  { font-size: .72rem; color: #94a3b8; margin-top: .1rem; }
+.sec-badge-sec  { background: rgba(78,199,210,.12); color: #00508f; border: 1px solid #4ec7d2;
+    border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
+    display: inline-flex; align-items: center; gap: .3rem; }
+.sec-badge-pend { background: rgba(255,193,7,.12); color: #b45309; border: 1px solid #ffc107;
+    border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
+    display: inline-flex; align-items: center; gap: .3rem; }
+.sec-badge-ok   { background: rgba(16,185,129,.1); color: #065f46; border: 1px solid #6ee7b7;
+    border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
+    display: inline-flex; align-items: center; gap: .3rem; }
 
-    .sec-btn-assign {
-        border: 1.5px solid #4ec7d2; color: #00508f; background: white;
-        border-radius: 7px; padding: .32rem .7rem; font-size: .8rem;
-        cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; transition: all .15s;
-    }
-    .sec-btn-assign:hover { background: #00508f; color: white; border-color: #00508f; }
-    .sec-btn-assign.assigned { border-color: #00508f; }
+.sec-date  { font-size: .8rem; color: #003b73; }
+.sec-code  { font-size: .72rem; color: #94a3b8; margin-top: .1rem; }
 
-    /* Empty */
-    .sec-empty { text-align: center; padding: 3.5rem 1rem; }
-    .sec-empty i { font-size: 3rem; color: #c3d9ee; margin-bottom: 1rem; display: block; }
-    .sec-empty h5 { color: #003b73; margin-bottom: .5rem; }
-    .sec-empty p { color: #6b7280; font-size: .9rem; }
+.sec-btn-assign {
+    border: 1.5px solid #4ec7d2; color: #00508f; background: white;
+    border-radius: 7px; padding: .32rem .7rem; font-size: .8rem;
+    cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; transition: all .15s;
+}
+.sec-btn-assign:hover { background: #00508f; color: white; border-color: #00508f; }
+.sec-btn-assign.assigned { border-color: #00508f; }
 
-    /* Paginación */
-    .sec-pag-footer {
-        padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
-        display: flex; align-items: center; justify-content: space-between;
-        background: #fafafa; flex-wrap: wrap; gap: .5rem;
-        border-radius: 0 0 12px 12px;
-    }
-    .sec-pag-info { font-size: .78rem; color: #94a3b8; }
-    .pagination { margin: 0; gap: 3px; display: flex; }
-    .pagination .page-link {
-        border-radius: 7px; padding: .3rem .65rem; font-size: .78rem; font-weight: 500;
-        border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
-    }
-    .pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
-    .pagination .page-item.active .page-link {
-        background: linear-gradient(135deg, #4ec7d2, #00508f);
-        border-color: #4ec7d2; color: #fff;
-    }
-    .pagination .page-item.disabled .page-link { opacity: .45; }
+/* Pagination */
+.sec-pag {
+    background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: .75rem 1.25rem; margin-top: .5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: .5rem;
+}
+.pagination { margin: 0; }
+.pagination .page-link {
+    border-radius: 6px; margin: 0 2px; border: 1px solid #e2e8f0;
+    color: #00508f; font-size: .82rem; padding: .3rem .65rem; transition: all .2s;
+}
+.pagination .page-link:hover { background: #bfd9ea; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg,#4ec7d2,#00508f);
+    border-color: #4ec7d2; color: white;
+}
 
-    /* Modales */
-    .sec-modal-header {
-        background: linear-gradient(135deg, #4ec7d2, #00508f);
-        border-radius: 12px 12px 0 0; border: none; padding: 1rem 1.5rem;
-    }
-    .sec-modal-label { font-size: .78rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .5px; color: #003b73; margin-bottom: .4rem; display: block; }
-    .sec-modal-input, .sec-modal-select {
-        width: 100%; border: 2px solid #bfd9ea; border-radius: 8px;
-        padding: .45rem .85rem; font-size: .92rem; color: #1e293b;
-        background: white; font-family: 'Inter', sans-serif;
-    }
-    .sec-modal-input:focus, .sec-modal-select:focus {
-        border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.15); outline: none;
-    }
-    .sec-modal-input:disabled { background: #f8fafc; }
+/* Modals */
+.sec-modal-header {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-radius: 12px 12px 0 0; border: none; padding: 1rem 1.5rem;
+}
+.sec-modal-label { font-size: .78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .5px; color: #003b73; margin-bottom: .4rem; display: block; }
+.sec-modal-input, .sec-modal-select {
+    width: 100%; border: 2px solid #bfd9ea; border-radius: 8px;
+    padding: .45rem .85rem; font-size: .92rem; color: #1e293b; background: white;
+}
+.sec-modal-input:focus, .sec-modal-select:focus {
+    border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.15); outline: none;
+}
+.sec-modal-input:disabled { background: #f8fafc; }
+
+/* Dark mode */
+body.dark-mode .sec-wrap  { background: #0f172a; }
+body.dark-mode .sec-toolbar { background: #1e293b; border-color: #334155; }
+body.dark-mode .sec-input, body.dark-mode .sec-select { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+body.dark-mode .sec-card { background: #1e293b; border-color: #334155; }
+body.dark-mode .sec-name { color: #e2e8f0; }
+body.dark-mode .sec-pag { background: #1e293b; border-color: #334155; }
 </style>
 @endpush
 
 @section('content')
-<div class="sec-wrap container-fluid px-4">
+<div class="sec-wrap">
 
-    {{-- Error alert (success lo maneja el layout) --}}
-    @if(session('error'))
-        <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;color:#991b1b;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span>{{ session('error') }}</span>
-            <button type="button" onclick="this.parentElement.remove()"
-                    style="margin-left:auto;background:none;border:none;color:#991b1b;font-size:1.2rem;cursor:pointer;line-height:1;">&times;</button>
-        </div>
-    @endif
-
-    {{-- Stats --}}
-    <div class="sec-stats">
-        <div class="sec-stat">
-            <div class="sec-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
-                <i class="fas fa-clipboard-check"></i>
-            </div>
+    {{-- Hero --}}
+    <div class="sec-hero">
+        <div class="sec-hero-left">
+            <div class="sec-hero-icon"><i class="fas fa-clipboard-check"></i></div>
             <div>
-                <div class="sec-stat-lbl">Total Inscripciones</div>
+                <h2 class="sec-hero-title">Gestión de Inscripciones</h2>
+                <p class="sec-hero-sub">Asigna secciones a los alumnos con matrícula aprobada</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <div class="sec-stat">
                 <div class="sec-stat-num">{{ $inscripciones->total() }}</div>
+                <div class="sec-stat-lbl">Total</div>
             </div>
-        </div>
-        <div class="sec-stat">
-            <div class="sec-stat-icon" style="background:linear-gradient(135deg,#10b981,#059669);">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div>
+            <div class="sec-stat">
+                <div class="sec-stat-num">{{ \App\Models\Matricula::whereNotNull('seccion_id')->count() }}</div>
                 <div class="sec-stat-lbl">Con Sección</div>
-                <div class="sec-stat-num" style="color:#059669;">{{ \App\Models\Matricula::whereNotNull('seccion_id')->count() }}</div>
             </div>
-        </div>
-        <div class="sec-stat">
-            <div class="sec-stat-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div>
+            <div class="sec-stat">
+                <div class="sec-stat-num">{{ \App\Models\Matricula::whereNull('seccion_id')->count() }}</div>
                 <div class="sec-stat-lbl">Sin Asignar</div>
-                <div class="sec-stat-num" style="color:#b45309;">{{ \App\Models\Matricula::whereNull('seccion_id')->count() }}</div>
             </div>
+            <button type="button" class="sec-btn-new"
+                    data-bs-toggle="modal" data-bs-target="#nuevaInscripcionModal">
+                <i class="fas fa-plus"></i> Nueva Asignación
+            </button>
         </div>
     </div>
 
-    {{-- Filtros --}}
-    <div class="sec-filter-card">
+    {{-- Toolbar / Filtros --}}
+    <div class="sec-toolbar">
         <form action="{{ request()->url() }}" method="GET">
             <div class="row g-2 align-items-end">
                 <div class="col-md-5">
@@ -230,8 +236,19 @@
         </form>
     </div>
 
-    {{-- Lista --}}
-    <div class="sec-list-wrap">
+    {{-- Body --}}
+    <div class="sec-body">
+
+        {{-- Flash error --}}
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mb-3 border-0 shadow-sm" role="alert"
+                 style="border-radius:10px;border-left:4px solid #ef4444 !important;">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        {{-- List --}}
         @forelse($inscripciones as $inscripcion)
             @php $estudiante = $inscripcion->estudiante; @endphp
             @if(!$estudiante) @continue @endif
@@ -353,10 +370,10 @@
 
         @empty
             <div class="sec-card">
-                <div class="sec-empty">
-                    <i class="fas fa-clipboard-list"></i>
-                    <h5>No hay inscripciones registradas</h5>
-                    <p>
+                <div class="sec-empty" style="text-align:center;padding:3.5rem 1rem;">
+                    <i class="fas fa-clipboard-list fa-2x mb-3" style="color:#cbd5e1;display:block;"></i>
+                    <h5 style="color:#003b73;margin-bottom:.5rem;">No hay inscripciones registradas</h5>
+                    <p style="color:#6b7280;font-size:.9rem;">
                         @if(request('buscar') || request('estado'))
                             No se encontraron resultados con los filtros aplicados.
                         @else
@@ -369,15 +386,15 @@
 
         {{-- Paginación --}}
         @if($inscripciones->hasPages())
-            <div class="sec-pag-footer" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-top:.5rem;">
-                <span class="sec-pag-info">
+            <div class="sec-pag">
+                <small class="text-muted">
                     Mostrando {{ $inscripciones->firstItem() }}–{{ $inscripciones->lastItem() }} de {{ $inscripciones->total() }} inscripciones
-                </span>
+                </small>
                 {{ $inscripciones->appends(request()->query())->links() }}
             </div>
         @endif
-    </div>
 
+    </div>{{-- /sec-body --}}
 </div>
 
 {{-- Modal nueva asignación --}}

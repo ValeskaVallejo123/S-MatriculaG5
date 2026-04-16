@@ -2,127 +2,54 @@
 
 @section('title', 'Mis Cursos')
 @section('page-title', 'Mis Cursos')
+@section('content-class', 'p-0')
 
 @push('styles')
 <style>
-:root {
-    --blue:     #00508f;
-    --blue-mid: #003b73;
-    --teal:     #4ec7d2;
-    --border:   #e8edf4;
-    --muted:    #6b7a90;
-    --r:        14px;
+.mc-wrap {
+    height: calc(100vh - 64px);
+    display: flex; flex-direction: column;
+    overflow: hidden; background: #f0f4f8;
 }
 
-.mc-wrap { width: 100%; box-sizing: border-box; }
-
-/* ── HEADER ── */
-.mc-header {
-    border-radius: var(--r) var(--r) 0 0;
-    background: linear-gradient(135deg, #002d5a 0%, #00508f 55%, #0077b6 100%);
-    padding: 1.5rem 1.7rem;
-    position: relative; overflow: hidden;
+/* Hero */
+.mc-hero {
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #4ec7d2 100%);
+    padding: 1.25rem 2rem; display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem; flex-shrink: 0;
 }
-.mc-header::before {
-    content: ''; position: absolute; right: -50px; top: -50px;
-    width: 200px; height: 200px; border-radius: 50%;
-    background: rgba(78,199,210,.13); pointer-events: none;
+.mc-hero-left { display: flex; align-items: center; gap: 1rem; }
+.mc-hero-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.3);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.mc-header::after {
-    content: ''; position: absolute; right: 100px; bottom: -45px;
-    width: 120px; height: 120px; border-radius: 50%;
-    background: rgba(255,255,255,.05); pointer-events: none;
-}
-.mc-header-inner {
-    position: relative; z-index: 1;
-    display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
-}
-.mc-avatar {
-    width: 64px; height: 64px; border-radius: 14px;
-    border: 2.5px solid rgba(78,199,210,.7);
-    background: rgba(255,255,255,.12);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 16px rgba(0,0,0,.2); flex-shrink: 0;
-}
-.mc-avatar i { color: white; font-size: 1.6rem; }
-.mc-header h2 {
-    font-size: 1.3rem; font-weight: 800; color: white;
-    margin: 0 0 .4rem; text-shadow: 0 1px 4px rgba(0,0,0,.2);
-}
-.mc-badge {
-    display: inline-flex; align-items: center; gap: .3rem;
-    padding: .2rem .65rem; border-radius: 999px;
-    font-size: .71rem; font-weight: 700;
-    border: 1px solid rgba(255,255,255,.35);
-    background: rgba(255,255,255,.15); color: white;
-    margin-right: .35rem;
-}
-
-/* ── BODY ── */
-.mc-body {
-    background: white;
-    border: 1px solid var(--border);
-    border-top: none;
-    border-radius: 0 0 var(--r) var(--r);
-    box-shadow: 0 4px 16px rgba(0,59,115,.10);
-    padding: 1.4rem 1.7rem;
-    margin-bottom: 1.3rem;
-}
-
-/* ── STATS ROW ── */
-.mc-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: .85rem;
-    margin-bottom: 1.5rem;
-}
+.mc-hero-icon i { font-size: 1.3rem; color: white; }
+.mc-hero-title { font-size: 1.2rem; font-weight: 700; color: white; margin: 0 0 .15rem; }
+.mc-hero-sub   { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0; }
 .mc-stat {
-    background: #f5f8fc;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: .9rem 1rem;
-    display: flex; align-items: center; gap: .75rem;
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px; padding: .45rem 1rem; text-align: center; min-width: 80px;
 }
-.mc-stat-icon {
-    width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, rgba(78,199,210,.18), rgba(0,80,143,.10));
-    border: 1px solid rgba(78,199,210,.25);
-}
-.mc-stat-icon i { color: var(--blue); font-size: .9rem; }
-.mc-stat-val {
-    font-size: 1.35rem; font-weight: 800; color: var(--blue-mid); line-height: 1;
-}
-.mc-stat-lbl {
-    font-size: .68rem; color: var(--muted); font-weight: 600;
-    text-transform: uppercase; letter-spacing: .05em; margin-top: .15rem;
-}
+.mc-stat-num { font-size: 1.2rem; font-weight: 700; color: white; line-height: 1; }
+.mc-stat-lbl { font-size: .7rem; color: rgba(255,255,255,.7); margin-top: .15rem; }
 
-/* ── SECTION TITLE ── */
-.mc-sec {
-    display: flex; align-items: center; gap: .5rem;
-    font-size: .75rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .08em;
-    color: var(--blue); margin-bottom: .95rem;
-    padding-bottom: .55rem;
-    border-bottom: 2px solid rgba(78,199,210,.15);
-}
-.mc-sec i { color: var(--teal); }
+/* Body */
+.mc-body { flex: 1; overflow-y: auto; padding: 1.5rem 2rem; }
 
-/* ── GRID DE CURSOS ── */
+/* Cards grid */
 .mc-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
+    gap: 1.2rem;
 }
+@media(max-width:580px) { .mc-grid { grid-template-columns: 1fr; } }
 
-/* ── CURSO CARD ── */
+/* Card */
 .mc-card {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: box-shadow .2s, transform .2s, border-color .2s;
-    background: white;
+    background: white; border-radius: 12px; overflow: hidden;
+    border: 1px solid #e2e8f0; box-shadow: 0 2px 12px rgba(0,59,115,.07);
+    transition: box-shadow .2s, transform .2s;
 }
 .mc-card:hover {
     box-shadow: 0 6px 24px rgba(0,80,143,.13);
@@ -130,9 +57,8 @@
     transform: translateY(-2px);
 }
 .mc-card-top {
-    background: linear-gradient(135deg, #002d5a 0%, #00508f 60%, #0077b6 100%);
-    padding: 1rem 1.1rem .85rem;
-    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #0077b6 100%);
+    padding: 1rem 1.1rem .85rem; position: relative; overflow: hidden;
 }
 .mc-card-top::after {
     content: ''; position: absolute; right: -20px; top: -20px;
@@ -141,113 +67,97 @@
 }
 .mc-card-nivel {
     font-size: .62rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .08em; color: rgba(78,199,210,.9);
-    margin-bottom: .25rem;
+    letter-spacing: .08em; color: rgba(78,199,210,.9); margin-bottom: .25rem;
 }
-.mc-card-grado {
-    font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.1;
-}
+.mc-card-grado { font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.1; }
 .mc-card-seccion {
-    display: inline-flex; align-items: center; gap: .25rem;
-    margin-top: .35rem;
-    background: rgba(255,255,255,.15);
-    border: 1px solid rgba(255,255,255,.25);
-    border-radius: 999px;
-    padding: .15rem .55rem;
+    display: inline-flex; align-items: center; gap: .25rem; margin-top: .35rem;
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px; padding: .15rem .55rem;
     font-size: .68rem; font-weight: 700; color: white;
 }
 .mc-card-body { padding: .9rem 1.1rem; }
 .mc-materias-label {
     font-size: .63rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .07em; color: var(--muted); margin-bottom: .45rem;
+    letter-spacing: .07em; color: #94a3b8; margin-bottom: .45rem;
 }
 .mc-materia-tag {
     display: inline-flex; align-items: center; gap: .25rem;
-    background: linear-gradient(135deg, rgba(78,199,210,.12), rgba(0,80,143,.07));
-    border: 1px solid rgba(78,199,210,.3);
-    border-radius: 999px;
-    padding: .2rem .65rem;
-    font-size: .7rem; font-weight: 600; color: var(--blue-mid);
+    background: rgba(78,199,210,.1); border: 1px solid rgba(78,199,210,.3);
+    border-radius: 999px; padding: .2rem .65rem;
+    font-size: .7rem; font-weight: 600; color: #003b73;
     margin: .15rem .15rem 0 0;
 }
-.mc-materia-tag i { color: var(--teal); font-size: .6rem; }
+.mc-materia-tag i { color: #4ec7d2; font-size: .6rem; }
 .mc-card-footer {
-    border-top: 1px solid var(--border);
-    padding: .6rem 1.1rem;
+    border-top: 1px solid #e2e8f0; padding: .6rem 1.1rem;
     display: flex; align-items: center; justify-content: space-between;
     background: #f9fbfd;
 }
+.mc-est-count {
+    display: flex; align-items: center; gap: .35rem;
+    font-size: .75rem; font-weight: 700; color: #003b73;
+}
+.mc-est-count i { color: #4ec7d2; }
 .mc-ver-btn {
     display: inline-flex; align-items: center; gap: .3rem;
-    background: linear-gradient(135deg, var(--teal), var(--blue));
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
     color: white; padding: .3rem .85rem; border-radius: 6px;
-    font-size: .7rem; font-weight: 700; text-decoration: none;
-    transition: opacity .15s;
+    font-size: .72rem; font-weight: 700; text-decoration: none; transition: opacity .15s;
 }
-.mc-ver-btn:hover { opacity: .88; color: white; text-decoration: none; }
-.mc-estudiantes {
-    display: flex; align-items: center; gap: .35rem;
-    font-size: .72rem; font-weight: 700; color: var(--blue-mid);
-}
-.mc-estudiantes i { color: var(--teal); font-size: .75rem; }
-.mc-anio {
-    font-size: .65rem; color: var(--muted);
-    display: flex; align-items: center; gap: .25rem;
-}
-.mc-anio i { color: rgba(78,199,210,.6); font-size: .6rem; }
+.mc-ver-btn:hover { opacity: .88; color: white; }
 
-/* ── EMPTY STATE ── */
-.mc-empty {
-    text-align: center; padding: 3.5rem 1rem; color: var(--muted);
-}
-.mc-empty i {
-    font-size: 2.8rem; display: block;
-    margin-bottom: .75rem; color: rgba(78,199,210,.35);
-}
-.mc-empty p  { font-size: .9rem; font-weight: 600; margin: 0 0 .25rem; }
-.mc-empty small { font-size: .78rem; }
+/* Empty */
+.mc-empty { text-align: center; padding: 3.5rem 1rem; color: #94a3b8; }
+.mc-empty i { font-size: 2.5rem; display: block; margin-bottom: .75rem; color: #bfd9ea; }
+.mc-empty p { font-size: .9rem; font-weight: 600; color: #003b73; margin: 0 0 .25rem; }
+.mc-empty small { font-size: .8rem; }
 
-@media(max-width: 768px) {
-    .mc-header  { padding: 1.2rem 1.1rem; }
-    .mc-body    { padding: 1rem 1.1rem; }
-    .mc-avatar  { width: 52px; height: 52px; }
-    .mc-avatar i { font-size: 1.3rem; }
-    .mc-header h2 { font-size: 1.1rem; }
-    .mc-stats   { grid-template-columns: 1fr 1fr; }
-}
-@media(max-width: 480px) {
-    .mc-stats { grid-template-columns: 1fr; }
-    .mc-grid  { grid-template-columns: 1fr; }
-}
+/* Dark mode */
+body.dark-mode .mc-wrap { background: #0f172a; }
+body.dark-mode .mc-card { background: #1e293b; border-color: #334155; }
+body.dark-mode .mc-card-body { background: #1e293b; }
+body.dark-mode .mc-card-footer { background: #1e293b; border-color: #334155; }
+body.dark-mode .mc-materia-tag { background: rgba(78,199,210,.08); color: #cbd5e1; }
+body.dark-mode .mc-est-count { color: #cbd5e1; }
 </style>
 @endpush
 
 @section('content')
-<div class="container-fluid px-4">
 <div class="mc-wrap">
 
-    {{-- HEADER --}}
-    <div class="mc-header">
-        <div class="mc-header-inner">
-            <div class="mc-avatar">
-                <i class="fas fa-chalkboard-teacher"></i>
-            </div>
+    {{-- Hero --}}
+    <div class="mc-hero">
+        <div class="mc-hero-left">
+            <div class="mc-hero-icon"><i class="fas fa-chalkboard-teacher"></i></div>
             <div>
-                <h2>Mis Cursos</h2>
-                <span class="mc-badge">
-                    <i class="fas fa-user-tie"></i>
+                <h2 class="mc-hero-title">Mis Cursos</h2>
+                <p class="mc-hero-sub">
                     {{ $profesor->nombre }} {{ $profesor->apellido }}
-                </span>
-                <span class="mc-badge">
-                    <i class="fas fa-calendar"></i> {{ now()->format('Y') }}
-                </span>
+                    — Año {{ now()->format('Y') }}
+                </p>
             </div>
         </div>
+        @if(!$gradosAgrupados->isEmpty())
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+                <div class="mc-stat">
+                    <div class="mc-stat-num">{{ $totalCursos }}</div>
+                    <div class="mc-stat-lbl">Cursos</div>
+                </div>
+                <div class="mc-stat">
+                    <div class="mc-stat-num">{{ $totalMaterias }}</div>
+                    <div class="mc-stat-lbl">Materias</div>
+                </div>
+                <div class="mc-stat">
+                    <div class="mc-stat-num">{{ $totalEstudiantes }}</div>
+                    <div class="mc-stat-lbl">Estudiantes</div>
+                </div>
+            </div>
+        @endif
     </div>
 
-    {{-- BODY --}}
+    {{-- Body --}}
     <div class="mc-body">
-
         @if($gradosAgrupados->isEmpty())
             <div class="mc-empty">
                 <i class="fas fa-chalkboard"></i>
@@ -255,37 +165,6 @@
                 <small>Cuando el administrador te asigne grados y materias, aparecerán aquí.</small>
             </div>
         @else
-
-            {{-- STATS --}}
-            <div class="mc-stats">
-                <div class="mc-stat">
-                    <div class="mc-stat-icon"><i class="fas fa-chalkboard"></i></div>
-                    <div>
-                        <div class="mc-stat-val">{{ $totalCursos }}</div>
-                        <div class="mc-stat-lbl">Cursos / Grados</div>
-                    </div>
-                </div>
-                <div class="mc-stat">
-                    <div class="mc-stat-icon"><i class="fas fa-book-open"></i></div>
-                    <div>
-                        <div class="mc-stat-val">{{ $totalMaterias }}</div>
-                        <div class="mc-stat-lbl">Materias</div>
-                    </div>
-                </div>
-                <div class="mc-stat">
-                    <div class="mc-stat-icon"><i class="fas fa-user-graduate"></i></div>
-                    <div>
-                        <div class="mc-stat-val">{{ $totalEstudiantes }}</div>
-                        <div class="mc-stat-lbl">Estudiantes</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mc-sec">
-                <i class="fas fa-th-large"></i> Grados Asignados
-            </div>
-
-            {{-- GRID --}}
             <div class="mc-grid">
                 @foreach($gradosAgrupados as $gradoId => $materias)
                     @php $grado = $materias->first(); @endphp
@@ -300,7 +179,7 @@
                         </div>
                         <div class="mc-card-body">
                             <div class="mc-materias-label">
-                                <i class="fas fa-book" style="color:var(--teal);"></i>
+                                <i class="fas fa-book" style="color:#4ec7d2;"></i>
                                 Materias que imparto
                             </div>
                             @foreach($materias as $m)
@@ -311,7 +190,7 @@
                             @endforeach
                         </div>
                         <div class="mc-card-footer">
-                            <span class="mc-estudiantes">
+                            <span class="mc-est-count">
                                 <i class="fas fa-users"></i>
                                 {{ $grado->total_estudiantes }} estudiantes
                             </span>
@@ -323,11 +202,8 @@
                     </div>
                 @endforeach
             </div>
-
         @endif
-
     </div>
 
-</div>
 </div>
 @endsection

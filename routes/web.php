@@ -48,7 +48,6 @@ use App\Http\Controllers\RegistrarCalificacionController;
 use App\Http\Controllers\MisCalificacionesController;
 use App\Http\Controllers\CalificacionController;
 use App\Http\Controllers\ConsultaestudiantexcursoController;
-use App\Http\Controllers\H20CursoController;
 use App\Http\Controllers\ProfesorDashboardController;
 
 /*
@@ -368,23 +367,6 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |-------------------------------------------------------------------------
-    | CURSOS DE SECUNDARIA (H2O)
-    |-------------------------------------------------------------------------
-    */
-    Route::resource('secundaria', H20CursoController::class)->names([
-        'index'   => 'h20cursos.index',
-        'create'  => 'h20cursos.create',
-        'store'   => 'h20cursos.store',
-        'show'    => 'h20cursos.show',
-        'edit'    => 'h20cursos.edit',
-        'update'  => 'h20cursos.update',
-        'destroy' => 'h20cursos.destroy',
-    ]);
-    // Compatibilidad con URLs anteriores
-    Route::get('/h20cursos', fn () => redirect()->route('h20cursos.index', [], 301));
-
-    /*
-    |-------------------------------------------------------------------------
     | CALIFICACIONES
     |-------------------------------------------------------------------------
     */
@@ -615,8 +597,5 @@ Route::middleware(['auth'])->group(function () {
 
 }); // fin middleware auth
 
-// Ruta para que los padres vean las calificaciones de sus hijos
-Route::middleware(['auth', 'role:Padre'])->group(function () {
-    Route::get('/calificaciones', [PadreDashboardController::class, 'calificaciones'])->name('calificaciones');
-});
+
 

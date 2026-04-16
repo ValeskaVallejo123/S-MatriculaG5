@@ -2,51 +2,61 @@
 
 @section('title', 'Calendario Académico')
 @section('page-title', 'Calendario Académico')
+@section('content-class', 'p-0')
 
 @push('styles')
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-.adm-wrap { font-family: 'Inter', sans-serif; }
-
-/* Stats */
-.adm-stats {
-    display: grid; grid-template-columns: repeat(4,1fr);
-    gap: 1rem; margin-bottom: 1.5rem;
+.cal-wrap {
+    height: calc(100vh - 64px);
+    display: flex; flex-direction: column;
+    overflow: hidden; background: #f0f4f8;
 }
-@media(max-width:768px){ .adm-stats { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:480px){ .adm-stats { grid-template-columns: 1fr; } }
 
-.adm-stat {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+/* Hero */
+.cal-hero {
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #4ec7d2 100%);
+    padding: 1.25rem 2rem; display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem; flex-shrink: 0;
 }
-.adm-stat-icon {
-    width: 44px; height: 44px; border-radius: 10px;
+.cal-hero-left { display: flex; align-items: center; gap: 1rem; }
+.cal-hero-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.3);
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.adm-stat-icon i { font-size: 1.15rem; color: #fff; }
-.adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
-.adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
+.cal-hero-icon i { font-size: 1.3rem; color: white; }
+.cal-hero-title { font-size: 1.2rem; font-weight: 700; color: white; margin: 0 0 .15rem; }
+.cal-hero-sub   { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0; }
 
-/* Card */
-.adm-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 1.25rem;
+.cal-stat {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px; padding: .45rem 1rem; text-align: center; min-width: 70px;
 }
-.adm-card-head {
-    background: #003b73; padding: .85rem 1.25rem;
-    display: flex; align-items: center; justify-content: space-between;
+.cal-stat-num { font-size: 1.2rem; font-weight: 700; color: white; line-height: 1; }
+.cal-stat-lbl { font-size: .7rem; color: rgba(255,255,255,.7); margin-top: .15rem; }
+
+/* Body */
+.cal-body { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; }
+
+/* Calendar card */
+.cal-card {
+    background: white; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,59,115,.08);
 }
-.adm-card-head-left { display: flex; align-items: center; gap: .6rem; }
-.adm-card-head i { color: #4ec7d2; font-size: 1rem; }
-.adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
-.adm-card-body { padding: 1.5rem; }
+.cal-card-head {
+    background: #003b73; padding: .75rem 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+}
+.cal-card-head i { color: #4ec7d2; }
+.cal-card-head span { color: white; font-weight: 700; font-size: .9rem; }
 
 /* Leyenda */
-.legend-wrap { display: flex; gap: .65rem; flex-wrap: wrap; padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9; }
+.legend-wrap {
+    display: flex; gap: .65rem; flex-wrap: wrap;
+    padding: .75rem 1.25rem; border-bottom: 1px solid #f1f5f9;
+    background: #f9fbfd;
+}
 .legend-item { display: flex; align-items: center; gap: .4rem; font-size: .75rem; color: #334155; font-weight: 500; }
 .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
 
@@ -55,8 +65,8 @@
     --fc-border-color: #f1f5f9;
     --fc-today-bg-color: rgba(78,199,210,.07);
     --fc-page-bg-color: #fff;
-    font-family: 'Inter', sans-serif;
     font-size: .82rem;
+    padding: 1.25rem;
 }
 .fc .fc-toolbar-title { font-size: 1rem; font-weight: 700; color: #0f172a; }
 .fc .fc-button {
@@ -65,7 +75,8 @@
     box-shadow: none; transition: all .15s;
 }
 .fc .fc-button:hover { background: #e8f8f9; border-color: #4ec7d2; }
-.fc .fc-button-active, .fc .fc-button-primary:not(:disabled).fc-button-active {
+.fc .fc-button-active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
     background: linear-gradient(135deg,#4ec7d2,#00508f) !important;
     border-color: transparent !important; color: #fff !important;
 }
@@ -94,7 +105,6 @@
 .form-control:focus, .form-select:focus {
     border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.12); background: #fff;
 }
-
 .btn-cancel-modal {
     padding: .42rem 1rem; border-radius: 7px; border: 1.5px solid #e2e8f0;
     background: #fff; color: #64748b; font-size: .82rem; font-weight: 600; cursor: pointer;
@@ -112,78 +122,76 @@
     background: #fef2f2; color: #ef4444; font-size: .82rem; font-weight: 600; cursor: pointer;
 }
 .btn-del-modal:hover { background: #ef4444; color: #fff; }
+
+/* Dark mode */
+body.dark-mode .cal-wrap { background: #0f172a; }
+body.dark-mode .cal-card { background: #1e293b; }
+body.dark-mode .legend-wrap { background: #1e293b; border-color: #334155; }
+body.dark-mode #calendar { --fc-page-bg-color: #1e293b; --fc-border-color: #334155; }
+body.dark-mode .fc .fc-toolbar-title { color: #e2e8f0; }
+body.dark-mode .fc .fc-button { background: #0f172a; border-color: #334155; color: #94a3b8; }
+body.dark-mode .fc .fc-col-header-cell { background: #0f172a; }
+body.dark-mode .fc .fc-daygrid-day-number { color: #94a3b8; }
 </style>
 @endpush
 
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<div class="adm-wrap">
+<div class="cal-wrap">
 
-    {{-- Stats dinámicas (opcionales, si pasas contadores desde el controller) --}}
-    <div class="adm-stats">
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
-                <i class="fas fa-chalkboard"></i>
-            </div>
+    {{-- Hero --}}
+    <div class="cal-hero">
+        <div class="cal-hero-left">
+            <div class="cal-hero-icon"><i class="fas fa-calendar-alt"></i></div>
             <div>
-                <div class="adm-stat-lbl">Clases</div>
-                <div class="adm-stat-num" id="count-clase">—</div>
+                <h2 class="cal-hero-title">Calendario Académico</h2>
+                <p class="cal-hero-sub">Gestión de eventos, clases, exámenes y festivos — {{ date('Y') }}</p>
             </div>
         </div>
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#f87171,#dc2626);">
-                <i class="fas fa-file-alt"></i>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <div class="cal-stat">
+                <div class="cal-stat-num" id="count-clase">—</div>
+                <div class="cal-stat-lbl">Clases</div>
             </div>
-            <div>
-                <div class="adm-stat-lbl">Exámenes</div>
-                <div class="adm-stat-num" id="count-examen">—</div>
+            <div class="cal-stat">
+                <div class="cal-stat-num" id="count-examen">—</div>
+                <div class="cal-stat-lbl">Exámenes</div>
             </div>
-        </div>
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#9c27b0,#7b1fa2);">
-                <i class="fas fa-user-check"></i>
+            <div class="cal-stat">
+                <div class="cal-stat-num" id="count-matricula">—</div>
+                <div class="cal-stat-lbl">Matrículas</div>
             </div>
-            <div>
-                <div class="adm-stat-lbl">Matrículas</div>
-                <div class="adm-stat-num" id="count-matricula">—</div>
-            </div>
-        </div>
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
-                <i class="fas fa-calendar-check"></i>
-            </div>
-            <div>
-                <div class="adm-stat-lbl">Festivos</div>
-                <div class="adm-stat-num" id="count-festivo">—</div>
+            <div class="cal-stat">
+                <div class="cal-stat-num" id="count-festivo">—</div>
+                <div class="cal-stat-lbl">Festivos</div>
             </div>
         </div>
     </div>
 
-    {{-- Calendario --}}
-    <div class="adm-card">
-        <div class="adm-card-head">
-            <div class="adm-card-head-left">
+    {{-- Body --}}
+    <div class="cal-body">
+
+        <div class="cal-card">
+            <div class="cal-card-head">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Calendario Académico</span>
             </div>
-        </div>
 
-        {{-- Leyenda --}}
-        <div class="legend-wrap">
-            <div class="legend-item"><div class="legend-dot" style="background:#3788d8"></div> Clase</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#dc3545"></div> Examen</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#28a745"></div> Festivo</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#ffc107"></div> Evento</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#17a2b8"></div> Vacaciones</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#9c27b0"></div> Prematrícula</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> Matrícula</div>
-        </div>
+            {{-- Leyenda --}}
+            <div class="legend-wrap">
+                <div class="legend-item"><div class="legend-dot" style="background:#3788d8"></div> Clase</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#dc3545"></div> Examen</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#28a745"></div> Festivo</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ffc107"></div> Evento</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#17a2b8"></div> Vacaciones</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#9c27b0"></div> Prematrícula</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ff5722"></div> Matrícula</div>
+            </div>
 
-        <div class="adm-card-body">
             <div id='calendar'></div>
         </div>
-    </div>
 
+    </div>{{-- /cal-body --}}
 </div>
 
 {{-- Modal Agregar/Editar --}}
@@ -244,12 +252,11 @@
         </div>
     </div>
 </div>
-
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js'></script>
 @endsection
 
 @push('scripts')
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js'></script>
 <script>
 const coloresPorTipo = {
     'clase'        : '#3788d8',
@@ -288,7 +295,6 @@ document.addEventListener('DOMContentLoaded', function () {
         eventDrop: (info) => actualizarFechasEvento(info.event),
         eventResize: (info) => actualizarFechasEvento(info.event),
 
-        // Actualizar contadores al cargar eventos
         eventsSet: function(events) {
             const tipos = ['clase','examen','festivo','matricula'];
             tipos.forEach(t => {

@@ -69,7 +69,7 @@ class PadreController extends Controller
         $this->authorizeRol();
 
         $validated = $this->validarPadre($request);
-        $validated['estado'] = $validated['estado'] ?? 'activo';
+        $validated['estado'] = $validated['estado'] ?? 1;
 
         $padre = Padre::create($validated);
 
@@ -129,7 +129,7 @@ class PadreController extends Controller
         $validated = $this->validarPadre($request, $id);
         $padre->update($validated);
 
-        return redirect()->route('padre.show', $padre->id)
+        return redirect()->route('padres.show', $padre->id)
             ->with('success', 'Información del padre/tutor actualizada correctamente.');
     }
 
@@ -288,7 +288,7 @@ class PadreController extends Controller
             'ocupacion'           => 'nullable|string|max:100',
             'lugar_trabajo'       => 'nullable|string|max:100',
             'telefono_trabajo'    => 'nullable|string|max:15',
-            'estado'              => 'nullable|string|in:activo,inactivo',
+            'estado'              => 'nullable|in:0,1',
             'observaciones'       => 'nullable|string|max:500',
         ]);
     }

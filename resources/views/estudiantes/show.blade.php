@@ -373,56 +373,6 @@
             </div>
         </div>
 
-        {{-- PADRES --}}
-        <div class="pf-sec">
-            <div class="pf-sec-hd">
-                <div class="pf-sec-title"><i class="fas fa-user-friends"></i> Padres / Tutores</div>
-                <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}" class="pf-sec-action">
-                    <i class="fas fa-plus"></i> Vincular
-                </a>
-            </div>
-
-            @if($estudiante->padres && $estudiante->padres->count() > 0)
-                @foreach($estudiante->padres as $padre)
-                <div class="padre-row">
-                    <div style="display:flex;align-items:center;gap:.8rem;min-width:0;">
-                        <div class="padre-av">{{ strtoupper(substr($padre->nombre ?? 'P', 0, 1)) }}</div>
-                        <div style="min-width:0;">
-                            <div class="padre-name">{{ $padre->nombre }} {{ $padre->apellido }}</div>
-                            <div class="padre-meta">
-                                <span class="padre-pill">{{ ucfirst($padre->parentesco ?? '—') }}</span>
-                                @if($padre->telefono)
-                                    <span class="padre-contact"><i class="fas fa-phone"></i> {{ $padre->telefono }}</span>
-                                @endif
-                                @if($padre->correo)
-                                    <span class="padre-contact"><i class="fas fa-envelope"></i> {{ $padre->correo }}</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                    <form action="{{ route('padres.desvincular') }}" method="POST" style="display:inline;flex-shrink:0;"
-                          data-confirm="¿Desvincular a este padre/tutor?">
-                        @csrf
-                        <input type="hidden" name="padre_id"      value="{{ $padre->id }}">
-                        <input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
-                        <button type="submit" class="btn-desvincular">
-                            <i class="fas fa-unlink"></i> Desvincular
-                        </button>
-                    </form>
-                </div>
-                @endforeach
-            @else
-                <div class="padre-empty">
-                    <i class="fas fa-user-slash"></i>
-                    <p>No hay padres o tutores vinculados</p>
-                    <a href="{{ route('padres.buscar', ['estudiante_id' => $estudiante->id]) }}"
-                       style="display:inline-flex;align-items:center;gap:.4rem;padding:.45rem 1.1rem;background:linear-gradient(135deg,var(--teal),var(--blue));color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:.82rem;">
-                        <i class="fas fa-link"></i> Vincular ahora
-                    </a>
-                </div>
-            @endif
-        </div>
-
         {{-- OBSERVACIONES --}}
         @if($estudiante->observaciones)
         <div class="pf-sec">
@@ -463,6 +413,12 @@
                class="pf-btn b-back">
                 <i class="fas fa-link"></i> Vincular Padre/Tutor
             </a>
+            @if(!$estudiante->documentos)
+                <a href="{{ route('documentos.create', ['estudiante_id' => $estudiante->id]) }}"
+                   class="pf-btn" style="background:linear-gradient(135deg,var(--teal),var(--blue));color:white;flex:1;min-width:100px;">
+                    <i class="fas fa-upload"></i> Subir Docs
+                </a>
+            @endif
             <button type="button" onclick="confirmDelete()" class="pf-btn b-del">
                 <i class="fas fa-trash"></i> Eliminar
             </button>

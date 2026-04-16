@@ -1,55 +1,48 @@
 @extends('layouts.app')
 
-@section('topbar-actions')
-
-    @php
-        $usuario = auth()->user();
-        $rutaDashboard = match($usuario->rol->nombre ?? '') {
-            'Administrador'       => route('admin.dashboard'),
-            'Super Administrador' => route('superadmin.dashboard'),
-            'Profesor'            => route('profesor.dashboard'),
-            'Estudiante'          => route('estudiante.dashboard'),
-            'Padre'               => route('padre.dashboard'),
-            default               => route('dashboard'),
-        };
-    @endphp
-
-    <div style="display:flex;gap:10px;">
-        <a href="{{ route('registrarcalificaciones.ver') }}"
-           class="btn btn-sm"
-           style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
-                  color:white;border:none;border-radius:8px;font-weight:600;">
-            <i class="fas fa-eye me-1"></i> Ver Calificaciones
-        </a>
-    </div>
-
-@endsection
+@section('title', 'Registrar Calificaciones')
+@section('page-title', 'Registrar Calificaciones')
+@section('content-class', 'p-0')
 
 @push('styles')
 <style>
-.rc-wrap { font-family: 'Inter', sans-serif; }
-
-/* Header */
-.rc-header {
-    border-radius: 12px;
-    background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1.5rem;
-    display: flex; align-items: center; gap: 1rem;
+.rc-wrap {
+    height: calc(100vh - 64px);
+    display: flex; flex-direction: column;
+    overflow: hidden; background: #f0f4f8;
 }
-.rc-header-icon {
-    width: 52px; height: 52px; border-radius: 12px;
-    background: rgba(255,255,255,0.2);
+
+/* Hero */
+.rc-hero {
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #4ec7d2 100%);
+    padding: 1.25rem 2rem; display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem; flex-shrink: 0;
+}
+.rc-hero-left { display: flex; align-items: center; gap: 1rem; }
+.rc-hero-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.3);
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.rc-header-icon i { color: #fff; font-size: 1.4rem; }
-.rc-header h5 { color: #fff; font-weight: 800; margin: 0 0 .2rem; }
-.rc-header p  { color: rgba(255,255,255,.8); font-size: .83rem; margin: 0; }
+.rc-hero-icon i { font-size: 1.3rem; color: white; }
+.rc-hero-title { font-size: 1.2rem; font-weight: 700; color: white; margin: 0 0 .15rem; }
+.rc-hero-sub   { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0; }
+.rc-btn-ver {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: white; color: #003b73; border: none;
+    border-radius: 8px; padding: .5rem 1.1rem;
+    font-size: .82rem; font-weight: 700; text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); flex-shrink: 0; transition: all .2s;
+}
+.rc-btn-ver:hover { background: #f0f4f8; color: #003b73; }
+
+/* Body */
+.rc-body { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; }
 
 /* Cards */
 .rc-card {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 1.5rem;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: 1rem;
 }
 .rc-card-head {
     background: #003b73; padding: .75rem 1.25rem;
@@ -63,7 +56,7 @@
 .rc-select {
     width: 100%; padding: .55rem .9rem;
     border: 2px solid #bfd9ea; border-radius: 8px;
-    font-family: 'Inter', sans-serif; font-size: .88rem; color: #0f172a;
+    font-size: .88rem; color: #0f172a;
     background: #fff; appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300508f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right .75rem center;
@@ -106,7 +99,7 @@
 .nota-input {
     width: 110px; padding: .4rem .7rem;
     border: 2px solid #bfd9ea; border-radius: 8px;
-    font-family: 'Inter', sans-serif; font-size: .9rem; font-weight: 700;
+    font-size: .9rem; font-weight: 700;
     text-align: center; transition: border-color .15s, background .15s;
 }
 .nota-input:focus { outline: none; border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.2); }
@@ -117,7 +110,7 @@
 .obs-input {
     width: 100%; padding: .4rem .7rem;
     border: 2px solid #e2e8f0; border-radius: 8px;
-    font-family: 'Inter', sans-serif; font-size: .8rem; color: #475569;
+    font-size: .8rem; color: #475569;
     transition: border-color .15s;
 }
 .obs-input:focus { outline: none; border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.15); }
@@ -139,20 +132,19 @@
 .rc-btn-save {
     background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
     color: #fff; border: none; border-radius: 8px;
-    font-family: 'Inter', sans-serif; font-weight: 700;
-    padding: .55rem 1.5rem; font-size: .9rem; cursor: pointer;
+    font-weight: 700; padding: .55rem 1.5rem; font-size: .9rem; cursor: pointer;
     transition: opacity .2s, box-shadow .2s;
 }
 .rc-btn-save:hover { opacity: .92; box-shadow: 0 4px 12px rgba(0,80,143,.3); }
 
-/* Alerta éxito/error */
-.rc-alert {
-    display: flex; align-items: center; gap: .6rem;
-    padding: .75rem 1rem; border-radius: 10px;
-    font-size: .85rem; font-weight: 600; margin-bottom: 1.25rem;
+/* Estado badge */
+.estado-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .68rem; font-weight: 700; padding: .2rem .55rem;
+    border-radius: 999px; white-space: nowrap;
 }
-.rc-alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
-.rc-alert-error   { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+.estado-pendiente  { background: #f1f5f9; color: #94a3b8; }
+.estado-registrada { background: #ecfdf5; color: #059669; }
 
 /* Tarjeta resumen del grado */
 .rc-resumen-grid {
@@ -193,348 +185,348 @@
     border-radius: 999px; padding: .1rem .55rem; margin: .15rem .1rem 0 0;
     font-size: .7rem; font-weight: 600;
 }
+
+/* Dark mode */
+body.dark-mode .rc-wrap { background: #0f172a; }
+body.dark-mode .rc-card { background: #1e293b; border-color: #334155; }
+body.dark-mode .rc-card-body { background: #1e293b; }
+body.dark-mode .rc-select { background: #0f172a; color: #cbd5e1; border-color: #334155; }
+body.dark-mode .rc-profesor-locked { background: #0f172a; color: #cbd5e1; }
+body.dark-mode .rc-tbl tbody td { color: #cbd5e1; }
+body.dark-mode .rc-tbl tbody tr { border-color: #334155; }
+body.dark-mode .rc-resumen-stat { background: #0f172a; border-color: #334155; }
+body.dark-mode .rc-resumen-stat-val { color: #e2e8f0; }
+body.dark-mode .obs-input { background: #0f172a; border-color: #334155; color: #cbd5e1; }
 </style>
 @endpush
 
 @section('content')
 <div class="rc-wrap">
 
-    {{-- Alerta de error (éxito lo muestra el layout global) --}}
-    @if(session('error'))
-        <div class="rc-alert rc-alert-error">
-            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+    {{-- Hero --}}
+    <div class="rc-hero">
+        <div class="rc-hero-left">
+            <div class="rc-hero-icon"><i class="fas fa-clipboard-check"></i></div>
+            <div>
+                <h2 class="rc-hero-title">Registrar Calificaciones</h2>
+                <p class="rc-hero-sub">
+                    @if($profesorActual)
+                        Prof. {{ $profesorActual->nombre }} {{ $profesorActual->apellido }}
+                        — Solo sus grados y materias asignadas
+                    @else
+                        Seleccione un curso para registrar las notas de los estudiantes
+                    @endif
+                </p>
+            </div>
         </div>
-    @endif
-
-    {{-- Header --}}
-    <div class="rc-header">
-        <div class="rc-header-icon"><i class="fas fa-clipboard-check"></i></div>
-        <div>
-            <h5>Registrar Calificaciones</h5>
-            <p>
-                @if($profesorActual)
-                    Prof. <strong>{{ $profesorActual->nombre }} {{ $profesorActual->apellido }}</strong>
-                    — Solo sus grados y materias asignadas
-                @else
-                    Seleccione un curso para registrar las notas de los estudiantes
-                @endif
-            </p>
-        </div>
+        <a href="{{ route('registrarcalificaciones.ver') }}" class="rc-btn-ver">
+            <i class="fas fa-eye"></i> Ver Calificaciones
+        </a>
     </div>
 
-    {{-- Seleccionar Curso --}}
-    <div class="rc-card">
-        <div class="rc-card-head">
-            <i class="fas fa-chalkboard-teacher"></i>
-            <span>Seleccionar Curso</span>
-        </div>
-        <div class="rc-card-body">
-            <form method="GET" action="{{ route('registrarcalificaciones.index') }}">
-                <label class="rc-field-lbl">Grado y Sección</label>
-                <select name="grado_id" class="rc-select" onchange="this.form.submit()" required>
-                    <option value="">— Seleccione un curso —</option>
-                    @foreach($grados as $grado)
-                        <option value="{{ $grado->id }}"
-                            {{ request('grado_id') == $grado->id ? 'selected' : '' }}>
-                            {{ $grado->numero }}° {{ ucfirst($grado->nivel) }} — Sección {{ $grado->seccion }}
-                            ({{ $grado->anio_lectivo }})
-                        </option>
-                    @endforeach
-                </select>
-            </form>
+    {{-- Body --}}
+    <div class="rc-body">
 
-            @if($grados->isEmpty())
-                <div class="rc-warn">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    No tienes grados asignados. Contacta al administrador.
-                </div>
-            @endif
-        </div>
-    </div>
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mb-3 border-0 shadow-sm"
+                 role="alert" style="border-radius:10px;border-left:4px solid #ef4444 !important;">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-
-    @if($gradoSeleccionado)
-
-        {{-- ─── RESUMEN DEL GRADO SELECCIONADO ──────────────────────────────── --}}
+        {{-- Seleccionar Curso --}}
         <div class="rc-card">
             <div class="rc-card-head">
-                <i class="fas fa-info-circle"></i>
-                <span>
-                    Resumen: {{ $gradoSeleccionado->numero }}°
-                    {{ ucfirst($gradoSeleccionado->nivel) }} — Sección {{ $gradoSeleccionado->seccion }}
-                </span>
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Seleccionar Curso</span>
             </div>
             <div class="rc-card-body">
+                <form method="GET" action="{{ route('registrarcalificaciones.index') }}">
+                    <label class="rc-field-lbl">Grado y Sección</label>
+                    <select name="grado_id" class="rc-select" onchange="this.form.submit()" required>
+                        <option value="">— Seleccione un curso —</option>
+                        @foreach($grados as $grado)
+                            <option value="{{ $grado->id }}"
+                                {{ request('grado_id') == $grado->id ? 'selected' : '' }}>
+                                {{ $grado->numero }}° {{ ucfirst($grado->nivel) }} — Sección {{ $grado->seccion }}
+                                ({{ $grado->anio_lectivo }})
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
 
-                {{-- Stats rápidos --}}
-                <div class="rc-resumen-grid" style="margin-bottom:1.25rem;">
-                    <div class="rc-resumen-stat">
-                        <div class="rc-resumen-stat-icon"
-                             style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div>
-                            <div class="rc-resumen-stat-lbl">Estudiantes</div>
-                            <div class="rc-resumen-stat-val">{{ $estudiantes->count() }}</div>
-                        </div>
-                    </div>
-                    <div class="rc-resumen-stat">
-                        <div class="rc-resumen-stat-icon"
-                             style="background:linear-gradient(135deg,#a78bfa,#7c3aed);">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <div>
-                            <div class="rc-resumen-stat-lbl">Profesores asignados</div>
-                            <div class="rc-resumen-stat-val">{{ $profesoresDelGrado->count() }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Lista de profesores y sus materias --}}
-                @if($profesoresDelGrado->isEmpty())
+                @if($grados->isEmpty())
                     <div class="rc-warn">
                         <i class="fas fa-exclamation-triangle"></i>
-                        No hay profesores asignados a este grado. Ve a <strong>Asignar Profesor</strong> para configurarlo.
+                        No tienes grados asignados. Contacta al administrador.
                     </div>
-                @else
-                    <div style="font-size:.72rem;font-weight:700;color:#64748b;
-                                text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">
-                        <i class="fas fa-chalkboard-teacher" style="color:#4ec7d2;margin-right:.3rem;"></i>
-                        Profesores y Materias
-                    </div>
-                    <ul class="rc-prof-list">
-                        @foreach($profesoresDelGrado as $profId => $asignaciones)
-                            @php $prof = $asignaciones->first(); @endphp
-                            <li class="rc-prof-item">
-                                <div class="rc-prof-avatar">
-                                    <i class="fas fa-user-tie"></i>
-                                </div>
-                                <div>
-                                    <div class="rc-prof-nombre">
-                                        {{ $prof->apellido }}, {{ $prof->nombre }}
-                                    </div>
-                                    <div class="rc-prof-materias">
-                                        @foreach($asignaciones as $a)
-                                            <span>{{ $a->materia_nombre }}</span>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </li>
-                        @endforeach
-                    </ul>
                 @endif
-
             </div>
         </div>
-        {{-- ──────────────────────────────────────────────────────────────────── --}}
 
-        <form action="{{ route('registrarcalificaciones.store') }}" method="POST" id="form-calificaciones">
-            @csrf
-            <input type="hidden" name="grado_id"  value="{{ request('grado_id') }}" id="hidden-grado-id">
+        @if($gradoSeleccionado)
 
-            @if($profesorActual)
-                <input type="hidden" name="profesor_id" value="{{ $profesorActual->id }}" id="hidden-prof-id">
-            @endif
-
-            {{-- Información de la Calificación --}}
+            {{-- Resumen del grado --}}
             <div class="rc-card">
                 <div class="rc-card-head">
-                    <i class="fas fa-cogs"></i>
-                    <span>Información de la Calificación</span>
+                    <i class="fas fa-info-circle"></i>
+                    <span>
+                        Resumen: {{ $gradoSeleccionado->numero }}°
+                        {{ ucfirst($gradoSeleccionado->nivel) }} — Sección {{ $gradoSeleccionado->seccion }}
+                    </span>
                 </div>
                 <div class="rc-card-body">
-                    <div class="rc-fields">
 
-                        {{-- Profesor --}}
-                        <div>
-                            <label class="rc-field-lbl">Profesor</label>
-                            @if($profesorActual)
-                                <div class="rc-profesor-locked">
-                                    <i class="fas fa-user-tie"></i>
-                                    {{ $profesorActual->apellido }}, {{ $profesorActual->nombre }}
-                                </div>
-                            @elseif($profesoresDelGrado->count() === 1)
-                                {{-- Solo 1 profesor: auto-selección --}}
-                                @php $soloProf = $profesoresDelGrado->first()->first(); @endphp
-                                <div class="rc-profesor-locked">
-                                    <i class="fas fa-user-tie"></i>
-                                    {{ $soloProf->apellido }}, {{ $soloProf->nombre }}
-                                </div>
-                                <input type="hidden" name="profesor_id" id="select-profesor"
-                                       value="{{ $soloProf->id }}">
-                            @elseif($profesoresDelGrado->isNotEmpty())
-                                {{-- Varios profesores: select --}}
-                                <select name="profesor_id" id="select-profesor" class="rc-select" required>
-                                    <option value="">— Seleccione profesor —</option>
-                                    @foreach($profesoresDelGrado as $profId => $asignaciones)
-                                        @php $p = $asignaciones->first(); @endphp
-                                        <option value="{{ $p->id }}">
-                                            {{ $p->apellido }}, {{ $p->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            @else
-                                <div class="rc-warn" style="margin-top:0;">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Sin profesores asignados a este grado.
-                                </div>
-                                <input type="hidden" name="profesor_id" id="select-profesor" value="">
-                            @endif
+                    <div class="rc-resumen-grid" style="margin-bottom:1.25rem;">
+                        <div class="rc-resumen-stat">
+                            <div class="rc-resumen-stat-icon"
+                                 style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <div class="rc-resumen-stat-lbl">Estudiantes</div>
+                                <div class="rc-resumen-stat-val">{{ $estudiantes->count() }}</div>
+                            </div>
                         </div>
-
-                        {{-- Materia --}}
-                        <div>
-                            <label class="rc-field-lbl">Materia</label>
-                            <select name="materia_id" id="select-materia" class="rc-select" required>
-                                <option value="">— Seleccione materia —</option>
-                                @foreach($materias as $materia)
-                                    <option value="{{ $materia->id }}">{{ $materia->nombre }}</option>
-                                @endforeach
-                            </select>
-                            @if($materias->isEmpty())
-                                <div class="rc-warn" style="margin-top:.5rem;padding:.4rem .75rem;">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    Sin materias asignadas en este grado.
-                                </div>
-                            @endif
+                        <div class="rc-resumen-stat">
+                            <div class="rc-resumen-stat-icon"
+                                 style="background:linear-gradient(135deg,#a78bfa,#7c3aed);">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div>
+                                <div class="rc-resumen-stat-lbl">Profesores asignados</div>
+                                <div class="rc-resumen-stat-val">{{ $profesoresDelGrado->count() }}</div>
+                            </div>
                         </div>
-
-                        {{-- Período --}}
-                        <div>
-                            <label class="rc-field-lbl">Período Académico</label>
-                            <select name="periodo_academico_id" id="select-periodo" class="rc-select" required>
-                                <option value="">— Seleccione período —</option>
-                                @foreach($periodos as $periodo)
-                                    <option value="{{ $periodo->id }}">{{ $periodo->nombre_periodo }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
                     </div>
+
+                    @if($profesoresDelGrado->isEmpty())
+                        <div class="rc-warn">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            No hay profesores asignados a este grado. Ve a <strong>Asignar Profesor</strong> para configurarlo.
+                        </div>
+                    @else
+                        <div style="font-size:.72rem;font-weight:700;color:#64748b;
+                                    text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">
+                            <i class="fas fa-chalkboard-teacher" style="color:#4ec7d2;margin-right:.3rem;"></i>
+                            Profesores y Materias
+                        </div>
+                        <ul class="rc-prof-list">
+                            @foreach($profesoresDelGrado as $profId => $asignaciones)
+                                @php $prof = $asignaciones->first(); @endphp
+                                <li class="rc-prof-item">
+                                    <div class="rc-prof-avatar"><i class="fas fa-user-tie"></i></div>
+                                    <div>
+                                        <div class="rc-prof-nombre">{{ $prof->apellido }}, {{ $prof->nombre }}</div>
+                                        <div class="rc-prof-materias">
+                                            @foreach($asignaciones as $a)
+                                                <span>{{ $a->materia_nombre }}</span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+
                 </div>
             </div>
 
-            {{-- Tabla de Estudiantes --}}
-            <div class="rc-card">
-                <div class="rc-card-head">
-                    <i class="fas fa-users"></i>
-                    <span>Estudiantes del Curso</span>
-                    @if($estudiantes->isNotEmpty())
-                        {{-- Contador dinámico actualizado por JS --}}
-                        <span id="badge-progreso"
-                              style="margin-left:auto;background:rgba(255,255,255,.15);
-                              color:#fff;font-size:.72rem;padding:.2rem .6rem;
-                              border-radius:999px;font-weight:600;">
-                            0 / {{ $estudiantes->count() }} con nota
-                        </span>
+            <form action="{{ route('registrarcalificaciones.store') }}" method="POST" id="form-calificaciones">
+                @csrf
+                <input type="hidden" name="grado_id"  value="{{ request('grado_id') }}" id="hidden-grado-id">
+
+                @if($profesorActual)
+                    <input type="hidden" name="profesor_id" value="{{ $profesorActual->id }}" id="hidden-prof-id">
+                @endif
+
+                {{-- Información de la Calificación --}}
+                <div class="rc-card">
+                    <div class="rc-card-head">
+                        <i class="fas fa-cogs"></i>
+                        <span>Información de la Calificación</span>
+                    </div>
+                    <div class="rc-card-body">
+                        <div class="rc-fields">
+
+                            {{-- Profesor --}}
+                            <div>
+                                <label class="rc-field-lbl">Profesor</label>
+                                @if($profesorActual)
+                                    <div class="rc-profesor-locked">
+                                        <i class="fas fa-user-tie"></i>
+                                        {{ $profesorActual->apellido }}, {{ $profesorActual->nombre }}
+                                    </div>
+                                @elseif($profesoresDelGrado->count() === 1)
+                                    @php $soloProf = $profesoresDelGrado->first()->first(); @endphp
+                                    <div class="rc-profesor-locked">
+                                        <i class="fas fa-user-tie"></i>
+                                        {{ $soloProf->apellido }}, {{ $soloProf->nombre }}
+                                    </div>
+                                    <input type="hidden" name="profesor_id" id="select-profesor"
+                                           value="{{ $soloProf->id }}">
+                                @elseif($profesoresDelGrado->isNotEmpty())
+                                    <select name="profesor_id" id="select-profesor" class="rc-select" required>
+                                        <option value="">— Seleccione profesor —</option>
+                                        @foreach($profesoresDelGrado as $profId => $asignaciones)
+                                            @php $p = $asignaciones->first(); @endphp
+                                            <option value="{{ $p->id }}">
+                                                {{ $p->apellido }}, {{ $p->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <div class="rc-warn" style="margin-top:0;">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Sin profesores asignados a este grado.
+                                    </div>
+                                    <input type="hidden" name="profesor_id" id="select-profesor" value="">
+                                @endif
+                            </div>
+
+                            {{-- Materia --}}
+                            <div>
+                                <label class="rc-field-lbl">Materia</label>
+                                <select name="materia_id" id="select-materia" class="rc-select" required>
+                                    <option value="">— Seleccione materia —</option>
+                                    @foreach($materias as $materia)
+                                        <option value="{{ $materia->id }}">{{ $materia->nombre }}</option>
+                                    @endforeach
+                                </select>
+                                @if($materias->isEmpty())
+                                    <div class="rc-warn" style="margin-top:.5rem;padding:.4rem .75rem;">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        Sin materias asignadas en este grado.
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Período --}}
+                            <div>
+                                <label class="rc-field-lbl">Período Académico</label>
+                                <select name="periodo_academico_id" id="select-periodo" class="rc-select" required>
+                                    <option value="">— Seleccione período —</option>
+                                    @foreach($periodos as $periodo)
+                                        <option value="{{ $periodo->id }}">{{ $periodo->nombre_periodo }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tabla de Estudiantes --}}
+                <div class="rc-card">
+                    <div class="rc-card-head">
+                        <i class="fas fa-users"></i>
+                        <span>Estudiantes del Curso</span>
+                        @if($estudiantes->isNotEmpty())
+                            <span id="badge-progreso"
+                                  style="margin-left:auto;background:rgba(255,255,255,.15);
+                                  color:#fff;font-size:.72rem;padding:.2rem .6rem;
+                                  border-radius:999px;font-weight:600;">
+                                0 / {{ $estudiantes->count() }} con nota
+                            </span>
+                        @endif
+                    </div>
+
+                    @if($estudiantes->isEmpty())
+                        <div class="rc-empty">
+                            <i class="fas fa-user-slash"></i>
+                            <p>No hay estudiantes registrados en este curso.</p>
+                        </div>
+                    @else
+                        {{-- Barra de progreso --}}
+                        <div id="barra-progreso-wrap"
+                             style="padding:.6rem 1.25rem .25rem;background:#f8fafc;border-bottom:1px solid #f1f5f9;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;
+                                        font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:.3rem;">
+                                <span>Progreso de calificación</span>
+                                <span id="txt-progreso">Seleccione materia y período para cargar notas existentes</span>
+                            </div>
+                            <div style="height:6px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+                                <div id="barra-fill"
+                                     style="height:100%;width:0%;
+                                            background:linear-gradient(90deg,#4ec7d2,#059669);
+                                            border-radius:999px;transition:width .4s ease;"></div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="rc-tbl">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Estudiante</th>
+                                        <th style="text-align:center;width:60px;">Estado</th>
+                                        <th style="text-align:center;width:130px;">Nota (0–100)</th>
+                                        <th>Observación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($estudiantes as $i => $estudiante)
+                                    <tr id="fila-{{ $estudiante->id }}">
+                                        <td style="color:#94a3b8;font-size:.78rem;font-weight:600;">
+                                            {{ $i + 1 }}
+                                        </td>
+                                        <td>
+                                            <span style="font-weight:700;color:#0f172a;">
+                                                {{ $estudiante->apellido1 }}
+                                                {{ $estudiante->apellido2 }},
+                                            </span>
+                                            {{ $estudiante->nombre1 }} {{ $estudiante->nombre2 }}
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span id="estado-{{ $estudiante->id }}"
+                                                  class="estado-badge estado-pendiente">
+                                                <i class="fas fa-circle-dot"></i> Pendiente
+                                            </span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <input type="number"
+                                                   name="notas[{{ $estudiante->id }}]"
+                                                   class="nota-input"
+                                                   id="nota-{{ $estudiante->id }}"
+                                                   data-estudiante="{{ $estudiante->id }}"
+                                                   min="0" max="100" step="0.01"
+                                                   placeholder="—">
+                                        </td>
+                                        <td>
+                                            <input type="text"
+                                                   name="observacion[{{ $estudiante->id }}]"
+                                                   class="obs-input"
+                                                   id="obs-{{ $estudiante->id }}"
+                                                   placeholder="Se generará automáticamente...">
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="padding:1rem 1.25rem;display:flex;justify-content:flex-end;
+                                    border-top:1px solid #f1f5f9;background:#fafbfc;">
+                            <button type="submit" class="rc-btn-save">
+                                <i class="fas fa-save me-2"></i>Guardar Calificaciones
+                            </button>
+                        </div>
                     @endif
                 </div>
 
-                @if($estudiantes->isEmpty())
-                    <div class="rc-empty">
-                        <i class="fas fa-user-slash"></i>
-                        <p>No hay estudiantes registrados en este curso.</p>
-                    </div>
-                @else
-                    {{-- Barra de progreso --}}
-                    <div id="barra-progreso-wrap"
-                         style="padding:.6rem 1.25rem .25rem;background:#f8fafc;border-bottom:1px solid #f1f5f9;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;
-                                    font-size:.72rem;color:#64748b;font-weight:600;margin-bottom:.3rem;">
-                            <span>Progreso de calificación</span>
-                            <span id="txt-progreso">Seleccione materia y período para cargar notas existentes</span>
-                        </div>
-                        <div style="height:6px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
-                            <div id="barra-fill"
-                                 style="height:100%;width:0%;
-                                        background:linear-gradient(90deg,#4ec7d2,#059669);
-                                        border-radius:999px;transition:width .4s ease;"></div>
-                        </div>
-                    </div>
+            </form>
 
-                    <div class="table-responsive">
-                        <table class="rc-tbl">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Estudiante</th>
-                                    <th style="text-align:center;width:60px;">Estado</th>
-                                    <th style="text-align:center;width:130px;">Nota (0–100)</th>
-                                    <th>Observación</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($estudiantes as $i => $estudiante)
-                                <tr id="fila-{{ $estudiante->id }}">
-                                    <td style="color:#94a3b8;font-size:.78rem;font-weight:600;">
-                                        {{ $i + 1 }}
-                                    </td>
-                                    <td>
-                                        <span style="font-weight:700;color:#0f172a;">
-                                            {{ $estudiante->apellido1 }}
-                                            {{ $estudiante->apellido2 }},
-                                        </span>
-                                        {{ $estudiante->nombre1 }} {{ $estudiante->nombre2 }}
-                                    </td>
-                                    {{-- Columna estado (pendiente / registrada) --}}
-                                    <td style="text-align:center;">
-                                        <span id="estado-{{ $estudiante->id }}"
-                                              class="estado-badge estado-pendiente">
-                                            <i class="fas fa-circle-dot"></i> Pendiente
-                                        </span>
-                                    </td>
-                                    <td style="text-align:center;">
-                                        <input type="number"
-                                               name="notas[{{ $estudiante->id }}]"
-                                               class="nota-input"
-                                               id="nota-{{ $estudiante->id }}"
-                                               data-estudiante="{{ $estudiante->id }}"
-                                               min="0" max="100" step="0.01"
-                                               placeholder="—">
-                                    </td>
-                                    <td>
-                                        <input type="text"
-                                               name="observacion[{{ $estudiante->id }}]"
-                                               class="obs-input"
-                                               id="obs-{{ $estudiante->id }}"
-                                               placeholder="Se generará automáticamente...">
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+        @endif
 
-                    <div style="padding:1rem 1.25rem;display:flex;justify-content:flex-end;
-                                border-top:1px solid #f1f5f9;background:#fafbfc;">
-                        <button type="submit" class="rc-btn-save">
-                            <i class="fas fa-save me-2"></i>Guardar Calificaciones
-                        </button>
-                    </div>
-                @endif
-            </div>
-
-        </form>
-
-    @endif
-
+    </div>{{-- /rc-body --}}
 </div>
 
-<style>
-.estado-badge {
-    display: inline-flex; align-items: center; gap: .3rem;
-    font-size: .68rem; font-weight: 700; padding: .2rem .55rem;
-    border-radius: 999px; white-space: nowrap;
-}
-.estado-pendiente  { background: #f1f5f9; color: #94a3b8; }
-.estado-registrada { background: #ecfdf5; color: #059669; }
-</style>
-
+@push('scripts')
 <script>
 const ENDPOINT_NOTAS = "{{ route('registrarcalificaciones.notas-existentes') }}";
 const GRADO_ID       = "{{ request('grado_id') }}";
 
-// ─── Texto de observación automático según nota ───────────────────────────
 function obsDesdeNota(val) {
     if (val >= 90) return 'Excelente';
     if (val >= 80) return 'Muy Bueno';
@@ -543,7 +535,6 @@ function obsDesdeNota(val) {
     return 'Reprobado';
 }
 
-// ─── Actualiza color del input y estado de la fila ───────────────────────
 function aplicarEstadoInput(input) {
     const id  = input.dataset.estudiante;
     const val = parseFloat(input.value);
@@ -555,18 +546,15 @@ function aplicarEstadoInput(input) {
     if (!isNaN(val) && input.value !== '') {
         input.classList.add(val >= 60 ? 'nota-aprobado' : 'nota-reprobado');
 
-        // Observación: solo si el usuario no la escribió manualmente
         if (obsEl && !obsEl.dataset.userModified) {
             obsEl.value = obsDesdeNota(val);
         }
 
-        // Badge estado
         if (estadoEl) {
             estadoEl.className = 'estado-badge estado-registrada';
             estadoEl.innerHTML = '<i class="fas fa-check-circle"></i> Registrada';
         }
     } else {
-        // Sin nota
         if (obsEl && !obsEl.dataset.userModified) obsEl.value = '';
         if (estadoEl) {
             estadoEl.className = 'estado-badge estado-pendiente';
@@ -577,7 +565,6 @@ function aplicarEstadoInput(input) {
     actualizarProgreso();
 }
 
-// ─── Barra de progreso ────────────────────────────────────────────────────
 function actualizarProgreso() {
     const total    = document.querySelectorAll('.nota-input').length;
     const conNota  = [...document.querySelectorAll('.nota-input')]
@@ -595,7 +582,6 @@ function actualizarProgreso() {
                                     : (conNota + ' registradas · ' + (total - conNota) + ' pendientes');
 }
 
-// ─── Cargar notas existentes via fetch ───────────────────────────────────
 function cargarNotasExistentes() {
     const profesorEl = document.getElementById('select-profesor') ||
                        document.getElementById('hidden-prof-id');
@@ -642,7 +628,6 @@ function cargarNotasExistentes() {
         .catch(() => { if (txt) txt.textContent = 'No se pudieron cargar notas previas.'; });
 }
 
-// ─── Eventos ──────────────────────────────────────────────────────────────
 document.querySelectorAll('.nota-input').forEach(input => {
     input.addEventListener('input', () => aplicarEstadoInput(input));
 });
@@ -652,9 +637,8 @@ document.querySelectorAll('.obs-input').forEach(obs => {
     obs.addEventListener('blur',  function () { if (!this.value) delete this.dataset.userModified; });
 });
 
-// Cargar notas cuando cambian materia o período
-const selMateria = document.getElementById('select-materia');
-const selPeriodo = document.getElementById('select-periodo');
+const selMateria  = document.getElementById('select-materia');
+const selPeriodo  = document.getElementById('select-periodo');
 const selProfesor = document.getElementById('select-profesor');
 
 if (selMateria)  selMateria.addEventListener('change',  cargarNotasExistentes);
@@ -662,4 +646,5 @@ if (selPeriodo)  selPeriodo.addEventListener('change',  cargarNotasExistentes);
 if (selProfesor && selProfesor.tagName === 'SELECT')
     selProfesor.addEventListener('change', cargarNotasExistentes);
 </script>
+@endpush
 @endsection

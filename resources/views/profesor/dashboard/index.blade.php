@@ -90,7 +90,7 @@
 
 /* ── QUICK ACCESS ── */
 .pd-quick {
-    display: grid; grid-template-columns: repeat(4, 1fr);
+    display: grid; grid-template-columns: repeat(3, 1fr);
     gap: .9rem; margin-bottom: 1.5rem;
 }
 .pd-qcard {
@@ -184,7 +184,7 @@
 /* ── RESPONSIVE ── */
 @media(max-width: 992px) {
     .pd-stats  { grid-template-columns: repeat(2, 1fr); }
-    .pd-quick  { grid-template-columns: repeat(2, 1fr); }
+    .pd-quick  { grid-template-columns: repeat(3, 1fr); }
     .pd-bottom { grid-template-columns: 1fr; }
 }
 @media(max-width: 576px) {
@@ -253,23 +253,17 @@
     <div class="pd-quick">
         <a href="{{ route('profesor.mis-cursos') }}" class="pd-qcard qc-1">
             <div class="pd-qcard-inner">
-                <i class="fas fa-users"></i>
-                <span>Mis Estudiantes</span>
-            </div>
-        </a>
-        <a href="{{ route('profesor.mis-cursos') }}" class="pd-qcard qc-2">
-            <div class="pd-qcard-inner">
-                <i class="fas fa-book"></i>
+                <i class="fas fa-chalkboard-teacher"></i>
                 <span>Mis Cursos</span>
             </div>
         </a>
-        <a href="{{ route('profesor.calificaciones.index') }}" class="pd-qcard qc-3">
+        <a href="{{ route('profesor.calificaciones.index') }}" class="pd-qcard qc-2">
             <div class="pd-qcard-inner">
                 <i class="fas fa-clipboard-check"></i>
                 <span>Calificaciones</span>
             </div>
         </a>
-        <a href="{{ route('profesor.miHorario') }}" class="pd-qcard qc-4">
+        <a href="{{ route('profesor.miHorario') }}" class="pd-qcard qc-3">
             <div class="pd-qcard-inner">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Mi Horario</span>

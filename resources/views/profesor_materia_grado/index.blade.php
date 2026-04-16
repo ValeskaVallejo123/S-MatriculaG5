@@ -1,23 +1,186 @@
 @extends('layouts.app')
 
 @section('title', 'Asignación Profesor-Materia-Grado')
-@section('page-title', 'Carga Docente Completa')
-
-@section('topbar-actions')
-    <a href="{{ route('profesor_materia_grado.create') }}"
-       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; border: none; box-shadow: 0 2px 8px rgba(78,199,210,0.3); font-size: 0.9rem;">
-        <i class="fas fa-plus"></i> Nueva Asignación
-    </a>
-@endsection
+@section('page-title', 'Asignación Profesor-Materia-Grado')
+@section('content-class', 'p-0')
 
 @push('styles')
 <style>
-.pmgi-footer {
-    padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
-    display: flex; align-items: center; justify-content: space-between;
-    background: #fafafa; flex-wrap: wrap; gap: .5rem;
+.pmg-wrap {
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f0f4f8;
 }
-.pmgi-pages { font-size: .78rem; color: #94a3b8; }
+
+/* Hero */
+.pmg-hero {
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #4ec7d2 100%);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+.pmg-hero-left { display: flex; align-items: center; gap: 1rem; }
+.pmg-hero-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.pmg-hero-icon i { font-size: 1.3rem; color: white; }
+.pmg-hero-title { font-size: 1.2rem; font-weight: 700; color: white; margin: 0 0 .15rem; }
+.pmg-hero-sub   { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0; }
+
+.pmg-stat {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+    padding: .45rem 1rem;
+    text-align: center;
+    min-width: 80px;
+}
+.pmg-stat-num { font-size: 1.2rem; font-weight: 700; color: white; line-height: 1; }
+.pmg-stat-lbl { font-size: .7rem; color: rgba(255,255,255,.7); margin-top: .15rem; }
+
+.pmg-btn-new {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: white; color: #003b73; border: none;
+    border-radius: 8px; padding: .5rem 1.1rem;
+    font-size: .85rem; font-weight: 700; text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); flex-shrink: 0; transition: all .2s;
+}
+.pmg-btn-new:hover { background: #f0f4f8; color: #003b73; transform: translateY(-1px); }
+
+/* Toolbar */
+.pmg-toolbar {
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    padding: .75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+.pmg-search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+    max-width: 380px;
+}
+.pmg-search-wrap i {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; font-size: .8rem; pointer-events: none;
+}
+.pmg-search-wrap input {
+    width: 100%;
+    padding: .4rem .75rem .4rem 2rem;
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: .82rem; color: #334155;
+    transition: border-color .2s;
+}
+.pmg-search-wrap input:focus { outline: none; border-color: #4ec7d2; }
+.pmg-select {
+    padding: .4rem .75rem; border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: .82rem; color: #334155; background: white; cursor: pointer;
+}
+.pmg-btn-search {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .4rem .9rem; border-radius: 8px;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: white; border: none; font-size: .82rem; font-weight: 600; cursor: pointer;
+}
+.pmg-btn-clear {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .4rem .75rem; border-radius: 8px;
+    border: 1.5px solid #e2e8f0; background: white;
+    color: #64748b; font-size: .82rem; font-weight: 500; text-decoration: none;
+}
+.pmg-btn-clear:hover { background: #f8fafc; color: #334155; }
+
+/* Scrollable body */
+.pmg-body { flex: 1; overflow-y: auto; }
+
+/* Table card */
+.pmg-table-card {
+    background: white;
+    margin: 1.25rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,59,115,.08);
+    overflow: hidden;
+}
+.pmg-tbl thead th {
+    background: #003b73;
+    color: white;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: .75rem 1rem;
+    border: none;
+}
+.pmg-tbl tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .15s; }
+.pmg-tbl tbody tr:hover { background: rgba(78,199,210,.05); }
+.pmg-tbl tbody td { padding: .75rem 1rem; vertical-align: middle; font-size: .85rem; color: #334155; }
+.pmg-tbl tbody tr:last-child { border-bottom: none; }
+
+/* Materia badge */
+.materia-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: rgba(78,199,210,.1); color: #00508f;
+    border: 1px solid #4ec7d2;
+    border-radius: 999px; padding: .25rem .65rem;
+    font-size: .75rem; font-weight: 600;
+}
+.seccion-badge {
+    display: inline-flex; align-items: center;
+    background: rgba(0,80,143,.1); color: #00508f;
+    border: 1px solid #00508f;
+    border-radius: 999px; padding: .25rem .65rem;
+    font-size: .78rem; font-weight: 700;
+}
+
+/* Action buttons */
+.btn-edit-sm {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .28rem .6rem; border-radius: 6px;
+    background: rgba(78,199,210,.1); color: #00508f;
+    border: 1px solid #4ec7d2;
+    font-size: .75rem; font-weight: 600; text-decoration: none; transition: background .15s;
+}
+.btn-edit-sm:hover { background: rgba(78,199,210,.25); color: #00508f; }
+.btn-del-sm {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .28rem .6rem; border-radius: 6px;
+    background: rgba(239,68,68,.08); color: #dc2626;
+    border: 1px solid #fca5a5;
+    font-size: .75rem; font-weight: 600; cursor: pointer; transition: background .15s;
+}
+.btn-del-sm:hover { background: rgba(239,68,68,.18); }
+
+/* Empty state */
+.pmg-empty {
+    text-align: center; padding: 3.5rem 1rem;
+}
+.pmg-empty i { font-size: 2.5rem; color: #bfd9ea; display: block; margin-bottom: .75rem; }
+.pmg-empty p { font-size: .9rem; font-weight: 600; color: #003b73; margin: 0 0 .5rem; }
+.pmg-empty small { font-size: .8rem; color: #94a3b8; }
+
+/* Footer paginación */
+.pmg-footer {
+    padding: .75rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: white; border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap; gap: .5rem; flex-shrink: 0;
+    margin: 0 1.5rem 1.25rem;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 2px 12px rgba(0,59,115,.08);
+}
+.pmg-pages { font-size: .78rem; color: #94a3b8; }
 .pagination { margin: 0; gap: 3px; display: flex; }
 .pagination .page-link {
     border-radius: 7px; padding: .3rem .65rem;
@@ -30,170 +193,187 @@
     border-color: #4ec7d2; color: #fff;
 }
 .pagination .page-item.disabled .page-link { opacity: .45; }
+
+/* Dark mode */
+body.dark-mode .pmg-wrap  { background: #0f172a; }
+body.dark-mode .pmg-toolbar { background: #1e293b; border-color: #334155; }
+body.dark-mode .pmg-search-wrap input { background: #0f172a; border-color: #334155; color: #cbd5e1; }
+body.dark-mode .pmg-select { background: #0f172a; border-color: #334155; color: #cbd5e1; }
+body.dark-mode .pmg-table-card { background: #1e293b; }
+body.dark-mode .pmg-tbl tbody tr:hover { background: rgba(78,199,210,.07); }
+body.dark-mode .pmg-tbl tbody td { color: #cbd5e1; }
+body.dark-mode .pmg-tbl tbody tr { border-color: #334155; }
+body.dark-mode .pmg-footer { background: #1e293b; border-color: #334155; }
 </style>
 @endpush
 
 @section('content')
-<div class="container-fluid px-4">
+<div class="pmg-wrap">
 
-    {{-- Resumen --}}
-    <div class="row g-3 mb-3">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #00508f !important;">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div style="width:42px;height:42px;background:rgba(0,80,143,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-chalkboard-teacher" style="color:#00508f;"></i>
-                    </div>
-                    <div>
-                        <div class="small text-muted">Profesores asignados</div>
-                        <div class="fw-bold fs-4" style="color:#00508f;">{{ $totalProfesores }}</div>
-                    </div>
-                </div>
+    {{-- Hero --}}
+    <div class="pmg-hero">
+        <div class="pmg-hero-left">
+            <div class="pmg-hero-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div>
+                <h2 class="pmg-hero-title">Asignación Profesor-Materia-Grado</h2>
+                <p class="pmg-hero-sub">Gestiona qué profesor imparte cada materia en cada grado y sección</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #4ec7d2 !important;">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div style="width:42px;height:42px;background:rgba(78,199,210,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-list-alt" style="color:#4ec7d2;"></i>
-                    </div>
-                    <div>
-                        <div class="small text-muted">Total asignaciones</div>
-                        <div class="fw-bold fs-4" style="color:#4ec7d2;">{{ $totalAsignaciones }}</div>
-                    </div>
-                </div>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <div class="pmg-stat">
+                <div class="pmg-stat-num">{{ $totalProfesores }}</div>
+                <div class="pmg-stat-lbl">Profesores</div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #003b73 !important;">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div style="width:42px;height:42px;background:rgba(0,59,115,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-school" style="color:#003b73;"></i>
-                    </div>
-                    <div>
-                        <div class="small text-muted">Grupos cubiertos</div>
-                        <div class="fw-bold fs-4" style="color:#003b73;">{{ $asignaciones->sum(fn($g) => $g->count()) }}</div>
-                    </div>
-                </div>
+            <div class="pmg-stat">
+                <div class="pmg-stat-num">{{ $totalAsignaciones }}</div>
+                <div class="pmg-stat-lbl">Asignaciones</div>
             </div>
+            <div class="pmg-stat">
+                <div class="pmg-stat-num">{{ $asignaciones->sum(fn($g) => $g->count()) }}</div>
+                <div class="pmg-stat-lbl">Grupos</div>
+            </div>
+            <a href="{{ route('profesor_materia_grado.create') }}" class="pmg-btn-new">
+                <i class="fas fa-plus"></i> Nueva Asignación
+            </a>
         </div>
     </div>
 
-    {{-- Tabla --}}
-    <div class="card border-0 shadow-sm" style="border-radius: 10px;">
-        <div class="card-body p-0">
-
-            {{-- Buscador --}}
-            <div class="p-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <form method="GET" action="{{ route('profesor_materia_grado.index') }}" class="d-flex gap-2 align-items-center flex-wrap">
-                    <div class="position-relative" style="min-width:260px;">
-                        <i class="fas fa-search position-absolute" style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:0.85rem;"></i>
-                        <input type="text" name="buscar" value="{{ request('buscar') }}"
-                               class="form-control form-control-sm ps-4"
-                               placeholder="Buscar profesor o materia..."
-                               style="border:1.5px solid #e2e8f0;border-radius:8px;">
-                    </div>
-                    <select name="per_page" class="form-select form-select-sm" style="width:auto;border:1.5px solid #e2e8f0;border-radius:8px;" onchange="this.form.submit()">
-                        @foreach([10,15,25,50] as $n)
-                            <option value="{{ $n }}" {{ request('per_page', 15) == $n ? 'selected' : '' }}>{{ $n }} por página</option>
-                        @endforeach
-                    </select>
-                    <button type="submit" class="btn btn-sm" style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border-radius:8px;padding:0.3rem 0.9rem;">
-                        <i class="fas fa-search me-1"></i> Buscar
-                    </button>
-                    @if(request('buscar'))
-                        <a href="{{ route('profesor_materia_grado.index') }}" class="btn btn-sm" style="border:1.5px solid #e2e8f0;border-radius:8px;color:#6b7280;padding:0.3rem 0.9rem;">
-                            <i class="fas fa-times me-1"></i> Limpiar
-                        </a>
-                    @endif
-                </form>
+    {{-- Toolbar --}}
+    <div class="pmg-toolbar">
+        <form method="GET" action="{{ route('profesor_materia_grado.index') }}"
+              class="d-flex align-items-center gap-2 flex-wrap w-100">
+            <div class="pmg-search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" name="buscar" value="{{ request('buscar') }}"
+                       placeholder="Buscar profesor o materia...">
             </div>
+            <select name="per_page" class="pmg-select" onchange="this.form.submit()">
+                @foreach([10, 15, 25, 50] as $n)
+                    <option value="{{ $n }}" {{ request('per_page', 15) == $n ? 'selected' : '' }}>
+                        {{ $n }} por página
+                    </option>
+                @endforeach
+            </select>
+            <button type="submit" class="pmg-btn-search">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            @if(request('buscar'))
+                <a href="{{ route('profesor_materia_grado.index') }}" class="pmg-btn-clear">
+                    <i class="fas fa-times"></i> Limpiar
+                </a>
+            @endif
+        </form>
+    </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="pmgTable">
-                    <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                        <tr>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size:0.7rem;color:#003b73;">#</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size:0.7rem;color:#003b73;">Profesor</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size:0.7rem;color:#003b73;">Materia</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size:0.7rem;color:#003b73;">Grado</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold text-center" style="font-size:0.7rem;color:#003b73;">Sección</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold text-center" style="font-size:0.7rem;color:#003b73;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($asignaciones as $asignacion)
-                            <tr class="pmg-row" style="border-bottom:1px solid #f1f5f9;">
-                                <td class="px-3 py-2 text-muted small">{{ $asignaciones->firstItem() + $loop->index }}</td>
-                                <td class="px-3 py-2">
-                                    <div class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
-                                        {{ $asignacion->profesor?->nombre_completo ?? (($asignacion->profesor?->nombre ?? '') . ' ' . ($asignacion->profesor?->apellido ?? '')) ?: 'Sin asignar' }}
-                                    </div>
-                                </td>
-                                <td class="px-3 py-2">
-                                    <span class="badge" style="background:rgba(78,199,210,0.1);color:#00508f;border:1px solid #4ec7d2;font-size:0.78rem;font-weight:500;padding:0.3rem 0.6rem;">
-                                        <i class="fas fa-book me-1" style="font-size:0.65rem;"></i>
-                                        {{ $asignacion->materia->nombre ?? '—' }}
-                                    </span>
-                                </td>
-                                <td class="px-3 py-2 small" style="color:#334155;">
-                                    {{ $asignacion->grado?->nombre_completo ?? '—' }}
-                                </td>
-                                <td class="px-3 py-2 text-center">
-                                    <span class="badge rounded-pill fw-bold"
-                                          style="background:rgba(0,80,143,0.1);color:#00508f;border:1px solid #00508f;padding:0.3rem 0.7rem;font-size:0.8rem;">
-                                        {{ $asignacion->seccion }}
-                                    </span>
-                                </td>
-                                <td class="px-3 py-2 text-center">
-                                    <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <a href="{{ route('profesor_materia_grado.edit', $asignacion->id) }}"
-                                           class="btn btn-sm" title="Editar"
-                                           style="background:rgba(78,199,210,0.1);color:#00508f;border:1px solid #4ec7d2;border-radius:6px;padding:0.25rem 0.5rem;">
-                                            <i class="fas fa-edit" style="font-size:0.75rem;"></i>
-                                        </a>
-                                        <form method="POST"
-                                              action="{{ route('profesor_materia_grado.destroy', $asignacion->id) }}"
-                                              data-confirm="¿Eliminar esta asignación?"
-                                              class="m-0">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm" title="Eliminar"
-                                                    style="background:rgba(244,67,54,0.08);color:#d32f2f;border:1px solid #ef9a9a;border-radius:6px;padding:0.25rem 0.5rem;">
-                                                <i class="fas fa-trash" style="font-size:0.75rem;"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
+    {{-- Body --}}
+    <div class="pmg-body">
+
+        {{-- Flash messages --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show mx-3 mt-3 mb-0 border-0 shadow-sm"
+                 role="alert" style="border-radius:10px;border-left:4px solid #4ec7d2 !important;">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3 mb-0 border-0 shadow-sm"
+                 role="alert" style="border-radius:10px;border-left:4px solid #ef4444 !important;">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        {{-- Table card --}}
+        <div class="pmg-table-card">
+            @if($asignaciones->isEmpty())
+                <div class="pmg-empty">
+                    <i class="fas fa-inbox"></i>
+                    <p>No hay asignaciones registradas</p>
+                    <small>Crea la primera asignación para comenzar.</small><br>
+                    <a href="{{ route('profesor_materia_grado.create') }}"
+                       style="display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;
+                              background:linear-gradient(135deg,#4ec7d2,#00508f);
+                              color:white;padding:.5rem 1.25rem;border-radius:8px;
+                              font-weight:700;font-size:.85rem;text-decoration:none;">
+                        <i class="fas fa-plus"></i> Crear primera asignación
+                    </a>
+                </div>
+            @else
+                <div class="table-responsive">
+                    <table class="table pmg-tbl mb-0" id="pmgTable">
+                        <thead>
                             <tr>
-                                <td colspan="6" class="text-center py-5">
-                                    <i class="fas fa-inbox fa-3x mb-3" style="color:#00508f;opacity:0.3;"></i>
-                                    <h6 style="color:#003b73;">No hay asignaciones registradas</h6>
-                                    <a href="{{ route('profesor_materia_grado.create') }}"
-                                       class="btn btn-sm mt-2"
-                                       style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border-radius:8px;padding:0.4rem 1rem;">
-                                        <i class="fas fa-plus me-1"></i>Crear primera asignación
-                                    </a>
-                                </td>
+                                <th>#</th>
+                                <th>Profesor</th>
+                                <th>Materia</th>
+                                <th>Grado</th>
+                                <th style="text-align:center;">Sección</th>
+                                <th style="text-align:center;">Acciones</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($asignaciones as $asignacion)
+                                <tr>
+                                    <td style="color:#94a3b8;font-size:.8rem;">
+                                        {{ $asignaciones->firstItem() + $loop->index }}
+                                    </td>
+                                    <td>
+                                        <div style="font-weight:700;color:#003b73;font-size:.88rem;">
+                                            {{ $asignacion->profesor?->nombre_completo
+                                               ?? trim(($asignacion->profesor?->nombre ?? '') . ' ' . ($asignacion->profesor?->apellido ?? ''))
+                                               ?: 'Sin asignar' }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="materia-badge">
+                                            <i class="fas fa-book" style="font-size:.65rem;"></i>
+                                            {{ $asignacion->materia->nombre ?? '—' }}
+                                        </span>
+                                    </td>
+                                    <td style="font-size:.84rem;">
+                                        {{ $asignacion->grado?->nombre_completo ?? '—' }}
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="seccion-badge">{{ $asignacion->seccion }}</span>
+                                    </td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;justify-content:center;gap:.4rem;">
+                                            <a href="{{ route('profesor_materia_grado.edit', $asignacion->id) }}"
+                                               class="btn-edit-sm" title="Editar">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
+                                            <form method="POST"
+                                                  action="{{ route('profesor_materia_grado.destroy', $asignacion->id) }}"
+                                                  data-confirm="¿Eliminar esta asignación?"
+                                                  class="m-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-del-sm" title="Eliminar">
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+
+        {{-- Paginación --}}
+        @if($asignaciones->hasPages())
+            <div class="pmg-footer">
+                <span class="pmg-pages">
+                    Mostrando {{ $asignaciones->firstItem() }}–{{ $asignaciones->lastItem() }}
+                    de {{ $asignaciones->total() }} asignaciones
+                </span>
+                {{ $asignaciones->appends(request()->query())->links() }}
             </div>
-        </div>
-    </div>
+        @endif
 
-    {{-- Paginación --}}
-    @if($asignaciones->hasPages())
-        <div class="pmgi-footer">
-            <span class="pmgi-pages">
-                Mostrando {{ $asignaciones->firstItem() }}–{{ $asignaciones->lastItem() }} de {{ $asignaciones->total() }} asignaciones
-            </span>
-            {{ $asignaciones->appends(request()->query())->links() }}
-        </div>
-    @endif
-
+    </div>{{-- /pmg-body --}}
 </div>
 @endsection

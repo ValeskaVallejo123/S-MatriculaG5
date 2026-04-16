@@ -2,43 +2,62 @@
 
 @section('title', 'Carga Docente')
 @section('page-title', 'Carga Docente')
-
+@section('content-class', 'p-0')
 
 @push('styles')
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-.cd-wrap { font-family: 'Inter', sans-serif; }
-
-/* ─── Stats ─────────────────────────────────── */
-.cd-stats {
-    display: grid; grid-template-columns: repeat(4,1fr);
-    gap: 1rem; margin-bottom: 1.5rem;
+.cd-wrap {
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f0f4f8;
 }
-@media(max-width:900px){ .cd-stats { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:480px){ .cd-stats { grid-template-columns: 1fr; } }
+
+/* Hero */
+.cd-hero {
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #4ec7d2 100%);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+.cd-hero-left { display: flex; align-items: center; gap: 1rem; }
+.cd-hero-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cd-hero-icon i { font-size: 1.3rem; color: white; }
+.cd-hero-title { font-size: 1.2rem; font-weight: 700; color: white; margin: 0 0 .15rem; }
+.cd-hero-sub   { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0; }
 
 .cd-stat {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+    padding: .45rem 1rem;
+    text-align: center;
+    min-width: 80px;
 }
-.cd-stat-icon {
-    width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-}
-.cd-stat-icon i { font-size: 1.1rem; color: #fff; }
-.cd-stat-lbl { font-size: .71rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
-.cd-stat-num { font-size: 1.7rem; font-weight: 700; color: #0f172a; line-height: 1; }
+.cd-stat-num { font-size: 1.2rem; font-weight: 700; color: white; line-height: 1; }
+.cd-stat-lbl { font-size: .7rem; color: rgba(255,255,255,.7); margin-top: .15rem; }
 
-/* ─── Toolbar ────────────────────────────────── */
+/* Toolbar */
 .cd-toolbar {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    padding: .85rem 1.25rem; margin-bottom: 1.25rem;
-    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    padding: .9rem 2rem;
+    background: white;
+    border-bottom: 1px solid #e8eef5;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
-.cd-toolbar-form { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; flex: 1; }
+.cd-toolbar-form { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
 .cd-select {
     padding: .38rem .75rem; border: 1.5px solid #e2e8f0; border-radius: 8px;
     font-size: .82rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
@@ -52,29 +71,39 @@
     border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity .15s;
 }
 .cd-btn:hover { opacity: .88; }
-.cd-search-wrap { position: relative; }
+.cd-search-wrap { position: relative; margin-left: auto; }
 .cd-search-wrap i { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: .78rem; pointer-events: none; }
 .cd-search {
     padding: .38rem .75rem .38rem 2rem; border: 1.5px solid #e2e8f0; border-radius: 8px;
     font-size: .82rem; outline: none; font-family: 'Inter', sans-serif; background: #f8fafc;
-    min-width: 200px;
+    min-width: 220px;
 }
 .cd-search:focus { border-color: #4ec7d2; background: #fff; }
 
-/* ─── View tabs ──────────────────────────────── */
-.cd-view-tabs { display: flex; gap: .4rem; margin-bottom: 1.25rem; }
-.cd-vtab {
-    padding: .42rem 1rem; border-radius: 8px; font-size: .82rem; font-weight: 600;
-    border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; cursor: pointer; transition: all .15s;
-    display: inline-flex; align-items: center; gap: .4rem;
+/* View tabs */
+.cd-tabs-bar {
+    padding: .7rem 2rem 0;
+    background: white;
+    border-bottom: 1px solid #e8eef5;
+    flex-shrink: 0;
+    display: flex;
+    gap: .4rem;
 }
-.cd-vtab.active { background: linear-gradient(135deg,#4ec7d2,#00508f); color: #fff; border-color: transparent; }
+.cd-vtab {
+    padding: .4rem 1.1rem; border-radius: 8px 8px 0 0; font-size: .82rem; font-weight: 600;
+    border: 1.5px solid #e2e8f0; border-bottom: none; background: #f8fafc; color: #64748b;
+    cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: .4rem;
+}
+.cd-vtab.active { background: #003b73; color: white; border-color: #003b73; }
 .cd-vtab:not(.active):hover { border-color: #4ec7d2; color: #00508f; background: #e8f8f9; }
 
-/* ─── Card ───────────────────────────────────── */
+/* Scrollable body */
+.cd-body { flex: 1; overflow-y: auto; padding: 1.5rem 2rem; }
+
+/* Card */
 .cd-card {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    overflow: hidden; box-shadow: 0 2px 12px rgba(0,59,115,.08);
 }
 .cd-card-head {
     background: #003b73; padding: .85rem 1.25rem;
@@ -85,13 +114,14 @@
 .cd-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
 .cd-card-head-sub { color: rgba(255,255,255,.55); font-size: .78rem; }
 
-/* ─── Tabla ──────────────────────────────────── */
+/* Tabla */
 .cd-tbl { width: 100%; border-collapse: collapse; }
 .cd-tbl thead th {
-    background: #f8fafc; padding: .6rem 1rem;
+    background: #003b73;
+    color: white;
     font-size: .7rem; font-weight: 700; letter-spacing: .07em;
-    text-transform: uppercase; color: #64748b;
-    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+    text-transform: uppercase; padding: .75rem 1rem;
+    border: none; white-space: nowrap;
 }
 .cd-tbl thead th.tc { text-align: center; }
 .cd-tbl tbody td {
@@ -100,7 +130,7 @@
 }
 .cd-tbl tbody td.tc { text-align: center; }
 .cd-tbl tbody tr:last-child td { border-bottom: none; }
-.cd-tbl tbody tr:hover { background: #fafbfc; }
+.cd-tbl tbody tr:hover { background: rgba(78,199,210,.05); }
 
 /* Ranking */
 .cd-rank {
@@ -120,7 +150,7 @@
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; color: #fff; font-size: .9rem;
 }
-.cd-name { font-weight: 600; color: #0f172a; font-size: .83rem; }
+.cd-name { font-weight: 600; color: #003b73; font-size: .83rem; }
 .cd-spec { font-size: .73rem; color: #64748b; margin-top: .1rem; }
 
 /* Barra de carga */
@@ -164,24 +194,6 @@
 }
 .btn-det:hover { background: #00508f; color: #fff; transform: translateY(-1px); }
 
-/* Gráficas */
-.cd-charts-grid {
-    display: grid; grid-template-columns: repeat(2,1fr); gap: 1.25rem;
-}
-@media(max-width:768px){ .cd-charts-grid { grid-template-columns: 1fr; } }
-
-.cd-chart-card {
-    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
-}
-.cd-chart-head {
-    padding: .75rem 1.1rem; border-bottom: 1px solid #f1f5f9;
-    display: flex; align-items: center; gap: .5rem;
-}
-.cd-chart-head i { color: #4ec7d2; }
-.cd-chart-head span { font-weight: 700; font-size: .88rem; color: #0f172a; }
-.cd-chart-body { padding: 1.25rem; }
-
 /* Detalle expandible */
 .cd-detail-panel {
     background: #f8fafc; border-top: 2px solid #4ec7d2; padding: 1rem 1.25rem;
@@ -212,17 +224,30 @@
 }
 .dp-empty { color: #94a3b8; font-size: .8rem; padding: .4rem 0; }
 
-/* Empty */
-.cd-empty { padding: 4rem 1rem; text-align: center; }
-.cd-empty i { font-size: 2.2rem; color: #cbd5e1; display: block; margin-bottom: .75rem; }
-.cd-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
-
-/* Footer */
+/* Footer tabla */
 .cd-footer {
     padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
     font-size: .78rem; color: #94a3b8; background: #fafafa;
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
 }
+
+/* Gráficas */
+.cd-charts-grid {
+    display: grid; grid-template-columns: repeat(2,1fr); gap: 1.25rem;
+}
+@media(max-width:768px){ .cd-charts-grid { grid-template-columns: 1fr; } }
+
+.cd-chart-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.cd-chart-head {
+    padding: .75rem 1.1rem; border-bottom: 1px solid #f1f5f9;
+    display: flex; align-items: center; gap: .5rem;
+}
+.cd-chart-head i { color: #4ec7d2; }
+.cd-chart-head span { font-weight: 700; font-size: .88rem; color: #0f172a; }
+.cd-chart-body { padding: 1.25rem; }
 
 /* Modal */
 .modal-content { border-radius: 12px; border: none; overflow: hidden; }
@@ -279,12 +304,30 @@
 .est-list::-webkit-scrollbar { width: 5px; }
 .est-list::-webkit-scrollbar-track { background: #f1f5f9; }
 .est-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+/* Dark mode */
+body.dark-mode .cd-wrap     { background: #0f172a; }
+body.dark-mode .cd-toolbar, body.dark-mode .cd-tabs-bar { background: #1e293b; border-color: #334155; }
+body.dark-mode .cd-select, body.dark-mode .cd-search { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+body.dark-mode .cd-card     { background: #1e293b; }
+body.dark-mode .cd-tbl tbody td { color: #cbd5e1; }
+body.dark-mode .cd-tbl tbody tr { border-color: #334155; }
+body.dark-mode .cd-tbl tbody tr:hover { background: rgba(78,199,210,.07); }
+body.dark-mode .cd-footer   { background: #1e293b; border-color: #334155; }
+body.dark-mode .cd-chart-card { background: #1e293b; border-color: #334155; }
+body.dark-mode .cd-chart-head { border-color: #334155; }
+body.dark-mode .cd-chart-head span { color: #e2e8f0; }
+body.dark-mode .dp-block { background: #0f172a; border-color: #334155; }
+body.dark-mode .cd-detail-panel { background: #162032; }
+body.dark-mode .dp-grado-row { border-color: #334155; }
+body.dark-mode .dp-grado-name { color: #e2e8f0; }
+body.dark-mode .cd-name { color: #e2e8f0; }
 </style>
 @endpush
 
 @section('content')
 
-{{-- ✅ JSON embebido AQUÍ (en @section content, NO en @push scripts) para evitar ParseError de Blade --}}
+{{-- JSON embebido para gráficas/modal (debe ir dentro de @section content) --}}
 <script id="profesores-data" type="application/json">
 {!! json_encode($profesores->map(function($p) {
     return [
@@ -303,42 +346,31 @@
 
 <div class="cd-wrap">
 
-    {{-- Stats --}}
-    <div class="cd-stats">
-        <div class="cd-stat">
-            <div class="cd-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
-                <i class="fas fa-chalkboard-teacher"></i>
-            </div>
+    {{-- Hero --}}
+    <div class="cd-hero">
+        <div class="cd-hero-left">
+            <div class="cd-hero-icon"><i class="fas fa-chalkboard-teacher"></i></div>
             <div>
-                <div class="cd-stat-lbl">Total Profesores</div>
+                <h2 class="cd-hero-title">Carga Docente</h2>
+                <p class="cd-hero-sub">Distribución de materias, grados y estudiantes por profesor — {{ $anio }}</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <div class="cd-stat">
                 <div class="cd-stat-num">{{ $totalProfesores }}</div>
+                <div class="cd-stat-lbl">Profesores</div>
             </div>
-        </div>
-        <div class="cd-stat">
-            <div class="cd-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div>
-                <div class="cd-stat-lbl">Con Carga</div>
+            <div class="cd-stat">
                 <div class="cd-stat-num">{{ $totalConCarga }}</div>
+                <div class="cd-stat-lbl">Con Carga</div>
             </div>
-        </div>
-        <div class="cd-stat">
-            <div class="cd-stat-icon" style="background:linear-gradient(135deg,#f87171,#dc2626);">
-                <i class="fas fa-user-times"></i>
-            </div>
-            <div>
-                <div class="cd-stat-lbl">Sin Carga</div>
+            <div class="cd-stat">
                 <div class="cd-stat-num">{{ $totalSinCarga }}</div>
+                <div class="cd-stat-lbl">Sin Carga</div>
             </div>
-        </div>
-        <div class="cd-stat">
-            <div class="cd-stat-icon" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);">
-                <i class="fas fa-users"></i>
-            </div>
-            <div>
-                <div class="cd-stat-lbl">Prom. Estudiantes</div>
+            <div class="cd-stat">
                 <div class="cd-stat-num">{{ $promEstudiantes }}</div>
+                <div class="cd-stat-lbl">Prom. Alumnos</div>
             </div>
         </div>
     </div>
@@ -365,8 +397,8 @@
         </div>
     </div>
 
-    {{-- View Tabs --}}
-    <div class="cd-view-tabs">
+    {{-- Tabs --}}
+    <div class="cd-tabs-bar">
         <button class="cd-vtab active" id="tab-tabla" onclick="switchView('tabla', this)">
             <i class="fas fa-table"></i> Tabla
         </button>
@@ -375,252 +407,252 @@
         </button>
     </div>
 
-    {{-- Vista Tabla --}}
-    <div id="view-tabla">
-        <div class="cd-card">
-            <div class="cd-card-head">
-                <div class="cd-card-head-left">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Distribución de Carga Docente — {{ $anio }}</span>
+    {{-- Scrollable body --}}
+    <div class="cd-body">
+
+        {{-- Vista Tabla --}}
+        <div id="view-tabla">
+            <div class="cd-card">
+                <div class="cd-card-head">
+                    <div class="cd-card-head-left">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Distribución de Carga Docente — {{ $anio }}</span>
+                    </div>
+                    <span class="cd-card-head-sub">
+                        Clic en <i class="fas fa-chevron-down" style="font-size:.7rem;"></i> para ver detalle
+                    </span>
                 </div>
-                <span class="cd-card-head-sub">
-                    Clic en <i class="fas fa-chevron-down" style="font-size:.7rem;"></i> para ver detalle
-                </span>
-            </div>
 
-            @php $maxEst = $profesores->max('total_estudiantes') ?: 1; @endphp
+                @php $maxEst = $profesores->max('total_estudiantes') ?: 1; @endphp
 
-            <div style="overflow-x:auto;">
-                <table class="cd-tbl" id="cdTable">
-                    <thead>
-                        <tr>
-                            <th class="tc">#</th>
-                            <th>Profesor</th>
-                            <th class="tc">Contrato</th>
-                            <th>Materias</th>
-                            <th class="tc">Grados</th>
-                            <th class="tc">Horas/sem</th>
-                            <th style="min-width:160px;">Estudiantes</th>
-                            <th class="tc">Detalle</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($profesores as $i => $p)
-                        @php
-                            $pct      = ($p->total_estudiantes / $maxEst) * 100;
-                            $barColor = $pct >= 80 ? '#ef4444' : ($pct >= 50 ? '#f59e0b' : '#4ec7d2');
-                            $rkClass  = ['rk-1','rk-2','rk-3'][$i] ?? 'rk-n';
-                            $contrato = match($p->tipo_contrato ?? '') {
-                                'tiempo_completo' => ['Tiempo Completo', 'b-full'],
-                                'medio_tiempo'    => ['Medio Tiempo',    'b-half'],
-                                'por_horas'       => ['Por Horas',       'b-hours'],
-                                default           => ['—',               'b-half'],
-                            };
-                            $materiasList        = $p->nombres_materias ? explode(', ', $p->nombres_materias) : [];
-                            $gradosList          = $p->nombres_grados   ? explode(', ', $p->nombres_grados)   : [];
-                            $estudiantesPorGrado = json_decode($p->estudiantes_por_grado ?? '[]', true);
-                        @endphp
+                <div style="overflow-x:auto;">
+                    <table class="cd-tbl" id="cdTable">
+                        <thead>
+                            <tr>
+                                <th class="tc">#</th>
+                                <th>Profesor</th>
+                                <th class="tc">Contrato</th>
+                                <th>Materias</th>
+                                <th class="tc">Grados</th>
+                                <th class="tc">Horas/sem</th>
+                                <th style="min-width:160px;">Estudiantes</th>
+                                <th class="tc">Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($profesores as $i => $p)
+                            @php
+                                $pct      = ($p->total_estudiantes / $maxEst) * 100;
+                                $barColor = $pct >= 80 ? '#ef4444' : ($pct >= 50 ? '#f59e0b' : '#4ec7d2');
+                                $rkClass  = ['rk-1','rk-2','rk-3'][$i] ?? 'rk-n';
+                                $contrato = match($p->tipo_contrato ?? '') {
+                                    'tiempo_completo' => ['Tiempo Completo', 'b-full'],
+                                    'medio_tiempo'    => ['Medio Tiempo',    'b-half'],
+                                    'por_horas'       => ['Por Horas',       'b-hours'],
+                                    default           => ['—',               'b-half'],
+                                };
+                                $materiasList        = $p->nombres_materias ? explode(', ', $p->nombres_materias) : [];
+                                $gradosList          = $p->nombres_grados   ? explode(', ', $p->nombres_grados)   : [];
+                                $estudiantesPorGrado = json_decode($p->estudiantes_por_grado ?? '[]', true);
+                            @endphp
 
-                        <tr data-name="{{ strtolower($p->nombre . ' ' . $p->apellido) }}" class="cd-main-row">
-                            <td class="tc"><span class="cd-rank {{ $rkClass }}">{{ $i + 1 }}</span></td>
-                            <td>
-                                <div style="display:flex;align-items:center;gap:.65rem;">
-                                    <div class="cd-av">{{ strtoupper(substr($p->nombre, 0, 1)) }}</div>
-                                    <div>
-                                        <div class="cd-name">{{ $p->nombre }} {{ $p->apellido }}</div>
-                                        <div class="cd-spec">{{ $p->especialidad ?? '—' }}</div>
+                            <tr data-name="{{ strtolower($p->nombre . ' ' . $p->apellido) }}" class="cd-main-row">
+                                <td class="tc"><span class="cd-rank {{ $rkClass }}">{{ $i + 1 }}</span></td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:.65rem;">
+                                        <div class="cd-av">{{ strtoupper(substr($p->nombre, 0, 1)) }}</div>
+                                        <div>
+                                            <div class="cd-name">{{ $p->nombre }} {{ $p->apellido }}</div>
+                                            <div class="cd-spec">{{ $p->especialidad ?? '—' }}</div>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="tc">
-                                <span class="bpill {{ $contrato[1] }}">{{ $contrato[0] }}</span>
-                            </td>
-                            <td>
-                                @if(count($materiasList))
-                                    <div class="cd-chips">
-                                        @foreach(array_slice($materiasList, 0, 3) as $m)
-                                            <span class="cd-chip">{{ $m }}</span>
+                                </td>
+                                <td class="tc">
+                                    <span class="bpill {{ $contrato[1] }}">{{ $contrato[0] }}</span>
+                                </td>
+                                <td>
+                                    @if(count($materiasList))
+                                        <div class="cd-chips">
+                                            @foreach(array_slice($materiasList, 0, 3) as $m)
+                                                <span class="cd-chip">{{ $m }}</span>
+                                            @endforeach
+                                            @if(count($materiasList) > 3)
+                                                <span class="cd-chip cd-chip-gray">+{{ count($materiasList) - 3 }}</span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span style="color:#cbd5e1;font-size:.75rem;">Sin materias</span>
+                                    @endif
+                                </td>
+                                <td class="tc">
+                                    <div style="display:flex;flex-wrap:wrap;gap:.25rem;justify-content:center;">
+                                        @foreach(array_slice($gradosList, 0, 3) as $g)
+                                            <span class="cd-grado-badge">{{ $g }}</span>
                                         @endforeach
-                                        @if(count($materiasList) > 3)
-                                            <span class="cd-chip cd-chip-gray">+{{ count($materiasList) - 3 }}</span>
+                                        @if(count($gradosList) > 3)
+                                            <span class="cd-grado-badge" style="background:#f1f5f9;color:#64748b;">+{{ count($gradosList) - 3 }}</span>
+                                        @endif
+                                        @if(!count($gradosList))
+                                            <span style="color:#cbd5e1;font-size:.75rem;">—</span>
                                         @endif
                                     </div>
-                                @else
-                                    <span style="color:#cbd5e1;font-size:.75rem;">Sin materias</span>
-                                @endif
-                            </td>
-                            <td class="tc">
-                                <div style="display:flex;flex-wrap:wrap;gap:.25rem;justify-content:center;">
-                                    @foreach(array_slice($gradosList, 0, 3) as $g)
-                                        <span class="cd-grado-badge">{{ $g }}</span>
-                                    @endforeach
-                                    @if(count($gradosList) > 3)
-                                        <span class="cd-grado-badge" style="background:#f1f5f9;color:#64748b;">+{{ count($gradosList) - 3 }}</span>
-                                    @endif
-                                    @if(!count($gradosList))
-                                        <span style="color:#cbd5e1;font-size:.75rem;">—</span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td class="tc">
-                                <span style="font-weight:700;color:#00508f;font-size:.9rem;">{{ $p->total_horas ?? 0 }}</span>
-                            </td>
-                            <td>
-                                <div class="cd-bar-wrap">
-                                    <div class="cd-bar-bg">
-                                        <div class="cd-bar-fill" style="width:{{ $pct }}%;background:{{ $barColor }};"></div>
-                                    </div>
-                                    <span class="cd-bar-num">{{ $p->total_estudiantes }}</span>
-                                </div>
-                            </td>
-                            <td class="tc">
-                                {{-- ✅ Usamos data-id, SIN parámetros en onclick --}}
-                                <button class="btn-det btn-toggle-detail"
-                                        data-id="{{ $p->id }}"
-                                        title="Ver detalle">
-                                    <i class="fas fa-chevron-down" id="icon-{{ $p->id }}"></i>
-                                </button>
-                            </td>
-                        </tr>
-
-                        {{-- Fila expandible --}}
-                        <tr id="detail-row-{{ $p->id }}" class="detail-row" style="display:none;">
-                            <td colspan="8" style="padding:0;background:#f8fafc;">
-                                <div class="cd-detail-panel">
-                                    <div class="dp-grid">
-
-                                        {{-- Grados --}}
-                                        <div class="dp-block">
-                                            <div class="dp-block-title">
-                                                <i class="fas fa-layer-group"></i> Grados Asignados
-                                            </div>
-                                            @if(count($gradosList))
-                                                @foreach($gradosList as $g)
-                                                <div class="dp-grado-row">
-                                                    <span class="dp-grado-name">
-                                                        <i class="fas fa-circle" style="font-size:.45rem;color:#4ec7d2;vertical-align:middle;margin-right:.3rem;"></i>
-                                                        {{ $g }}
-                                                    </span>
-                                                    <span class="dp-grado-count">
-                                                        <i class="fas fa-users" style="font-size:.65rem;"></i>
-                                                        {{ $estudiantesPorGrado[$g] ?? '—' }} est.
-                                                    </span>
-                                                </div>
-                                                @endforeach
-                                            @else
-                                                <p class="dp-empty">Sin grados asignados</p>
-                                            @endif
+                                </td>
+                                <td class="tc">
+                                    <span style="font-weight:700;color:#00508f;font-size:.9rem;">{{ $p->total_horas ?? 0 }}</span>
+                                </td>
+                                <td>
+                                    <div class="cd-bar-wrap">
+                                        <div class="cd-bar-bg">
+                                            <div class="cd-bar-fill" style="width:{{ $pct }}%;background:{{ $barColor }};"></div>
                                         </div>
+                                        <span class="cd-bar-num">{{ $p->total_estudiantes }}</span>
+                                    </div>
+                                </td>
+                                <td class="tc">
+                                    <button class="btn-det btn-toggle-detail"
+                                            data-id="{{ $p->id }}"
+                                            title="Ver detalle">
+                                        <i class="fas fa-chevron-down" id="icon-{{ $p->id }}"></i>
+                                    </button>
+                                </td>
+                            </tr>
 
-                                        {{-- Materias --}}
-                                        <div class="dp-block">
-                                            <div class="dp-block-title">
-                                                <i class="fas fa-book-open"></i> Materias que Imparte
+                            {{-- Fila expandible --}}
+                            <tr id="detail-row-{{ $p->id }}" class="detail-row" style="display:none;">
+                                <td colspan="8" style="padding:0;background:#f8fafc;">
+                                    <div class="cd-detail-panel">
+                                        <div class="dp-grid">
+
+                                            {{-- Grados --}}
+                                            <div class="dp-block">
+                                                <div class="dp-block-title">
+                                                    <i class="fas fa-layer-group"></i> Grados Asignados
+                                                </div>
+                                                @if(count($gradosList))
+                                                    @foreach($gradosList as $g)
+                                                    <div class="dp-grado-row">
+                                                        <span class="dp-grado-name">
+                                                            <i class="fas fa-circle" style="font-size:.45rem;color:#4ec7d2;vertical-align:middle;margin-right:.3rem;"></i>
+                                                            {{ $g }}
+                                                        </span>
+                                                        <span class="dp-grado-count">
+                                                            <i class="fas fa-users" style="font-size:.65rem;"></i>
+                                                            {{ $estudiantesPorGrado[$g] ?? '—' }} est.
+                                                        </span>
+                                                    </div>
+                                                    @endforeach
+                                                @else
+                                                    <p class="dp-empty">Sin grados asignados</p>
+                                                @endif
                                             </div>
-                                            @if(count($materiasList))
-                                                <div style="display:flex;flex-wrap:wrap;gap:.2rem;">
-                                                    @foreach($materiasList as $m)
-                                                        <span class="dp-materia-chip">{{ $m }}</span>
+
+                                            {{-- Materias --}}
+                                            <div class="dp-block">
+                                                <div class="dp-block-title">
+                                                    <i class="fas fa-book-open"></i> Materias que Imparte
+                                                </div>
+                                                @if(count($materiasList))
+                                                    <div style="display:flex;flex-wrap:wrap;gap:.2rem;">
+                                                        @foreach($materiasList as $m)
+                                                            <span class="dp-materia-chip">{{ $m }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <p class="dp-empty">Sin materias asignadas</p>
+                                                @endif
+                                            </div>
+
+                                            {{-- Resumen --}}
+                                            <div class="dp-block">
+                                                <div class="dp-block-title">
+                                                    <i class="fas fa-chart-pie"></i> Resumen
+                                                </div>
+                                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem;">
+                                                    @php
+                                                        $resumenItems = [
+                                                            ['icon' => 'fas fa-layer-group', 'label' => 'Grados',      'val' => count($gradosList),   'color' => '#4f46e5'],
+                                                            ['icon' => 'fas fa-book',         'label' => 'Materias',    'val' => count($materiasList), 'color' => '#00508f'],
+                                                            ['icon' => 'fas fa-clock',        'label' => 'Horas/sem',   'val' => $p->total_horas ?? 0, 'color' => '#0891b2'],
+                                                            ['icon' => 'fas fa-users',        'label' => 'Estudiantes', 'val' => $p->total_estudiantes,'color' => '#059669'],
+                                                        ];
+                                                    @endphp
+                                                    @foreach($resumenItems as $it)
+                                                    <div style="background:#f8fafc;border-radius:8px;padding:.55rem .7rem;display:flex;align-items:center;gap:.5rem;">
+                                                        <i class="{{ $it['icon'] }}" style="color:{{ $it['color'] }};font-size:.8rem;"></i>
+                                                        <div>
+                                                            <div style="font-size:.68rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">{{ $it['label'] }}</div>
+                                                            <div style="font-size:1.05rem;font-weight:700;color:#0f172a;line-height:1.1;">{{ $it['val'] }}</div>
+                                                        </div>
+                                                    </div>
                                                     @endforeach
                                                 </div>
-                                            @else
-                                                <p class="dp-empty">Sin materias asignadas</p>
-                                            @endif
-                                        </div>
-
-                                        {{-- Resumen --}}
-                                        <div class="dp-block">
-                                            <div class="dp-block-title">
-                                                <i class="fas fa-chart-pie"></i> Resumen
+                                                <button class="cd-btn btn-ver-estudiantes"
+                                                        data-id="{{ $p->id }}"
+                                                        data-nombre="{{ $p->nombre }} {{ $p->apellido }}"
+                                                        style="width:100%;justify-content:center;font-size:.8rem;padding:.45rem;">
+                                                    <i class="fas fa-users"></i> Ver Lista de Estudiantes
+                                                </button>
                                             </div>
-                                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem;">
-                                                @php
-                                                    $resumenItems = [
-                                                        ['icon' => 'fas fa-layer-group', 'label' => 'Grados',      'val' => count($gradosList),   'color' => '#4f46e5'],
-                                                        ['icon' => 'fas fa-book',         'label' => 'Materias',    'val' => count($materiasList), 'color' => '#00508f'],
-                                                        ['icon' => 'fas fa-clock',        'label' => 'Horas/sem',   'val' => $p->total_horas ?? 0, 'color' => '#0891b2'],
-                                                        ['icon' => 'fas fa-users',        'label' => 'Estudiantes', 'val' => $p->total_estudiantes,'color' => '#059669'],
-                                                    ];
-                                                @endphp
-                                                @foreach($resumenItems as $it)
-                                                <div style="background:#f8fafc;border-radius:8px;padding:.55rem .7rem;display:flex;align-items:center;gap:.5rem;">
-                                                    <i class="{{ $it['icon'] }}" style="color:{{ $it['color'] }};font-size:.8rem;"></i>
-                                                    <div>
-                                                        <div style="font-size:.68rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">{{ $it['label'] }}</div>
-                                                        <div style="font-size:1.05rem;font-weight:700;color:#0f172a;line-height:1.1;">{{ $it['val'] }}</div>
-                                                    </div>
-                                                </div>
-                                                @endforeach
-                                            </div>
-                                            {{-- ✅ data-id y data-nombre, SIN parámetros en onclick --}}
-                                            <button class="cd-btn btn-ver-estudiantes"
-                                                    data-id="{{ $p->id }}"
-                                                    data-nombre="{{ $p->nombre }} {{ $p->apellido }}"
-                                                    style="width:100%;justify-content:center;font-size:.8rem;padding:.45rem;">
-                                                <i class="fas fa-users"></i> Ver Lista de Estudiantes
-                                            </button>
-                                        </div>
 
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
 
-                        @empty
-                        <tr>
-                            <td colspan="8">
-                                <div class="cd-empty">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                    <p>No hay datos de carga docente para este año lectivo</p>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <i class="fas fa-chalkboard-teacher fa-2x mb-3" style="color:#cbd5e1;display:block;"></i>
+                                    <div class="fw-semibold" style="color:#003b73;">No hay datos de carga docente para el año {{ $anio }}</div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="cd-footer">
-                <span>Mostrando {{ $profesores->count() }} profesores activos · Año {{ $anio }}</span>
-                <span>Total estudiantes: <strong style="color:#00508f;">{{ $profesores->sum('total_estudiantes') }}</strong></span>
-            </div>
-        </div>
-    </div>
-
-    {{-- Vista Gráficas --}}
-    <div id="view-graficas" style="display:none;">
-        <div class="cd-charts-grid">
-
-            <div class="cd-chart-card" style="grid-column:1/-1;">
-                <div class="cd-chart-head"><i class="fas fa-chart-bar"></i><span>Estudiantes por Profesor</span></div>
-                <div class="cd-chart-body" style="height:300px;"><canvas id="chartEstudiantes"></canvas></div>
-            </div>
-
-            <div class="cd-chart-card">
-                <div class="cd-chart-head"><i class="fas fa-clock"></i><span>Horas Semanales por Profesor</span></div>
-                <div class="cd-chart-body" style="height:260px;"><canvas id="chartHoras"></canvas></div>
-            </div>
-
-            <div class="cd-chart-card">
-                <div class="cd-chart-head"><i class="fas fa-book"></i><span>Materias Asignadas por Profesor</span></div>
-                <div class="cd-chart-body" style="height:260px;"><canvas id="chartMaterias"></canvas></div>
-            </div>
-
-            <div class="cd-chart-card">
-                <div class="cd-chart-head"><i class="fas fa-file-contract"></i><span>Distribución por Contrato</span></div>
-                <div class="cd-chart-body" style="height:260px;display:flex;align-items:center;justify-content:center;">
-                    <canvas id="chartContrato" style="max-height:220px;max-width:220px;"></canvas>
+                <div class="cd-footer">
+                    <span>Mostrando {{ $profesores->count() }} profesores activos · Año {{ $anio }}</span>
+                    <span>Total estudiantes: <strong style="color:#00508f;">{{ $profesores->sum('total_estudiantes') }}</strong></span>
                 </div>
             </div>
-
-            <div class="cd-chart-card">
-                <div class="cd-chart-head"><i class="fas fa-layer-group"></i><span>Grados Asignados por Profesor</span></div>
-                <div class="cd-chart-body" style="height:260px;"><canvas id="chartGrados"></canvas></div>
-            </div>
-
         </div>
-    </div>
 
+        {{-- Vista Gráficas --}}
+        <div id="view-graficas" style="display:none;">
+            <div class="cd-charts-grid">
+
+                <div class="cd-chart-card" style="grid-column:1/-1;">
+                    <div class="cd-chart-head"><i class="fas fa-chart-bar"></i><span>Estudiantes por Profesor</span></div>
+                    <div class="cd-chart-body" style="height:300px;"><canvas id="chartEstudiantes"></canvas></div>
+                </div>
+
+                <div class="cd-chart-card">
+                    <div class="cd-chart-head"><i class="fas fa-clock"></i><span>Horas Semanales por Profesor</span></div>
+                    <div class="cd-chart-body" style="height:260px;"><canvas id="chartHoras"></canvas></div>
+                </div>
+
+                <div class="cd-chart-card">
+                    <div class="cd-chart-head"><i class="fas fa-book"></i><span>Materias Asignadas por Profesor</span></div>
+                    <div class="cd-chart-body" style="height:260px;"><canvas id="chartMaterias"></canvas></div>
+                </div>
+
+                <div class="cd-chart-card">
+                    <div class="cd-chart-head"><i class="fas fa-file-contract"></i><span>Distribución por Contrato</span></div>
+                    <div class="cd-chart-body" style="height:260px;display:flex;align-items:center;justify-content:center;">
+                        <canvas id="chartContrato" style="max-height:220px;max-width:220px;"></canvas>
+                    </div>
+                </div>
+
+                <div class="cd-chart-card">
+                    <div class="cd-chart-head"><i class="fas fa-layer-group"></i><span>Grados Asignados por Profesor</span></div>
+                    <div class="cd-chart-body" style="height:260px;"><canvas id="chartGrados"></canvas></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>{{-- /cd-body --}}
 </div>
 
 {{-- Modal Estudiantes --}}
@@ -659,12 +691,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ── Leer JSON embebido ─────────────────────────────────── */
     var profesoresData = JSON.parse(
         document.getElementById('profesores-data').textContent
     );
 
-    /* ── Labels cortos ──────────────────────────────────────── */
     var labels = profesoresData.map(function(p) {
         var parts = p.nombre.split(' ');
         return parts[0] + (parts.length > 1 ? ' ' + parts[parts.length - 1][0] + '.' : '');
@@ -681,7 +711,7 @@ document.addEventListener('DOMContentLoaded', function () {
     Chart.defaults.color = '#64748b';
     var chartsInitialized = false;
 
-    /* ── Switch de vista ────────────────────────────────────── */
+    /* Switch de vista */
     window.switchView = function(view, btn) {
         document.querySelectorAll('.cd-vtab').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
@@ -693,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    /* ── Toggle detalle (usando delegación en document) ─────── */
+    /* Toggle detalle */
     document.addEventListener('click', function(e) {
         var btn = e.target.closest('.btn-toggle-detail');
         if (!btn) return;
@@ -707,7 +737,7 @@ document.addEventListener('DOMContentLoaded', function () {
         icon.style.transition = 'transform .2s';
     });
 
-    /* ── Búsqueda en tabla ──────────────────────────────────── */
+    /* Búsqueda en tabla */
     var cdSearch = document.getElementById('cdSearch');
     if (cdSearch) {
         cdSearch.addEventListener('input', function() {
@@ -724,12 +754,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ── Modal Estudiantes ──────────────────────────────────── */
+    /* Modal Estudiantes */
     var estudiantesActuales = [];
     var gradoFiltroActual   = '';
     var modalBS = new bootstrap.Modal(document.getElementById('modalEstudiantes'));
 
-    /* Abrir modal (delegación en document) */
     document.addEventListener('click', function(e) {
         var btn = e.target.closest('.btn-ver-estudiantes');
         if (!btn) return;
@@ -745,7 +774,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var estudiantes = (p && p.estudiantes_detalle) ? p.estudiantes_detalle : [];
         estudiantesActuales = estudiantes;
 
-        /* Tabs de grado */
         var tabsEl = document.getElementById('gradoFilterTabs');
         var grados = Array.from(new Set(
             estudiantes.map(function(e) { return e.grado; }).filter(Boolean)
@@ -757,7 +785,6 @@ document.addEventListener('DOMContentLoaded', function () {
             tabsEl.innerHTML += '<button class="mft" data-grado="' + g + '">' + g + ' (' + cnt + ')</button>';
         });
 
-        /* Eventos de tabs */
         tabsEl.querySelectorAll('.mft').forEach(function(tab) {
             tab.addEventListener('click', function() {
                 tabsEl.querySelectorAll('.mft').forEach(function(t) { t.classList.remove('active'); });
@@ -775,7 +802,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modalBS.show();
     }
 
-    /* Búsqueda en modal */
     document.getElementById('estSearch').addEventListener('input', function() {
         var q    = this.value.toLowerCase();
         var base = gradoFiltroActual
@@ -812,10 +838,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }).join('');
     }
 
-    /* ── Gráficas ───────────────────────────────────────────── */
+    /* Gráficas */
     function initCharts() {
 
-        /* 1. Estudiantes (horizontal) */
         new Chart(document.getElementById('chartEstudiantes'), {
             type: 'bar',
             data: {
@@ -837,7 +862,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        /* 2. Horas */
         new Chart(document.getElementById('chartHoras'), {
             type: 'bar',
             data: {
@@ -859,7 +883,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        /* 3. Materias */
         new Chart(document.getElementById('chartMaterias'), {
             type: 'bar',
             data: {
@@ -881,7 +904,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        /* 4. Contrato (dona) */
         var cc = { tiempo_completo: 0, medio_tiempo: 0, por_horas: 0, otro: 0 };
         profesoresData.forEach(function(p) {
             if (cc[p.tipo_contrato] !== undefined) cc[p.tipo_contrato]++;
@@ -904,7 +926,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        /* 5. Grados */
         new Chart(document.getElementById('chartGrados'), {
             type: 'bar',
             data: {

@@ -1,304 +1,184 @@
 @extends('layouts.app')
 
-@section('title', 'Lista de usuarios')
+@section('title', 'Usuarios del Sistema')
 @section('page-title', 'Usuarios del Sistema')
-
+@section('content-class', 'p-0')
 
 @push('styles')
 <style>
-/* ════════════════════════════════════════════════
-   TAMAÑOS — igualados al perfil del estudiante
-   ════════════════════════════════════════════════ */
-
-/* ── Tabla ── */
-.tbl-wrap table {
-    width: 100%;
-    border-collapse: collapse;
+.usr-wrap {
+    height: calc(100vh - 64px);
+    display: flex; flex-direction: column;
+    overflow: hidden; background: #f0f4f8;
 }
 
-.tbl-wrap thead th {
-    font-size: .63rem;                            /* ← TAMAÑO encabezados tabla */
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    color: #6b7a90;
-    background: #f5f8fc;
-    padding: .75rem 1rem;
-    border-bottom: 2px solid #e8edf4;
-    white-space: nowrap;
+/* Hero */
+.usr-hero {
+    background: linear-gradient(135deg, #003b73 0%, #00508f 60%, #4ec7d2 100%);
+    padding: 1.25rem 2rem; display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem; flex-shrink: 0;
 }
-
-.tbl-wrap tbody td {
-    font-size: .83rem;                            /* ← TAMAÑO celdas tabla */
-    color: #0d2137;
-    padding: .78rem 1rem;
-    border-bottom: 1px solid #f0f4f9;
-    vertical-align: middle;
+.usr-hero-left { display: flex; align-items: center; gap: 1rem; }
+.usr-hero-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.3);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-
-.tbl-wrap tbody tr:last-child td { border-bottom: none; }
-
-.tbl-wrap tbody tr:hover td {
-    background: rgba(78,199,210,.04);
+.usr-hero-icon i { font-size: 1.3rem; color: white; }
+.usr-hero-title { font-size: 1.2rem; font-weight: 700; color: white; margin: 0 0 .15rem; }
+.usr-hero-sub   { color: rgba(255,255,255,.7); font-size: .82rem; margin: 0; }
+.usr-stat {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px; padding: .45rem 1rem; text-align: center; min-width: 70px;
 }
+.usr-stat-num { font-size: 1.1rem; font-weight: 700; color: white; line-height: 1; }
+.usr-stat-lbl { font-size: .65rem; color: rgba(255,255,255,.7); margin-top: .1rem; }
 
-/* ── ID bold ── */
-.tbl-id {
-    font-weight: 700;
-    font-size: .8rem;                             /* ← TAMAÑO columna ID */
-    color: #00508f;
-    font-family: 'Courier New', monospace;
+/* Tabs bar */
+.usr-tabs {
+    background: white; border-bottom: 1px solid #e2e8f0;
+    padding: .6rem 1.5rem; display: flex; gap: .4rem;
+    flex-wrap: wrap; flex-shrink: 0;
 }
-
-/* ── Nombre ── */
-.tbl-name {
-    font-weight: 600;
-    font-size: .85rem;                            /* ← TAMAÑO columna nombre */
-    color: #0d2137;
+.usr-tab {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .35rem .8rem; border-radius: 999px;
+    font-size: .75rem; font-weight: 700; text-decoration: none; transition: all .2s;
+    border: 1.5px solid #bfd9ea; color: #00508f; background: white;
 }
-
-/* ── Email ── */
-.tbl-email {
-    font-size: .8rem;                             /* ← TAMAÑO columna email */
-    color: #6b7a90;
+.usr-tab:hover { background: #eff6ff; color: #00508f; }
+.usr-tab.active {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: white; border-color: transparent;
+    box-shadow: 0 2px 8px rgba(0,80,143,.25);
 }
+.usr-tab-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 1.3rem; height: 1.3rem; border-radius: 999px; font-size: .65rem;
+}
+.usr-tab.active .usr-tab-count { background: rgba(255,255,255,.25); color: white; }
+.usr-tab:not(.active) .usr-tab-count { background: #e8edf4; color: #00508f; }
 
-/* ── Badges rol ── */
+/* Body */
+.usr-body { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; }
+
+/* Table card */
+.usr-table-card {
+    background: white; border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,59,115,.08); overflow: hidden;
+}
+.usr-tbl thead th {
+    background: #003b73; color: white; font-size: .7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .06em; padding: .75rem 1rem; border: none;
+}
+.usr-tbl tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .15s; }
+.usr-tbl tbody tr:hover { background: rgba(78,199,210,.05); }
+.usr-tbl tbody td { padding: .72rem 1rem; vertical-align: middle; font-size: .84rem; color: #334155; }
+.usr-tbl tbody tr:last-child { border-bottom: none; }
+
 .rol-badge {
     display: inline-flex; align-items: center; gap: .3rem;
-    padding: .2rem .6rem; border-radius: 999px;
-    font-size: .68rem; font-weight: 700;          /* ← TAMAÑO badge rol */
-    letter-spacing: .04em;
+    padding: .22rem .65rem; border-radius: 999px; font-size: .72rem; font-weight: 700;
 }
-
-/* ── Badges estado ── */
 .estado-badge {
     display: inline-flex; align-items: center; gap: .3rem;
-    padding: .2rem .6rem; border-radius: 999px;
-    font-size: .68rem; font-weight: 700;          /* ← TAMAÑO badge estado */
+    padding: .22rem .65rem; border-radius: 999px; font-size: .72rem; font-weight: 700;
 }
 .badge-activo    { background: #f0fdf4; color: #166534; border: 1.5px solid #86efac; }
 .badge-pendiente { background: #fefce8; color: #854d0e; border: 1.5px solid #fde047; }
 
-/* ── Fecha ── */
-.tbl-fecha {
-    font-size: .75rem;                            /* ← TAMAÑO columna fecha */
-    color: #6b7a90;
-}
-
-/* ── Botón ver ── */
 .btn-ver {
     display: inline-flex; align-items: center; gap: .3rem;
-    padding: .28rem .65rem; border-radius: 7px;
-    font-size: .72rem; font-weight: 700;          /* ← TAMAÑO botón ver */
-    background: white; color: #00508f;
-    border: 1.5px solid #00508f;
+    padding: .28rem .65rem; border-radius: 7px; font-size: .75rem; font-weight: 700;
+    background: white; color: #00508f; border: 1.5px solid #00508f;
     text-decoration: none; transition: all .2s;
 }
-.btn-ver:hover {
-    background: #eff6ff; color: #00508f;
-    transform: translateY(-1px);
-}
+.btn-ver:hover { background: #eff6ff; color: #00508f; }
 
-/* ── Alerta contraseña ── */
+/* Alerts */
 .alert-temp {
     display: flex; align-items: flex-start; gap: .75rem;
     padding: .9rem 1.1rem; border-radius: 10px;
-    background: rgba(78,199,210,.08);
-    border: 1px solid #b2e8ed; color: #003b73;
-    font-size: .83rem;                            /* ← TAMAÑO alerta contraseña */
-    margin-bottom: 1rem;
+    background: rgba(78,199,210,.08); border: 1px solid #b2e8ed;
+    color: #003b73; font-size: .83rem; margin-bottom: 1rem;
 }
 
-/* ── Alerta éxito / error ── */
-.alert-ok  {
-    padding: .9rem 1.1rem; border-radius: 10px;
-    background: #f0fdf4; border: 1px solid #86efac;
-    color: #166534; font-size: .83rem;            /* ← TAMAÑO alerta éxito */
-    margin-bottom: 1rem;
-}
-.alert-err {
-    padding: .9rem 1.1rem; border-radius: 10px;
-    background: #fef2f2; border: 1px solid #fca5a5;
-    color: #991b1b; font-size: .83rem;            /* ← TAMAÑO alerta error */
-    margin-bottom: 1rem;
-}
-
-/* ── Footer paginación ── */
-.tbl-footer {
-    display: flex; align-items: center;
+/* Footer paginación */
+.usr-footer {
+    padding: .7rem 1rem; display: flex; align-items: center;
     justify-content: space-between; flex-wrap: wrap; gap: .5rem;
-    padding: .85rem 1.7rem;
-    background: #f5f8fc; border-top: 1px solid #e8edf4;
-    border-radius: 0 0 14px 14px;
-    font-size: .75rem; color: #6b7a90;            /* ← TAMAÑO texto paginación */
+    border-top: 1px solid #f1f5f9; background: white;
 }
+.pagination { margin: 0; }
+.pagination .page-link { border-radius: 6px; margin: 0 2px; border: 1px solid #e2e8f0; color: #00508f; font-size: .8rem; padding: .3rem .65rem; }
+.pagination .page-link:hover { background: #bfd9ea; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link { background: linear-gradient(135deg,#4ec7d2,#00508f); border-color: #4ec7d2; color: white; }
 
-/* ── Stats grid responsive ── */
-@media(max-width:1100px){ .usr-stats-grid { grid-template-columns: repeat(3,1fr) !important; } }
-@media(max-width:700px) { .usr-stats-grid { grid-template-columns: repeat(2,1fr) !important; } }
-
-/* ── Empty state ── */
-.tbl-empty {
-    text-align: center; padding: 3rem 1rem;
-    font-size: .83rem; color: #94a3b8;            /* ← TAMAÑO mensaje vacío */
-}
-.tbl-empty i { font-size: 2rem; display: block; margin-bottom: .75rem; color: #bfd9ea; }
+/* Dark mode */
+body.dark-mode .usr-wrap  { background: #0f172a; }
+body.dark-mode .usr-tabs  { background: #1e293b; border-color: #334155; }
+body.dark-mode .usr-tab:not(.active) { background: #0f172a; border-color: #334155; color: #94a3b8; }
+body.dark-mode .usr-table-card { background: #1e293b; }
+body.dark-mode .usr-tbl tbody td { color: #cbd5e1; }
+body.dark-mode .usr-tbl tbody tr { border-color: #334155; }
+body.dark-mode .usr-footer { background: #1e293b; border-color: #334155; }
 </style>
 @endpush
 
 @section('content')
-<div style="width:100%;">
+@php
+    $tabs = [
+        ''           => ['label' => 'Todos',           'icon' => 'fa-users',             'count' => $conteos['total']],
+        'admin'      => ['label' => 'Administradores', 'icon' => 'fa-user-shield',        'count' => $conteos['admin']],
+        'profesor'   => ['label' => 'Profesores',      'icon' => 'fa-chalkboard-teacher', 'count' => $conteos['profesor']],
+        'Estudiante' => ['label' => 'Estudiantes',     'icon' => 'fa-user-graduate',      'count' => $conteos['Estudiante']],
+        'Padre'      => ['label' => 'Padres',          'icon' => 'fa-user-friends',       'count' => $conteos['Padre']],
+    ];
+    $labelMap = ['admin'=>'administradores','profesor'=>'profesores','Estudiante'=>'estudiantes','Padre'=>'padres'];
+@endphp
+<div class="usr-wrap">
 
-    {{-- ── HEADER ── --}}
-    <div style="border-radius:14px 14px 0 0;
-                background:linear-gradient(135deg,#002d5a 0%,#00508f 55%,#0077b6 100%);
-                padding:2rem 1.7rem; position:relative; overflow:hidden;">
-
-        <div style="position:absolute;right:-50px;top:-50px;width:200px;height:200px;
-                    border-radius:50%;background:rgba(78,199,210,.13);pointer-events:none;"></div>
-        <div style="position:absolute;right:100px;bottom:-45px;width:120px;height:120px;
-                    border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
-
-        <div style="position:relative;z-index:1;display:flex;align-items:center;
-                    justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-            <div style="display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;">
-                <div style="width:80px;height:80px;              {{-- ← TAMAÑO ícono header --}}
-                            border-radius:18px;
-                            border:3px solid rgba(78,199,210,.7);
-                            background:rgba(255,255,255,.12);
-                            display:flex;align-items:center;justify-content:center;
-                            box-shadow:0 6px 20px rgba(0,0,0,.25);">
-                    <i class="fas fa-users" style="color:white;font-size:2rem;"></i>
-                </div>
-                <div>
-                    <h2 style="font-size:1.45rem;font-weight:800;color:white; {{-- ← TÍTULO header --}}
-                               margin:0 0 .4rem;text-shadow:0 1px 4px rgba(0,0,0,.2);">
-                        Usuarios del Sistema
-                    </h2>
-                    <span style="display:inline-flex;align-items:center;gap:.3rem;
-                                 padding:.2rem .65rem;border-radius:999px;
-                                 background:rgba(255,255,255,.14);color:rgba(255,255,255,.92);
-                                 font-size:.72rem;font-weight:600; {{-- ← TEXTO tag subtítulo --}}
-                                 border:1px solid rgba(255,255,255,.18);">
-                        <i class="fas fa-list"></i> Listado de usuarios registrados
-                    </span>
-                </div>
+    {{-- Hero --}}
+    <div class="usr-hero">
+        <div class="usr-hero-left">
+            <div class="usr-hero-icon"><i class="fas fa-users"></i></div>
+            <div>
+                <h2 class="usr-hero-title">Usuarios del Sistema</h2>
+                <p class="usr-hero-sub">Listado de todos los usuarios registrados</p>
             </div>
-            {{-- Total badge --}}
-            <span style="display:inline-flex;align-items:center;gap:.4rem;
-                         padding:.35rem .9rem;border-radius:999px;
-                         background:rgba(78,199,210,.2);color:white;
-                         font-size:.78rem;font-weight:700; {{-- ← TAMAÑO badge total --}}
-                         border:1px solid rgba(78,199,210,.4);
-                         position:relative;z-index:1;">
-                <i class="fas fa-user-check"></i>
-                @if($rolFiltro)
-                    @php
-                        $labelMap = ['admin'=>'Administradores','profesor'=>'Profesores','Estudiante'=>'Estudiantes','Padre'=>'Padres'];
-                        $labelFiltro = $labelMap[$rolFiltro] ?? $rolFiltro.'s';
-                    @endphp
-                    {{ $labelFiltro }}: {{ $usuarios->total() }}
-                @else
-                    Total: {{ $usuarios->total() }}
-                @endif
-            </span>
+        </div>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            @foreach(['total'=>'Total','admin'=>'Admins','profesor'=>'Profes','Estudiante'=>'Estudts','Padre'=>'Padres'] as $key => $lbl)
+                <div class="usr-stat">
+                    <div class="usr-stat-num">{{ $conteos[$key] }}</div>
+                    <div class="usr-stat-lbl">{{ $lbl }}</div>
+                </div>
+            @endforeach
         </div>
     </div>
 
-    {{-- ── STAT CARDS ── --}}
-    <div class="usr-stats-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:.85rem;
-                margin:1rem 0 1.25rem;">
-
-        {{-- Total --}}
-        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
-                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
-                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
-            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#10b981;border-radius:4px 0 0 4px;"></div>
-            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
-                        background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;">
-                <i class="fas fa-users" style="color:#10b981;font-size:1.05rem;"></i>
-            </div>
-            <div>
-                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Total</div>
-                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['total'] }}</div>
-                <div style="font-size:.7rem;color:#6b7a90;">Usuarios</div>
-            </div>
-        </div>
-
-        {{-- Administradores --}}
-        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
-                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
-                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
-            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#475569;border-radius:4px 0 0 4px;"></div>
-            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
-                        background:rgba(71,85,105,.12);display:flex;align-items:center;justify-content:center;">
-                <i class="fas fa-user-shield" style="color:#475569;font-size:1.05rem;"></i>
-            </div>
-            <div>
-                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Administradores</div>
-                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['admin'] }}</div>
-                <div style="font-size:.7rem;color:#6b7a90;">Gestión del sistema</div>
-            </div>
-        </div>
-
-        {{-- Profesores --}}
-        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
-                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
-                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
-            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#4ec7d2;border-radius:4px 0 0 4px;"></div>
-            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
-                        background:rgba(78,199,210,.15);display:flex;align-items:center;justify-content:center;">
-                <i class="fas fa-chalkboard-teacher" style="color:#00508f;font-size:1.05rem;"></i>
-            </div>
-            <div>
-                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Profesores</div>
-                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['profesor'] }}</div>
-                <div style="font-size:.7rem;color:#6b7a90;">Docentes activos</div>
-            </div>
-        </div>
-
-        {{-- Estudiantes --}}
-        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
-                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
-                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
-            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#00508f;border-radius:4px 0 0 4px;"></div>
-            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
-                        background:rgba(0,80,143,.1);display:flex;align-items:center;justify-content:center;">
-                <i class="fas fa-user-graduate" style="color:#00508f;font-size:1.05rem;"></i>
-            </div>
-            <div>
-                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Estudiantes</div>
-                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['Estudiante'] }}</div>
-                <div style="font-size:.7rem;color:#6b7a90;">Alumnos registrados</div>
-            </div>
-        </div>
-
-        {{-- Padres --}}
-        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
-                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
-                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
-            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#10b981;border-radius:4px 0 0 4px;"></div>
-            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
-                        background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;">
-                <i class="fas fa-user-friends" style="color:#10b981;font-size:1.05rem;"></i>
-            </div>
-            <div>
-                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Padres</div>
-                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['Padre'] }}</div>
-                <div style="font-size:.7rem;color:#6b7a90;">Tutores / padres</div>
-            </div>
-        </div>
-
+    {{-- Tabs --}}
+    <div class="usr-tabs">
+        @foreach($tabs as $valor => $tab)
+            @php
+                $activo = ($rolFiltro ?? '') === $valor;
+                $url    = $valor === ''
+                    ? route('superadmin.usuarios.index')
+                    : route('superadmin.usuarios.index', ['rol' => $valor]);
+            @endphp
+            <a href="{{ $url }}" class="usr-tab {{ $activo ? 'active' : '' }}">
+                <i class="fas {{ $tab['icon'] }}" style="font-size:.7rem;"></i>
+                {{ $tab['label'] }}
+                <span class="usr-tab-count">{{ $tab['count'] }}</span>
+            </a>
+        @endforeach
     </div>
 
-    {{-- ── BODY ── --}}
-    <div style="background:white;border:1px solid #e8edf4;border-top:none;
-                border-radius:0 0 14px 14px;box-shadow:0 2px 16px rgba(0,59,115,.09);">
+    {{-- Body --}}
+    <div class="usr-body">
 
         {{-- Alertas --}}
         @if(session('password_temp'))
-        <div style="padding:1rem 1.7rem 0;">
             <div class="alert-temp">
                 <i class="fas fa-key" style="flex-shrink:0;margin-top:2px;"></i>
                 <div>
@@ -308,167 +188,106 @@
                     </span>
                 </div>
             </div>
-        </div>
         @endif
-
         @if(session('success'))
-        <div style="padding:1rem 1.7rem 0;">
-            <div class="alert-ok">
+            <div class="alert alert-success alert-dismissible fade show mb-3 border-0 shadow-sm"
+                 role="alert" style="border-radius:10px;border-left:4px solid #4ec7d2 !important;">
                 <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        </div>
         @endif
-
         @if(session('error'))
-        <div style="padding:1rem 1.7rem 0;">
-            <div class="alert-err">
+            <div class="alert alert-danger alert-dismissible fade show mb-3 border-0 shadow-sm"
+                 role="alert" style="border-radius:10px;border-left:4px solid #ef4444 !important;">
                 <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        </div>
         @endif
 
-        {{-- Filtros por rol --}}
-        @php
-            $tabs = [
-                ''          => ['label' => 'Todos',          'icon' => 'fa-users',            'count' => $conteos['total']],
-                'admin'     => ['label' => 'Administradores','icon' => 'fa-user-shield',       'count' => $conteos['admin']],
-                'profesor'  => ['label' => 'Profesores',     'icon' => 'fa-chalkboard-teacher','count' => $conteos['profesor']],
-                'Estudiante'=> ['label' => 'Estudiantes',    'icon' => 'fa-user-graduate',     'count' => $conteos['Estudiante']],
-                'Padre'     => ['label' => 'Padres',         'icon' => 'fa-user-friends',      'count' => $conteos['Padre']],
-            ];
-        @endphp
-        <div style="padding:.85rem 1.7rem .25rem; display:flex; flex-wrap:wrap; gap:.45rem; border-bottom:1px solid #e8edf4;">
-            @foreach ($tabs as $valor => $tab)
-                @php
-                    $activo = ($rolFiltro ?? '') === $valor;
-                    $url    = $valor === ''
-                        ? route('superadmin.usuarios.index')
-                        : route('superadmin.usuarios.index', ['rol' => $valor]);
-                @endphp
-                <a href="{{ $url }}"
-                   style="display:inline-flex;align-items:center;gap:.35rem;
-                          padding:.38rem .8rem; border-radius:999px;
-                          font-size:.75rem; font-weight:700; text-decoration:none;
-                          transition:all .2s;
-                          {{ $activo
-                              ? 'background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border:1.5px solid transparent;box-shadow:0 2px 8px rgba(0,80,143,.25);'
-                              : 'background:white;color:#00508f;border:1.5px solid #bfd9ea;' }}">
-                    <i class="fas {{ $tab['icon'] }}" style="font-size:.7rem;"></i>
-                    {{ $tab['label'] }}
-                    <span style="display:inline-flex;align-items:center;justify-content:center;
-                                 min-width:1.3rem;height:1.3rem;border-radius:999px;font-size:.65rem;
-                                 {{ $activo
-                                     ? 'background:rgba(255,255,255,.25);color:white;'
-                                     : 'background:#e8edf4;color:#00508f;' }}">
-                        {{ $tab['count'] }}
-                    </span>
-                </a>
-            @endforeach
-        </div>
-
-        {{-- Tabla --}}
-        <div class="tbl-wrap" style="overflow-x:auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Estado</th>
-                        <th>Creado</th>
-                        <th style="text-align:center;">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($usuarios as $u)
-                        <tr>
-                            <td><span class="tbl-id">#{{ $u->id }}</span></td>
-
-                            <td><span class="tbl-name">{{ $u->name }}</span></td>
-
-                            <td><span class="tbl-email">{{ $u->email }}</span></td>
-
-                            <td>
-                                @php
-                                    $coloresRol = [
-                                        'Super Administrador' => 'background:#1e293b;color:white;',
-                                        'super_admin'         => 'background:#1e293b;color:white;',
-                                        'Administrador'       => 'background:#475569;color:white;',
-                                        'admin'               => 'background:#475569;color:white;',
-                                        'Maestro'             => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
-                                        'Profesor'            => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
-                                        'profesor'            => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
-                                        'Estudiante'          => 'background:rgba(0,80,143,.1);color:#00508f;border:1.5px solid #bfd9ea;',
-                                        'estudiante'          => 'background:rgba(0,80,143,.1);color:#00508f;border:1.5px solid #bfd9ea;',
-                                        'Padre'               => 'background:#f0fdf4;color:#166534;border:1.5px solid #86efac;',
-                                        'padre'               => 'background:#f0fdf4;color:#166534;border:1.5px solid #86efac;',
-                                    ];
-                                    $nombreRol = $u->rol->nombre ?? 'Sin rol';
-                                    $estiloRol = $coloresRol[$nombreRol] ?? 'background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;';
-                                @endphp
-                                <span class="rol-badge" style="{{ $estiloRol }}">
-                                    {{ $nombreRol }}
-                                </span>
-                            </td>
-
-                            <td>
-                                @if($u->activo)
-                                    <span class="estado-badge badge-activo">
-                                        <i class="fas fa-circle" style="font-size:.45rem;"></i> Activo
-                                    </span>
-                                @else
-                                    <span class="estado-badge badge-pendiente">
-                                        <i class="fas fa-circle" style="font-size:.45rem;"></i> Pendiente
-                                    </span>
-                                @endif
-                            </td>
-
-                            <td>
-                                <span class="tbl-fecha">
+        <div class="usr-table-card">
+            @if($usuarios->isEmpty())
+                <div style="text-align:center;padding:3.5rem 1rem;color:#94a3b8;">
+                    <i class="fas fa-users-slash fa-2x" style="display:block;margin-bottom:.75rem;color:#bfd9ea;"></i>
+                    <p style="font-size:.9rem;font-weight:600;color:#003b73;margin:0;">No hay usuarios registrados.</p>
+                </div>
+            @else
+                <div class="table-responsive">
+                    <table class="table usr-tbl mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Creado</th>
+                                <th style="text-align:center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($usuarios as $u)
+                            @php
+                                $coloresRol = [
+                                    'Super Administrador' => 'background:#1e293b;color:white;',
+                                    'super_admin'         => 'background:#1e293b;color:white;',
+                                    'Administrador'       => 'background:#475569;color:white;',
+                                    'admin'               => 'background:#475569;color:white;',
+                                    'Maestro'             => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
+                                    'Profesor'            => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
+                                    'profesor'            => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
+                                    'Estudiante'          => 'background:rgba(0,80,143,.1);color:#00508f;border:1.5px solid #bfd9ea;',
+                                    'Padre'               => 'background:#f0fdf4;color:#166534;border:1.5px solid #86efac;',
+                                ];
+                                $nombreRol = $u->rol->nombre ?? 'Sin rol';
+                                $estiloRol = $coloresRol[$nombreRol] ?? 'background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;';
+                            @endphp
+                            <tr>
+                                <td style="font-family:monospace;font-size:.8rem;color:#00508f;font-weight:700;">#{{ $u->id }}</td>
+                                <td style="font-weight:700;color:#003b73;">{{ $u->name }}</td>
+                                <td style="color:#64748b;">{{ $u->email }}</td>
+                                <td>
+                                    <span class="rol-badge" style="{{ $estiloRol }}">{{ $nombreRol }}</span>
+                                </td>
+                                <td>
+                                    @if($u->activo)
+                                        <span class="estado-badge badge-activo">
+                                            <i class="fas fa-circle" style="font-size:.45rem;"></i> Activo
+                                        </span>
+                                    @else
+                                        <span class="estado-badge badge-pendiente">
+                                            <i class="fas fa-circle" style="font-size:.45rem;"></i> Pendiente
+                                        </span>
+                                    @endif
+                                </td>
+                                <td style="color:#64748b;font-size:.8rem;">
                                     {{ $u->created_at->format('d/m/Y') }}<br>
-                                    <span style="font-size:.68rem;color:#94a3b8;">{{ $u->created_at->format('H:i') }}</span>
-                                </span>
-                            </td>
+                                    <span style="font-size:.7rem;color:#94a3b8;">{{ $u->created_at->format('H:i') }}</span>
+                                </td>
+                                <td style="text-align:center;">
+                                    <a href="{{ route('superadmin.usuarios.show', $u->id) }}"
+                                       class="btn-ver" title="Ver detalle">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-                            <td style="text-align:center;">
-                                <a href="{{ route('superadmin.usuarios.show', $u->id) }}"
-                                   class="btn-ver" title="Ver detalle">
-                                    <i class="fas fa-eye"></i> Ver
-                                </a>
-                            </td>
-                        </tr>
-
-                    @empty
-                        <tr>
-                            <td colspan="7">
-                                <div class="tbl-empty">
-                                    <i class="fas fa-users-slash"></i>
-                                    No hay usuarios registrados.
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        {{-- Paginación --}}
-        @if($usuarios->hasPages())
-        <div class="tbl-footer">
-            <span>
-                Mostrando {{ $usuarios->firstItem() }}–{{ $usuarios->lastItem() }}
-                de {{ $usuarios->total() }}
-                @if($rolFiltro)
-                    {{ ['admin'=>'administradores','profesor'=>'profesores','Estudiante'=>'estudiantes','Padre'=>'padres'][$rolFiltro] ?? strtolower($rolFiltro).'s' }}
-                @else
-                    usuarios
+                @if($usuarios->hasPages())
+                    <div class="usr-footer">
+                        <small style="color:#94a3b8;">
+                            Mostrando {{ $usuarios->firstItem() }}–{{ $usuarios->lastItem() }}
+                            de {{ $usuarios->total() }}
+                            {{ $rolFiltro ? ($labelMap[$rolFiltro] ?? strtolower($rolFiltro).'s') : 'usuarios' }}
+                        </small>
+                        {{ $usuarios->links() }}
+                    </div>
                 @endif
-            </span>
-            {{ $usuarios->links() }}
+            @endif
         </div>
-        @endif
 
-    </div>{{-- fin body --}}
-</div>{{-- fin width:100% --}}
+    </div>{{-- /usr-body --}}
+</div>
 @endsection

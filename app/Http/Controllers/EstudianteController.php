@@ -194,7 +194,7 @@ class EstudianteController extends Controller
        ============================================================ */
     public function show(Estudiante $estudiante)
     {
-        $estudiante->load('padres');
+        $estudiante->load('padres', 'documentos');
         return view('estudiantes.show', compact('estudiante'));
     }
 

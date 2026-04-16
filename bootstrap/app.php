@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verificar.permiso' => \App\Http\Middleware\VerificarPermiso::class,
             'verificar.rol'     => \App\Http\Middleware\VerificarRol::class,
+            'rol'               => \App\Http\Middleware\VerificarRol::class,
             'role'              => \App\Http\Middleware\RoleMiddleware::class,
             'es.padre'          => \App\Http\Middleware\EsPadre::class,
         ]);

@@ -149,6 +149,8 @@
            — Sin sidebar: padding lateral más generoso
         ══════════════════════════════════════════════ */
         .content-wrapper { padding: 2rem; }
+        .content-wrapper.full-width { padding: 0 !important; }
+
 
         /* ── RESPONSIVE ── */
         .mobile-menu-btn {
@@ -660,26 +662,22 @@
 </li>
 
         {{-- ── CALIFICACIONES (NUEVO) ── --}}
+        @auth
         <li class="menu-section-title">CALIFICACIONES</li>
         <li class="menu-item">
             <a href="{{ route('registrarcalificaciones.index') }}"
-               class="menu-link {{ request()->routeIs('registrarcalificaciones.*') ? 'active' : '' }}">
+               class="menu-link {{ request()->routeIs('registrarcalificaciones.index') ? 'active' : '' }}">
                 <i class="fas fa-clipboard-check"></i><span>Registrar Calificaciones</span>
             </a>
         </li>
+        @endauth
+
         <li class="menu-item">
             <a href="{{ route('consultaestudiantesxcurso.index') }}"
                class="menu-link {{ request()->routeIs('consultaestudiantesxcurso.*') ? 'active' : '' }}">
                 <i class="fas fa-users"></i><span>Estudiantes por Curso</span>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="{{ route('h20cursos.index') }}"
-               class="menu-link {{ request()->routeIs('h20cursos.*') ? 'active' : '' }}">
-                <i class="fas fa-graduation-cap"></i><span>Cursos Secundaria</span>
-            </a>
-        </li>
-
         {{-- ── CALENDARIO ── --}}
         <li class="menu-section-title">CALENDARIO</li>
         <li class="menu-item">
@@ -781,7 +779,7 @@
         </div>
     </div>
 
-    <div class="content-wrapper">
+    <div class="content-wrapper @yield('content-class')">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
                 {{ session('success') }}
