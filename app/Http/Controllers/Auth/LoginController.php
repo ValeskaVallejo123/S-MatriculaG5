@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
@@ -64,11 +63,9 @@ class LoginController extends Controller
 
             if ($esPadre) {
                 // Activar al padre en su primer login si su matrícula fue aprobada
-                DB::table('users')
-                    ->where('id', $usuario->id)
-                    ->update(['activo' => 1]);
+                $usuario->update(['activo' => true]);
 
-                // FIX: recargar CON la relación rol para que isPadre()
+                // Recargar CON la relación rol para que isPadre()
                 // y redirigirSegunRol() funcionen correctamente después
                 $usuario = User::with('rol')->find($usuario->id);
                 Auth::setUser($usuario);

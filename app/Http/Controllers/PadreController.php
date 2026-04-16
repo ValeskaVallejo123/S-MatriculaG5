@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Padre;
 use App\Models\Estudiante;
 use App\Models\Matricula;
+use App\Models\User;
+use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -75,25 +77,24 @@ class PadreController extends Controller
 
         // Crear cuenta de usuario si el padre tiene correo y no existe ya un usuario con ese email
         $correoPadre = $padre->correo ?? null;
-        $padreRolId  = DB::table('roles')->where('nombre', 'Padre')->value('id');
-        if ($padreRolId && $correoPadre && !DB::table('users')->where('email', $correoPadre)->exists()) {
-            DB::table('users')->insert([
-                'name'              => $padre->nombre . ' ' . $padre->apellido,
-                'email'             => $correoPadre,
-                'password'          => Hash::make('Padre2025!'),
-                'id_rol'            => $padreRolId,
-                'activo'            => true,
-                'is_super_admin'    => false,
-                'is_protected'      => false,
-                'email_verified_at' => now(),
-                'created_at'        => now(),
-                'updated_at'        => now(),
+        $padreRol    = Rol::where('nombre', 'Padre')->first();
+        if ($padreRol && $correoPadre && !User::where('email', $correoPadre)->exists()) {
+            User::create([
+                'name'                     => $padre->nombre . ' ' . $padre->apellido,
+                'email'                    => $correoPadre,
+                'password'                 => Hash::make('Padre2025!'),
+                'id_rol'                   => $padreRol->id,
+                'activo'                   => true,
+                'is_super_admin'           => false,
+                'is_protected'             => false,
+                'debe_cambiar_contrasenia' => true,
+                'email_verified_at'        => now(),
             ]);
         }
 
         $msg = 'Padre/tutor registrado exitosamente.';
         if ($correoPadre) {
-            $msg .= " Contraseña inicial: Padre2025!";
+            $msg .= " Deberá cambiar su contraseña al iniciar sesión por primera vez.";
         }
 
         return redirect()->route('padres.index')->with('success', $msg);

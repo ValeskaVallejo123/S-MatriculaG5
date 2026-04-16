@@ -49,6 +49,9 @@ class Kernel extends HttpKernel
         // Permisos
         'permiso' => \App\Http\Middleware\VerificarPermiso::class,
         'permiso.padre' => \App\Http\Middleware\VerificarPermisoPadre::class,
+
+        // Forzar cambio de contraseña al primer inicio de sesión
+        'forzar.contrasenia' => \App\Http\Middleware\ForzarCambioContrasenia::class,
     ];
 
 

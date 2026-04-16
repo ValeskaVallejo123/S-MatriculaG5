@@ -121,7 +121,7 @@ body.dark-mode .info-card i {
         $user       = auth()->user();
         $estudiante = $user->estudiante;
         $noLeidas   = $user->total_notificaciones_no_leidas;
-        $notificaciones = $user->notificacionesPermitidas()->take(5)->get();
+        $notificaciones = $user->notificacionesPermitidas()->get();
     @endphp
 
 <div class="est-portal">
@@ -164,7 +164,7 @@ body.dark-mode .info-card i {
     {{-- ══ Tarjetas resumen (clicables) ══ --}}
     <div class="row g-3 mb-4">
 
-        <div class="col-md-3">
+        <div class="col-md-4">
             <a href="{{ route('estudiante.miHorario') }}" class="text-decoration-none">
                 <div class="card border-0 shadow-sm h-100 info-card"
                      style="border-radius:10px;border-left:4px solid #003b73 !important;cursor:pointer;">
@@ -174,7 +174,7 @@ body.dark-mode .info-card i {
                         </div>
                         <div class="flex-grow-1">
                             <p class="text-muted mb-0 small">Mi Horario</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalHoras ?? '—' }}</h3>
+                            <h3 class="mb-0 fw-bold" style="color:#003b73;">Ver</h3>
                         </div>
                         <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                     </div>
@@ -182,7 +182,7 @@ body.dark-mode .info-card i {
             </a>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
             <a href="{{ route('estudiante.calificaciones') }}" class="text-decoration-none">
                 <div class="card border-0 shadow-sm h-100 info-card"
                      style="border-radius:10px;border-left:4px solid #00508f !important;cursor:pointer;">
@@ -192,7 +192,7 @@ body.dark-mode .info-card i {
                         </div>
                         <div class="flex-grow-1">
                             <p class="text-muted mb-0 small">Calificaciones</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">{{ $totalCalificaciones ?? '—' }}</h3>
+                            <h3 class="mb-0 fw-bold" style="color:#003b73;">Ver</h3>
                         </div>
                         <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                     </div>
@@ -200,7 +200,7 @@ body.dark-mode .info-card i {
             </a>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
             <a href="{{ route('estudiante.historial') }}" class="text-decoration-none">
                 <div class="card border-0 shadow-sm h-100 info-card"
                      style="border-radius:10px;border-left:4px solid #4ec7d2 !important;cursor:pointer;">
@@ -209,31 +209,8 @@ body.dark-mode .info-card i {
                             <i class="fas fa-history fa-lg" style="color:#4ec7d2;"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <p class="text-muted mb-0 small">Historial</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">Académico</h3>
-                        </div>
-                        <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="{{ route('notificaciones.index') }}" class="text-decoration-none">
-                <div class="card border-0 shadow-sm h-100 info-card"
-                     style="border-radius:10px;border-left:4px solid #f59e0b !important;cursor:pointer;">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <div style="width:50px;height:50px;background:rgba(245,158,11,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-bell fa-lg" style="color:#f59e0b;"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="text-muted mb-0 small">Notificaciones</p>
-                            <h3 class="mb-0 fw-bold" style="color:#003b73;">
-                                {{ $noLeidas }}
-                                @if($noLeidas > 0)
-                                    <span class="badge bg-danger ms-1" style="font-size:0.65rem;">Sin leer</span>
-                                @endif
-                            </h3>
+                            <p class="text-muted mb-0 small">Historial Académico</p>
+                            <h3 class="mb-0 fw-bold" style="color:#003b73;">Ver</h3>
                         </div>
                         <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
                     </div>
@@ -249,14 +226,9 @@ body.dark-mode .info-card i {
             <div class="card border-0 shadow-sm" style="border-radius:12px;">
                 <div class="card-header border-0 py-3 px-4"
                      style="background:linear-gradient(135deg,#00508f 0%,#4ec7d2 100%);border-radius:12px 12px 0 0;">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="text-white fw-bold mb-0">
-                            <i class="fas fa-bell me-2"></i>Notificaciones Recientes
-                        </h5>
-                        <a href="{{ route('notificaciones.index') }}" class="btn btn-light btn-sm fw-semibold">
-                            Ver todas
-                        </a>
-                    </div>
+                    <h5 class="text-white fw-bold mb-0">
+                        <i class="fas fa-bell me-2"></i>Notificaciones Recientes
+                    </h5>
                 </div>
                 <div class="card-body p-3">
                     @if($notificaciones->isEmpty())

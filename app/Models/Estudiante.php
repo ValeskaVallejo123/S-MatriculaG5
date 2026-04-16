@@ -161,21 +161,21 @@ class Estudiante extends Model
     public static function grados()
     {
         return [
-            '1ro Primaria',
-            '2do Primaria',
-            '3ro Primaria',
-            '4to Primaria',
-            '5to Primaria',
-            '6to Primaria',
-            '1ro Secundaria',
-            '2do Secundaria',
-            '3ro Secundaria',
+            'Primer Grado',
+            'Segundo Grado',
+            'Tercer Grado',
+            'Cuarto Grado',
+            'Quinto Grado',
+            'Sexto Grado',
+            'Séptimo Grado',
+            'Octavo Grado',
+            'Noveno Grado',
         ];
     }
 
     public static function secciones()
     {
-        return ['A', 'B', 'C'];
+        return ['A', 'B', 'C', 'D'];
     }
 
     /**

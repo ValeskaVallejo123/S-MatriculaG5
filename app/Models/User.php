@@ -52,6 +52,7 @@ class User extends Authenticatable
         'is_protected',
         'permissions',
         'email_verified_at',
+        'debe_cambiar_contrasenia',
     ];
 
     protected $hidden = [
@@ -68,7 +69,8 @@ class User extends Authenticatable
             'activo'            => 'boolean',
             'fecha_registro'    => 'datetime',
             'is_super_admin'    => 'boolean',
-            'is_protected'      => 'boolean',
+            'is_protected'               => 'boolean',
+            'debe_cambiar_contrasenia'   => 'boolean',
         ];
     }
 

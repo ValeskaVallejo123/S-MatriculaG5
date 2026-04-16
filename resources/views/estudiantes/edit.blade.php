@@ -3,382 +3,491 @@
 @section('title', 'Editar Estudiante')
 @section('page-title', 'Editar Estudiante')
 
-
 @push('styles')
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+<style>
+    /* ── Inputs y Selects ── */
+    .form-control,
+    .form-select {
+        border: 2px solid #bfd9ea !important;
+        border-radius: 10px;
+        padding: 0.68rem 1rem 0.68rem 2.8rem !important;
+        font-size: .88rem !important;
+        transition: all 0.3s ease;
+        height: auto !important;
+    }
 
-        .edit-wrap { font-family: 'Inter', sans-serif; max-width: 900px; margin: 0 auto; }
+    /* Inputs/Selects SIN ícono */
+    select[name="grado"],
+    select[name="seccion"],
+    select[name="estado"],
+    textarea[name="observaciones"],
+    input[name="foto"] {
+        padding: 0.68rem 1rem !important;
+    }
 
-        .adm-btn-outline {
-            display: inline-flex; align-items: center; gap: .4rem;
-            padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-            background: #fff; color: #00508f; border: 1.5px solid #00508f;
-            text-decoration: none; transition: all .15s;
-        }
-        .adm-btn-outline:hover { background: #eff6ff; }
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4ec7d2 !important;
+        box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.15);
+    }
 
-        .edit-header {
-            background: linear-gradient(135deg, #00508f, #003b73);
-            border-radius: 12px; padding: 1.25rem 1.5rem;
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 1.25rem;
-        }
-        .edit-header-left { display: flex; align-items: center; gap: .85rem; }
-        .edit-header-icon {
-            width: 44px; height: 44px; border-radius: 10px;
-            background: rgba(78,199,210,.25);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .edit-header-icon i { color: #fff; font-size: 1.2rem; }
-        .edit-header-title { color: #fff; font-weight: 700; font-size: 1rem; margin: 0; }
-        .edit-header-sub   { color: rgba(255,255,255,.7); font-size: .78rem; margin: 0; }
-        .edit-header-id {
-            background: rgba(78,199,210,.2); color: rgba(255,255,255,.9);
-            padding: .3rem .75rem; border-radius: 6px; font-size: .78rem; font-weight: 600;
-        }
+    /* ── Labels ── */
+    .form-label {
+        color: #003b73 !important;
+        font-size: .63rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .22rem;
+    }
 
-        .edit-card {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,.05); overflow: hidden;
-            margin-bottom: 1rem;
-        }
-        .edit-card-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    /* ── Mensajes de error ── */
+    .invalid-feedback { font-size: .7rem; }
 
-        .edit-section-title {
-            display: flex; align-items: center; gap: .5rem;
-            font-size: .82rem; font-weight: 700; color: #00508f;
-            padding-bottom: .6rem; border-bottom: 1.5px solid #e8f8f9;
-            margin-bottom: .85rem;
-        }
-        .edit-section-title i { color: #4ec7d2; }
+    /* ── Textarea ── */
+    textarea.form-control {
+        padding-left: 1rem !important;
+        resize: none;
+        min-height: 80px;
+    }
 
-        .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-        @media(max-width:600px){ .fields-grid { grid-template-columns: 1fr; } }
+    /* ── Botón Guardar ── */
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #4ec7d2, #00508f);
+        color: white; border: none; border-radius: 9px;
+        padding: .6rem .75rem; font-size: .83rem; font-weight: 600;
+        box-shadow: 0 2px 10px rgba(78,199,210,.3); transition: all .2s;
+    }
+    .btn-primary-custom:hover {
+        color: white; box-shadow: 0 4px 16px rgba(78,199,210,.4);
+        transform: translateY(-2px);
+    }
 
-        .field-group { display: flex; flex-direction: column; gap: .3rem; }
-        .field-group.full { grid-column: 1 / -1; }
+    /* ── Botón Cancelar ── */
+    .btn-cancel-custom {
+        border: 1.5px solid #00508f; color: #00508f; background: white;
+        border-radius: 9px; padding: .6rem .75rem; font-size: .83rem;
+        font-weight: 600; transition: all .2s;
+    }
+    .btn-cancel-custom:hover {
+        background: #eff6ff; color: #00508f; transform: translateY(-2px);
+    }
 
-        .field-label {
-            font-size: .75rem; font-weight: 700; color: #003b73; letter-spacing: .02em;
-        }
-        .field-label span { color: #ef4444; margin-left: 2px; }
+    .border-bottom { border-color: rgba(78,199,210,.1) !important; }
 
-        .field-input, .field-select, .field-textarea {
-            width: 100%; padding: .48rem .75rem;
-            border: 1.5px solid #e2e8f0; border-radius: 8px;
-            font-size: .83rem; font-family: 'Inter', sans-serif;
-            color: #0f172a; outline: none;
-            transition: border-color .2s, box-shadow .2s;
-            background: #f8fafc;
-        }
-        .field-input:focus, .field-select:focus, .field-textarea:focus {
-            border-color: #4ec7d2;
-            box-shadow: 0 0 0 3px rgba(78,199,210,.12);
-            background: #fff;
-        }
-        .field-input.is-invalid, .field-select.is-invalid, .field-textarea.is-invalid {
-            border-color: #ef4444;
-        }
-        .field-textarea { resize: none; min-height: 70px; }
-        .field-hint  { font-size: .68rem; color: #94a3b8; margin-top: .15rem; }
-        .field-error { font-size: .72rem; color: #ef4444; margin-top: .2rem; }
-
-        .edit-footer { display: flex; gap: .6rem; padding-top: 1.25rem; border-top: 1px solid #f1f5f9; }
-        .footer-btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
-            flex: 1; padding: .6rem .75rem; border-radius: 8px;
-            font-size: .83rem; font-weight: 600; cursor: pointer;
-            text-decoration: none; border: none; transition: all .15s;
-        }
-        .footer-btn:hover { transform: translateY(-1px); }
-        .btn-save   { background: linear-gradient(135deg,#4ec7d2,#00508f); color:#fff; box-shadow:0 2px 8px rgba(78,199,210,.3); }
-        .btn-save:hover { color:#fff; }
-        .btn-cancel { background:#fff; color:#64748b; border:1.5px solid #e2e8f0; }
-
-        .edit-note {
-            display: flex; align-items: flex-start; gap: .5rem;
-            background: rgba(78,199,210,.08); border-left: 3px solid #4ec7d2;
-            border-radius: 8px; padding: .75rem 1rem;
-            font-size: .8rem; color: #475569;
-        }
-        .edit-note i { color: #4ec7d2; margin-top: 1px; flex-shrink: 0; }
-        .edit-note strong { color: #00508f; }
-    </style>
+    /* ── Vista previa foto ── */
+    .foto-preview-wrap {
+        display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+        margin-top: .5rem;
+    }
+    .foto-preview {
+        width: 70px; height: 70px; border-radius: 12px; object-fit: cover;
+        border: 2px solid #bfd9ea;
+    }
+    .foto-placeholder {
+        width: 70px; height: 70px; border-radius: 12px;
+        background: #f0f7ff; border: 2px dashed #bfd9ea;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .foto-placeholder i { color: #94a3b8; font-size: 1.5rem; }
+</style>
 @endpush
 
 @section('content')
-    <div class="container" style="max-width: 1200px;">
 
-        <!-- Header -->
-        <div class="card border-0 shadow-sm mb-3"
-             style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-box me-3"
-                             style="width: 45px; height: 45px; background: rgba(78,199,210,0.3);
-                                border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-user-edit text-white" style="font-size: 1.3rem;"></i>
-                        </div>
-                        <div class="text-white">
-                            <h5 class="mb-0 fw-bold" style="font-size: 1.1rem;">Editar Estudiante</h5>
-                            <p class="mb-0 opacity-90" style="font-size: 0.8rem;">Actualice la información necesaria</p>
-                        </div>
-                    </div>
-                    <div style="background: rgba(78,199,210,0.2); padding: 0.4rem 0.8rem; border-radius: 6px;">
-                        <p class="text-white mb-0 small fw-semibold" style="font-size: 0.8rem;">
-                            ID: #{{ $estudiante->id }}
-                        </p>
-                    </div>
+<div style="width:100%;">
+
+    {{-- ── HEADER ── --}}
+    <div style="border-radius:14px 14px 0 0;
+            background:linear-gradient(135deg,#002d5a 0%,#00508f 55%,#0077b6 100%);
+            padding:2rem; position:relative; overflow:hidden;">
+
+        <div style="position:absolute;right:-50px;top:-50px;width:200px;height:200px;
+                border-radius:50%;background:rgba(78,199,210,.13);pointer-events:none;"></div>
+        <div style="position:absolute;right:100px;bottom:-45px;width:120px;height:120px;
+                border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
+
+        <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;">
+                <div style="width:80px;height:80px;border-radius:18px;
+                        border:3px solid rgba(78,199,210,.7);
+                        background:rgba(255,255,255,.12);
+                        display:flex;align-items:center;justify-content:center;
+                        box-shadow:0 6px 20px rgba(0,0,0,.25);">
+                    <i class="fas fa-user-edit" style="color:white;font-size:2rem;"></i>
                 </div>
-            </div>
-            <span class="edit-header-id">ID: #{{ $estudiante->id }}</span>
-        </div>
-
-        <div class="edit-card">
-            <div class="edit-card-body">
-                <form action="{{ route('estudiantes.update', $estudiante) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-
-                    {{-- Información Personal --}}
-                    <div>
-                        <div class="edit-section-title">
-                            <i class="fas fa-user"></i> Información Personal
-                        </div>
-                        <div class="fields-grid">
-
-                            <div class="field-group">
-                                <label class="field-label">Primer Nombre <span>*</span></label>
-                                <input type="text" name="nombre1"
-                                       value="{{ old('nombre1', $estudiante->nombre1) }}"
-                                       class="field-input {{ $errors->has('nombre1') ? 'is-invalid' : '' }}"
-                                       placeholder="Ej: Maria" required maxlength="50">
-                                @error('nombre1')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">Segundo Nombre</label>
-                                <input type="text" name="nombre2"
-                                       value="{{ old('nombre2', $estudiante->nombre2) }}"
-                                       class="field-input {{ $errors->has('nombre2') ? 'is-invalid' : '' }}"
-                                       placeholder="Ej: Guadalupe" maxlength="50">
-                                @error('nombre2')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">Primer Apellido <span>*</span></label>
-                                <input type="text" name="apellido1"
-                                       value="{{ old('apellido1', $estudiante->apellido1) }}"
-                                       class="field-input {{ $errors->has('apellido1') ? 'is-invalid' : '' }}"
-                                       placeholder="Ej: Gutierrez" required maxlength="50">
-                                @error('apellido1')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">Segundo Apellido</label>
-                                <input type="text" name="apellido2"
-                                       value="{{ old('apellido2', $estudiante->apellido2) }}"
-                                       class="field-input {{ $errors->has('apellido2') ? 'is-invalid' : '' }}"
-                                       placeholder="Ej: Flores" maxlength="50">
-                                @error('apellido2')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">DNI <span>*</span></label>
-                                <input type="text" name="dni"
-                                       value="{{ old('dni', $estudiante->dni) }}"
-                                       class="field-input {{ $errors->has('dni') ? 'is-invalid' : '' }}"
-                                       placeholder="0000000000000" required
-                                       pattern="[0-9]{13}" maxlength="13">
-                                <span class="field-hint">13 dígitos sin guiones</span>
-                                @error('dni')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">Fecha de Nacimiento <span>*</span></label>
-                                <input type="date" name="fecha_nacimiento"
-                                       value="{{ old('fecha_nacimiento', \Carbon\Carbon::parse($estudiante->fecha_nacimiento)->format('Y-m-d')) }}"
-                                       class="field-input {{ $errors->has('fecha_nacimiento') ? 'is-invalid' : '' }}"
-                                       required>
-                                @error('fecha_nacimiento')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">Sexo</label>
-                                <select name="sexo" class="field-select {{ $errors->has('sexo') ? 'is-invalid' : '' }}">
-                                    <option value="">Seleccione</option>
-                                    <option value="masculino" {{ old('sexo', $estudiante->sexo) == 'masculino' ? 'selected' : '' }}>Masculino</option>
-                                    <option value="femenino"  {{ old('sexo', $estudiante->sexo) == 'femenino'  ? 'selected' : '' }}>Femenino</option>
-                                </select>
-                                @error('sexo')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">Teléfono</label>
-                                <input type="text" name="telefono"
-                                       value="{{ old('telefono', $estudiante->telefono) }}"
-                                       class="field-input {{ $errors->has('telefono') ? 'is-invalid' : '' }}"
-                                       placeholder="00000000" maxlength="8">
-                                <span class="field-hint">8 dígitos</span>
-                                @error('telefono')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group full">
-                                <label class="field-label">Dirección</label>
-                                <textarea name="direccion"
-                                          class="field-textarea {{ $errors->has('direccion') ? 'is-invalid' : '' }}"
-                                          placeholder="Dirección completa del estudiante"
-                                          maxlength="200">{{ old('direccion', $estudiante->direccion) }}</textarea>
-                                @error('direccion')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                        </div>
-                    </div>
-
-                    {{-- Información Académica --}}
-                    <div>
-                        <div class="edit-section-title">
-                            <i class="fas fa-graduation-cap"></i> Información Académica
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:.75rem;">
-
-                            <div class="field-group">
-                                <label class="field-label">Grado <span>*</span></label>
-                                <select name="grado" class="field-select {{ $errors->has('grado') ? 'is-invalid' : '' }}" required>
-                                    <option value="">Seleccione</option>
-                                    @foreach($grados as $grado)
-                                        <option value="{{ $grado }}"
-                                            {{ old('grado', $estudiante->grado) == $grado ? 'selected' : '' }}>
-                                            {{ $grado }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('grado')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">Sección <span>*</span></label>
-                                <select name="seccion" class="field-select {{ $errors->has('seccion') ? 'is-invalid' : '' }}" required>
-                                    <option value="">Seleccione</option>
-                                    @foreach($secciones as $seccion)
-                                        <option value="{{ $seccion }}"
-                                            {{ old('seccion', $estudiante->seccion) == $seccion ? 'selected' : '' }}>
-                                            {{ $seccion }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('seccion')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                            <div class="field-group">
-                                <label class="field-label">Estado <span>*</span></label>
-                                <select name="estado" class="field-select {{ $errors->has('estado') ? 'is-invalid' : '' }}" required>
-                                    <option value="activo"   {{ old('estado', $estudiante->estado) == 'activo'   ? 'selected' : '' }}>Activo</option>
-                                    <option value="inactivo" {{ old('estado', $estudiante->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
-                                </select>
-                                @error('estado')<div class="field-error">{{ $message }}</div>@enderror
-                            </div>
-
-                        </div>
-                    </div>
-
-                    {{-- Observaciones --}}
-                    <div>
-                        <div class="edit-section-title">
-                            <i class="fas fa-clipboard"></i> Información Adicional
-                        </div>
-                        <div class="field-group">
-                            <label class="field-label">Observaciones</label>
-                            <textarea name="observaciones"
-                                      class="field-textarea {{ $errors->has('observaciones') ? 'is-invalid' : '' }}"
-                                      placeholder="Alergias, condiciones médicas, notas especiales..."
-                                      maxlength="500">{{ old('observaciones', $estudiante->observaciones) }}</textarea>
-                            @error('observaciones')<div class="field-error">{{ $message }}</div>@enderror
-                        </div>
-                    </div>
-
-                    {{-- Botones --}}
-                    <div class="edit-footer">
-                        <button type="submit" class="footer-btn btn-save">
-                            <i class="fas fa-save"></i> Guardar Cambios
-                        </button>
-                        <a href="{{ route('estudiantes.index') }}" class="footer-btn btn-cancel">
-                            <i class="fas fa-times"></i> Cancelar
-                        </a>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-
-        <!-- Nota Final -->
-        <div class="alert border-0 mt-2 py-2 px-3"
-             style="border-radius: 8px; background: rgba(78,199,210,0.1);
-                border-left: 3px solid #4ec7d2 !important; font-size: 0.85rem;">
-            <div class="d-flex align-items-start">
-                <i class="fas fa-info-circle me-2 mt-1"
-                   style="font-size: 0.9rem; color:#00508f;"></i>
                 <div>
-                    <strong style="color:#00508f;">Importante:</strong>
-                    <span class="text-muted">Los cambios se aplicarán inmediatamente al guardar.</span>
+                    <h2 style="font-size:1.45rem;font-weight:800;color:white;
+                           margin:0 0 .4rem;text-shadow:0 1px 4px rgba(0,0,0,.2);">
+                        Editar Estudiante
+                    </h2>
+                    <span style="display:inline-flex;align-items:center;gap:.3rem;
+                             padding:.2rem .65rem;border-radius:999px;
+                             background:rgba(255,255,255,.14);color:rgba(255,255,255,.92);
+                             font-size:.72rem;font-weight:600;
+                             border:1px solid rgba(255,255,255,.18);">
+                        <i class="fas fa-pen"></i> Actualice la información del estudiante
+                    </span>
                 </div>
             </div>
+            <div style="background:rgba(78,199,210,.2);padding:.4rem .9rem;border-radius:8px;">
+                <span style="color:rgba(255,255,255,.9);font-size:.8rem;font-weight:700;">
+                    ID: #{{ $estudiante->id }}
+                </span>
+            </div>
         </div>
+    </div>
 
-    </div> <!-- cierre container -->
+    {{-- ── BODY DEL FORMULARIO ── --}}
+    <div style="background:white;border:1px solid #e8edf4;border-top:none;
+            border-radius:0 0 14px 14px;box-shadow:0 2px 16px rgba(0,59,115,.09);">
 
-    @push('styles')
-        <style>
-            .form-control-sm, .form-select-sm {
-                border-radius: 6px;
-                border: 1.5px solid #e2e8f0;
-                padding: 0.5rem 0.75rem;
-                transition: all 0.3s ease;
-                font-size: 0.875rem;
-            }
+        <form action="{{ route('estudiantes.update', $estudiante) }}" method="POST"
+              enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
 
-            .form-control-sm:focus, .form-select-sm:focus {
-                border-color: #4ec7d2;
-                box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.15);
-            }
+            {{-- ══ SECCIÓN 1 · INFORMACIÓN PERSONAL ══ --}}
+            <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
 
-            .form-label {
-                color: #003b73;
-                font-size: 0.85rem;
-                margin-bottom: 0.3rem;
-            }
+                <div style="display:flex;align-items:center;gap:.5rem;
+                        font-size:.75rem;font-weight:700;color:#00508f;
+                        text-transform:uppercase;letter-spacing:.08em;
+                        margin-bottom:.95rem;padding-bottom:.55rem;
+                        border-bottom:2px solid rgba(78,199,210,.1);">
+                    <i class="fas fa-user" style="color:#4ec7d2;font-size:.88rem;"></i>
+                    Información Personal
+                </div>
 
-            small.text-muted {
-                font-size: 0.7rem;
-                display: block;
-                margin-top: 0.15rem;
-            }
+                <div class="row g-3">
 
-            .btn:hover {
-                transform: translateY(-2px);
-                transition: all 0.3s ease;
-            }
+                    {{-- Primer Nombre --}}
+                    <div class="col-md-6">
+                        <label class="form-label">Primer Nombre <span style="color:#ef4444;">*</span></label>
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;"></i>
+                            <input type="text" name="nombre1"
+                                   value="{{ old('nombre1', $estudiante->nombre1) }}"
+                                   class="form-control @error('nombre1') is-invalid @enderror"
+                                   placeholder="Ej: Juan" required maxlength="50">
+                            @error('nombre1')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            .btn-back:hover {
-                background: #00508f !important;
-                color: white !important;
-                transform: translateY(-2px);
-            }
+                    {{-- Segundo Nombre --}}
+                    <div class="col-md-6">
+                        <label class="form-label">Segundo Nombre
+                            <span style="color:#6b7a90;font-weight:400;text-transform:none;font-size:.72rem;">(Opcional)</span>
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;"></i>
+                            <input type="text" name="nombre2"
+                                   value="{{ old('nombre2', $estudiante->nombre2) }}"
+                                   class="form-control @error('nombre2') is-invalid @enderror"
+                                   placeholder="Ej: Carlos" maxlength="50">
+                            @error('nombre2')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            button[type="submit"]:hover {
-                box-shadow: 0 4px 12px rgba(78,199,210,0.4) !important;
-            }
+                    {{-- Primer Apellido --}}
+                    <div class="col-md-6">
+                        <label class="form-label">Primer Apellido <span style="color:#ef4444;">*</span></label>
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;"></i>
+                            <input type="text" name="apellido1"
+                                   value="{{ old('apellido1', $estudiante->apellido1) }}"
+                                   class="form-control @error('apellido1') is-invalid @enderror"
+                                   placeholder="Ej: Pérez" required maxlength="50">
+                            @error('apellido1')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            .border-bottom {
-                border-color: rgba(0,80,143,0.15) !important;
-            }
+                    {{-- Segundo Apellido --}}
+                    <div class="col-md-6">
+                        <label class="form-label">Segundo Apellido
+                            <span style="color:#6b7a90;font-weight:400;text-transform:none;font-size:.72rem;">(Opcional)</span>
+                        </label>
+                        <div class="position-relative">
+                            <i class="fas fa-user position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;"></i>
+                            <input type="text" name="apellido2"
+                                   value="{{ old('apellido2', $estudiante->apellido2) }}"
+                                   class="form-control @error('apellido2') is-invalid @enderror"
+                                   placeholder="Ej: García" maxlength="50">
+                            @error('apellido2')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            textarea {
-                min-height: 60px !important;
-            }
-        </style>
-    @endpush
+                    {{-- DNI --}}
+                    <div class="col-md-6">
+                        <label class="form-label">DNI <span style="color:#ef4444;">*</span></label>
+                        <div class="position-relative">
+                            <i class="fas fa-id-card position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;"></i>
+                            <input type="text" name="dni"
+                                   value="{{ old('dni', $estudiante->dni) }}"
+                                   class="form-control @error('dni') is-invalid @enderror"
+                                   placeholder="0000000000000" required pattern="[0-9]{13}" maxlength="13">
+                            @error('dni')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">13 dígitos sin guiones</small>
+                        </div>
+                    </div>
+
+                    {{-- Fecha de Nacimiento --}}
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha de Nacimiento <span style="color:#ef4444;">*</span></label>
+                        <div class="position-relative">
+                            <i class="fas fa-calendar position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;"></i>
+                            <input type="date" name="fecha_nacimiento"
+                                   value="{{ old('fecha_nacimiento', \Carbon\Carbon::parse($estudiante->fecha_nacimiento)->format('Y-m-d')) }}"
+                                   class="form-control @error('fecha_nacimiento') is-invalid @enderror"
+                                   required>
+                            @error('fecha_nacimiento')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Sexo --}}
+                    <div class="col-md-6">
+                        <label class="form-label">Género <span style="color:#ef4444;">*</span></label>
+                        <div class="position-relative">
+                            <i class="fas fa-venus-mars position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;z-index:10;"></i>
+                            <select name="sexo"
+                                    class="form-select @error('sexo') is-invalid @enderror"
+                                    required>
+                                <option value="">Seleccionar...</option>
+                                <option value="masculino" {{ old('sexo', $estudiante->sexo) == 'masculino' ? 'selected' : '' }}>Masculino</option>
+                                <option value="femenino"  {{ old('sexo', $estudiante->sexo) == 'femenino'  ? 'selected' : '' }}>Femenino</option>
+                            </select>
+                            @error('sexo')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Email --}}
+                    <div class="col-md-6">
+                        <label class="form-label">Correo Electrónico</label>
+                        <div class="position-relative">
+                            <i class="fas fa-envelope position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;"></i>
+                            <input type="email" name="email"
+                                   value="{{ old('email', $estudiante->email) }}"
+                                   class="form-control @error('email') is-invalid @enderror"
+                                   placeholder="estudiante@egm.edu.hn" maxlength="100">
+                            @error('email')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Teléfono --}}
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono</label>
+                        <div class="position-relative">
+                            <i class="fas fa-phone position-absolute"
+                               style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:.68rem;"></i>
+                            <input type="text" name="telefono"
+                                   value="{{ old('telefono', $estudiante->telefono) }}"
+                                   class="form-control @error('telefono') is-invalid @enderror"
+                                   placeholder="00000000" maxlength="15">
+                            @error('telefono')
+                            <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Dirección --}}
+                    <div class="col-12">
+                        <label class="form-label">Dirección</label>
+                        <textarea name="direccion" rows="2" maxlength="200"
+                                  class="form-control @error('direccion') is-invalid @enderror"
+                                  placeholder="Dirección completa del estudiante"
+                        >{{ old('direccion', $estudiante->direccion) }}</textarea>
+                        @error('direccion')
+                        <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Foto --}}
+                    <div class="col-12">
+                        <label class="form-label">Foto del Estudiante
+                            <span style="color:#6b7a90;font-weight:400;text-transform:none;font-size:.72rem;">(Opcional — JPG/PNG, máx. 2 MB)</span>
+                        </label>
+                        <div class="foto-preview-wrap">
+                            @if($estudiante->foto)
+                                <img src="{{ asset('storage/' . $estudiante->foto) }}"
+                                     alt="Foto actual" class="foto-preview" id="fotoPreview">
+                            @else
+                                <div class="foto-placeholder" id="fotoPlaceholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <img src="" alt="Nueva foto" class="foto-preview d-none" id="fotoPreview">
+                            @endif
+                            <div class="flex-grow-1">
+                                <input type="file" name="foto" accept="image/*"
+                                       class="form-control @error('foto') is-invalid @enderror"
+                                       id="fotoInput" onchange="previewFoto(this)">
+                                @error('foto')
+                                <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                                @if($estudiante->foto)
+                                    <small class="text-muted">Subir una nueva imagen reemplazará la actual.</small>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                </div>{{-- fin row Personal --}}
+            </div>{{-- fin sección Personal --}}
+
+            {{-- ══ SECCIÓN 2 · INFORMACIÓN ACADÉMICA ══ --}}
+            <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
+
+                <div style="display:flex;align-items:center;gap:.5rem;
+                        font-size:.75rem;font-weight:700;color:#00508f;
+                        text-transform:uppercase;letter-spacing:.08em;
+                        margin-bottom:.95rem;padding-bottom:.55rem;
+                        border-bottom:2px solid rgba(78,199,210,.1);">
+                    <i class="fas fa-graduation-cap" style="color:#4ec7d2;font-size:.88rem;"></i>
+                    Información Académica
+                </div>
+
+                <div class="row g-3">
+
+                    {{-- Grado --}}
+                    <div class="col-md-4">
+                        <label class="form-label">Grado <span style="color:#ef4444;">*</span></label>
+                        <select name="grado"
+                                class="form-select @error('grado') is-invalid @enderror"
+                                required>
+                            <option value="">Seleccione</option>
+                            @foreach($grados as $grado)
+                                <option value="{{ $grado }}"
+                                    {{ old('grado', $estudiante->grado) == $grado ? 'selected' : '' }}>
+                                    {{ $grado }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('grado')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Sección --}}
+                    <div class="col-md-4">
+                        <label class="form-label">Sección <span style="color:#ef4444;">*</span></label>
+                        <select name="seccion"
+                                class="form-select @error('seccion') is-invalid @enderror"
+                                required>
+                            <option value="">Seleccione</option>
+                            @foreach($secciones as $seccion)
+                                <option value="{{ $seccion }}"
+                                    {{ old('seccion', $estudiante->seccion) == $seccion ? 'selected' : '' }}>
+                                    {{ $seccion }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('seccion')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Estado --}}
+                    <div class="col-md-4">
+                        <label class="form-label">Estado <span style="color:#ef4444;">*</span></label>
+                        <select name="estado"
+                                class="form-select @error('estado') is-invalid @enderror"
+                                required>
+                            <option value="activo"      {{ old('estado', $estudiante->estado) == 'activo'      ? 'selected' : '' }}>Activo</option>
+                            <option value="inactivo"    {{ old('estado', $estudiante->estado) == 'inactivo'    ? 'selected' : '' }}>Inactivo</option>
+                            <option value="retirado"    {{ old('estado', $estudiante->estado) == 'retirado'    ? 'selected' : '' }}>Retirado</option>
+                            <option value="suspendido"  {{ old('estado', $estudiante->estado) == 'suspendido'  ? 'selected' : '' }}>Suspendido</option>
+                        </select>
+                        @error('estado')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                </div>
+            </div>{{-- fin sección Académica --}}
+
+            {{-- ══ SECCIÓN 3 · INFORMACIÓN ADICIONAL ══ --}}
+            <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
+
+                <div style="display:flex;align-items:center;gap:.5rem;
+                        font-size:.75rem;font-weight:700;color:#00508f;
+                        text-transform:uppercase;letter-spacing:.08em;
+                        margin-bottom:.95rem;padding-bottom:.55rem;
+                        border-bottom:2px solid rgba(78,199,210,.1);">
+                    <i class="fas fa-clipboard" style="color:#4ec7d2;font-size:.88rem;"></i>
+                    Información Adicional
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observaciones" rows="3" maxlength="500"
+                                  class="form-control @error('observaciones') is-invalid @enderror"
+                                  placeholder="Alergias, condiciones médicas, notas especiales..."
+                        >{{ old('observaciones', $estudiante->observaciones) }}</textarea>
+                        @error('observaciones')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>{{-- fin sección Adicional --}}
+
+            {{-- ══ BOTONES ══ --}}
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap;
+                    padding:1.1rem 1.7rem;
+                    background:#f5f8fc;border-top:1px solid #e8edf4;
+                    border-radius:0 0 14px 14px;">
+                <button type="submit" class="btn btn-primary-custom flex-fill">
+                    <i class="fas fa-save me-1"></i> Guardar Cambios
+                </button>
+                <a href="{{ route('estudiantes.show', $estudiante->id) }}" class="btn btn-cancel-custom flex-fill">
+                    <i class="fas fa-times me-1"></i> Cancelar
+                </a>
+            </div>
+
+        </form>
+    </div>{{-- fin body --}}
+</div>{{-- fin width:100% --}}
 
 @endsection
+
+@push('scripts')
+<script>
+    function previewFoto(input) {
+        const preview   = document.getElementById('fotoPreview');
+        const placeholder = document.getElementById('fotoPlaceholder');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('d-none');
+                if (placeholder) placeholder.classList.add('d-none');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+@endpush

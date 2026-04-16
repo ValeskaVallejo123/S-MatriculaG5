@@ -48,9 +48,33 @@ class PadreDashboardController extends Controller
             ->where('estado', 'aprobada')
             ->firstOrFail();
 
-        $estudiante = $matricula->estudiante;
+        $estudiante = $matricula->estudiante->load('calificaciones.materia');
 
-        return view('padre.hijo', compact('padre', 'estudiante', 'matricula'));
+        // Resumen de calificaciones por materia
+        $resumenMaterias = $estudiante->calificaciones
+            ->groupBy('materia_id')
+            ->map(function ($notas) {
+                $conNota = $notas->whereNotNull('nota_final');
+                return [
+                    'materia'  => $notas->first()->materia,
+                    'promedio' => $conNota->isNotEmpty() ? round($conNota->avg('nota_final'), 2) : null,
+                    'aprobado' => $conNota->isNotEmpty() && $conNota->avg('nota_final') >= 60,
+                ];
+            })->values();
+
+        // Promedio general
+        $conNota = $estudiante->calificaciones->whereNotNull('nota_final');
+        $promedioGeneral = $conNota->isNotEmpty() ? round($conNota->avg('nota_final'), 2) : null;
+
+        // Horario del grado
+        $horarioGrado = null;
+        if ($estudiante->grado_id) {
+            $horarioGrado = \App\Models\HorarioGrado::where('grado_id', $estudiante->grado_id)
+                ->with('grado')
+                ->first();
+        }
+
+        return view('padre.hijo', compact('padre', 'estudiante', 'matricula', 'resumenMaterias', 'promedioGeneral', 'horarioGrado'));
     }
 
     public function cambiarPassword(Request $request)
@@ -136,5 +160,34 @@ class PadreDashboardController extends Controller
         )->get()->keyBy('id');
 
         return view('padre.calificaciones', compact('padre', 'estudiantes', 'estudiantesConCalificaciones', 'periodos'));
+    }
+
+    public function horarioHijo($estudianteId)
+    {
+        /** @var User $user */
+        $user  = Auth::user();
+        $padre = $user->padre;
+
+        if (!$padre) {
+            abort(403);
+        }
+
+        // Verificar que el estudiante pertenece a este padre
+        $matricula = $padre->matriculas()
+            ->with('estudiante')
+            ->where('estudiante_id', $estudianteId)
+            ->where('estado', 'aprobada')
+            ->firstOrFail();
+
+        $estudiante = $matricula->estudiante;
+
+        $horarioGrado = null;
+        if ($estudiante->grado_id) {
+            $horarioGrado = \App\Models\HorarioGrado::where('grado_id', $estudiante->grado_id)
+                ->with('grado')
+                ->first();
+        }
+
+        return view('padre.horario', compact('padre', 'estudiante', 'horarioGrado'));
     }
 }

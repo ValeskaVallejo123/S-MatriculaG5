@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profesor;
+use App\Models\User;
+use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -83,24 +85,23 @@ class ProfesorController extends Controller
         $profesor = Profesor::create($validated);
 
         // Crear cuenta de usuario si no existe ya uno con ese email
-        $maestroRolId = DB::table('roles')->where('nombre', 'Maestro')->value('id');
-        if ($maestroRolId && !DB::table('users')->where('email', $profesor->email)->exists()) {
-            DB::table('users')->insert([
-                'name'              => $profesor->nombre . ' ' . $profesor->apellido,
-                'email'             => $profesor->email,
-                'password'          => Hash::make('Docente2025!'),
-                'id_rol'            => $maestroRolId,
-                'activo'            => true,
-                'is_super_admin'    => false,
-                'is_protected'      => false,
-                'email_verified_at' => now(),
-                'created_at'        => now(),
-                'updated_at'        => now(),
+        $maestroRol = Rol::where('nombre', 'Maestro')->first();
+        if ($maestroRol && !User::where('email', $profesor->email)->exists()) {
+            User::create([
+                'name'                     => $profesor->nombre . ' ' . $profesor->apellido,
+                'email'                    => $profesor->email,
+                'password'                 => Hash::make('Docente2025!'),
+                'id_rol'                   => $maestroRol->id,
+                'activo'                   => true,
+                'is_super_admin'           => false,
+                'is_protected'             => false,
+                'debe_cambiar_contrasenia' => true,
+                'email_verified_at'        => now(),
             ]);
         }
 
         return redirect()->route('profesores.index')
-            ->with('success', 'Profesor creado exitosamente. Contraseña inicial: Docente2025!');
+            ->with('success', 'Profesor creado exitosamente. Deberá cambiar su contraseña al iniciar sesión.');
     }
 
     /**

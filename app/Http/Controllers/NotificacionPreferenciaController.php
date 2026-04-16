@@ -111,13 +111,6 @@ class NotificacionPreferenciaController extends Controller
             ->get();
 
         // Vista según el rol
-        return match ($user->id_rol) {
-            4 => view('estudiante.notificaciones.index', compact('notificaciones')),
-            3 => view('profesor.notificaciones.index', compact('notificaciones')),
-            5 => view('padre.notificaciones.index', compact('notificaciones')),
-            1 => view('superadmin.notificaciones.index', compact('notificaciones')),
-            2 => view('admin.notificaciones.index', compact('notificaciones')),
-            default => abort(403, 'Rol no autorizado'),
-        };
+        return view('notificaciones.index', compact('notificaciones'));
     }
 }

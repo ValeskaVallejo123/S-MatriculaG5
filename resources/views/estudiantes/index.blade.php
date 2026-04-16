@@ -163,11 +163,23 @@ body.dark-mode .est-tbl tbody tr:hover td { background: rgba(78,199,210,.06); }
     </div>
 
     {{-- Toolbar --}}
+    <form method="GET" action="{{ route('estudiantes.index') }}" id="searchForm">
     <div class="est-toolbar">
         <div class="est-search-wrap">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" class="est-search" placeholder="Buscar por nombre, DNI, grado…">
+            <input type="text" name="search" id="searchInput" class="est-search"
+                   placeholder="Buscar por nombre, DNI, grado…"
+                   value="{{ request('search') }}"
+                   autocomplete="off">
+            @if(request('search'))
+                <a href="{{ route('estudiantes.index', ['per_page' => request('per_page', 10)]) }}"
+                   style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#94a3b8;text-decoration:none;font-size:.8rem;"
+                   title="Limpiar búsqueda">
+                    <i class="fas fa-times"></i>
+                </a>
+            @endif
         </div>
+        <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
         <div class="est-select">
             <label for="perPageSelect" class="me-1" style="font-size:.8rem;color:#64748b;">Mostrar:</label>
             <select id="perPageSelect" onchange="cambiarPerPage(this.value)" style="border:none;background:transparent;font-size:.8rem;color:#003b73;outline:none;cursor:pointer;">
@@ -176,8 +188,11 @@ body.dark-mode .est-tbl tbody tr:hover td { background: rgba(78,199,210,.06); }
                 @endforeach
             </select>
         </div>
-        <small class="text-muted ms-auto" id="visibleCount"></small>
+        @if(request('search'))
+            <small class="text-muted ms-auto">{{ $estudiantes->total() }} resultado{{ $estudiantes->total() !== 1 ? 's' : '' }}</small>
+        @endif
     </div>
+    </form>
 
     {{-- Body --}}
     <div class="est-body">
@@ -199,8 +214,7 @@ body.dark-mode .est-tbl tbody tr:hover td { background: rgba(78,199,210,.06); }
                     </thead>
                     <tbody id="tableBody">
                         @forelse($estudiantes as $i => $estudiante)
-                        <tr class="student-row"
-                            data-search="{{ strtolower(($estudiante->nombre1 ?? '') . ' ' . ($estudiante->nombre2 ?? '') . ' ' . ($estudiante->apellido1 ?? '') . ' ' . ($estudiante->apellido2 ?? '') . ' ' . ($estudiante->dni ?? '') . ' ' . ($estudiante->grado ?? '') . ' ' . ($estudiante->seccion ?? '')) }}">
+                        <tr class="student-row">
                             <td class="tc"><span class="row-num">{{ $estudiantes->firstItem() + $i }}</span></td>
                             <td>
                                 <div class="est-av">
@@ -267,39 +281,22 @@ body.dark-mode .est-tbl tbody tr:hover td { background: rgba(78,199,210,.06); }
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const input  = document.getElementById('searchInput');
-    const tbody  = document.getElementById('tableBody');
-    const counter = document.getElementById('visibleCount');
-    if (!input || !tbody) return;
+    const input = document.getElementById('searchInput');
+    if (!input) return;
 
+    let timer;
     input.addEventListener('input', function () {
-        const term = this.value.toLowerCase().trim();
-        const noRow = tbody.querySelector('.no-results-row');
-        if (noRow) noRow.remove();
-        let visible = 0;
-        tbody.querySelectorAll('.student-row').forEach(function (row) {
-            const match = term === '' || (row.dataset.search || '').includes(term);
-            row.classList.toggle('hidden', !match);
-            if (match) visible++;
-        });
-        counter.textContent = term ? `${visible} resultado${visible !== 1 ? 's' : ''}` : '';
-        if (visible === 0 && term !== '') {
-            const tr = document.createElement('tr');
-            tr.className = 'no-results-row';
-            tr.innerHTML = `<td colspan="8" class="text-center py-5">
-                <i class="fas fa-search fa-2x mb-3" style="color:#cbd5e1;display:block;"></i>
-                <div style="color:#003b73;font-weight:600;">Sin resultados para "<em>${term}</em>"</div>
-            </td>`;
-            tbody.appendChild(tr);
-        }
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            document.getElementById('searchForm').submit();
+        }, 400);
     });
 });
 
 function cambiarPerPage(val) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('per_page', val);
-    url.searchParams.set('page', 1);
-    window.location.href = url.toString();
+    const form = document.getElementById('searchForm');
+    form.querySelector('[name="per_page"]').value = val;
+    form.submit();
 }
 </script>
 @endpush

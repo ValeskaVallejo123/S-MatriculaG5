@@ -54,8 +54,11 @@ class CambiarContraseniaController extends Controller
             return back()->withErrors(['current_password' => 'La contraseña actual no es correcta.']);
         }
 
-        // Actualiza la contraseña
-        $user->update(['password' => Hash::make($request->new_password)]);
+        // Actualiza la contraseña y desactiva el flag de cambio obligatorio
+        $user->update([
+            'password'                 => Hash::make($request->new_password),
+            'debe_cambiar_contrasenia' => false,
+        ]);
 
         return back()->with('success', '¡Tu contraseña ha sido actualizada correctamente!');
     }

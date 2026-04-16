@@ -29,6 +29,37 @@ class Grado extends Model
                     ->withTimestamps();
     }
 
+    /**
+     * Busca el grado activo que coincide con el nombre de grado y sección del estudiante.
+     * Ej: buscarPorNombreYSeccion('Primer Grado', 'A') → Grado con nivel=primaria, numero=1, seccion=A
+     */
+    public static function buscarPorNombreYSeccion(string $nombre, string $seccion): ?self
+    {
+        $mapa = [
+            'Primer Grado'  => ['primaria',    1],
+            'Segundo Grado' => ['primaria',    2],
+            'Tercer Grado'  => ['primaria',    3],
+            'Cuarto Grado'  => ['primaria',    4],
+            'Quinto Grado'  => ['primaria',    5],
+            'Sexto Grado'   => ['primaria',    6],
+            'Séptimo Grado' => ['secundaria',  7],
+            'Octavo Grado'  => ['secundaria',  8],
+            'Noveno Grado'  => ['secundaria',  9],
+        ];
+
+        if (!isset($mapa[$nombre])) {
+            return null;
+        }
+
+        [$nivel, $numero] = $mapa[$nombre];
+
+        return static::where('activo', true)
+            ->where('nivel', $nivel)
+            ->where('numero', $numero)
+            ->where('seccion', $seccion)
+            ->first();
+    }
+
     // ── Mapa canónico número → nombre ──
     public static function nombrePorNumero(int $numero): string
     {

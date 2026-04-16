@@ -45,7 +45,22 @@ class EstudianteController extends Controller
         $perPage = (int) $request->input('per_page', 10);
         $perPage = in_array($perPage, [10, 25, 50]) ? $perPage : 10;
 
-        $estudiantes = Estudiante::orderBy('apellido1')
+        $search = $request->input('search');
+
+        $estudiantes = Estudiante::when($search, function ($q) use ($search) {
+                $q->where(function ($sub) use ($search) {
+                    $sub->where('nombre1',   'like', "%{$search}%")
+                        ->orWhere('nombre2',   'like', "%{$search}%")
+                        ->orWhere('apellido1', 'like', "%{$search}%")
+                        ->orWhere('apellido2', 'like', "%{$search}%")
+                        ->orWhere('dni',       'like', "%{$search}%")
+                        ->orWhere('grado',     'like', "%{$search}%")
+                        ->orWhere('seccion',   'like', "%{$search}%")
+                        ->orWhereRaw("CONCAT(nombre1, ' ', apellido1) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("CONCAT(nombre1, ' ', nombre2, ' ', apellido1, ' ', apellido2) LIKE ?", ["%{$search}%"]);
+                });
+            })
+            ->orderBy('apellido1')
             ->orderBy('apellido2')
             ->orderBy('nombre1')
             ->orderBy('nombre2')
@@ -167,6 +182,12 @@ class EstudianteController extends Controller
             $data['foto'] = $request->file('foto')->store('estudiantes', 'public');
         }
 
+        // Sincronizar grado_id según el grado (texto) y sección seleccionados
+        $gradoModel = \App\Models\Grado::buscarPorNombreYSeccion($data['grado'], $data['seccion']);
+        if ($gradoModel) {
+            $data['grado_id'] = $gradoModel->id;
+        }
+
         $estudiante = Estudiante::create($data);
 
         Documento::create([
@@ -177,11 +198,12 @@ class EstudianteController extends Controller
         ]);
 
         \App\Models\User::create([
-            'name'     => $estudiante->nombre_completo,
-            'email'    => $email,
-            'password' => Hash::make('egm2025'),
-            'id_rol'   => 4,
-            'activo'   => 1,
+            'name'                     => $estudiante->nombre_completo,
+            'email'                    => $email,
+            'password'                 => Hash::make('egm2025'),
+            'id_rol'                   => 4,
+            'activo'                   => 1,
+            'debe_cambiar_contrasenia' => true,
         ]);
 
         return redirect()
@@ -245,6 +267,10 @@ class EstudianteController extends Controller
             }
             $data['foto'] = $request->file('foto')->store('estudiantes', 'public');
         }
+
+        // Sincronizar grado_id si cambió el grado o la sección
+        $gradoModel = \App\Models\Grado::buscarPorNombreYSeccion($data['grado'], $data['seccion']);
+        $data['grado_id'] = $gradoModel ? $gradoModel->id : null;
 
         $estudiante->update($data);
 
@@ -311,7 +337,8 @@ class EstudianteController extends Controller
    ============================================================ */
     public function historial()
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         // Buscamos al estudiante por el correo del usuario autenticado
         $estudiante = \App\Models\Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])
@@ -360,8 +387,8 @@ class EstudianteController extends Controller
     }
     public function updateHistorialAdmin(Request $request, $id)
     {
-        // 1. Validar al estudiante
-        $estudiante = \App\Models\Estudiante::findOrFail($id);
+        // 1. Verificar que el estudiante existe (lanza 404 si no)
+        \App\Models\Estudiante::findOrFail($id);
         $cambiosRealizados = false;
 
         // 2. Procesar las notas si vienen en el request

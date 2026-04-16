@@ -127,7 +127,7 @@ Route::prefix('portal')->name('portal.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/login',   [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login',  [LoginController::class, 'login']);
+Route::post('/login',  [LoginController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 /*
@@ -146,7 +146,7 @@ Route::view('/password/recuperar',          'recuperarcontrasenia.recuperar_cont
 | RUTAS PRIVADAS (AUTH)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'forzar.contrasenia'])->group(function () {
 
     // Dashboard con redirección por rol
     Route::get('/dashboard', function () {
@@ -436,9 +436,6 @@ Route::middleware(['auth'])->group(function () {
 
 // El resource debe ir después
         Route::resource('estudiantes', EstudianteController::class);
-        Route::get('/cambiarcontrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
-        Route::put('/cambiarcontrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
-
         Route::get('/administradores/permisos',         [SuperAdminController::class, 'permisosRoles'])->name('administradores.permisos');
         Route::get('/administradores/permisos-roles',   [SuperAdminController::class, 'permisosRoles'])->name('administradores.permisos-roles');
         Route::put('/administradores/permisos/guardar', [SuperAdminController::class, 'actualizarPermisos'])->name('administradores.permisos.update');
@@ -529,8 +526,6 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('profesor')->name('profesor.')->group(function () {
         Route::get('/dashboard', [ProfesorDashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/cambiar-contrasenia', [CambiarContraseniaController::class, 'edit'])->name('cambiarcontrasenia.edit');
-        Route::put('/cambiar-contrasenia', [CambiarContraseniaController::class, 'update'])->name('cambiarcontrasenia.update');
         Route::get('/mi-horario',          [HorarioController::class, 'miHorarioProfesor'])->name('miHorario');
         Route::get('/notificaciones',      [NotificacionPreferenciaController::class, 'indexProfesor'])->name('notificaciones.index');
 
@@ -583,6 +578,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Ruta para que los padres vean las calificaciones de sus hijos
         Route::get('/calificaciones', [PadreDashboardController::class, 'calificaciones'])->name('calificaciones');
+
+        // Ruta para que los padres vean el horario de un hijo específico
+        Route::get('/horario/{estudianteId}', [PadreDashboardController::class, 'horarioHijo'])->name('horario');
     });
 
     /*

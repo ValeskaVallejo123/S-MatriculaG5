@@ -58,53 +58,36 @@
 .creds-alert strong { color: #92400e; font-size: .85rem; }
 .creds-alert p { margin: .2rem 0 0; font-size: .8rem; color: #64748b; }
 
-/* Hijos grid */
-.hijos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem; margin-bottom: 1.5rem;
+/* Hijos list */
+.hijos-list {
+    display: flex; flex-direction: column;
+    gap: .6rem; margin-bottom: 1.5rem;
 }
-
-/* Hijo card */
-.hijo-card {
-    background: white; border-radius: 12px;
+.hijo-row {
+    background: white; border-radius: 10px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 12px rgba(0,59,115,.07);
-    overflow: hidden; transition: box-shadow .2s, transform .2s;
+    box-shadow: 0 1px 6px rgba(0,59,115,.06);
+    display: flex; align-items: center; gap: .9rem;
+    padding: .75rem 1rem;
+    transition: box-shadow .15s, transform .15s;
 }
-.hijo-card:hover { box-shadow: 0 6px 20px rgba(78,199,210,.15); transform: translateY(-2px); }
-.hijo-header {
-    background: #003b73; padding: 1rem 1.1rem;
-    display: flex; align-items: center; gap: .75rem;
-}
+.hijo-row:hover { box-shadow: 0 4px 14px rgba(78,199,210,.15); transform: translateY(-1px); }
 .hijo-avatar {
-    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-    background: rgba(255,255,255,.15); border: 2px solid rgba(78,199,210,.6);
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, #003b73, #00508f);
+    border: 2px solid rgba(78,199,210,.5);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; font-weight: 800; color: white; overflow: hidden;
+    font-size: .9rem; font-weight: 800; color: white; overflow: hidden;
 }
 .hijo-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.hijo-nombre { font-size: .88rem; font-weight: 700; color: white; margin: 0 0 .2rem; }
-.hijo-grado  { font-size: .72rem; color: rgba(255,255,255,.7); margin: 0; }
-.hijo-body { padding: .9rem 1.1rem; }
-.info-row {
-    display: flex; align-items: center; gap: .5rem;
-    padding: .45rem 0; border-bottom: 1px solid #f8fafc;
-    font-size: .81rem;
-}
-.info-row:last-child { border-bottom: none; }
-.info-row i { color: #4ec7d2; width: 14px; text-align: center; flex-shrink: 0; }
-.info-row .lbl { color: #94a3b8; font-weight: 600; min-width: 90px; }
-.info-row .val { color: #0f172a; font-weight: 500; }
-.info-row .val.mono { font-family: monospace; color: #00508f; }
-.hijo-footer {
-    padding: .75rem 1.1rem; background: #f9fbfd;
-    border-top: 1px solid #e2e8f0;
-}
+.hijo-info { flex: 1; min-width: 0; }
+.hijo-nombre { font-size: .88rem; font-weight: 700; color: #003b73; margin: 0 0 .1rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hijo-grado  { font-size: .72rem; color: #94a3b8; margin: 0; }
 .hijo-btn {
-    display: flex; align-items: center; justify-content: center; gap: .4rem;
-    padding: .45rem .9rem; border-radius: 8px;
-    font-size: .78rem; font-weight: 700; text-decoration: none;
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .4rem .9rem; border-radius: 8px; flex-shrink: 0;
+    font-size: .77rem; font-weight: 700; text-decoration: none;
     background: linear-gradient(135deg, #4ec7d2, #00508f);
     color: white; transition: opacity .15s;
 }
@@ -239,13 +222,12 @@
 
 /* Dark mode */
 body.dark-mode .pd-wrap { background: #0f172a; }
-body.dark-mode .hijo-card,
+body.dark-mode .hijo-row,
 body.dark-mode .hist-card,
 body.dark-mode .pd-info-card { background: #1e293b; border-color: #334155; }
-body.dark-mode .hijo-body,
-body.dark-mode .hijo-footer,
+body.dark-mode .hijo-nombre { color: #93c5fd; }
+body.dark-mode .hijo-grado  { color: #64748b; }
 body.dark-mode .pd-info-body { background: #1e293b; }
-body.dark-mode .info-row .val { color: #cbd5e1; }
 body.dark-mode .hist-table thead th { background: #1e293b; }
 body.dark-mode .hist-table tbody td { color: #cbd5e1; border-color: #334155; }
 body.dark-mode .pf-box { background: #0f172a; }
@@ -307,67 +289,27 @@ body.dark-mode .pw-input { background: #0f172a; border-color: #334155; color: #c
         </div>
 
         @if($matriculas->count() > 0)
-            <div class="hijos-grid">
+            <div class="hijos-list">
                 @foreach($matriculas as $matricula)
                     @php $estudiante = $matricula->estudiante; @endphp
-                    <div class="hijo-card">
-                        <div class="hijo-header">
-                            <div class="hijo-avatar">
-                                @if($estudiante->foto)
-                                    <img src="{{ asset('storage/' . $estudiante->foto) }}" alt="{{ $estudiante->nombre1 }}">
-                                @else
-                                    {{ strtoupper(substr($estudiante->nombre1, 0, 1) . substr($estudiante->apellido1, 0, 1)) }}
-                                @endif
-                            </div>
-                            <div style="flex:1;">
-                                <p class="hijo-nombre">{{ $estudiante->nombre1 }} {{ $estudiante->nombre2 }} {{ $estudiante->apellido1 }} {{ $estudiante->apellido2 }}</p>
-                                <p class="hijo-grado">
-                                    <i class="fas fa-graduation-cap" style="margin-right:.3rem;"></i>
-                                    {{ $estudiante->grado }} — Sección {{ $estudiante->seccion }}
-                                </p>
-                            </div>
-                            <span class="bpill b-active">
-                                <i class="fas fa-circle" style="font-size:.4rem;"></i> Activo
-                            </span>
-                        </div>
-                        <div class="hijo-body">
-                            <div class="info-row">
-                                <i class="fas fa-id-card"></i>
-                                <span class="lbl">DNI</span>
-                                <span class="val mono">{{ $estudiante->dni ?: '—' }}</span>
-                            </div>
-                            <div class="info-row">
-                                <i class="fas fa-birthday-cake"></i>
-                                <span class="lbl">Nacimiento</span>
-                                <span class="val">
-                                    {{ $estudiante->fecha_nacimiento
-                                        ? \Carbon\Carbon::parse($estudiante->fecha_nacimiento)->format('d/m/Y')
-                                        : 'No registrado' }}
-                                </span>
-                            </div>
-                            <div class="info-row">
-                                <i class="fas fa-barcode"></i>
-                                <span class="lbl">Matrícula</span>
-                                <span class="val mono">{{ $matricula->codigo_matricula }}</span>
-                            </div>
-                            <div class="info-row">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span class="lbl">Año lectivo</span>
-                                <span class="val">{{ $matricula->anio_lectivo }}</span>
-                            </div>
-                            @if($estudiante->email)
-                                <div class="info-row">
-                                    <i class="fas fa-envelope"></i>
-                                    <span class="lbl">Email</span>
-                                    <span class="val">{{ $estudiante->email }}</span>
-                                </div>
+                    <div class="hijo-row">
+                        <div class="hijo-avatar">
+                            @if($estudiante->foto)
+                                <img src="{{ asset('storage/' . $estudiante->foto) }}" alt="{{ $estudiante->nombre1 }}">
+                            @else
+                                {{ strtoupper(substr($estudiante->nombre1, 0, 1) . substr($estudiante->apellido1, 0, 1)) }}
                             @endif
                         </div>
-                        <div class="hijo-footer">
-                            <a href="{{ route('padre.hijo', $estudiante->id) }}" class="hijo-btn">
-                                <i class="fas fa-eye"></i> Ver Detalles
-                            </a>
+                        <div class="hijo-info">
+                            <p class="hijo-nombre">{{ $estudiante->nombre1 }} {{ $estudiante->nombre2 }} {{ $estudiante->apellido1 }} {{ $estudiante->apellido2 }}</p>
+                            <p class="hijo-grado">
+                                <i class="fas fa-graduation-cap" style="margin-right:.25rem;"></i>
+                                {{ $estudiante->grado }} — Sección {{ $estudiante->seccion }}
+                            </p>
                         </div>
+                        <a href="{{ route('padre.hijo', $estudiante->id) }}" class="hijo-btn">
+                            <i class="fas fa-eye"></i> Ver Detalles
+                        </a>
                     </div>
                 @endforeach
             </div>
