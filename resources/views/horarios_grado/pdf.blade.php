@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Horario {{ $grado->numero }}°{{ $grado->seccion }}</title>
+<title>Horario {{ $grado->nombre_completo }}</title>
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -11,56 +11,108 @@
         font-size: 11px;
         background: white;
         color: #1e293b;
-        width: 680px;
-        margin: 60px auto;
+        width: 700px;
+        margin: 40px auto;
     }
 
     /* ══════════════════════════════
-       HEADER — solo badges centrados
+       BANNER INSTITUCIONAL
        ══════════════════════════════ */
-    .header {
-        background: #00508f;
-        border-radius: 12px 12px 0 0;
-        padding: 12px 20px;
-        text-align: center;
+    .inst-banner {
+        background: #003b73;
+        border-radius: 10px 10px 0 0;
+        padding: 18px 24px 14px;
+        display: table;
+        width: 100%;
     }
 
-    .badge {
-        display: inline-block;
-        padding: 3px 12px;
-        border-radius: 999px;
-        font-size: 9px;
+    .inst-banner-left {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    .inst-banner-name {
+        font-size: 17px;
         font-weight: 700;
-        border: 1px solid rgba(255,255,255,.35);
-        background: rgba(255,255,255,.15);
-        color: white;
-        margin: 0 3px;
+        color: #ffffff;
+        letter-spacing: .01em;
+    }
+
+    .inst-banner-sub {
+        font-size: 9px;
+        color: #4ec7d2;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        margin-top: 4px;
+    }
+
+    .inst-banner-right {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: right;
+        font-size: 8px;
+        color: rgba(255,255,255,.7);
+        white-space: nowrap;
+    }
+
+    .inst-banner-right strong {
+        color: #ffffff;
+        font-size: 9px;
     }
 
     /* ══════════════════════════════
-       BODY WRAPPER
+       CARD DE DATOS DEL GRADO
        ══════════════════════════════ */
-    .body-wrapper {
-        background: white;
-        border: 1px solid #e8edf4;
+    .grado-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
         border-top: none;
-        border-radius: 0 0 12px 12px;
-        padding: 16px 18px 0;
+        border-bottom: 3px solid #4ec7d2;
+        padding: 12px 24px;
+        margin-bottom: 18px;
+        display: table;
+        width: 100%;
+    }
+
+    .grado-card-inner {
+        display: table-row;
+    }
+
+    .grado-cell {
+        display: table-cell;
+        vertical-align: middle;
+        padding-right: 32px;
+    }
+
+    .grado-label {
+        font-size: 7px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #94a3b8;
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .grado-value {
+        font-size: 12px;
+        font-weight: 800;
+        color: #003b73;
     }
 
     /* ══════════════════════════════
-       TÍTULO PRINCIPAL — centrado
+       TÍTULO DE SECCIÓN
        ══════════════════════════════ */
     .sec-title {
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .09em;
         color: #00508f;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid rgba(78,199,210,.25);
-        text-align: center;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid rgba(78,199,210,.30);
     }
 
     /* ══════════════════════════════
@@ -78,21 +130,20 @@
         letter-spacing: .08em;
         color: #6b7a90;
         background: #f5f8fc;
-        padding: 7px 8px;
-        border: 1px solid #e8edf4;
+        padding: 8px 6px;
+        border: 1px solid #e2e8f0;
         text-align: center;
     }
 
     thead th.th-hora {
         background: #eaf2f8;
         color: #003b73;
-        text-align: center;
-        width: 95px;
+        width: 90px;
     }
 
     tbody td {
-        border: 1px solid #e8edf4;
-        padding: 6px 8px;
+        border: 1px solid #e2e8f0;
+        padding: 6px 7px;
         vertical-align: middle;
         text-align: center;
     }
@@ -132,6 +183,34 @@
         font-size: 9px;
     }
 
+    /* ── Fila de RECREO ── */
+    .tr-recreo td {
+        background: #e8f4fb;
+        border: 1px solid #b8d9ee;
+    }
+
+    .td-recreo-label {
+        font-size: 9px;
+        font-weight: 700;
+        color: #00508f;
+        text-transform: uppercase;
+        letter-spacing: .35em;
+        text-align: center;
+    }
+
+    .td-recreo-hora {
+        font-size: 8px;
+        font-weight: 700;
+        color: #00508f;
+        background: #d0e9f7;
+        text-align: center;
+        white-space: nowrap;
+        border: 1px solid #b8d9ee;
+    }
+
+    tbody tr:nth-child(even) td:not(.td-recreo-label):not(.td-recreo-hora)         { background: #fafcff; }
+    tbody tr:nth-child(even) td.td-hora { background: #edf4fb; }
+
     /* ══════════════════════════════
        EMPTY STATE
        ══════════════════════════════ */
@@ -143,70 +222,135 @@
     }
 
     /* ══════════════════════════════
+       FIRMAS
+       ══════════════════════════════ */
+    .firmas {
+        display: table;
+        width: 100%;
+        margin-top: 36px;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 16px;
+    }
+
+    .firma-cell {
+        display: table-cell;
+        text-align: center;
+        width: 33.33%;
+        padding: 0 12px;
+    }
+
+    .firma-linea {
+        border-top: 1px solid #003b73;
+        margin-bottom: 5px;
+        margin-top: 28px;
+    }
+
+    .firma-cargo {
+        font-size: 8px;
+        font-weight: 700;
+        color: #003b73;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .firma-sub {
+        font-size: 7px;
+        color: #94a3b8;
+        margin-top: 2px;
+    }
+
+    /* ══════════════════════════════
        FOOTER
        ══════════════════════════════ */
     .footer {
         display: table;
         width: 100%;
-        padding: 8px 18px;
-        background: #f5f8fc;
-        border-top: 1px solid #e8edf4;
-        border-radius: 0 0 12px 12px;
-        font-size: 8px;
+        padding: 8px 0;
+        border-top: 1px solid #e2e8f0;
+        margin-top: 20px;
+        font-size: 7.5px;
         color: #94a3b8;
-        margin-top: 12px;
     }
 
     .footer-left  { display: table-cell; text-align: left; }
     .footer-right { display: table-cell; text-align: right; }
 
     .accent { color: #4ec7d2; }
-
-    tbody tr:nth-child(even) td         { background: #fafcff; }
-    tbody tr:nth-child(even) td.td-hora { background: #edf4fb; }
 </style>
 </head>
 <body>
 
-{{-- ── HEADER — solo badges centrados ── --}}
-<div class="header">
-    <span class="badge">
-        @if($jornada === 'matutina') ☀ @else ☾ @endif
-        Jornada {{ ucfirst($jornada) }}
-    </span>
-    <span class="badge">{{ $grado->anio_lectivo }}</span>
+{{-- ══ BANNER INSTITUCIONAL ══ --}}
+<div class="inst-banner">
+    <div class="inst-banner-left">
+        <div class="inst-banner-name">Escuela Gabriela Mistral</div>
+        <div class="inst-banner-sub">Horario de Clases &mdash; Documento Oficial</div>
+    </div>
+    <div class="inst-banner-right">
+        <div>Fecha de emisión: <strong>{{ \Carbon\Carbon::now()->format('d/m/Y') }}</strong></div>
+        <div style="margin-top:3px;">Documento de uso institucional</div>
+    </div>
 </div>
 
-{{-- ── BODY ── --}}
-<div class="body-wrapper">
-
-    {{-- Título principal centrado (reemplaza al nombre del grado) --}}
-    <div class="sec-title">Distribución de Clases</div>
-
-    @if(!$horarioGrado || empty($horarioGrado->horario))
-
-        <div class="empty-state">
-            No hay horario registrado para esta jornada.
+{{-- ══ DATOS DEL GRADO ══ --}}
+<div class="grado-card">
+    <div class="grado-card-inner">
+        <div class="grado-cell">
+            <span class="grado-label">Grado</span>
+            <span class="grado-value">{{ $grado->nombre_completo }}</span>
         </div>
+        <div class="grado-cell">
+            <span class="grado-label">Nivel</span>
+            <span class="grado-value">{{ ucfirst($grado->nivel) }}</span>
+        </div>
+        <div class="grado-cell">
+            <span class="grado-label">Jornada</span>
+            <span class="grado-value">{{ ucfirst($jornada) }}</span>
+        </div>
+        <div class="grado-cell">
+            <span class="grado-label">Año Lectivo</span>
+            <span class="grado-value">{{ $grado->anio_lectivo }}</span>
+        </div>
+    </div>
+</div>
 
-    @else
-        @php
-            $estructura = $horarioGrado->horario;
-            $dias       = array_keys($estructura);
-            $horas      = array_keys(reset($estructura));
-        @endphp
+{{-- ══ TABLA DE HORARIO ══ --}}
+<div class="sec-title">Distribución de Clases</div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th class="th-hora">Hora</th>
-                    @foreach($dias as $dia)
-                        <th>{{ $dia }}</th>
-                    @endforeach
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($horas as $hora)
+@if(!$horarioGrado || empty($horarioGrado->horario))
+
+    <div class="empty-state">
+        No hay horario registrado para esta jornada.
+    </div>
+
+@else
+    @php
+        $estructura = $horarioGrado->horario;
+        $dias       = array_keys($estructura);
+        $horas      = array_keys(reset($estructura));
+        $totalCols  = count($dias) + 1; // +1 por columna Hora
+    @endphp
+
+    <table>
+        <thead>
+            <tr>
+                <th class="th-hora">Hora</th>
+                @foreach($dias as $dia)
+                    <th>{{ $dia }}</th>
+                @endforeach
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($horas as $hora)
+                @if(str_contains($hora, 'RECREO'))
+                    {{-- Fila especial de recreo --}}
+                    <tr class="tr-recreo">
+                        <td class="td-recreo-hora">{{ $hora }}</td>
+                        <td class="td-recreo-label" colspan="{{ count($dias) }}">
+                            R E C R E O
+                        </td>
+                    </tr>
+                @else
                     <tr>
                         <td class="td-hora">{{ $hora }}</td>
 
@@ -229,22 +373,40 @@
                             </td>
                         @endforeach
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                @endif
+            @endforeach
+        </tbody>
+    </table>
 
-    @endif
+@endif
 
-</div>{{-- fin body-wrapper --}}
+{{-- ══ ÁREA DE FIRMAS ══ --}}
+<div class="firmas">
+    <div class="firma-cell">
+        <div class="firma-linea"></div>
+        <div class="firma-cargo">Director(a)</div>
+        <div class="firma-sub">Firma y sello</div>
+    </div>
+    <div class="firma-cell">
+        <div class="firma-linea"></div>
+        <div class="firma-cargo">Secretaria</div>
+        <div class="firma-sub">Firma y sello</div>
+    </div>
+    <div class="firma-cell">
+        <div class="firma-linea"></div>
+        <div class="firma-cargo">Docente responsable</div>
+        <div class="firma-sub">Firma</div>
+    </div>
+</div>
 
-{{-- ── FOOTER ── --}}
+{{-- ══ FOOTER ══ --}}
 <div class="footer">
     <div class="footer-left">
         <span class="accent">&#9432;</span>
-        Horario de {{ $grado->numero }}° {{ $grado->seccion }} · Jornada {{ ucfirst($jornada) }}
+        Horario oficial &mdash; {{ $grado->nombre_completo }} &middot; Jornada {{ ucfirst($jornada) }}
     </div>
     <div class="footer-right">
-        Año lectivo {{ $grado->anio_lectivo }}
+        Escuela Gabriela Mistral &middot; {{ \Carbon\Carbon::now()->format('d/m/Y') }}
     </div>
 </div>
 

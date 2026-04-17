@@ -188,9 +188,7 @@ body.dark-mode .rc-label { color: #94a3b8; }
                         @foreach($grados as $grado)
                             <option value="{{ $grado->id }}"
                                 {{ request('grado_id') == $grado->id ? 'selected' : '' }}>
-                                {{ $grado->numero }}° {{ ucfirst($grado->nivel) }}
-                                — Sección {{ $grado->seccion }}
-                                ({{ $grado->anio_lectivo }})
+                                {{ $grado->nombre_completo }} ({{ $grado->anio_lectivo }})
                             </option>
                         @endforeach
                     </select>

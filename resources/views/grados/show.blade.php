@@ -213,10 +213,7 @@
                     <i class="fas fa-graduation-cap"></i>
                 </div>
                 <div>
-                    <h2>
-                        {{ $grado->numero }}° Grado
-                        @if($grado->seccion) — Sección {{ $grado->seccion }} @endif
-                    </h2>
+                    <h2>{{ $grado->nombre_completo }}</h2>
                     <span class="gs-badge"><i class="fas fa-layer-group"></i> {{ $grado->nivel }}</span>
                     <span class="gs-badge"><i class="fas fa-calendar"></i> {{ $grado->anio_lectivo }}</span>
                     <span class="gs-badge"><i class="fas fa-book"></i> {{ $grado->materias->count() }} materias</span>
@@ -256,8 +253,8 @@
 
                 <div class="gs-grado-titulo">
                     <i class="fas fa-school"></i>
-                    {{ $grado->numero }}° Grado
-                    @if($grado->seccion)<span>Sección {{ $grado->seccion }}</span>@endif
+                    {{ $grado->nombre }}
+                    @if($grado->seccion)<span>— Sección {{ $grado->seccion }}</span>@endif
                 </div>
 
                 <div class="gs-info-grid">

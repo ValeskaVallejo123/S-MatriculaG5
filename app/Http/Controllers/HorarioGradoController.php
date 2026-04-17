@@ -42,8 +42,8 @@ class HorarioGradoController extends Controller
           $horarioGrado->horario = $horarioOrdenado;
        }
 
-        $materias = Materia::orderBy('nombre')->get();
-        $profesores = Profesor::orderBy('nombre')->get();
+        $materias   = $grado->materias()->orderBy('nombre')->get();
+        $profesores = Profesor::orderBy('nombre')->get()->unique('nombre')->values();
 
         return view('horarios_grado.show', compact(
             'grado',
@@ -75,8 +75,8 @@ class HorarioGradoController extends Controller
          $horarioGrado->horario = $horarioOrdenado;
         }
 
-        $materias = Materia::orderBy('nombre')->get();
-        $profesores = Profesor::orderBy('nombre')->get();
+        $materias   = $grado->materias()->orderBy('nombre')->get();
+        $profesores = Profesor::orderBy('nombre')->get()->unique('nombre')->values();
 
         return view('horarios_grado.edit', compact(
             'grado',
@@ -179,8 +179,8 @@ class HorarioGradoController extends Controller
         ->where('jornada', $jornada)
         ->firstOrFail();
 
-    $materias   = \App\Models\Materia::orderBy('nombre')->get();
-    $profesores = \App\Models\Profesor::orderBy('nombre')->get();
+    $materias   = $grado->materias()->orderBy('nombre')->get();
+    $profesores = \App\Models\Profesor::orderBy('nombre')->get()->unique('nombre')->values();
 
     $pdf = Pdf::loadView('horarios_grado.pdf', compact(
         'grado',

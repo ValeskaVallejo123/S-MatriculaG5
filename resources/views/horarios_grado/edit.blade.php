@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', "Editar Horario {$grado->numero}°{$grado->seccion}")
-@section('page-title', "Editar Horario — {$grado->numero}°{$grado->seccion}")
+@section('title', "Editar Horario — {$grado->nombre_completo}")
+@section('page-title', "Editar Horario — {$grado->nombre_completo}")
 
 @section('topbar-actions')
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -209,7 +209,7 @@
             <div>
                 <h2 style="font-size:1.45rem;font-weight:800;color:white;
                            margin:0 0 .5rem;text-shadow:0 1px 4px rgba(0,0,0,.2);">
-                    Editar Horario — {{ $grado->numero }}° {{ $grado->seccion }}
+                    Editar Horario — {{ $grado->nombre_completo }}
                 </h2>
                 <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
                     <span class="jornada-badge">
@@ -364,7 +364,7 @@
             </span>
             <span>
                 <i class="fas fa-calendar me-1" style="color:#4ec7d2;"></i>
-                {{ $grado->numero }}° {{ $grado->seccion }} · {{ ucfirst($jornada) }} · {{ $grado->anio_lectivo }}
+                {{ $grado->nombre_completo }} · {{ ucfirst($jornada) }} · {{ $grado->anio_lectivo }}
             </span>
         </div>
 

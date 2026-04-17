@@ -171,7 +171,7 @@ body.dark-mode .mc-est-count { color: #cbd5e1; }
                     <div class="mc-card">
                         <div class="mc-card-top">
                             <div class="mc-card-nivel">{{ $grado->nivel }}</div>
-                            <div class="mc-card-grado">{{ $grado->numero }}° Grado</div>
+                            <div class="mc-card-grado">{{ $grado->nombre }}</div>
                             <span class="mc-card-seccion">
                                 <i class="fas fa-layer-group" style="font-size:.55rem;"></i>
                                 Sección {{ $grado->seccion }}

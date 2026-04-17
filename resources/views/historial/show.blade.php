@@ -11,14 +11,68 @@
     .sidebar       { display: none !important; }
     @endif
 
+    /* ── Solo visible al imprimir ── */
+    .print-only { display: none; }
+
     /* Impresión */
     @media print {
-        .no-print, .sidebar, .topbar, .btn-toggle-dark, .btn-logout { display: none !important; }
+        @page { margin: 1.2cm 1.5cm; size: A4; }
+
+        /* Ocultar elementos de pantalla */
+        .no-print, .sidebar, .topbar, .btn-toggle-dark,
+        .btn-logout, .hist-hero, .alert { display: none !important; }
+
+        /* Layout limpio */
         .main-content  { margin-left: 0 !important; width: 100% !important; }
         .content-wrapper { padding: 0 !important; }
-        body { background: white !important; }
-        .hist-card { box-shadow: none !important; }
-        @page { margin: 1cm; }
+        body { background: white !important; font-size: 11pt !important; }
+
+        /* Mostrar encabezado de impresión */
+        .print-only { display: block !important; }
+
+        /* Quitar sombras y bordes decorativos */
+        .hist-card, .hist-stat, .hist-ciclo {
+            box-shadow: none !important;
+            border: 1px solid #ccc !important;
+        }
+
+        /* Stats en fila horizontal */
+        .hist-stats {
+            display: flex !important;
+            gap: 0 !important;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .hist-stat {
+            flex: 1; border: none !important;
+            border-right: 1px solid #ccc !important;
+            border-radius: 0 !important;
+            padding: 0.6rem 1rem !important;
+        }
+        .hist-stat:last-child { border-right: none !important; }
+        .hist-stat-val { font-size: 1.4rem !important; }
+
+        /* Tabla limpia para impresión */
+        .hist-card-head {
+            background: #003b73 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .hist-ciclo-head {
+            background: #f1f5f9 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .hist-table th { font-size: 7.5pt !important; }
+        .hist-table td { font-size: 9pt !important; padding: 0.45rem 0.75rem !important; }
+
+        /* Evitar cortes en ciclos */
+        .hist-ciclo { page-break-inside: avoid; }
+
+        /* Firma al fondo */
+        .print-firma { display: block !important; }
     }
 
     /* ── Layout general ── */
@@ -171,6 +225,46 @@
 
 <div class="hist-wrap">
 
+    {{-- ══ ENCABEZADO SOLO IMPRESIÓN ══ --}}
+    <div class="print-only" style="margin-bottom:1.25rem;">
+        {{-- Cabecera institucional --}}
+        <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid #003b73; padding-bottom:0.75rem; margin-bottom:0.75rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="width:52px;height:52px;background:#003b73;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                    <span style="color:#4ec7d2;font-size:1.4rem;">🎓</span>
+                </div>
+                <div>
+                    <div style="font-size:14pt;font-weight:800;color:#003b73;line-height:1.1;">Escuela Gabriela Mistral</div>
+                    <div style="font-size:8pt;color:#00508f;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Historial Académico Oficial</div>
+                </div>
+            </div>
+            <div style="text-align:right;font-size:8pt;color:#64748b;">
+                <div>Fecha de emisión: <strong>{{ date('d/m/Y') }}</strong></div>
+                <div>Documento de uso institucional</div>
+            </div>
+        </div>
+
+        {{-- Datos del estudiante --}}
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #4ec7d2;border-radius:8px;padding:0.75rem 1.25rem;display:flex;gap:2.5rem;flex-wrap:wrap;">
+            <div>
+                <div style="font-size:7.5pt;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;">Estudiante</div>
+                <div style="font-size:12pt;font-weight:800;color:#003b73;">{{ $estudiante->nombre1 }} {{ $estudiante->nombre2 }} {{ $estudiante->apellido1 }} {{ $estudiante->apellido2 }}</div>
+            </div>
+            <div>
+                <div style="font-size:7.5pt;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;">DNI</div>
+                <div style="font-size:11pt;font-weight:700;color:#003b73;">{{ $estudiante->dni }}</div>
+            </div>
+            <div>
+                <div style="font-size:7.5pt;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;">Grado</div>
+                <div style="font-size:11pt;font-weight:700;color:#003b73;">{{ $estudiante->grado ?? 'N/A' }}</div>
+            </div>
+            <div>
+                <div style="font-size:7.5pt;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;">Sección</div>
+                <div style="font-size:11pt;font-weight:700;color:#003b73;">{{ $estudiante->seccion ?? 'N/A' }}</div>
+            </div>
+        </div>
+    </div>
+
     {{-- ══ Encabezado hero ══ --}}
     <div class="hist-hero no-print" style="padding-bottom:1.75rem;">
         <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;">
@@ -294,6 +388,33 @@
         <div class="hist-foot">
             <span>Generado el: {{ date('d/m/Y h:i A') }}</span>
             <strong>Escuela Gabriela Mistral</strong>
+        </div>
+    </div>
+
+    {{-- ══ ÁREA DE FIRMAS — solo impresión ══ --}}
+    <div class="print-only print-firma" style="margin-top:2.5rem;page-break-inside:avoid;">
+        <div style="display:flex;justify-content:space-around;gap:2rem;flex-wrap:wrap;">
+            <div style="text-align:center;flex:1;min-width:160px;">
+                <div style="border-top:1.5px solid #003b73;padding-top:0.5rem;margin-top:2.5rem;">
+                    <div style="font-size:9pt;font-weight:700;color:#003b73;">Director(a)</div>
+                    <div style="font-size:7.5pt;color:#64748b;">Escuela Gabriela Mistral</div>
+                </div>
+            </div>
+            <div style="text-align:center;flex:1;min-width:160px;">
+                <div style="border-top:1.5px solid #003b73;padding-top:0.5rem;margin-top:2.5rem;">
+                    <div style="font-size:9pt;font-weight:700;color:#003b73;">Secretaria Académica</div>
+                    <div style="font-size:7.5pt;color:#64748b;">Departamento de Registros</div>
+                </div>
+            </div>
+            <div style="text-align:center;flex:1;min-width:160px;">
+                <div style="border-top:1.5px solid #003b73;padding-top:0.5rem;margin-top:2.5rem;">
+                    <div style="font-size:9pt;font-weight:700;color:#003b73;">Recibido por</div>
+                    <div style="font-size:7.5pt;color:#64748b;">Padre / Tutor / Estudiante</div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:1.5rem;font-size:7.5pt;color:#94a3b8;border-top:1px dashed #e2e8f0;padding-top:0.75rem;">
+            Este documento es válido únicamente con sellos y firmas originales de la institución. — Escuela Gabriela Mistral · {{ date('Y') }}
         </div>
     </div>
 

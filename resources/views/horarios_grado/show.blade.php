@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', "Horario {$grado->numero}°{$grado->seccion}")
-@section('page-title', "Horario — {$grado->numero}°{$grado->seccion}")
+@section('title', "Horario — {$grado->nombre_completo}")
+@section('page-title', "Horario — {$grado->nombre_completo}")
 
 @section('topbar-actions')
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -153,7 +153,7 @@
             <div>
                 <h2 style="font-size:1.45rem;font-weight:800;color:white;
                            margin:0 0 .5rem;text-shadow:0 1px 4px rgba(0,0,0,.2);">
-                    {{ $grado->numero }}° {{ $grado->seccion }}
+                    {{ $grado->nombre_completo }}
                     — {{ ucfirst($grado->nivel) }}
                 </h2>
                 <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -277,7 +277,7 @@
                     font-size:.72rem;color:#94a3b8;">
             <span>
                 <i class="fas fa-info-circle me-1" style="color:#4ec7d2;"></i>
-                Horario de {{ $grado->numero }}° {{ $grado->seccion }}
+                Horario de {{ $grado->nombre_completo }}
                 · Jornada {{ ucfirst($jornada) }}
             </span>
             <span>

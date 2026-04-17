@@ -150,7 +150,7 @@ body.dark-mode .pc-tbl tbody tr { border-color: #334155; }
                     <div class="pc-group-header">
                         <div class="pc-group-title">
                             <i class="fas fa-school"></i>
-                            {{ $grado->numero ?? '' }}° Grado — Sección {{ $seccion }}
+                            {{ $grado->nombre ?? '' }} — Sección {{ $seccion }}
                             &nbsp;·&nbsp; {{ ucfirst($grado->nivel ?? '') }}
                         </div>
                         <span class="pc-count-badge">
@@ -175,7 +175,7 @@ body.dark-mode .pc-tbl tbody tr { border-color: #334155; }
                                             {{ $asignacion->materia->nombre ?? 'Materia' }}
                                         </td>
                                         <td style="color:#64748b;font-size:.82rem;">
-                                            {{ $grado->numero ?? '' }}° Grado · Sección {{ $seccion }}
+                                            {{ $grado->nombre ?? '' }} · Sección {{ $seccion }}
                                         </td>
                                         <td style="text-align:center;">
                                             <a href="{{ route('profesor.calificaciones.listar', [

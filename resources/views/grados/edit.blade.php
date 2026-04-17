@@ -11,7 +11,7 @@
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.2rem;">
             <h5 class="mb-0 fw-bold">
-                <i class="fas fa-edit"></i> Editar Grado: {{ $grado->numero }}° {{ $grado->seccion ? 'Sección ' . $grado->seccion : '' }}
+                <i class="fas fa-edit"></i> Editar Grado: {{ $grado->nombre_completo }}
             </h5>
         </div>
         <div class="card-body p-4">
@@ -54,15 +54,15 @@
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar grado...</option>
-                            <option value="1" {{ old('numero', $grado->numero) == 1 ? 'selected' : '' }}>1° Grado</option>
-                            <option value="2" {{ old('numero', $grado->numero) == 2 ? 'selected' : '' }}>2° Grado</option>
-                            <option value="3" {{ old('numero', $grado->numero) == 3 ? 'selected' : '' }}>3° Grado</option>
-                            <option value="4" {{ old('numero', $grado->numero) == 4 ? 'selected' : '' }}>4° Grado</option>
-                            <option value="5" {{ old('numero', $grado->numero) == 5 ? 'selected' : '' }}>5° Grado</option>
-                            <option value="6" {{ old('numero', $grado->numero) == 6 ? 'selected' : '' }}>6° Grado</option>
-                            <option value="7" {{ old('numero', $grado->numero) == 7 ? 'selected' : '' }}>7° Grado</option>
-                            <option value="8" {{ old('numero', $grado->numero) == 8 ? 'selected' : '' }}>8° Grado</option>
-                            <option value="9" {{ old('numero', $grado->numero) == 9 ? 'selected' : '' }}>9° Grado</option>
+                            <option value="1" {{ old('numero', $grado->numero) == 1 ? 'selected' : '' }}>Primer Grado</option>
+                            <option value="2" {{ old('numero', $grado->numero) == 2 ? 'selected' : '' }}>Segundo Grado</option>
+                            <option value="3" {{ old('numero', $grado->numero) == 3 ? 'selected' : '' }}>Tercer Grado</option>
+                            <option value="4" {{ old('numero', $grado->numero) == 4 ? 'selected' : '' }}>Cuarto Grado</option>
+                            <option value="5" {{ old('numero', $grado->numero) == 5 ? 'selected' : '' }}>Quinto Grado</option>
+                            <option value="6" {{ old('numero', $grado->numero) == 6 ? 'selected' : '' }}>Sexto Grado</option>
+                            <option value="7" {{ old('numero', $grado->numero) == 7 ? 'selected' : '' }}>Séptimo Grado</option>
+                            <option value="8" {{ old('numero', $grado->numero) == 8 ? 'selected' : '' }}>Octavo Grado</option>
+                            <option value="9" {{ old('numero', $grado->numero) == 9 ? 'selected' : '' }}>Noveno Grado</option>
                         </select>
                         @error('numero')
                             <div class="invalid-feedback">{{ $message }}</div>

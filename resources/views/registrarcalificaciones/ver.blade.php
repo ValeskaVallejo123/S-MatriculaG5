@@ -62,7 +62,7 @@
                             <option value="">Todos los grados</option>
                             @foreach($gradosFiltro as $g)
                                 <option value="{{ $g->id }}" {{ request('grado_id') == $g->id ? 'selected' : '' }}>
-                                    {{ $g->numero }}° {{ ucfirst($g->nivel) }} — Sec. {{ $g->seccion }}
+                                    {{ $g->nombre_completo }}
                                 </option>
                             @endforeach
                         </select>
@@ -108,12 +108,16 @@
                         <thead style="background:#003b73;color:white;">
 
                         <tr>
-                            <th style="min-width:200px;">Estudiante</th>
-                            <th style="min-width:180px;">Grado</th>
-                            <th style="min-width:150px;">Materia</th>
-                            <th style="min-width:170px;">Periodo Académico</th>
-                            <th style="min-width:110px;">Nota</th>
-                            <th style="min-width:200px;">Observación</th>
+                            <th style="min-width:190px;">Estudiante</th>
+                            <th style="min-width:170px;">Grado</th>
+                            <th style="min-width:140px;">Materia</th>
+                            <th style="min-width:150px;">Período</th>
+                            <th style="text-align:center;min-width:75px;">P1</th>
+                            <th style="text-align:center;min-width:75px;">P2</th>
+                            <th style="text-align:center;min-width:75px;">P3</th>
+                            <th style="text-align:center;min-width:75px;">Rec.</th>
+                            <th style="text-align:center;min-width:90px;">Nota Final</th>
+                            <th style="min-width:160px;">Observación</th>
                         </tr>
 
                         </thead>
@@ -133,68 +137,54 @@
 
                                 </td>
 
-                                <td>
+                                <td>{{ $calificacion->grado->nombre_completo ?? '—' }}</td>
 
-                                    {{ $calificacion->grado->numero ?? '' }}°
-                                    {{ ucfirst($calificacion->grado->nivel ?? '') }}
-                                    - Sección {{ $calificacion->grado->seccion ?? '' }}
+                                <td>{{ $calificacion->materia->nombre ?? '—' }}</td>
 
-                                </td>
+                                <td>{{ $calificacion->periodoAcademico->nombre_periodo ?? 'No asignado' }}</td>
 
-                                <td>
+                                @php
+                                    $parciales = [
+                                        $calificacion->primer_parcial,
+                                        $calificacion->segundo_parcial,
+                                        $calificacion->tercer_parcial,
+                                    ];
+                                    $nota = $calificacion->nota;
+                                    $colorNota = $nota === null ? '#94a3b8' : ($nota >= 60 ? '#059669' : '#dc2626');
+                                    $bgNota    = $nota === null ? '#f1f5f9' : ($nota >= 60 ? '#ecfdf5'  : '#fee2e2');
+                                @endphp
 
-                                    {{ $calificacion->materia->nombre ?? '' }}
+                                @foreach($parciales as $p)
+                                    <td style="text-align:center;">
+                                        @if($p !== null)
+                                            <span style="font-weight:700;color:{{ $p >= 60 ? '#059669' : '#dc2626' }};">
+                                                {{ number_format($p, 1) }}
+                                            </span>
+                                        @else
+                                            <span style="color:#cbd5e1;">—</span>
+                                        @endif
+                                    </td>
+                                @endforeach
 
-                                </td>
-
-                                <td>
-
-                                    {{ $calificacion->periodoAcademico->nombre_periodo ?? 'No asignado' }}
-
-                                </td>
-
-                                <td>
-
-                                    @php
-                                        $nota = $calificacion->nota;
-                                    @endphp
-
-                                    @if($nota < 60)
-
-                                        <span class="badge"
-                                              style="background:#ffe6e6;color:#7a1a1a;font-size:0.9rem;padding:6px 10px;">
-
-                                        {{ $nota }}
-
-                                    </span>
-
-                                    @elseif($nota < 80)
-
-                                        <span class="badge"
-                                              style="background:#fff4cc;color:#6a4a00;font-size:0.9rem;padding:6px 10px;">
-
-                                        {{ $nota }}
-
-                                    </span>
-
+                                <td style="text-align:center;">
+                                    @if($calificacion->recuperacion !== null)
+                                        <span style="font-weight:700;color:#d97706;">
+                                            {{ number_format($calificacion->recuperacion, 1) }}
+                                        </span>
                                     @else
-
-                                        <span class="badge"
-                                              style="background:#e6ffef;color:#0f5132;font-size:0.9rem;padding:6px 10px;">
-
-                                        {{ $nota }}
-
-                                    </span>
-
+                                        <span style="color:#cbd5e1;">—</span>
                                     @endif
-
                                 </td>
 
-                                <td>
-
-                                    {{ $calificacion->observacion ?? '-' }}
-
+                                <td style="text-align:center;">
+                                    <span style="display:inline-block;padding:.3rem .7rem;border-radius:999px;
+                                                 font-weight:800;font-size:.9rem;
+                                                 background:{{ $bgNota }};color:{{ $colorNota }};">
+                                        {{ $nota !== null ? number_format($nota, 1) : '—' }}
+                                    </span>
                                 </td>
+
+                                <td style="color:#64748b;font-size:.83rem;">{{ $calificacion->observacion ?? '—' }}</td>
 
                             </tr>
 
@@ -202,7 +192,7 @@
 
                             <tr>
 
-                                <td colspan="6" class="text-center py-4 text-muted">
+                                <td colspan="10" class="text-center py-4 text-muted">
 
                                     <i class="fas fa-info-circle me-2"></i>
                                     No hay calificaciones registradas.

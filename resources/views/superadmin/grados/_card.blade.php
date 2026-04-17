@@ -16,7 +16,7 @@
                 </span>
                 {{-- Número y sección --}}
                 <h5 class="mb-0 fw-800 text-white" style="font-size:1.15rem; font-weight:800; margin-top:.2rem;">
-                    {{ $grado->numero }}° Grado
+                    {{ $grado->nombre }}
                 </h5>
                 <div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
                     @if($grado->seccion)

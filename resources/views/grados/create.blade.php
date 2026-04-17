@@ -63,11 +63,11 @@
                                 style="border:2px solid #bfd9ea; border-radius:8px; padding:0.6rem 1rem;">
                             <option value="">Seleccionar grado...</option>
                             {{-- 1-6 Primaria | 7-9 Secundaria --}}
-                            @for($i = 1; $i <= 9; $i++)
-                                <option value="{{ $i }}" {{ old('numero') == $i ? 'selected' : '' }}>
-                                    {{ $i }}° Grado
+                            @foreach([1=>'Primer Grado',2=>'Segundo Grado',3=>'Tercer Grado',4=>'Cuarto Grado',5=>'Quinto Grado',6=>'Sexto Grado',7=>'Séptimo Grado',8=>'Octavo Grado',9=>'Noveno Grado'] as $num => $nombreGrado)
+                                <option value="{{ $num }}" {{ old('numero') == $num ? 'selected' : '' }}>
+                                    {{ $nombreGrado }}
                                 </option>
-                            @endfor
+                            @endforeach
                         </select>
                         @error('numero')
                             <div class="invalid-feedback">{{ $message }}</div>

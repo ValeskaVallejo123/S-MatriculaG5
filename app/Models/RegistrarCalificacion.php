@@ -18,11 +18,19 @@ class RegistrarCalificacion extends Model
         'estudiante_id',
         'periodo_academico_id',
         'nota',
+        'primer_parcial',
+        'segundo_parcial',
+        'tercer_parcial',
+        'recuperacion',
         'observacion',
     ];
 
     protected $casts = [
-        'nota' => 'float',
+        'nota'           => 'float',
+        'primer_parcial' => 'float',
+        'segundo_parcial'=> 'float',
+        'tercer_parcial' => 'float',
+        'recuperacion'   => 'float',
     ];
 
     public function profesor()

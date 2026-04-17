@@ -65,8 +65,8 @@
 .rc-select:focus { outline: none; border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.2); }
 
 /* Fila de campos */
-.rc-fields { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
-@media(max-width:768px) { .rc-fields { grid-template-columns: 1fr; } }
+.rc-fields { display: flex; gap: 1rem; flex-wrap: wrap; }
+.rc-fields > div { flex: 1; min-width: 200px; }
 
 .rc-field-lbl {
     font-size: .72rem; font-weight: 700; letter-spacing: .06em;
@@ -95,16 +95,27 @@
 .rc-tbl tbody tr:last-child td { border-bottom: none; }
 .rc-tbl tbody tr:hover { background: #fafbfc; }
 
-/* Inputs de nota */
-.nota-input {
-    width: 110px; padding: .4rem .7rem;
-    border: 2px solid #bfd9ea; border-radius: 8px;
-    font-size: .9rem; font-weight: 700;
+/* Input parcial */
+.parcial-input {
+    width: 72px; padding: .35rem .4rem;
+    border: 2px solid #bfd9ea; border-radius: 6px;
+    font-size: .82rem; font-weight: 700;
     text-align: center; transition: border-color .15s, background .15s;
+    display: block; margin: 0 auto;
 }
-.nota-input:focus { outline: none; border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.2); }
-.nota-aprobado  { border-color: #059669 !important; background: #ecfdf5 !important; color: #065f46 !important; }
-.nota-reprobado { border-color: #dc2626 !important; background: #fee2e2 !important; color: #991b1b !important; }
+.parcial-input:focus { outline: none; border-color: #4ec7d2; box-shadow: 0 0 0 2px rgba(78,199,210,.2); }
+.parcial-aprobado  { border-color: #059669 !important; background: #ecfdf5 !important; color: #065f46 !important; }
+.parcial-reprobado { border-color: #dc2626 !important; background: #fee2e2 !important; color: #991b1b !important; }
+.parcial-rec       { border-color: #d97706 !important; background: #fffbeb !important; color: #92400e !important; }
+
+/* Display nota final */
+.nota-final-display {
+    display: inline-block; min-width: 60px; padding: .35rem .6rem;
+    border-radius: 8px; font-size: 1rem; font-weight: 800;
+    text-align: center; background: #f1f5f9; color: #94a3b8;
+}
+.nota-final-aprobado  { background: #ecfdf5 !important; color: #059669 !important; }
+.nota-final-reprobado { background: #fee2e2 !important; color: #dc2626 !important; }
 
 /* Input observación */
 .obs-input {
@@ -114,6 +125,12 @@
     transition: border-color .15s;
 }
 .obs-input:focus { outline: none; border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.15); }
+
+/* Cabecera de parcial */
+.th-parcial {
+    font-size: .67rem !important; letter-spacing: .04em !important;
+    white-space: nowrap;
+}
 
 /* Empty state */
 .rc-empty { padding: 3rem 1rem; text-align: center; }
@@ -148,9 +165,9 @@
 
 /* Tarjeta resumen del grado */
 .rc-resumen-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+    display: flex; gap: 1.25rem; flex-wrap: wrap;
 }
-@media(max-width:640px) { .rc-resumen-grid { grid-template-columns: 1fr; } }
+.rc-resumen-stat { flex: 1; min-width: 180px; }
 
 .rc-resumen-stat {
     display: flex; align-items: center; gap: .75rem;
@@ -235,32 +252,110 @@ body.dark-mode .obs-input { background: #0f172a; border-color: #334155; color: #
             </div>
         @endif
 
-        {{-- Seleccionar Curso --}}
-        <div class="rc-card">
+        {{-- Seleccionar Curso — Grid de cards --}}
+        <div class="rc-card" style="margin-bottom:1rem;">
             <div class="rc-card-head">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span>Seleccionar Curso</span>
+                @if($gradoSeleccionado)
+                    <span style="margin-left:auto;font-size:.72rem;background:rgba(78,199,210,.2);
+                                 color:#4ec7d2;padding:.2rem .65rem;border-radius:999px;font-weight:600;">
+                        {{ $gradoSeleccionado->nombre_completo }}
+                    </span>
+                @endif
             </div>
-            <div class="rc-card-body">
-                <form method="GET" action="{{ route('registrarcalificaciones.index') }}">
-                    <label class="rc-field-lbl">Grado y Sección</label>
-                    <select name="grado_id" class="rc-select" onchange="this.form.submit()" required>
-                        <option value="">— Seleccione un curso —</option>
-                        @foreach($grados as $grado)
-                            <option value="{{ $grado->id }}"
-                                {{ request('grado_id') == $grado->id ? 'selected' : '' }}>
-                                {{ $grado->numero }}° {{ ucfirst($grado->nivel) }} — Sección {{ $grado->seccion }}
-                                ({{ $grado->anio_lectivo }})
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
+            <div class="rc-card-body" style="padding:.9rem 1.25rem;">
 
                 @if($grados->isEmpty())
                     <div class="rc-warn">
                         <i class="fas fa-exclamation-triangle"></i>
                         No tienes grados asignados. Contacta al administrador.
                     </div>
+
+                @elseif($gradoSeleccionado)
+                    {{-- Solo mostrar el grado seleccionado + botón cambiar --}}
+                    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+
+                        <div style="display:flex;flex-direction:column;align-items:center;
+                                    padding:.65rem 1rem;border-radius:10px;min-width:105px;
+                                    border:2px solid #4ec7d2;
+                                    background:linear-gradient(135deg,#003b73,#00508f);
+                                    box-shadow:0 4px 14px rgba(0,59,115,.25);">
+                            <span style="font-size:1.5rem;font-weight:800;line-height:1;color:white;">
+                                {{ $gradoSeleccionado->numero }}
+                            </span>
+                            <span style="font-size:.72rem;font-weight:700;margin-top:.15rem;color:#4ec7d2;">
+                                Sección {{ $gradoSeleccionado->seccion }}
+                            </span>
+                            <span style="font-size:.62rem;margin-top:.3rem;color:rgba(255,255,255,.65);">
+                                <i class="fas fa-users" style="font-size:.55rem;"></i>
+                                {{ $gradoSeleccionado->estudiantes_count ?? $gradoSeleccionado->estudiantes()->count() }}
+                            </span>
+                        </div>
+
+                        <div>
+                            <div style="font-size:.82rem;font-weight:700;color:#003b73;margin-bottom:.25rem;">
+                                {{ $gradoSeleccionado->nombre_completo }}
+                            </div>
+                            <div style="font-size:.75rem;color:#64748b;margin-bottom:.5rem;">
+                                {{ ucfirst($gradoSeleccionado->nivel) }} · {{ $gradoSeleccionado->anio_lectivo }}
+                            </div>
+                            <a href="{{ route('registrarcalificaciones.index') }}"
+                               style="display:inline-flex;align-items:center;gap:.35rem;
+                                      font-size:.75rem;font-weight:600;color:#00508f;
+                                      background:#f0f9ff;border:1px solid #bfd9ea;
+                                      border-radius:7px;padding:.3rem .75rem;
+                                      text-decoration:none;transition:all .15s;"
+                               onmouseover="this.style.background='#e0f2fe'"
+                               onmouseout="this.style.background='#f0f9ff'">
+                                <i class="fas fa-exchange-alt" style="font-size:.65rem;"></i>
+                                Cambiar grado
+                            </a>
+                        </div>
+
+                    </div>
+
+                @else
+                    {{-- Grid completo cuando no hay selección --}}
+                    @php $gradosPorNivel = $grados->groupBy('nivel'); @endphp
+
+                    @foreach($gradosPorNivel as $nivel => $listaGrados)
+                        <div style="margin-bottom:.6rem;">
+                            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;
+                                        letter-spacing:.1em;color:#94a3b8;margin-bottom:.55rem;
+                                        display:flex;align-items:center;gap:.4rem;">
+                                <i class="fas fa-{{ $nivel === 'primaria' ? 'child' : 'graduation-cap' }}"
+                                   style="color:#4ec7d2;font-size:.65rem;"></i>
+                                {{ ucfirst($nivel) }}
+                            </div>
+                            <div style="display:flex;flex-wrap:wrap;gap:.55rem;">
+                                @foreach($listaGrados as $g)
+                                    <a href="{{ route('registrarcalificaciones.index', ['grado_id' => $g->id]) }}"
+                                       style="display:flex;flex-direction:column;align-items:center;
+                                              text-decoration:none;padding:.6rem .85rem;
+                                              border-radius:10px;min-width:100px;transition:all .18s;
+                                              border:2px solid #e2e8f0;background:white;
+                                              box-shadow:0 1px 3px rgba(0,0,0,.06);"
+                                       onmouseover="this.style.borderColor='#4ec7d2';this.style.boxShadow='0 4px 12px rgba(78,199,210,.2)'"
+                                       onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='0 1px 3px rgba(0,0,0,.06)'">
+                                        <span style="font-size:1.5rem;font-weight:800;line-height:1;color:#003b73;">
+                                            {{ $g->numero }}
+                                        </span>
+                                        <span style="font-size:.72rem;font-weight:700;margin-top:.15rem;color:#00508f;">
+                                            Sección {{ $g->seccion }}
+                                        </span>
+                                        <span style="font-size:.62rem;margin-top:.3rem;color:#94a3b8;">
+                                            <i class="fas fa-users" style="font-size:.55rem;"></i>
+                                            {{ $g->estudiantes_count ?? 0 }}
+                                        </span>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                        @if(!$loop->last)
+                            <div style="border-top:1px solid #f1f5f9;margin:.6rem 0;"></div>
+                        @endif
+                    @endforeach
                 @endif
             </div>
         </div>
@@ -271,10 +366,7 @@ body.dark-mode .obs-input { background: #0f172a; border-color: #334155; color: #
             <div class="rc-card">
                 <div class="rc-card-head">
                     <i class="fas fa-info-circle"></i>
-                    <span>
-                        Resumen: {{ $gradoSeleccionado->numero }}°
-                        {{ ucfirst($gradoSeleccionado->nivel) }} — Sección {{ $gradoSeleccionado->seccion }}
-                    </span>
+                    <span>Resumen: {{ $gradoSeleccionado->nombre_completo }}</span>
                 </div>
                 <div class="rc-card-body">
 
@@ -458,25 +550,67 @@ body.dark-mode .obs-input { background: #0f172a; border-color: #334155; color: #
                             <table class="rc-tbl">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th style="width:36px;">#</th>
                                         <th>Estudiante</th>
-                                        <th style="text-align:center;width:60px;">Estado</th>
-                                        <th style="text-align:center;width:130px;">Nota (0–100)</th>
+                                        <th class="th-parcial" style="text-align:center;width:82px;">1er Parcial</th>
+                                        <th class="th-parcial" style="text-align:center;width:82px;">2do Parcial</th>
+                                        <th class="th-parcial" style="text-align:center;width:82px;">3er Parcial</th>
+                                        <th class="th-parcial" style="text-align:center;width:82px;">Recuperación</th>
+                                        <th class="th-parcial" style="text-align:center;width:80px;">Nota Final</th>
+                                        <th style="text-align:center;width:90px;">Estado</th>
                                         <th>Observación</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($estudiantes as $i => $estudiante)
                                     <tr id="fila-{{ $estudiante->id }}">
-                                        <td style="color:#94a3b8;font-size:.78rem;font-weight:600;">
-                                            {{ $i + 1 }}
-                                        </td>
+                                        <td style="color:#94a3b8;font-size:.78rem;font-weight:600;">{{ $i + 1 }}</td>
                                         <td>
                                             <span style="font-weight:700;color:#0f172a;">
-                                                {{ $estudiante->apellido1 }}
-                                                {{ $estudiante->apellido2 }},
+                                                {{ $estudiante->apellido1 }} {{ $estudiante->apellido2 }},
                                             </span>
                                             {{ $estudiante->nombre1 }} {{ $estudiante->nombre2 }}
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <input type="number" min="0" max="100" step="0.01"
+                                                   class="parcial-input"
+                                                   id="p1-{{ $estudiante->id }}"
+                                                   name="primer_parcial[{{ $estudiante->id }}]"
+                                                   data-estudiante="{{ $estudiante->id }}"
+                                                   data-parcial="p1" placeholder="—">
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <input type="number" min="0" max="100" step="0.01"
+                                                   class="parcial-input"
+                                                   id="p2-{{ $estudiante->id }}"
+                                                   name="segundo_parcial[{{ $estudiante->id }}]"
+                                                   data-estudiante="{{ $estudiante->id }}"
+                                                   data-parcial="p2" placeholder="—">
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <input type="number" min="0" max="100" step="0.01"
+                                                   class="parcial-input"
+                                                   id="p3-{{ $estudiante->id }}"
+                                                   name="tercer_parcial[{{ $estudiante->id }}]"
+                                                   data-estudiante="{{ $estudiante->id }}"
+                                                   data-parcial="p3" placeholder="—">
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <input type="number" min="0" max="100" step="0.01"
+                                                   class="parcial-input parcial-rec"
+                                                   id="rec-{{ $estudiante->id }}"
+                                                   name="recuperacion[{{ $estudiante->id }}]"
+                                                   data-estudiante="{{ $estudiante->id }}"
+                                                   data-parcial="rec" placeholder="—"
+                                                   style="border-color:#d97706;">
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <span id="final-display-{{ $estudiante->id }}" class="nota-final-display">—</span>
+                                            <input type="hidden"
+                                                   name="notas[{{ $estudiante->id }}]"
+                                                   id="nota-{{ $estudiante->id }}"
+                                                   class="nota-input"
+                                                   data-estudiante="{{ $estudiante->id }}">
                                         </td>
                                         <td style="text-align:center;">
                                             <span id="estado-{{ $estudiante->id }}"
@@ -484,21 +618,12 @@ body.dark-mode .obs-input { background: #0f172a; border-color: #334155; color: #
                                                 <i class="fas fa-circle-dot"></i> Pendiente
                                             </span>
                                         </td>
-                                        <td style="text-align:center;">
-                                            <input type="number"
-                                                   name="notas[{{ $estudiante->id }}]"
-                                                   class="nota-input"
-                                                   id="nota-{{ $estudiante->id }}"
-                                                   data-estudiante="{{ $estudiante->id }}"
-                                                   min="0" max="100" step="0.01"
-                                                   placeholder="—">
-                                        </td>
                                         <td>
                                             <input type="text"
                                                    name="observacion[{{ $estudiante->id }}]"
                                                    class="obs-input"
                                                    id="obs-{{ $estudiante->id }}"
-                                                   placeholder="Se generará automáticamente...">
+                                                   placeholder="Se genera automáticamente...">
                                         </td>
                                     </tr>
                                     @endforeach
@@ -527,6 +652,18 @@ body.dark-mode .obs-input { background: #0f172a; border-color: #334155; color: #
 const ENDPOINT_NOTAS = "{{ route('registrarcalificaciones.notas-existentes') }}";
 const GRADO_ID       = "{{ request('grado_id') }}";
 
+// Mapa profesor → materias para filtrado dinámico
+@if($gradoSeleccionado)
+const PROF_MATERIAS = @json(
+    $profesoresDelGrado->map(fn($asigns) =>
+        $asigns->map(fn($a) => ['id' => $a->materia_id, 'nombre' => $a->materia_nombre])->values()
+    )
+);
+@else
+const PROF_MATERIAS = {};
+@endif
+
+/* ── Utilidades ─────────────────────────────────────── */
 function obsDesdeNota(val) {
     if (val >= 90) return 'Excelente';
     if (val >= 80) return 'Muy Bueno';
@@ -535,40 +672,72 @@ function obsDesdeNota(val) {
     return 'Reprobado';
 }
 
-function aplicarEstadoInput(input) {
-    const id  = input.dataset.estudiante;
-    const val = parseFloat(input.value);
-    const obsEl    = document.getElementById('obs-' + id);
+function getNum(id) {
+    const el = document.getElementById(id);
+    if (!el || el.value === '') return null;
+    const v = parseFloat(el.value);
+    return isNaN(v) ? null : v;
+}
+
+function calcularFinal(id) {
+    const p1  = getNum('p1-'  + id);
+    const p2  = getNum('p2-'  + id);
+    const p3  = getNum('p3-'  + id);
+    const rec = getNum('rec-' + id);
+    const parciales = [p1, p2, p3].filter(v => v !== null);
+    if (parciales.length === 0) return null;
+    const promedio = parciales.reduce((a, b) => a + b, 0) / parciales.length;
+    return (promedio < 60 && rec !== null) ? Math.max(promedio, rec) : promedio;
+}
+
+/* ── Actualizar fila al cambiar cualquier parcial ───── */
+function actualizarFila(id) {
+    const final    = calcularFinal(id);
+    const hiddenEl = document.getElementById('nota-' + id);
+    const dispEl   = document.getElementById('final-display-' + id);
     const estadoEl = document.getElementById('estado-' + id);
+    const obsEl    = document.getElementById('obs-' + id);
 
-    input.classList.remove('nota-aprobado', 'nota-reprobado');
-
-    if (!isNaN(val) && input.value !== '') {
-        input.classList.add(val >= 60 ? 'nota-aprobado' : 'nota-reprobado');
-
-        if (obsEl && !obsEl.dataset.userModified) {
-            obsEl.value = obsDesdeNota(val);
-        }
+    if (final !== null) {
+        hiddenEl.value  = final.toFixed(2);
+        dispEl.textContent = final.toFixed(1);
+        dispEl.className = 'nota-final-display ' + (final >= 60 ? 'nota-final-aprobado' : 'nota-final-reprobado');
 
         if (estadoEl) {
             estadoEl.className = 'estado-badge estado-registrada';
             estadoEl.innerHTML = '<i class="fas fa-check-circle"></i> Registrada';
         }
+        if (obsEl && !obsEl.dataset.userModified) obsEl.value = obsDesdeNota(final);
     } else {
-        if (obsEl && !obsEl.dataset.userModified) obsEl.value = '';
+        hiddenEl.value = '';
+        dispEl.textContent = '—';
+        dispEl.className = 'nota-final-display';
         if (estadoEl) {
             estadoEl.className = 'estado-badge estado-pendiente';
             estadoEl.innerHTML = '<i class="fas fa-circle-dot"></i> Pendiente';
         }
+        if (obsEl && !obsEl.dataset.userModified) obsEl.value = '';
     }
+
+    // Color en cada parcial individualmente
+    ['p1','p2','p3'].forEach(p => {
+        const inp = document.getElementById(p + '-' + id);
+        if (!inp) return;
+        inp.classList.remove('parcial-aprobado','parcial-reprobado');
+        if (inp.value !== '') {
+            const v = parseFloat(inp.value);
+            if (!isNaN(v)) inp.classList.add(v >= 60 ? 'parcial-aprobado' : 'parcial-reprobado');
+        }
+    });
 
     actualizarProgreso();
 }
 
+/* ── Progreso global ─────────────────────────────────── */
 function actualizarProgreso() {
-    const total    = document.querySelectorAll('.nota-input').length;
-    const conNota  = [...document.querySelectorAll('.nota-input')]
-                        .filter(i => i.value !== '' && !isNaN(parseFloat(i.value))).length;
+    const inputs   = document.querySelectorAll('.nota-input');
+    const total    = inputs.length;
+    const conNota  = [...inputs].filter(i => i.value !== '' && !isNaN(parseFloat(i.value))).length;
     const pct      = total > 0 ? Math.round(conNota / total * 100) : 0;
 
     const badge = document.getElementById('badge-progreso');
@@ -577,24 +746,42 @@ function actualizarProgreso() {
 
     if (badge) badge.textContent = conNota + ' / ' + total + ' con nota';
     if (fill)  fill.style.width  = pct + '%';
-    if (txt)   txt.textContent   = conNota === total
+    if (txt)   txt.textContent   = conNota === total && total > 0
                                     ? '¡Todos los estudiantes tienen nota! ✓'
                                     : (conNota + ' registradas · ' + (total - conNota) + ' pendientes');
 }
 
+/* ── Filtrar materias por profesor ───────────────────── */
+function filtrarMateriasPorProfesor(profId) {
+    const sel = document.getElementById('select-materia');
+    if (!sel) return;
+    const prevVal = sel.value;
+    sel.innerHTML = '<option value="">— Seleccione materia —</option>';
+    if (!profId || !PROF_MATERIAS[profId]) return;
+    PROF_MATERIAS[profId].forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = m.nombre;
+        if (String(m.id) === String(prevVal)) opt.selected = true;
+        sel.appendChild(opt);
+    });
+}
+
+/* ── Cargar notas existentes (AJAX) ──────────────────── */
 function cargarNotasExistentes() {
     const profesorEl = document.getElementById('select-profesor') ||
                        document.getElementById('hidden-prof-id');
     const materiaEl  = document.getElementById('select-materia');
     const periodoEl  = document.getElementById('select-periodo');
-
     if (!profesorEl || !materiaEl || !periodoEl) return;
 
     const profId    = profesorEl.value || profesorEl.getAttribute('value');
     const materiaId = materiaEl.value;
     const periodoId = periodoEl.value;
-
     if (!profId || !materiaId || !periodoId) return;
+
+    const txt = document.getElementById('txt-progreso');
+    if (txt) txt.textContent = 'Cargando notas existentes...';
 
     const url = ENDPOINT_NOTAS
         + '?profesor_id='          + profId
@@ -602,34 +789,41 @@ function cargarNotasExistentes() {
         + '&materia_id='           + materiaId
         + '&periodo_academico_id=' + periodoId;
 
-    const txt = document.getElementById('txt-progreso');
-    if (txt) txt.textContent = 'Cargando notas existentes...';
-
     fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(r => r.json())
         .then(data => {
-            document.querySelectorAll('.nota-input').forEach(input => {
-                const id = input.dataset.estudiante;
-                if (data[id]) {
-                    input.value = data[id].nota ?? '';
-                    const obsEl = document.getElementById('obs-' + id);
-                    if (obsEl && data[id].observacion) {
-                        obsEl.value = data[id].observacion;
-                        obsEl.dataset.userModified = 'true';
-                    }
-                } else {
-                    input.value = '';
-                    const obsEl = document.getElementById('obs-' + id);
-                    if (obsEl) { obsEl.value = ''; delete obsEl.dataset.userModified; }
+            document.querySelectorAll('.nota-input').forEach(hidden => {
+                const id = hidden.dataset.estudiante;
+                const d  = data[id];
+
+                const setVal = (inputId, val) => {
+                    const el = document.getElementById(inputId);
+                    if (el) el.value = (val !== null && val !== undefined) ? val : '';
+                };
+
+                setVal('p1-'  + id, d?.primer_parcial);
+                setVal('p2-'  + id, d?.segundo_parcial);
+                setVal('p3-'  + id, d?.tercer_parcial);
+                setVal('rec-' + id, d?.recuperacion);
+
+                const obsEl = document.getElementById('obs-' + id);
+                if (obsEl && d?.observacion) {
+                    obsEl.value = d.observacion;
+                    obsEl.dataset.userModified = 'true';
+                } else if (obsEl) {
+                    obsEl.value = '';
+                    delete obsEl.dataset.userModified;
                 }
-                aplicarEstadoInput(input);
+
+                actualizarFila(id);
             });
         })
         .catch(() => { if (txt) txt.textContent = 'No se pudieron cargar notas previas.'; });
 }
 
-document.querySelectorAll('.nota-input').forEach(input => {
-    input.addEventListener('input', () => aplicarEstadoInput(input));
+/* ── Eventos ─────────────────────────────────────────── */
+document.querySelectorAll('.parcial-input').forEach(input => {
+    input.addEventListener('input', () => actualizarFila(input.dataset.estudiante));
 });
 
 document.querySelectorAll('.obs-input').forEach(obs => {
@@ -643,8 +837,14 @@ const selProfesor = document.getElementById('select-profesor');
 
 if (selMateria)  selMateria.addEventListener('change',  cargarNotasExistentes);
 if (selPeriodo)  selPeriodo.addEventListener('change',  cargarNotasExistentes);
-if (selProfesor && selProfesor.tagName === 'SELECT')
-    selProfesor.addEventListener('change', cargarNotasExistentes);
+if (selProfesor && selProfesor.tagName === 'SELECT') {
+    selProfesor.addEventListener('change', function() {
+        filtrarMateriasPorProfesor(this.value);
+        cargarNotasExistentes();
+    });
+    // Filtrar al cargar si ya hay un profesor seleccionado
+    if (selProfesor.value) filtrarMateriasPorProfesor(selProfesor.value);
+}
 </script>
 @endpush
 @endsection

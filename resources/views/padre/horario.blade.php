@@ -212,9 +212,7 @@ body.dark-mode .celda-materia { color: #93c5fd; }
 
             <div class="grado-chip">
                 <i class="fas fa-graduation-cap"></i>
-                {{ $horarioGrado->grado->nivel ?? '' }}
-                {{ $horarioGrado->grado->numero ?? '?' }}°
-                {{ $horarioGrado->grado->seccion ?? '' }}
+                {{ $horarioGrado->grado->nombre_completo ?? '' }}
                 &nbsp;·&nbsp;
                 Jornada {{ ucfirst($horarioGrado->jornada ?? '') }}
             </div>

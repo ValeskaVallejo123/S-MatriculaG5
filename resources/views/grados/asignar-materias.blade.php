@@ -14,10 +14,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h4 class="mb-2 fw-bold">
-                        <i class="fas fa-school"></i> {{ $grado->numero }}° Grado
-                        @if($grado->seccion)
-                            <span style="opacity: 0.9;">- Sección {{ $grado->seccion }}</span>
-                        @endif
+                        <i class="fas fa-school"></i> {{ $grado->nombre_completo }}
                     </h4>
                     <p class="mb-0" style="opacity: 0.9; font-size: 0.938rem;">
                         <i class="fas fa-calendar-alt me-1"></i>Año Lectivo: {{ $grado->anio_lectivo }}

@@ -344,7 +344,7 @@
                             <tbody>
                                 @foreach($materia->grados as $grado)
                                 <tr>
-                                    <td><span class="ms-grado-tag">{{ $grado->numero }}° Grado</span></td>
+                                    <td><span class="ms-grado-tag">{{ $grado->nombre }}</span></td>
                                     <td>
                                         @if(strtolower($grado->nivel) === 'primaria')
                                             <span class="ms-pill p-pri">Primaria</span>

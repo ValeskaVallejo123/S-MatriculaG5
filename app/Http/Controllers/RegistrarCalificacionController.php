@@ -49,7 +49,8 @@ class RegistrarCalificacionController extends Controller
                 ->unique()
                 ->values();
 
-            $grados = Grado::whereIn('id', $gradoIds)
+            $grados = Grado::withCount('estudiantes')
+                ->whereIn('id', $gradoIds)
                 ->where('activo', true)
                 ->orderBy('nivel')
                 ->orderBy('numero')
@@ -68,7 +69,8 @@ class RegistrarCalificacionController extends Controller
 
         } else {
             // Admin / superadmin — ve todo
-            $grados     = Grado::where('activo', true)
+            $grados     = Grado::withCount('estudiantes')
+                ->where('activo', true)
                 ->orderBy('nivel')
                 ->orderBy('numero')
                 ->orderBy('seccion')
@@ -136,6 +138,7 @@ class RegistrarCalificacionController extends Controller
                         'profesores.id',
                         'profesores.nombre',
                         'profesores.apellido',
+                        'materias.id   as materia_id',
                         'materias.nombre as materia_nombre'
                     )
                     ->orderBy('profesores.apellido')
@@ -168,6 +171,10 @@ class RegistrarCalificacionController extends Controller
             'periodo_academico_id' => 'required|exists:periodos_academicos,id',
             'notas'                => 'required|array|min:1',
             'notas.*'              => 'nullable|numeric|min:0|max:100',
+            'primer_parcial.*'     => 'nullable|numeric|min:0|max:100',
+            'segundo_parcial.*'    => 'nullable|numeric|min:0|max:100',
+            'tercer_parcial.*'     => 'nullable|numeric|min:0|max:100',
+            'recuperacion.*'       => 'nullable|numeric|min:0|max:100',
             'observacion'          => 'nullable|array',
         ]);
 
@@ -191,8 +198,12 @@ class RegistrarCalificacionController extends Controller
                         'periodo_academico_id' => $request->periodo_academico_id,
                     ],
                     [
-                        'nota'        => $nota,
-                        'observacion' => $request->observacion[$estudianteId] ?? null,
+                        'nota'           => $nota,
+                        'primer_parcial' => $request->primer_parcial[$estudianteId]  ?? null,
+                        'segundo_parcial'=> $request->segundo_parcial[$estudianteId] ?? null,
+                        'tercer_parcial' => $request->tercer_parcial[$estudianteId]  ?? null,
+                        'recuperacion'   => $request->recuperacion[$estudianteId]    ?? null,
+                        'observacion'    => $request->observacion[$estudianteId]     ?? null,
                     ]
                 );
             }
@@ -221,7 +232,7 @@ class RegistrarCalificacionController extends Controller
             ->where('grado_id',             $request->grado_id)
             ->where('materia_id',           $request->materia_id)
             ->where('periodo_academico_id', $request->periodo_academico_id)
-            ->get(['estudiante_id', 'nota', 'observacion'])
+            ->get(['estudiante_id', 'nota', 'primer_parcial', 'segundo_parcial', 'tercer_parcial', 'recuperacion', 'observacion'])
             ->keyBy('estudiante_id');
 
         return response()->json($notas);

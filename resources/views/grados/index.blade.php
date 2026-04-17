@@ -290,15 +290,12 @@ body.dark-mode .gr-pag-wrap { background: #1e293b; border-color: #334155; }
             @forelse($grados as $grado)
             <div class="grado-card"
                  data-nivel="{{ $grado->nivel }}"
-                 data-text="{{ strtolower($grado->numero.' '.($grado->seccion ?? '').' '.$grado->nivel.' '.$grado->anio_lectivo) }}">
+                 data-text="{{ strtolower($grado->nombre.' '.($grado->seccion ?? '').' '.$grado->nivel.' '.$grado->anio_lectivo) }}">
 
                 <div class="grado-card-head">
                     <div class="grado-numero-badge">{{ $grado->numero }}</div>
                     <div>
-                        <p class="grado-title">
-                            {{ $grado->numero }}° Grado
-                            @if($grado->seccion) — Sección {{ $grado->seccion }} @endif
-                        </p>
+                        <p class="grado-title">{{ $grado->nombre_completo }}</p>
                         <p class="grado-subtitle">
                             <span class="grado-meta {{ $grado->nivel === 'primaria' ? 'nivel-primaria' : 'nivel-secundaria' }}"
                                   style="padding:.15rem .55rem;">
@@ -340,7 +337,7 @@ body.dark-mode .gr-pag-wrap { background: #1e293b; border-color: #334155; }
                         onclick="mostrarModalDelete(
                             '{{ route('superadmin.grados.destroy', $grado) }}',
                             '¿Estás seguro de que deseas eliminar este grado? Esta acción no se puede deshacer.',
-                            '{{ $grado->numero }}° Grado{{ $grado->seccion ? " — Sección " . $grado->seccion : "" }}'
+                            '{{ $grado->nombre_completo }}'
                         )">
                         <i class="fas fa-trash"></i>
                     </button>

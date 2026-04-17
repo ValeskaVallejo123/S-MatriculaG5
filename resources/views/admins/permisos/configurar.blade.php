@@ -14,11 +14,28 @@
         border: 1.5px solid #e2e8f0;
         border-radius: 10px;
         background: #fafbfc;
+        display: flex !important;
+        align-items: center;
+        gap: .75rem;
+        padding: .75rem 1rem !important;
+        padding-left: 1rem !important;
     }
     .perm-switch:hover {
         border-color: #4ec7d2 !important;
         box-shadow: 0 2px 8px rgba(78,199,210,0.15);
         background: rgba(78,199,210,0.04);
+    }
+    .perm-switch .form-check-input {
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        flex-shrink: 0;
+        position: static !important;
+        float: none !important;
+    }
+    .perm-switch .form-check-label {
+        padding-left: 0 !important;
+        flex: 1;
+        cursor: pointer;
     }
 
     .section-divider {

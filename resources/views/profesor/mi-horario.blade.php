@@ -204,8 +204,7 @@
 
                 <div class="grado-chip">
                     <i class="fas fa-graduation-cap"></i>
-                    {{ $hg->grado->numero ?? '?' }}°
-                    {{ $hg->grado->seccion ?? '' }}
+                    {{ $hg->grado->nombre_completo ?? '' }}
                     &nbsp;·&nbsp;
                     Jornada {{ ucfirst($hg->jornada) }}
                 </div>
