@@ -59,34 +59,24 @@
     <div class="card-body p-3">
 
         {{-- Materias count --}}
-        <div style="display:flex; align-items:center; justify-content:space-between;
-                    background:#f5f8fc; border:1px solid #e8edf4; border-radius:8px;
-                    padding:.6rem .85rem; margin-bottom:.75rem;">
-            <span style="font-size:.72rem; font-weight:600; color:#6b7a90; display:flex; align-items:center; gap:.4rem;">
+        <div class="gc-mat-count">
+            <span class="gc-mat-count-lbl">
                 <i class="fas fa-book-open" style="color:#4ec7d2;"></i> Materias asignadas
             </span>
-            <span style="font-size:.8rem; font-weight:800; color:#003b73;">
-                {{ $grado->materias->count() }}
-            </span>
+            <span class="gc-mat-count-num">{{ $grado->materias->count() }}</span>
         </div>
 
         {{-- Materias list (máx 3) --}}
         @if($grado->materias->isNotEmpty())
             <div style="margin-bottom:.75rem;">
                 @foreach($grado->materias->take(3) as $materia)
-                    <span style="display:inline-flex; align-items:center; gap:.25rem;
-                                 background:linear-gradient(135deg,rgba(78,199,210,.12),rgba(0,80,143,.07));
-                                 border:1px solid rgba(78,199,210,.3); border-radius:999px;
-                                 padding:.2rem .6rem; font-size:.68rem; font-weight:600;
-                                 color:#003b73; margin:.1rem .1rem 0 0;">
+                    <span class="gc-mat-pill">
                         <i class="fas fa-circle" style="font-size:.35rem; color:#4ec7d2;"></i>
                         {{ $materia->nombre }}
                     </span>
                 @endforeach
                 @if($grado->materias->count() > 3)
-                    <span style="font-size:.65rem; color:#6b7a90; margin-left:.25rem;">
-                        +{{ $grado->materias->count() - 3 }} más
-                    </span>
+                    <span class="gc-mat-more">+{{ $grado->materias->count() - 3 }} más</span>
                 @endif
             </div>
         @else
@@ -98,20 +88,12 @@
     </div>
 
     {{-- Footer con acciones --}}
-    <div class="card-footer border-0 p-3 pt-0" style="background:white; border-radius:0 0 12px 12px;">
+    <div class="card-footer border-0 p-3 pt-0 gc-footer">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-bottom:.5rem;">
-            <a href="{{ route('superadmin.grados.show', $grado) }}"
-               style="display:flex; align-items:center; justify-content:center; gap:.3rem;
-                      background:#f5f8fc; border:1px solid #e8edf4; border-radius:8px;
-                      padding:.45rem; font-size:.72rem; font-weight:700; color:#003b73;
-                      text-decoration:none; transition:all .2s;">
+            <a href="{{ route('superadmin.grados.show', $grado) }}" class="gc-btn-ver">
                 <i class="fas fa-eye" style="color:#4ec7d2;"></i> Ver
             </a>
-            <a href="{{ route('superadmin.grados.edit', $grado) }}"
-               style="display:flex; align-items:center; justify-content:center; gap:.3rem;
-                      background:#fff8eb; border:1px solid #fde68a; border-radius:8px;
-                      padding:.45rem; font-size:.72rem; font-weight:700; color:#92400e;
-                      text-decoration:none; transition:all .2s;">
+            <a href="{{ route('superadmin.grados.edit', $grado) }}" class="gc-btn-edit">
                 <i class="fas fa-edit" style="color:#f59e0b;"></i> Editar
             </a>
         </div>

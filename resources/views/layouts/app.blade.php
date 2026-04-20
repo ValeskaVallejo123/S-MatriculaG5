@@ -273,24 +273,86 @@
          estilos de las vistas, para que sus reglas tengan prioridad.
          ═══════════════════════════════════════════════════════════════ --}}
     <style id="dark-mode-styles">
+        /*
+        ══════════════════════════════════════════════════════
+          MODO OSCURO — Sistema de capas azul-marino refinado
+          Capa base   : #0b1628  (fondo general)
+          Capa 1      : #111f35  (sidebar, topbar)
+          Capa 2      : #172035  (cards principales)
+          Capa 3      : #1c2b42  (inputs, nested, toolbars)
+          Capa 4      : #223250  (hover de filas/items)
+          Borde sutil : #1e3452
+          Borde fuerte: #2a4266
+          Acento      : #4ec7d2  (teal — sin cambio)
+        ══════════════════════════════════════════════════════
+        */
+
+        /* ── Variables CSS para consistencia ── */
+        body.dark-mode {
+            --dm-base:    #0b1628;
+            --dm-l1:      #111f35;
+            --dm-l2:      #172035;
+            --dm-l3:      #1c2b42;
+            --dm-l4:      #223250;
+            --dm-border:  #1e3452;
+            --dm-border2: #2a4266;
+            --dm-text:    #dde8f5;
+            --dm-text2:   #8aadcc;
+            --dm-text3:   #4d6a88;
+            --dm-accent:  #4ec7d2;
+        }
+
         /* ── Layout base ── */
         body.dark-mode {
-            background-color: #0f172a !important;
-            color: #f1f5f9 !important;
+            background-color: var(--dm-base) !important;
+            color: var(--dm-text) !important;
         }
-        body.dark-mode .sidebar {
-            background: linear-gradient(180deg, #020617 0%, #0f172a 100%) !important;
-            box-shadow: 4px 0 15px rgba(0,0,0,.5);
-        }
-        body.dark-mode .topbar {
-            background: #1e293b !important;
-            border-bottom: 1px solid #334155 !important;
-        }
-        body.dark-mode .main-content,
-        body.dark-mode .content-wrapper { background: #0f172a !important; }
-        body.dark-mode .topbar-divider  { background: #334155 !important; }
 
-        /* ── Tarjetas — cubre TODAS las variantes de clase ── */
+        /* ── Sidebar ── */
+        body.dark-mode .sidebar {
+            background: linear-gradient(180deg, #091422 0%, #0e1c32 60%, #111f35 100%) !important;
+            box-shadow: 4px 0 20px rgba(0,0,0,.55), inset -1px 0 0 var(--dm-border) !important;
+        }
+        body.dark-mode .menu-section-title { color: rgba(78,199,210,.55) !important; }
+        body.dark-mode .menu-link          { color: rgba(221,232,245,.65) !important; }
+        body.dark-mode .menu-link:hover    {
+            background: rgba(78,199,210,.1) !important;
+            color: #dde8f5 !important;
+        }
+        body.dark-mode .menu-link.active {
+            background: rgba(78,199,210,.15) !important;
+            color: #fff !important;
+            border-left-color: var(--dm-accent) !important;
+        }
+        body.dark-mode .menu-link i { color: rgba(78,199,210,.75) !important; }
+        body.dark-mode .menu-link.active i,
+        body.dark-mode .menu-link:hover i { color: var(--dm-accent) !important; }
+
+        /* ── Topbar ── */
+        body.dark-mode .topbar {
+            background: var(--dm-l1) !important;
+            border-bottom: 1px solid var(--dm-border) !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,.35) !important;
+        }
+        body.dark-mode .topbar-left h5 { color: #dde8f5 !important; }
+        body.dark-mode .topbar-divider  { background: var(--dm-border2) !important; }
+
+        body.dark-mode .btn-back-topbar {
+            background: var(--dm-l3) !important;
+            border-color: var(--dm-border2) !important;
+            color: var(--dm-text2) !important;
+        }
+        body.dark-mode .btn-back-topbar:hover {
+            background: var(--dm-accent) !important;
+            border-color: var(--dm-accent) !important;
+            color: #fff !important;
+        }
+
+        /* ── Contenido principal ── */
+        body.dark-mode .main-content,
+        body.dark-mode .content-wrapper { background: var(--dm-base) !important; }
+
+        /* ── Tarjetas — todas las variantes ── */
         body.dark-mode .card,
         body.dark-mode .welcome-card,
         body.dark-mode .adm-card,
@@ -302,15 +364,27 @@
         body.dark-mode .info-card,
         body.dark-mode .modal-content,
         body.dark-mode .adm-toolbar,
-        body.dark-mode .pub-card {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
+        body.dark-mode .pub-card,
+        body.dark-mode .rc-card,
+        body.dark-mode .filtros-card,
+        body.dark-mode .hist-card,
+        body.dark-mode .hist-stat,
+        body.dark-mode .hist-ciclo {
+            background-color: var(--dm-l2) !important;
+            border-color: var(--dm-border) !important;
+            color: var(--dm-text) !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03) !important;
         }
         body.dark-mode .card-header,
         body.dark-mode .adm-card-head,
-        body.dark-mode .pub-card-head { border-color: #334155 !important; }
-        body.dark-mode .card-footer   { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .rc-card-head,
+        body.dark-mode .pub-card-head {
+            border-color: var(--dm-border) !important;
+        }
+        body.dark-mode .card-footer {
+            background: var(--dm-l1) !important;
+            border-color: var(--dm-border) !important;
+        }
 
         /* ── Textos principales ── */
         body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
@@ -319,7 +393,7 @@
         body.dark-mode .adm-stat-num, body.dark-mode .est-stat-num,
         body.dark-mode .action-title, body.dark-mode .card-title,
         body.dark-mode .fw-bold, body.dark-mode .text-dark,
-        body.dark-mode strong { color: #ffffff !important; }
+        body.dark-mode strong { color: #eef4ff !important; }
 
         /* ── Textos secundarios ── */
         body.dark-mode .text-muted,
@@ -327,28 +401,28 @@
         body.dark-mode .est-stat-sub,  body.dark-mode .stat-label,
         body.dark-mode .welcome-subtitle, body.dark-mode .action-subtitle,
         body.dark-mode label, body.dark-mode p,
-        body.dark-mode small { color: #cbd5e1 !important; }
+        body.dark-mode small { color: var(--dm-text2) !important; }
 
         body.dark-mode span:not(.badge):not(.text-white):not(.w-badge) { color: inherit; }
 
         /* ── Tablas ── */
         body.dark-mode .table,
-        body.dark-mode .adm-tbl       { color: #f1f5f9 !important; background: transparent !important; }
+        body.dark-mode .adm-tbl       { color: var(--dm-text) !important; background: transparent !important; }
         body.dark-mode .table td,
         body.dark-mode .table th,
         body.dark-mode .text-primary,
-        body.dark-mode .dni-text      { color: #e2e8f0 !important; }
+        body.dark-mode .dni-text      { color: var(--dm-text) !important; }
         body.dark-mode .table thead th {
-            background: #1e293b !important;
-            color: #4ec7d2 !important;
-            border-bottom: 2px solid #334155 !important;
+            background: var(--dm-l1) !important;
+            color: var(--dm-accent) !important;
+            border-bottom: 2px solid var(--dm-border2) !important;
         }
-        body.dark-mode .table td      { border-bottom-color: #334155 !important; }
+        body.dark-mode .table td { border-bottom-color: var(--dm-border) !important; }
         body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
-            background-color: rgba(255,255,255,.03) !important;
+            background-color: rgba(78,199,210,.03) !important;
         }
         body.dark-mode .table-hover > tbody > tr:hover > * {
-            background-color: rgba(78,199,210,.07) !important;
+            background-color: rgba(78,199,210,.08) !important;
         }
 
         /* ── Formularios ── */
@@ -356,186 +430,407 @@
         body.dark-mode .form-select,
         body.dark-mode .input-group-text,
         body.dark-mode .est-search,
-        body.dark-mode .adm-search {
-            background-color: #0f172a !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
+        body.dark-mode .adm-search,
+        body.dark-mode .search-input,
+        body.dark-mode .filter-select,
+        body.dark-mode .rc-select,
+        body.dark-mode .obs-input {
+            background-color: var(--dm-l3) !important;
+            border-color: var(--dm-border2) !important;
+            color: var(--dm-text) !important;
         }
         body.dark-mode .form-control::placeholder,
         body.dark-mode .form-select::placeholder,
-        body.dark-mode .est-search::placeholder { color: #475569 !important; }
+        body.dark-mode .est-search::placeholder,
+        body.dark-mode .obs-input::placeholder    { color: var(--dm-text3) !important; }
         body.dark-mode .form-control:focus,
         body.dark-mode .form-select:focus,
-        body.dark-mode .est-search:focus {
-            background-color: #0f172a !important;
-            border-color: #4ec7d2 !important;
-            box-shadow: 0 0 0 3px rgba(78,199,210,.15) !important;
-            color: #f1f5f9 !important;
+        body.dark-mode .est-search:focus,
+        body.dark-mode .rc-select:focus,
+        body.dark-mode .obs-input:focus {
+            background-color: var(--dm-l3) !important;
+            border-color: var(--dm-accent) !important;
+            box-shadow: 0 0 0 3px rgba(78,199,210,.18) !important;
+            color: var(--dm-text) !important;
         }
 
         /* ── Alertas ── */
         body.dark-mode .alert {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
+            background-color: var(--dm-l2) !important;
+            border-color: var(--dm-border) !important;
+            color: var(--dm-text) !important;
         }
-        body.dark-mode .alert-success { border-left-color: #34d399 !important; }
-        body.dark-mode .alert-danger  { border-left-color: #f87171 !important; }
-        body.dark-mode .alert-warning { border-left-color: #fbbf24 !important; }
-        body.dark-mode .alert-info    { border-left-color: #4ec7d2 !important; }
+        body.dark-mode .alert-success { border-left-color: #34d399 !important; background-color: rgba(52,211,153,.08) !important; }
+        body.dark-mode .alert-danger  { border-left-color: #f87171 !important; background-color: rgba(248,113,113,.08) !important; }
+        body.dark-mode .alert-warning { border-left-color: #fbbf24 !important; background-color: rgba(251,191,36,.08) !important; }
+        body.dark-mode .alert-info    { border-left-color: var(--dm-accent) !important; background-color: rgba(78,199,210,.08) !important; }
 
         /* ── Paginación ── */
         body.dark-mode .page-link {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-            color: #4ec7d2 !important;
+            background-color: var(--dm-l2) !important;
+            border-color: var(--dm-border2) !important;
+            color: var(--dm-accent) !important;
+        }
+        body.dark-mode .page-link:hover {
+            background-color: var(--dm-l4) !important;
         }
         body.dark-mode .page-item.active .page-link {
-            background-color: #00508f !important;
+            background: linear-gradient(135deg,#4ec7d2,#00508f) !important;
             border-color: #00508f !important;
             color: #fff !important;
         }
-        body.dark-mode .page-item.disabled .page-link { opacity: .4; }
+        body.dark-mode .page-item.disabled .page-link { opacity: .35; }
 
         /* ── Dropdowns ── */
         body.dark-mode .dropdown-menu {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
+            background-color: var(--dm-l2) !important;
+            border-color: var(--dm-border2) !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,.45) !important;
         }
-        body.dark-mode .dropdown-item          { color: #f1f5f9 !important; }
-        body.dark-mode .dropdown-item:hover    { background-color: #334155 !important; }
-        body.dark-mode .dropdown-divider       { border-color: #334155 !important; }
+        body.dark-mode .dropdown-item          { color: var(--dm-text) !important; }
+        body.dark-mode .dropdown-item:hover    { background-color: var(--dm-l4) !important; }
+        body.dark-mode .dropdown-divider       { border-color: var(--dm-border) !important; }
 
         /* ── Botones ── */
         body.dark-mode .btn-outline-secondary {
-            color: #94a3b8 !important; border-color: #475569 !important;
+            color: var(--dm-text2) !important;
+            border-color: var(--dm-border2) !important;
         }
         body.dark-mode .btn-outline-secondary:hover {
-            background-color: #334155 !important; color: #f1f5f9 !important;
+            background-color: var(--dm-l4) !important;
+            color: var(--dm-text) !important;
         }
-        body.dark-mode .btn-toggle-dark { background: #334155 !important; color: #fbbf24 !important; border-color: #475569 !important; }
+        body.dark-mode .btn-toggle-dark {
+            background: var(--dm-l3) !important;
+            color: #fbbf24 !important;
+            border-color: var(--dm-border2) !important;
+        }
+        body.dark-mode .btn-toggle-dark:hover {
+            background: var(--dm-l4) !important;
+        }
+
+        /* ── Botones de acción (editar / eliminar) ── */
+        body.dark-mode .act-edit { background: rgba(78,199,210,.1) !important; color: var(--dm-accent) !important; border-color: rgba(78,199,210,.2) !important; }
+        body.dark-mode .act-edit:hover { background: var(--dm-accent) !important; color: #0b1628 !important; }
+        body.dark-mode .act-del  { background: rgba(239,68,68,.1) !important; color: #f87171 !important; border-color: rgba(239,68,68,.2) !important; }
+        body.dark-mode .act-del:hover  { background: #ef4444 !important; color: #fff !important; }
 
         /* ── Action cards ── */
         body.dark-mode .action-card-header {
-            background: rgba(255,255,255,.03) !important;
-            border-bottom-color: #334155 !important;
+            background: rgba(255,255,255,.02) !important;
+            border-bottom-color: var(--dm-border) !important;
         }
         body.dark-mode .action-card-body .btn-outline-primary {
-            color: #4ec7d2 !important; border-color: #4ec7d2 !important;
+            color: var(--dm-accent) !important; border-color: var(--dm-accent) !important;
         }
         body.dark-mode .action-card-body .btn-outline-primary:hover {
-            background-color: #4ec7d2 !important; color: #0f172a !important;
+            background-color: var(--dm-accent) !important; color: #0b1628 !important;
         }
 
         /* ── Notificaciones (portal estudiante) ── */
         body.dark-mode .notif-item {
-            background: #1e293b !important; border-left-color: #4ec7d2 !important;
+            background: var(--dm-l2) !important;
+            border-left-color: var(--dm-accent) !important;
+            border-color: var(--dm-border) !important;
         }
         body.dark-mode .notif-item.leida {
-            background: rgba(255,255,255,.04) !important; border-left-color: #334155 !important;
+            background: rgba(255,255,255,.025) !important;
+            border-left-color: var(--dm-border2) !important;
         }
-        body.dark-mode .notif-item:hover { background: #263347 !important; }
+        body.dark-mode .notif-item:hover { background: var(--dm-l4) !important; }
         body.dark-mode .badge-nueva {
-            background: rgba(78,199,210,.2) !important; color: #4ec7d2 !important;
-            border-color: rgba(78,199,210,.4) !important;
+            background: rgba(78,199,210,.15) !important;
+            color: var(--dm-accent) !important;
+            border-color: rgba(78,199,210,.3) !important;
         }
         body.dark-mode .btn-marcar {
-            background: #1e293b !important; border-color: #334155 !important; color: #4ec7d2 !important;
+            background: var(--dm-l3) !important;
+            border-color: var(--dm-border2) !important;
+            color: var(--dm-accent) !important;
         }
 
-        /* ── Barra de búsqueda / toolbar (vistas admin) ── */
+        /* ── Toolbars y filtros ── */
         body.dark-mode .adm-toolbar,
         body.dark-mode .adm-filter-bar,
-        body.dark-mode .est-filter-bar { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .est-filter-bar {
+            background: var(--dm-l2) !important;
+            border-color: var(--dm-border) !important;
+        }
 
         /* ── Leyenda del calendario ── */
-        body.dark-mode .legend-wrap { background: #1e293b !important; border-color: #334155 !important; }
-        body.dark-mode .legend-item { color: #cbd5e1 !important; }
+        body.dark-mode .legend-wrap {
+            background: var(--dm-l2) !important;
+            border-color: var(--dm-border) !important;
+        }
+        body.dark-mode .legend-item { color: var(--dm-text2) !important; }
 
-        /* ── Badges de estado ── */
-        body.dark-mode .badge.bg-light { background-color: #334155 !important; color: #e2e8f0 !important; }
-        body.dark-mode .badge.bg-white { background-color: #334155 !important; color: #e2e8f0 !important; }
+        /* ── Badges ── */
+        body.dark-mode .badge.bg-light { background-color: var(--dm-l4) !important; color: var(--dm-text2) !important; }
+        body.dark-mode .badge.bg-white { background-color: var(--dm-l4) !important; color: var(--dm-text2) !important; }
+
+        /* ── Pills de colores (.bpill) ── */
+        body.dark-mode .bpill.b-red    { background: rgba(220,38,38,.15) !important;  color: #fca5a5 !important; border-color: rgba(220,38,38,.2) !important; }
+        body.dark-mode .bpill.b-blue   { background: rgba(78,199,210,.12) !important;  color: var(--dm-accent) !important; border-color: rgba(78,199,210,.2) !important; }
+        body.dark-mode .bpill.b-green  { background: rgba(16,185,129,.12) !important;  color: #34d399 !important; border-color: rgba(16,185,129,.2) !important; }
+        body.dark-mode .bpill.b-indigo { background: rgba(99,102,241,.15) !important;  color: #a5b4fc !important; border-color: rgba(99,102,241,.2) !important; }
+        body.dark-mode .bpill.b-amber  { background: rgba(245,158,11,.12) !important;  color: #fbbf24 !important; border-color: rgba(245,158,11,.2) !important; }
 
         /* ── Tabla de administradores ── */
         body.dark-mode .adm-tbl thead th {
-            background: #0f172a !important;
-            color: #4ec7d2 !important;
-            border-bottom-color: #334155 !important;
+            background: var(--dm-l1) !important;
+            color: var(--dm-accent) !important;
+            border-bottom-color: var(--dm-border2) !important;
         }
         body.dark-mode .adm-tbl tbody td {
-            color: #e2e8f0 !important;
-            border-bottom-color: #1e293b !important;
+            color: var(--dm-text) !important;
+            border-bottom-color: var(--dm-border) !important;
         }
-        body.dark-mode .adm-tbl tbody tr:hover { background: rgba(78,199,210,.06) !important; }
+        body.dark-mode .adm-tbl tbody tr:hover { background: rgba(78,199,210,.07) !important; }
         body.dark-mode .adm-footer {
-            background: #161f2e !important;
-            border-top-color: #334155 !important;
+            background: var(--dm-l1) !important;
+            border-top-color: var(--dm-border) !important;
         }
-        body.dark-mode .adm-pages { color: #64748b !important; }
-        body.dark-mode .adm-num {
-            background: #334155 !important;
-            color: #94a3b8 !important;
-        }
-        body.dark-mode .adm-name  { color: #f1f5f9 !important; }
-        body.dark-mode .adm-email { color: #94a3b8 !important; }
-        body.dark-mode .adm-perpage { color: #94a3b8 !important; }
+        body.dark-mode .adm-pages  { color: var(--dm-text3) !important; }
+        body.dark-mode .adm-num    { background: var(--dm-l3) !important; color: var(--dm-text2) !important; }
+        body.dark-mode .adm-name   { color: var(--dm-text) !important; }
+        body.dark-mode .adm-email  { color: var(--dm-text2) !important; }
+        body.dark-mode .adm-perpage { color: var(--dm-text2) !important; }
         body.dark-mode .adm-perpage select {
-            background: #0f172a !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
+            background: var(--dm-l3) !important;
+            border-color: var(--dm-border2) !important;
+            color: var(--dm-text) !important;
         }
 
-        /* ── Pills / badges de colores (.bpill) ── */
-        body.dark-mode .bpill.b-red    { background: rgba(220,38,38,.15) !important; color: #fca5a5 !important; }
-        body.dark-mode .bpill.b-blue   { background: rgba(78,199,210,.12) !important; color: #4ec7d2 !important; }
-        body.dark-mode .bpill.b-green  { background: rgba(16,185,129,.12) !important; color: #34d399 !important; }
-        body.dark-mode .bpill.b-indigo { background: rgba(99,102,241,.15) !important; color: #a5b4fc !important; }
-        body.dark-mode .bpill.b-amber  { background: rgba(245,158,11,.12) !important; color: #fbbf24 !important; }
-
-        /* ── Botones de acción (editar / eliminar) ── */
-        body.dark-mode .act-edit { background: rgba(78,199,210,.12) !important; color: #4ec7d2 !important; }
-        body.dark-mode .act-edit:hover { background: #4ec7d2 !important; color: #0f172a !important; }
-        body.dark-mode .act-del  { background: rgba(239,68,68,.12) !important; color: #f87171 !important; }
-        body.dark-mode .act-del:hover  { background: #ef4444 !important; color: #fff !important; }
-
-        /* ── Formularios con clases propias (no Bootstrap) ── */
-        body.dark-mode .search-input,
-        body.dark-mode .filter-select {
-            background: #0f172a !important;
-            border-color: #334155 !important;
-            color: #f1f5f9 !important;
-        }
-        body.dark-mode .filtros-card,
-        body.dark-mode .hist-card,
-        body.dark-mode .hist-stat,
-        body.dark-mode .hist-ciclo {
-            background: #1e293b !important;
-            border-color: #334155 !important;
-        }
+        /* ── Historial académico ── */
         body.dark-mode .hist-ciclo-head {
-            background: #0f172a !important;
-            color: #e2e8f0 !important;
-            border-bottom-color: #334155 !important;
+            background: var(--dm-l1) !important;
+            color: var(--dm-text) !important;
+            border-bottom-color: var(--dm-border) !important;
         }
-        body.dark-mode .hist-table thead tr { background: #1e293b !important; }
+        body.dark-mode .hist-table thead tr { background: var(--dm-l1) !important; }
         body.dark-mode .hist-table th {
-            color: #4ec7d2 !important;
-            border-bottom-color: #334155 !important;
+            color: var(--dm-accent) !important;
+            border-bottom-color: var(--dm-border2) !important;
         }
         body.dark-mode .hist-table td {
-            color: #e2e8f0 !important;
-            border-top-color: #334155 !important;
+            color: var(--dm-text) !important;
+            border-top-color: var(--dm-border) !important;
         }
-        body.dark-mode .hist-table tbody tr:hover { background: rgba(78,199,210,.05) !important; }
+        body.dark-mode .hist-table tbody tr:hover { background: rgba(78,199,210,.06) !important; }
         body.dark-mode .hist-foot {
-            border-top-color: #334155 !important;
-            color: #64748b !important;
+            border-top-color: var(--dm-border) !important;
+            color: var(--dm-text3) !important;
         }
-        body.dark-mode .hist-stat-lbl { color: #64748b !important; }
-        body.dark-mode .hist-stat-val { color: #4ec7d2 !important; }
-        body.dark-mode .nota-materia  { color: #93c5fd !important; }
-        body.dark-mode .nota-periodo  { color: #64748b !important; }
-        body.dark-mode .nota-parciales { color: #94a3b8 !important; }
+        body.dark-mode .hist-stat-lbl { color: var(--dm-text3) !important; }
+        body.dark-mode .hist-stat-val { color: var(--dm-accent) !important; }
+        body.dark-mode .nota-materia   { color: #93c5fd !important; }
+        body.dark-mode .nota-periodo   { color: var(--dm-text3) !important; }
+        body.dark-mode .nota-parciales { color: var(--dm-text2) !important; }
+
+        /* ── Registrar Calificaciones ── */
+        body.dark-mode .rc-card-body  { background: var(--dm-l2) !important; }
+        body.dark-mode .rc-select     { background-color: var(--dm-l3) !important; color: var(--dm-text) !important; border-color: var(--dm-border2) !important; }
+        body.dark-mode .rc-profesor-locked { background: var(--dm-l3) !important; color: var(--dm-text2) !important; border-color: var(--dm-border2) !important; }
+        body.dark-mode .rc-tbl tbody td   { color: var(--dm-text) !important; border-bottom-color: var(--dm-border) !important; }
+        body.dark-mode .rc-tbl tbody tr:hover { background: rgba(78,199,210,.06) !important; }
+        body.dark-mode .rc-resumen-stat   { background: var(--dm-l3) !important; border-color: var(--dm-border) !important; }
+        body.dark-mode .rc-resumen-stat-val { color: #eef4ff !important; }
+        body.dark-mode .obs-input  { background: var(--dm-l3) !important; border-color: var(--dm-border2) !important; color: var(--dm-text) !important; }
+        body.dark-mode .parcial-input { background: var(--dm-l3) !important; border-color: var(--dm-border2) !important; color: var(--dm-text) !important; }
+
+        /* ── Permisos de padres ── */
+        body.dark-mode .perm-switch {
+            background: var(--dm-l3) !important;
+            border-color: var(--dm-border) !important;
+        }
+        body.dark-mode .perm-switch:hover {
+            border-color: var(--dm-accent) !important;
+            background: rgba(78,199,210,.06) !important;
+        }
+
+        /* ── Separadores horizontales ── */
+        body.dark-mode hr,
+        body.dark-mode .dropdown-divider { border-color: var(--dm-border) !important; }
+
+        /* ── Scrollbar personalizado ── */
+        body.dark-mode ::-webkit-scrollbar       { width: 6px; height: 6px; }
+        body.dark-mode ::-webkit-scrollbar-track { background: var(--dm-base); }
+        body.dark-mode ::-webkit-scrollbar-thumb { background: var(--dm-border2); border-radius: 99px; }
+        body.dark-mode ::-webkit-scrollbar-thumb:hover { background: #3a5a80; }
+
+        /* ══════════════════════════════════════════════════════════════
+           OVERRIDES GLOBALES — uniformiza TODAS las vistas al nuevo
+           sistema de capas. Sobrescribe los colores viejos embebidos
+           en cada vista con la nueva paleta azul-marino refinada.
+           ══════════════════════════════════════════════════════════════ */
+
+        /* ── Fondos de página (wraps / panels) → dm-base ── */
+        body.dark-mode .gr-wrap, body.dark-mode .hor-wrap, body.dark-mode .mc-wrap,
+        body.dark-mode .rc-wrap, body.dark-mode .pc-wrap, body.dark-mode .est-wrap,
+        body.dark-mode .me-wrap, body.dark-mode .pad-wrap, body.dark-mode .pd-wrap,
+        body.dark-mode .prof-wrap, body.dark-mode .pmg-wrap, body.dark-mode .cec-wrap,
+        body.dark-mode .ces-wrap, body.dark-mode .sec-wrap, body.dark-mode .cup-wrap,
+        body.dark-mode .pa-wrap, body.dark-mode .obs-wrap, body.dark-mode .ai-wrap,
+        body.dark-mode .aai-wrap, body.dark-mode .cal-wrap, body.dark-mode .ical-wrap,
+        body.dark-mode .cic-wrap, body.dark-mode .cd-wrap, body.dark-mode .mat-wrap,
+        body.dark-mode .permisos-wrap, body.dark-mode .usr-wrap, body.dark-mode .usp-wrap,
+        body.dark-mode .usc-wrap, body.dark-mode .epa-wrap, body.dark-mode .sa-form-panel,
+        body.dark-mode .edit-form-panel, body.dark-mode .prof-edit-panel,
+        body.dark-mode .doc-form-panel, body.dark-mode .cal-mini-stats,
+        body.dark-mode .role-card, body.dark-mode .perm-item, body.dark-mode .meta-row,
+        body.dark-mode .td-hora, body.dark-mode .pf-box, body.dark-mode .dp-block,
+        body.dark-mode .adm-wrap { background: var(--dm-base) !important; }
+
+        /* ── Superficies L2 — cards, toolbars, tabs, footers ── */
+        body.dark-mode .gr-toolbar, body.dark-mode .gr-tabs, body.dark-mode .gr-pag-wrap,
+        body.dark-mode .grado-card, body.dark-mode .prof-toolbar, body.dark-mode .prof-table-card,
+        body.dark-mode .prof-pag, body.dark-mode .pad-toolbar, body.dark-mode .pad-table-card,
+        body.dark-mode .pad-pag, body.dark-mode .pmg-toolbar, body.dark-mode .pmg-table-card,
+        body.dark-mode .pmg-footer, body.dark-mode .mat-toolbar, body.dark-mode .mat-tabs,
+        body.dark-mode .mat-card, body.dark-mode .mat-table-card, body.dark-mode .mat-pag,
+        body.dark-mode .sec-toolbar, body.dark-mode .sec-card, body.dark-mode .sec-pag,
+        body.dark-mode .cup-toolbar, body.dark-mode .cup-table-card, body.dark-mode .cup-pag,
+        body.dark-mode .pa-table-card, body.dark-mode .obs-toolbar, body.dark-mode .obs-table-card,
+        body.dark-mode .obs-footer, body.dark-mode .cic-table-card, body.dark-mode .ical-toolbar,
+        body.dark-mode .ical-table-card, body.dark-mode .ical-footer, body.dark-mode .cal-table-card,
+        body.dark-mode .cal-stat, body.dark-mode .cd-toolbar, body.dark-mode .cd-tabs-bar,
+        body.dark-mode .cd-card, body.dark-mode .cd-footer, body.dark-mode .cd-chart-card,
+        body.dark-mode .cd-detail-panel, body.dark-mode .me-table-card,
+        body.dark-mode .me-materias-card, body.dark-mode .me-toolbar, body.dark-mode .me-stat-card,
+        body.dark-mode .mc-card, body.dark-mode .mc-card-body, body.dark-mode .mc-card-footer,
+        body.dark-mode .pc-group, body.dark-mode .ces-table-card, body.dark-mode .cec-card,
+        body.dark-mode .cec-card-body, body.dark-mode .usp-table-card, body.dark-mode .usr-table-card,
+        body.dark-mode .usr-tabs, body.dark-mode .usr-footer, body.dark-mode .usc-table-card,
+        body.dark-mode .perm-toolbar, body.dark-mode .perm-table-card, body.dark-mode .perm-pag,
+        body.dark-mode .sa-field-card, body.dark-mode .edit-field-card, body.dark-mode .f-card,
+        body.dark-mode .doc-field-card, body.dark-mode .epa-card, body.dark-mode .accion-card,
+        body.dark-mode .hijo-row, body.dark-mode .pd-info-card, body.dark-mode .pd-info-body,
+        body.dark-mode .mh-body, body.dark-mode .cal-card-header, body.dark-mode .adm-table-card,
+        body.dark-mode .pc-tbl thead th { background: var(--dm-l2) !important; border-color: var(--dm-border) !important; }
+
+        /* ── Inputs y selects de vistas ── */
+        body.dark-mode .gr-search input, body.dark-mode .gr-filter select,
+        body.dark-mode .gr-perpage select, body.dark-mode .prof-search input,
+        body.dark-mode .prof-perpage select, body.dark-mode .pad-search input,
+        body.dark-mode .pad-perpage select, body.dark-mode .pmg-search-wrap input,
+        body.dark-mode .pmg-select, body.dark-mode .mat-search, body.dark-mode .mat-select,
+        body.dark-mode .sec-input, body.dark-mode .sec-select,
+        body.dark-mode .cup-search-input, body.dark-mode .cup-filter-sel,
+        body.dark-mode .obs-select, body.dark-mode .ical-select,
+        body.dark-mode .cd-select, body.dark-mode .cd-search, body.dark-mode .me-search,
+        body.dark-mode .perm-search input, body.dark-mode .f-input, body.dark-mode .f-select,
+        body.dark-mode .rc-input, body.dark-mode .pw-input, body.dark-mode .filter-input,
+        body.dark-mode .form-control-sm, body.dark-mode .form-select-sm,
+        body.dark-mode .btn-ver-h, body.dark-mode .btn-configurar,
+        body.dark-mode .cec-btn-ver { background: var(--dm-l3) !important; border-color: var(--dm-border2) !important; color: var(--dm-text) !important; }
+
+        body.dark-mode .btn-ver-h, body.dark-mode .btn-configurar,
+        body.dark-mode .cec-btn-ver { color: var(--dm-accent) !important; border-color: var(--dm-accent) !important; }
+
+        /* ── Texto en celdas de tablas ── */
+        body.dark-mode .usp-tbl tbody td, body.dark-mode .usr-tbl tbody td,
+        body.dark-mode .usc-tbl tbody td, body.dark-mode .prof-table tbody td,
+        body.dark-mode .pad-tbl tbody td, body.dark-mode .pmg-tbl tbody td,
+        body.dark-mode .mat-tbl tbody td, body.dark-mode .sec-tbl tbody td,
+        body.dark-mode .cup-tbl tbody td, body.dark-mode .pa-tbl tbody td,
+        body.dark-mode .obs-tbl tbody td, body.dark-mode .cic-tbl tbody td,
+        body.dark-mode .ical-tbl tbody td, body.dark-mode .cal-tbl tbody td,
+        body.dark-mode .cal-table tbody td, body.dark-mode .cd-tbl tbody td,
+        body.dark-mode .me-tbl tbody td, body.dark-mode .pc-tbl tbody td,
+        body.dark-mode .ces-tbl tbody td, body.dark-mode .perm-table tbody td,
+        body.dark-mode .mh-table tbody td, body.dark-mode .mh-table thead th,
+        body.dark-mode .accion-item .nombre, body.dark-mode .cd-name,
+        body.dark-mode .grado-title, body.dark-mode .ces-nombre,
+        body.dark-mode .me-nombre, body.dark-mode .dp-grado-name,
+        body.dark-mode .cd-chart-head span, body.dark-mode .pf-value,
+        body.dark-mode .hijo-nombre { color: var(--dm-text) !important; }
+
+        /* ── Bordes en filas / separadores ── */
+        body.dark-mode .usp-tbl tbody tr, body.dark-mode .usr-tbl tbody tr,
+        body.dark-mode .usc-tbl tbody tr, body.dark-mode .prof-table tbody tr,
+        body.dark-mode .pad-tbl tbody tr, body.dark-mode .pmg-tbl tbody tr,
+        body.dark-mode .mat-tbl tbody tr, body.dark-mode .sec-tbl tbody tr,
+        body.dark-mode .cup-tbl tbody tr, body.dark-mode .pa-tbl tbody tr,
+        body.dark-mode .obs-tbl tbody tr, body.dark-mode .cic-tbl tbody tr,
+        body.dark-mode .ical-tbl tbody tr, body.dark-mode .cal-tbl tbody tr,
+        body.dark-mode .cal-table tbody tr, body.dark-mode .cd-tbl tbody tr,
+        body.dark-mode .me-tbl tbody tr, body.dark-mode .pc-tbl tbody tr,
+        body.dark-mode .ces-tbl tbody tr, body.dark-mode .perm-table tbody tr,
+        body.dark-mode .grado-card-body, body.dark-mode .grado-card-actions,
+        body.dark-mode .accion-item, body.dark-mode .cd-chart-head,
+        body.dark-mode .dp-grado-row, body.dark-mode .epa-section-title,
+        body.dark-mode .btn-group-sep, body.dark-mode .f-card-title,
+        body.dark-mode .sa-section-title, body.dark-mode .edit-section-title,
+        body.dark-mode .doc-section-title { border-color: var(--dm-border) !important; }
+
+        /* ── Texto muted / secundario por vista ── */
+        body.dark-mode .f-label, body.dark-mode .hijo-grado,
+        body.dark-mode .me-materia-tag, body.dark-mode .mc-materia-tag,
+        body.dark-mode .mc-est-count, body.dark-mode .me-stat-val,
+        body.dark-mode .grado-subtitle, body.dark-mode .grado-meta { color: var(--dm-text2) !important; }
+
+        body.dark-mode .me-materia-tag,
+        body.dark-mode .mc-materia-tag { background: rgba(78,199,210,.08) !important; }
+
+        /* ── Tabs inactivos ── */
+        body.dark-mode .mat-tab, body.dark-mode .usr-tab:not(.active) {
+            background: var(--dm-l3) !important; border-color: var(--dm-border) !important; color: var(--dm-text2) !important;
+        }
+        body.dark-mode .mat-tab.active { background: var(--dm-l2) !important; color: var(--dm-accent) !important; }
+
+        /* ── Hover en tablas ── */
+        body.dark-mode .prof-table tbody tr:hover, body.dark-mode .pad-tbl tbody tr:hover,
+        body.dark-mode .pmg-tbl tbody tr:hover, body.dark-mode .mat-tbl tbody tr:hover td,
+        body.dark-mode .cup-tbl tbody tr:hover, body.dark-mode .obs-tbl tbody tr:hover,
+        body.dark-mode .cic-tbl tbody tr:hover, body.dark-mode .ical-tbl tbody tr:hover,
+        body.dark-mode .cal-tbl tbody tr:hover, body.dark-mode .cd-tbl tbody tr:hover,
+        body.dark-mode .me-tbl tbody tr:hover, body.dark-mode .pc-tbl tbody tr:hover,
+        body.dark-mode .perm-table tbody tr:hover, body.dark-mode .cal-table tbody tr:hover,
+        body.dark-mode .est-tbl tbody tr:hover td { background: rgba(78,199,210,.07) !important; }
+
+        /* ── FullCalendar dark ── */
+        body.dark-mode .fc .fc-toolbar-title { color: var(--dm-text) !important; }
+        body.dark-mode .fc .fc-button { background: var(--dm-l3) !important; border-color: var(--dm-border2) !important; color: var(--dm-text2) !important; }
+        body.dark-mode .fc .fc-col-header-cell { background: var(--dm-l1) !important; }
+        body.dark-mode .fc .fc-daygrid-day-number { color: var(--dm-text2) !important; }
+        body.dark-mode .fc .fc-daygrid-day,
+        body.dark-mode .fc .fc-scrollgrid { border-color: var(--dm-border) !important; }
+        body.dark-mode .fc-theme-standard td,
+        body.dark-mode .fc-theme-standard th { border-color: var(--dm-border) !important; }
+
+        /* ── Horario table ── */
+        body.dark-mode .mh-table thead th.th-hora { color: var(--dm-accent) !important; }
+        body.dark-mode .celda-asignada { background: rgba(78,199,210,.08) !important; }
+        body.dark-mode .celda-materia  { color: #93c5fd !important; }
+
+        /* ── Badges de estado en index views ── */
+        body.dark-mode .badge-activo, body.dark-mode .badge-parentesco { background: rgba(78,199,210,.1) !important; color: var(--dm-accent) !important; }
+        body.dark-mode .nivel-primaria   { background: rgba(5,150,105,.12) !important; color: #34d399 !important; }
+        body.dark-mode .nivel-secundaria { background: rgba(99,102,241,.12) !important; color: #a5b4fc !important; }
+        body.dark-mode .badge-inactivo   { background: rgba(220,38,38,.12) !important; color: #f87171 !important; }
+        body.dark-mode .grado-meta       { background: var(--dm-l3) !important; }
+
+        /* ── Superadmin grados card (_card.blade.php) ── */
+        body.dark-mode .gc-mat-count { background: var(--dm-l3) !important; border-color: var(--dm-border) !important; }
+        body.dark-mode .gc-mat-count-lbl { color: var(--dm-text2) !important; }
+        body.dark-mode .gc-mat-count-num { color: var(--dm-accent) !important; }
+        body.dark-mode .gc-mat-pill { background: rgba(78,199,210,.1) !important; border-color: rgba(78,199,210,.2) !important; color: var(--dm-text) !important; }
+        body.dark-mode .gc-mat-more { color: var(--dm-text2) !important; }
+        body.dark-mode .gc-footer   { background: var(--dm-l1) !important; border-radius: 0 0 12px 12px; }
+        body.dark-mode .gc-btn-ver  { background: var(--dm-l3) !important; border-color: var(--dm-border2) !important; color: var(--dm-text2) !important; }
+        body.dark-mode .gc-btn-edit { background: rgba(245,158,11,.1) !important; border-color: rgba(245,158,11,.25) !important; color: #fbbf24 !important; }
+    </style>
+
+    {{-- Estilos base para clases del grado card (modo claro) --}}
+    <style>
+        .gc-mat-count { display:flex; align-items:center; justify-content:space-between; background:#f5f8fc; border:1px solid #e8edf4; border-radius:8px; padding:.6rem .85rem; margin-bottom:.75rem; }
+        .gc-mat-count-lbl { font-size:.72rem; font-weight:600; color:#6b7a90; display:flex; align-items:center; gap:.4rem; }
+        .gc-mat-count-num { font-size:.8rem; font-weight:800; color:#003b73; }
+        .gc-mat-pill { display:inline-flex; align-items:center; gap:.25rem; background:linear-gradient(135deg,rgba(78,199,210,.12),rgba(0,80,143,.07)); border:1px solid rgba(78,199,210,.3); border-radius:999px; padding:.2rem .6rem; font-size:.68rem; font-weight:600; color:#003b73; margin:.1rem .1rem 0 0; }
+        .gc-mat-more { font-size:.65rem; color:#6b7a90; margin-left:.25rem; }
+        .gc-footer { background:white; border-radius:0 0 12px 12px; }
+        .gc-btn-ver  { display:flex; align-items:center; justify-content:center; gap:.3rem; background:#f5f8fc; border:1px solid #e8edf4; border-radius:8px; padding:.45rem; font-size:.72rem; font-weight:700; color:#003b73; text-decoration:none; transition:all .2s; }
+        .gc-btn-edit { display:flex; align-items:center; justify-content:center; gap:.3rem; background:#fff8eb; border:1px solid #fde68a; border-radius:8px; padding:.45rem; font-size:.72rem; font-weight:700; color:#92400e; text-decoration:none; transition:all .2s; }
     </style>
 </head>
 <body>
