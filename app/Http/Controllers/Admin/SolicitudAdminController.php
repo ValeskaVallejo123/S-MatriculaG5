@@ -1,75 +1,41 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin; // Namespace corregido
 
 use App\Http\Controllers\Controller;
-use App\Models\Solicitud;
+use App\Models\CupoMaximo;
 use Illuminate\Http\Request;
 
+// Nombre de clase corregido para que NO choque con CupoMaximoController
 class SolicitudAdminController extends Controller
 {
-    /**
-     * Listar todas las solicitudes
-     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
-        $solicitudes = Solicitud::with('estudiante')
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
-        return view('admin.solicitudes.index', compact('solicitudes'));
+        // Si este controlador no se usa para cupos, aquí irá la lógica de solicitudes
+        $cursos = CupoMaximo::orderBy('nombre')->get();
+        return view('cupos_maximos.index', compact('cursos'));
     }
 
-    /**
-     * Mostrar detalle de una solicitud
-     */
-    public function show($id)
+    // He mantenido los métodos para que no falle si alguna ruta los llama,
+    // pero ahora bajo el nombre de SolicitudAdminController.
+
+    public function store(Request $request)
     {
-        $solicitud = Solicitud::with('estudiante')->findOrFail($id);
-        return view('admin.solicitudes.show', compact('solicitud'));
+        return redirect()->route('superadmin.cupos_maximos.index');
     }
 
-    /**
-     * Aprobar solicitud
-     */
-    public function aprobar($id)
+    public function update(Request $request, string $id)
     {
-        try {
-            $solicitud = Solicitud::with('estudiante')->findOrFail($id);
-            $solicitud->aprobar();
-
-            $mensaje = 'Solicitud aprobada exitosamente.';
-            
-            if ($solicitud->email) {
-                $mensaje .= ' Se ha creado un usuario para el padre con email: ' . $solicitud->email . ' y contraseña: DNI del estudiante.';
-            }
-
-            return redirect()->back()->with('success', $mensaje);
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al aprobar la solicitud: ' . $e->getMessage());
-        }
+        return redirect()->route('superadmin.cupos_maximos.index');
     }
 
-    /**
-     * Rechazar solicitud
-     */
-    public function rechazar(Request $request, $id)
+    public function destroy(string $id)
     {
-        $solicitud = Solicitud::findOrFail($id);
-        $solicitud->rechazar();
-
-        return redirect()->back()->with('success', 'Solicitud rechazada');
-    }
-
-    /**
-     * Cambiar estado a pendiente
-     */
-    public function pendiente($id)
-    {
-        $solicitud = Solicitud::findOrFail($id);
-        $solicitud->estado = 'pendiente';
-        $solicitud->save();
-
-        return redirect()->back()->with('success', 'Solicitud marcada como pendiente');
+        return redirect()->route('superadmin.cupos_maximos.index');
     }
 }

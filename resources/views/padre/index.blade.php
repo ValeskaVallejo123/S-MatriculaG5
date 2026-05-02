@@ -1,496 +1,409 @@
 @extends('layouts.app')
 
-@section('title', 'Detalle del Estudiante')
-@section('page-title', 'Detalle del Estudiante')
+@section('title', 'Padres y Tutores')
+@section('page-title', 'Gestión de Padres y Tutores')
 
 @section('topbar-actions')
-    <a href="{{ route('padre.dashboard') }}"
-       style="background:white;color:#00508f;padding:.5rem 1.2rem;border-radius:8px;
-              text-decoration:none;font-weight:600;display:inline-flex;align-items:center;
-              gap:.5rem;border:2px solid #00508f;font-size:.9rem;">
-        <i class="fas fa-arrow-left"></i> Volver al Portal
+    <a href="{{ route('padres.create') }}" class="adm-btn-solid">
+        <i class="fas fa-plus"></i> Agregar Nuevo Padre/Tutor
     </a>
 @endsection
 
 @push('styles')
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-:root {
-    --blue-dark:  #003b73;
-    --blue-mid:   #00508f;
-    --cyan:       #4ec7d2;
-    --cyan-light: rgba(78,199,210,.1);
-    --cyan-border:#b2e8ed;
-    --surface:    #f5f7fa;
-    --border:     #e2e8f0;
-    --text:       #0f172a;
-    --muted:      #64748b;
-    --subtle:     #94a3b8;
-    --radius:     12px;
-    --shadow:     0 1px 4px rgba(0,59,115,.07);
-    --shadow-md:  0 4px 16px rgba(0,59,115,.1);
-}
+.pad-wrap { font-family: 'Inter', sans-serif; }
 
-.hijo-wrap {
-    font-family:'Inter',sans-serif;
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:1.25rem;
+.adm-btn-solid {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .6rem .75rem;
+    border-radius: 7px;
+    font-size: .83rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: #fff; border: none; text-decoration: none; transition: opacity .15s;
 }
+.adm-btn-solid:hover { opacity: .88; color: #fff; }
 
-/* ══ BANNER ══ */
-.hijo-banner {
-    background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue-mid) 55%,var(--cyan) 100%);
-    border-radius:var(--radius);
-    padding:1.5rem 2rem;
-    display:flex; align-items:center; gap:1.5rem;
-    box-shadow:0 4px 20px rgba(0,59,115,.2);
-    position:relative; overflow:hidden;
+/* ── Stats ── */
+.pad-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1rem; margin-bottom: 1.25rem;
 }
-.hijo-banner::before {
-    content:''; position:absolute; top:-50%; right:-3%;
-    width:220px; height:220px; background:rgba(255,255,255,.07); border-radius:50%;
-}
-.hijo-banner::after {
-    content:''; position:absolute; bottom:-55%; right:15%;
-    width:150px; height:150px; background:rgba(255,255,255,.04); border-radius:50%;
-}
-.hijo-banner-av {
-    width:72px; height:72px; border-radius:16px; flex-shrink:0;
-    background:rgba(255,255,255,.15); border:2.5px solid rgba(255,255,255,.35);
-    display:flex; align-items:center; justify-content:center;
-    font-size:1.6rem; font-weight:800; color:#fff;
-    position:relative; z-index:1; overflow:hidden;
-    box-shadow:0 4px 12px rgba(0,0,0,.2);
-}
-.hijo-banner-av img { width:100%; height:100%; object-fit:cover; }
-.hijo-banner-info { position:relative; z-index:1; flex:1; }
-.hijo-banner-info h3 { color:#fff; font-weight:800; margin:0 0 .25rem; font-size:1.3rem; }
-.hijo-banner-info p  { color:rgba(255,255,255,.72); font-size:.82rem; margin:0 0 .65rem; }
-.hijo-banner-tags { display:flex; flex-wrap:wrap; gap:.4rem; }
-.h-tag {
-    display:inline-flex; align-items:center; gap:.3rem;
-    padding:.22rem .75rem; border-radius:999px; font-size:.72rem; font-weight:600;
-}
-.tag-cyan  { background:rgba(78,199,210,.3);  color:#fff; border:1px solid rgba(78,199,210,.5); }
-.tag-white { background:rgba(255,255,255,.15); color:#fff; border:1px solid rgba(255,255,255,.28); }
-.tag-green { background:rgba(16,185,129,.28);  color:#fff; border:1px solid rgba(16,185,129,.5); }
+@media(max-width:640px){ .pad-stats { grid-template-columns: 1fr; } }
 
-/* ══ STATS ══ */
-.hijo-stats {
-    display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;
+.pad-stat {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
 }
-@media(max-width:768px){ .hijo-stats { grid-template-columns:1fr 1fr; } }
-@media(max-width:480px){ .hijo-stats { grid-template-columns:1fr; } }
+.pad-stat-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.pad-stat-icon i { font-size: 1.15rem; color: #fff; }
+.pad-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
+.pad-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
 
-.h-stat {
-    background:#fff; border:1px solid var(--border); border-radius:var(--radius);
-    padding:1.1rem 1.25rem; display:flex; align-items:center; gap:1rem;
-    box-shadow:var(--shadow); position:relative; overflow:hidden;
-    transition:box-shadow .15s,transform .15s;
+/* ── Toolbar ── */
+.pad-toolbar {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,.05);
 }
-.h-stat:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
-.h-stat-stripe {
-    position:absolute; left:0; top:0; bottom:0;
-    width:4px; border-radius:var(--radius) 0 0 var(--radius);
+.pad-search {
+    display: flex; align-items: center; gap: .5rem;
+    background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px;
+    padding: .35rem .75rem; flex: 1; max-width: 320px;
 }
-.h-stat-icon {
-    width:44px; height:44px; border-radius:11px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:1.05rem;
+.pad-search input {
+    border: none; background: transparent; outline: none;
+    font-size: .82rem; color: #0f172a; width: 100%;
 }
-.h-stat-lbl { font-size:.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.15rem; }
-.h-stat-val { font-size:1rem; font-weight:800; color:var(--blue-dark); line-height:1.2; }
+.pad-search i { color: #94a3b8; font-size: .82rem; }
 
-/* ══ SECTION CARD ══ */
-.sec-card {
-    background:#fff; border:1px solid var(--border); border-radius:var(--radius);
-    overflow:hidden; box-shadow:var(--shadow);
+.pad-perpage { display: flex; align-items: center; gap: .5rem; font-size: .8rem; color: #64748b; }
+.pad-perpage select {
+    padding: .3rem .6rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
+    font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
 }
-.sec-head {
-    background:var(--blue-dark); padding:.85rem 1.25rem;
-    display:flex; align-items:center; justify-content:space-between;
+.pad-perpage select:focus { border-color: #4ec7d2; }
+
+/* ── Card ── */
+.pad-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
 }
-.sec-head-left { display:flex; align-items:center; gap:.6rem; }
-.sec-head i    { color:var(--cyan); font-size:1rem; }
-.sec-head span { color:#fff; font-weight:700; font-size:.95rem; }
-.sec-head-badge {
-    padding:.2rem .7rem; border-radius:999px; font-size:.72rem; font-weight:700;
-    background:rgba(78,199,210,.25); color:#fff; border:1px solid rgba(78,199,210,.4);
+.pad-card-head {
+    background: #003b73; padding: .85rem 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+}
+.pad-card-head i { color: #4ec7d2; font-size: 1rem; }
+.pad-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+
+/* ── Table ── */
+.pad-tbl { width: 100%; border-collapse: collapse; }
+.pad-tbl thead th {
+    background: #f8fafc; padding: .6rem 1rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+}
+.pad-tbl thead th.tc { text-align: center; }
+.pad-tbl tbody td {
+    padding: .75rem 1rem; border-bottom: 1px solid #f1f5f9;
+    font-size: .82rem; color: #334155; vertical-align: middle;
+}
+.pad-tbl tbody td.tc { text-align: center; }
+.pad-tbl tbody tr:last-child td { border-bottom: none; }
+.pad-tbl tbody tr:hover { background: #fafbfc; }
+
+/* Número */
+.pad-num {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: #f1f5f9; color: #64748b;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700;
 }
 
-/* ══ DATOS PERSONALES ══ */
-.pf-grid {
-    display:grid; grid-template-columns:1fr 1fr; gap:.65rem; padding:1rem;
+/* Avatar */
+.pad-av {
+    width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #fff; font-size: .9rem;
 }
-@media(max-width:500px){ .pf-grid { grid-template-columns:1fr; } }
-.pf-box {
-    background:var(--surface); border-radius:8px;
-    border-left:3px solid var(--cyan); padding:.55rem .8rem;
-}
-.pf-label { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--subtle); margin-bottom:.15rem; }
-.pf-value { font-size:.82rem; font-weight:600; color:var(--text); }
-.pf-value.empty { color:var(--subtle); font-style:italic; font-weight:400; }
+.pad-name { font-weight: 600; color: #0f172a; font-size: .83rem; }
+.pad-sub  { font-size: .73rem; color: #64748b; }
 
-/* ══ OBSERVACIONES ══ */
-.obs-list { padding:.75rem 1rem; display:flex; flex-direction:column; gap:.5rem; }
-.obs-item {
-    display:flex; align-items:flex-start; gap:.85rem;
-    padding:.85rem 1rem; border-radius:9px;
-    border:1px solid var(--border); background:#fff;
-    transition:background .15s,border-color .15s;
+/* Badges */
+.bpill {
+    display: inline-flex; align-items: center; gap: .25rem;
+    padding: .2rem .6rem; border-radius: 999px;
+    font-size: .7rem; font-weight: 600; white-space: nowrap;
 }
-.obs-item:hover { background:var(--cyan-light); border-color:var(--cyan-border); }
-.obs-dot {
-    width:36px; height:36px; border-radius:9px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:.85rem;
-}
-.obs-body { flex:1; min-width:0; }
-.obs-titulo { font-weight:700; color:var(--blue-dark); font-size:.84rem; margin-bottom:.2rem; }
-.obs-desc   { color:var(--muted); font-size:.78rem; margin-bottom:.25rem; line-height:1.5; }
-.obs-meta   { color:var(--subtle); font-size:.7rem; display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; }
-.obs-tipo-badge {
-    display:inline-flex; align-items:center; gap:.25rem;
-    padding:.15rem .55rem; border-radius:999px; font-size:.65rem; font-weight:700;
-}
+.b-blue   { background: #e8f8f9; color: #00508f; }
+.b-green  { background: #ecfdf5; color: #059669; }
+.b-red    { background: #fef2f2; color: #dc2626; }
+.b-amber  { background: #fffbeb; color: #92400e; }
+.b-gray   { background: #f1f5f9; color: #64748b; }
 
-/* ══ EMPTY STATE ══ */
-.empty-state { text-align:center; padding:3rem 2rem; color:var(--subtle); }
-.empty-state i { font-size:2rem; color:var(--border); display:block; margin-bottom:.75rem; }
-.empty-state p { margin:0; font-size:.82rem; }
-
-/* ══ MAIN GRID ══ */
-.main-grid {
-    display:grid; grid-template-columns:1fr 300px; gap:1.25rem; align-items:start;
+/* Hijos chips */
+.hijo-chip {
+    display: inline-flex; align-items: center; gap: .25rem;
+    padding: .2rem .55rem; border-radius: 6px;
+    background: #f0f9ff; color: #0369a1;
+    font-size: .72rem; font-weight: 600;
+    border: 1px solid #bae6fd; margin: .1rem;
 }
-@media(max-width:1100px){ .main-grid { grid-template-columns:1fr; } }
+.hijos-empty { font-size: .75rem; color: #cbd5e1; font-style: italic; }
 
-/* ══ INFO PADRE ══ */
-.padre-tag {
-    display:inline-flex; align-items:center; gap:.4rem;
-    padding:.3rem .85rem; border-radius:999px; font-size:.73rem; font-weight:600;
-    background:rgba(78,199,210,.12); color:var(--blue-mid);
-    border:1px solid var(--cyan-border);
+/* Actions */
+.act-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
 }
+.act-btn:hover { transform: translateY(-1px); }
+.act-edit { background: #e8f8f9; color: #00508f; }
+.act-edit:hover { background: #4ec7d2; color: #fff; }
+.act-del  { background: #fef2f2; color: #ef4444; }
+.act-del:hover  { background: #ef4444; color: #fff; }
+.act-view { background: #f0fdf4; color: #059669; }
+.act-view:hover { background: #059669; color: #fff; }
+
+/* Empty */
+.pad-empty { padding: 3.5rem 1rem; text-align: center; }
+.pad-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
+.pad-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
+
+/* Footer */
+.pad-footer {
+    padding: .85rem 1.25rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafafa; flex-wrap: wrap; gap: .5rem;
+}
+.pad-pages { font-size: .78rem; color: #94a3b8; }
+
+.pagination { margin: 0; gap: 3px; display: flex; }
+.pagination .page-link {
+    border-radius: 7px; padding: .3rem .65rem;
+    font-size: .78rem; font-weight: 500;
+    border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
+}
+.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-color: #4ec7d2; color: #fff;
+}
+.pagination .page-item.disabled .page-link { opacity: .45; }
 </style>
 @endpush
 
 @section('content')
-@php
-    $obsColors = [
-        'academica'  => ['bg'=>'rgba(78,199,210,.12)', 'color'=>'#00508f', 'icon'=>'fa-book',           'label'=>'Académica'],
-        'conductual' => ['bg'=>'rgba(239,68,68,.1)',   'color'=>'#dc2626', 'icon'=>'fa-exclamation',    'label'=>'Conductual'],
-        'positiva'   => ['bg'=>'rgba(16,185,129,.1)',  'color'=>'#059669', 'icon'=>'fa-star',           'label'=>'Positiva'],
-        'salud'      => ['bg'=>'rgba(245,158,11,.1)',  'color'=>'#d97706', 'icon'=>'fa-heartbeat',      'label'=>'Salud'],
-        'asistencia' => ['bg'=>'rgba(99,102,241,.1)',  'color'=>'#6366f1', 'icon'=>'fa-calendar-check', 'label'=>'Asistencia'],
-        'otro'       => ['bg'=>'rgba(100,116,139,.1)', 'color'=>'#475569', 'icon'=>'fa-comment',        'label'=>'General'],
-    ];
+<div class="pad-wrap">
 
-    $observaciones = collect();
-    try {
-        $observaciones = \App\Models\Observacion::where('estudiante_id', $estudiante->id)
-            ->with(['profesor'])
-            ->latest()
-            ->get();
-    } catch (\Exception $e) {}
-@endphp
+    {{-- Stats --}}
+    <div class="pad-stats">
+        <div class="pad-stat">
+            <div class="pad-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
+                <i class="fas fa-users"></i>
+            </div>
+            <div>
+                <div class="pad-stat-lbl">Total Padres</div>
+                <div class="pad-stat-num">{{ $padres->total() }}</div>
+            </div>
+        </div>
+        <div class="pad-stat">
+            <div class="pad-stat-icon" style="background:linear-gradient(135deg,#34d399,#059669);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div>
+                <div class="pad-stat-lbl">Activos</div>
+                {{-- ✅ CORREGIDO: estado es boolean (1/0), no string --}}
+                <div class="pad-stat-num">{{ $padres->getCollection()->where('estado', 1)->count() }}</div>
+            </div>
+        </div>
+        <div class="pad-stat">
+            <div class="pad-stat-icon" style="background:linear-gradient(135deg,#f87171,#dc2626);">
+                <i class="fas fa-child"></i>
+            </div>
+            <div>
+                <div class="pad-stat-lbl">Con Hijos Vinculados</div>
+                <div class="pad-stat-num">{{ $padres->getCollection()->filter(fn($p) => $p->estudiantes->count() > 0)->count() }}</div>
+            </div>
+        </div>
+    </div>
 
-<div class="hijo-wrap">
-
-    {{-- ══ BANNER ══ --}}
-    <div class="hijo-banner">
-        <div class="hijo-banner-av">
-            @if($estudiante->foto)
-                <img src="{{ asset('storage/' . $estudiante->foto) }}" alt="">
-            @else
-                {{ strtoupper(substr($estudiante->nombre1,0,1) . substr($estudiante->apellido1,0,1)) }}
+    {{-- Toolbar --}}
+    <div class="pad-toolbar">
+        <form method="GET" action="{{ route('padres.index') }}" style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;flex:1;">
+            <div class="pad-search">
+                <i class="fas fa-search"></i>
+                <input type="text" name="buscar" placeholder="Buscar por nombre, DNI o correo..."
+                       value="{{ request('buscar') }}">
+            </div>
+            <button type="submit" style="padding:.38rem .85rem;border-radius:7px;border:none;
+                background:linear-gradient(135deg,#4ec7d2,#00508f);color:#fff;font-size:.8rem;
+                font-weight:600;cursor:pointer;">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            @if(request('buscar'))
+                <a href="{{ route('padres.index') }}" style="font-size:.78rem;color:#64748b;text-decoration:none;">
+                    <i class="fas fa-times"></i> Limpiar
+                </a>
             @endif
-        </div>
-        <div class="hijo-banner-info">
-            <h3>
-                {{ $estudiante->nombre1 }} {{ $estudiante->nombre2 }}
-                {{ $estudiante->apellido1 }} {{ $estudiante->apellido2 }}
-            </h3>
-            <p>
-                <i class="fas fa-user-friends me-1"></i>
-                Viendo como: {{ $padre->nombre }} {{ $padre->apellido }}
-                &nbsp;·&nbsp;
-                {{ ucfirst(str_replace('_',' ', $padre->parentesco ?? '')) }}
-            </p>
-            <div class="hijo-banner-tags">
-                <span class="h-tag tag-cyan">
-                    <i class="fas fa-graduation-cap"></i>
-                    {{ $estudiante->grado }} — Sección {{ $estudiante->seccion }}
-                </span>
-                <span class="h-tag tag-white">
-                    <i class="fas fa-id-card"></i>
-                    {{ $estudiante->dni }}
-                </span>
-                <span class="h-tag tag-green">
-                    <i class="fas fa-circle" style="font-size:.4rem;"></i>
-                    {{ ucfirst($estudiante->estado) }}
-                </span>
-            </div>
+        </form>
+        <div class="pad-perpage">
+            <label>Mostrar:</label>
+            <select onchange="cambiarPerPage(this.value)">
+                @foreach([10, 25, 50] as $op)
+                    <option value="{{ $op }}" {{ request('per_page', 15) == $op ? 'selected' : '' }}>
+                        {{ $op }} por página
+                    </option>
+                @endforeach
+            </select>
         </div>
     </div>
 
-    {{-- ══ STATS ══ --}}
-    <div class="hijo-stats">
-        <div class="h-stat">
-            <div class="h-stat-stripe" style="background:var(--cyan);"></div>
-            <div class="h-stat-icon" style="background:rgba(78,199,210,.12);">
-                <i class="fas fa-barcode" style="color:var(--blue-mid);"></i>
-            </div>
-            <div>
-                <div class="h-stat-lbl">Código Matrícula</div>
-                <div class="h-stat-val" style="font-family:monospace;font-size:.9rem;">
-                    {{ $matricula->codigo_matricula }}
-                </div>
-            </div>
+    {{-- Tabla --}}
+    <div class="pad-card">
+        <div class="pad-card-head">
+            <i class="fas fa-users"></i>
+            <span>Lista de Padres y Tutores</span>
         </div>
-        <div class="h-stat">
-            <div class="h-stat-stripe" style="background:#10b981;"></div>
-            <div class="h-stat-icon" style="background:rgba(16,185,129,.1);">
-                <i class="fas fa-calendar-alt" style="color:#10b981;"></i>
-            </div>
-            <div>
-                <div class="h-stat-lbl">Año Lectivo</div>
-                <div class="h-stat-val">{{ $matricula->anio_lectivo }}</div>
-            </div>
-        </div>
-        <div class="h-stat">
-            <div class="h-stat-stripe" style="background:#f59e0b;"></div>
-            <div class="h-stat-icon" style="background:rgba(245,158,11,.1);">
-                <i class="fas fa-comment-alt" style="color:#d97706;"></i>
-            </div>
-            <div>
-                <div class="h-stat-lbl">Observaciones</div>
-                <div class="h-stat-val">{{ $observaciones->count() }}</div>
-            </div>
-        </div>
-    </div>
+        <div style="overflow-x:auto;">
+            <table class="pad-tbl">
+                <thead>
+                    <tr>
+                        <th class="tc">#</th>
+                        <th>Padre / Tutor</th>
+                        <th>Contacto</th>
+                        <th class="tc">Parentesco</th>
+                        <th>Hijos Vinculados</th>
+                        <th class="tc">Estado</th>
+                        <th class="tc">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($padres as $index => $padre)
+                    <tr>
+                        {{-- Número --}}
+                        <td class="tc">
+                            <span class="pad-num">{{ $padres->firstItem() + $index }}</span>
+                        </td>
 
-    {{-- ══ MAIN GRID: datos + accesos ══ --}}
-    <div class="main-grid">
+                        {{-- Padre --}}
+                        <td>
+                            <div style="display:flex;align-items:center;gap:.65rem;">
+                                <div class="pad-av">{{ strtoupper(substr($padre->nombre,0,1)) }}</div>
+                                <div>
+                                    <div class="pad-name">{{ $padre->nombre }} {{ $padre->apellido }}</div>
+                                    @if($padre->dni)
+                                        <div class="pad-sub"><i class="fas fa-id-card" style="font-size:.65rem;"></i> {{ $padre->dni }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
 
-        {{-- Datos del estudiante --}}
-        <div class="sec-card">
-            <div class="sec-head">
-                <div class="sec-head-left">
-                    <i class="fas fa-user-graduate"></i>
-                    <span>Datos del Estudiante</span>
-                </div>
-                <span class="padre-tag">
-                    <i class="fas fa-user-friends"></i>
-                    {{ $padre->nombre }} {{ $padre->apellido }}
-                </span>
-            </div>
-            <div class="pf-grid">
-                <div class="pf-box">
-                    <div class="pf-label">Nombre Completo</div>
-                    <div class="pf-value">
-                        {{ $estudiante->nombre1 }} {{ $estudiante->nombre2 }}
-                        {{ $estudiante->apellido1 }} {{ $estudiante->apellido2 }}
-                    </div>
-                </div>
-                <div class="pf-box">
-                    <div class="pf-label">DNI</div>
-                    <div class="pf-value" style="font-family:monospace;color:var(--blue-mid);">
-                        {{ $estudiante->dni ?: '—' }}
-                    </div>
-                </div>
-                <div class="pf-box">
-                    <div class="pf-label">Fecha de Nacimiento</div>
-                    <div class="pf-value">
-                        {{ $estudiante->fecha_nacimiento
-                            ? \Carbon\Carbon::parse($estudiante->fecha_nacimiento)->format('d/m/Y')
-                            : 'No registrada' }}
-                    </div>
-                </div>
-                <div class="pf-box">
-                    <div class="pf-label">Sexo</div>
-                    <div class="pf-value">{{ ucfirst($estudiante->sexo ?? '—') }}</div>
-                </div>
-                <div class="pf-box">
-                    <div class="pf-label">Grado</div>
-                    <div class="pf-value">{{ $estudiante->grado }}</div>
-                </div>
-                <div class="pf-box">
-                    <div class="pf-label">Sección</div>
-                    <div class="pf-value">{{ $estudiante->seccion }}</div>
-                </div>
-                <div class="pf-box">
-                    <div class="pf-label">Correo Institucional</div>
-                    <div class="pf-value {{ !$estudiante->email ? 'empty' : '' }}">
-                        {{ $estudiante->email ?: 'No registrado' }}
-                    </div>
-                </div>
-                <div class="pf-box">
-                    <div class="pf-label">Teléfono</div>
-                    <div class="pf-value {{ !$estudiante->telefono ? 'empty' : '' }}">
-                        {{ $estudiante->telefono ?: 'No registrado' }}
-                    </div>
-                </div>
-                <div class="pf-box" style="grid-column:1 / -1;">
-                    <div class="pf-label">Dirección</div>
-                    <div class="pf-value {{ !$estudiante->direccion ? 'empty' : '' }}">
-                        {{ $estudiante->direccion ?: 'No registrada' }}
-                    </div>
-                </div>
-                @if($estudiante->observaciones)
-                <div class="pf-box" style="grid-column:1 / -1;">
-                    <div class="pf-label">Observaciones Generales</div>
-                    <div class="pf-value">{{ $estudiante->observaciones }}</div>
-                </div>
-                @endif
-            </div>
-        </div>
+                        {{-- Contacto --}}
+                        <td>
+                            @if($padre->correo)
+                                <div class="pad-sub"><i class="fas fa-envelope" style="color:#4ec7d2;font-size:.7rem;"></i> {{ $padre->correo }}</div>
+                            @endif
+                            @if($padre->telefono)
+                                <div class="pad-sub"><i class="fas fa-phone" style="color:#4ec7d2;font-size:.7rem;"></i> {{ $padre->telefono }}</div>
+                            @endif
+                            @if(!$padre->correo && !$padre->telefono)
+                                <span class="hijos-empty">Sin contacto</span>
+                            @endif
+                        </td>
 
-        {{-- Panel lateral --}}
-        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+                        {{-- Parentesco --}}
+                        <td class="tc">
+                            @php
+                                $parentesco = match($padre->parentesco) {
+                                    'padre'      => ['Padre',      'b-blue'],
+                                    'madre'      => ['Madre',      'b-green'],
+                                    'tutor_legal'=> ['Tutor Legal','b-amber'],
+                                    'abuelo'     => ['Abuelo',     'b-gray'],
+                                    'abuela'     => ['Abuela',     'b-gray'],
+                                    default      => [ucfirst($padre->parentesco_otro ?? $padre->parentesco), 'b-gray'],
+                                };
+                            @endphp
+                            <span class="bpill {{ $parentesco[1] }}">{{ $parentesco[0] }}</span>
+                        </td>
 
-            {{-- Info matrícula --}}
-            <div class="sec-card">
-                <div class="sec-head">
-                    <div class="sec-head-left">
-                        <i class="fas fa-file-signature"></i>
-                        <span>Matrícula</span>
-                    </div>
-                </div>
-                <div style="padding:.85rem 1rem;display:flex;flex-direction:column;gap:.5rem;">
-                    <div class="pf-box">
-                        <div class="pf-label">Código</div>
-                        <div class="pf-value" style="font-family:monospace;color:var(--blue-mid);">
-                            {{ $matricula->codigo_matricula }}
-                        </div>
-                    </div>
-                    <div class="pf-box">
-                        <div class="pf-label">Año Lectivo</div>
-                        <div class="pf-value">{{ $matricula->anio_lectivo }}</div>
-                    </div>
-                    <div class="pf-box">
-                        <div class="pf-label">Estado</div>
-                        <div class="pf-value">
-                            <span style="display:inline-flex;align-items:center;gap:.3rem;
-                                         padding:.2rem .65rem;border-radius:999px;
-                                         font-size:.72rem;font-weight:700;
-                                         background:#f0fdf4;color:#166534;border:1px solid #86efac;">
-                                <i class="fas fa-check-circle" style="font-size:.55rem;"></i>
-                                {{ ucfirst($matricula->estado) }}
-                            </span>
-                        </div>
-                    </div>
-                    @if($matricula->fecha_matricula)
-                    <div class="pf-box">
-                        <div class="pf-label">Fecha de Matrícula</div>
-                        <div class="pf-value">
-                            {{ \Carbon\Carbon::parse($matricula->fecha_matricula)->format('d/m/Y') }}
-                        </div>
-                    </div>
-                    @endif
-                </div>
-            </div>
+                        {{-- Hijos --}}
+                        <td>
+                            @if($padre->estudiantes->count() > 0)
+                                @foreach($padre->estudiantes as $estudiante)
+                                    <span class="hijo-chip">
+                                        <i class="fas fa-user-graduate" style="font-size:.6rem;"></i>
+                                        {{ $estudiante->nombre1 }} {{ $estudiante->apellido1 }}
+                                    </span>
+                                @endforeach
+                            @else
+                                <span class="hijos-empty">Sin hijos vinculados</span>
+                            @endif
+                        </td>
 
-            {{-- Accesos rápidos --}}
-            <div class="sec-card">
-                <div class="sec-head">
-                    <div class="sec-head-left">
-                        <i class="fas fa-rocket"></i>
-                        <span>Accesos Rápidos</span>
-                    </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr;gap:.6rem;padding:1rem;">
-                    <a href="{{ route('padre.dashboard') }}"
-                       style="display:flex;align-items:center;gap:.75rem;padding:.8rem 1rem;
-                              border-radius:9px;text-decoration:none;transition:all .15s;
-                              border:1.5px solid rgba(78,199,210,.3);background:var(--surface);min-width:0;">
-                        <div style="width:36px;height:36px;border-radius:9px;flex-shrink:0;
-                                    background:rgba(78,199,210,.1);display:flex;align-items:center;
-                                    justify-content:center;font-size:.9rem;">
-                            <i class="fas fa-home" style="color:var(--cyan);"></i>
-                        </div>
-                        <span style="font-size:.83rem;font-weight:600;color:var(--blue-dark);flex:1;">
-                            Volver al Portal
-                        </span>
-                        <i class="fas fa-chevron-right" style="color:var(--subtle);font-size:.7rem;"></i>
-                    </a>
-                    <a href="{{ route('estado-solicitud') }}"
-                       style="display:flex;align-items:center;gap:.75rem;padding:.8rem 1rem;
-                              border-radius:9px;text-decoration:none;transition:all .15s;
-                              border:1.5px solid rgba(0,80,143,.2);background:var(--surface);min-width:0;">
-                        <div style="width:36px;height:36px;border-radius:9px;flex-shrink:0;
-                                    background:rgba(0,80,143,.1);display:flex;align-items:center;
-                                    justify-content:center;font-size:.9rem;">
-                            <i class="fas fa-file-signature" style="color:var(--blue-mid);"></i>
-                        </div>
-                        <span style="font-size:.83rem;font-weight:600;color:var(--blue-dark);flex:1;">
-                            Estado de Solicitud
-                        </span>
-                        <i class="fas fa-chevron-right" style="color:var(--subtle);font-size:.7rem;"></i>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    {{-- ══ OBSERVACIONES DEL ESTUDIANTE ══ --}}
-    <div class="sec-card">
-        <div class="sec-head">
-            <div class="sec-head-left">
-                <i class="fas fa-comment-alt"></i>
-                <span>Observaciones de Profesores</span>
-            </div>
-            <span class="sec-head-badge">{{ $observaciones->count() }}</span>
-        </div>
-
-        @if($observaciones->count() > 0)
-            <div class="obs-list">
-                @foreach($observaciones as $obs)
-                @php
-                    $c = $obsColors[$obs->tipo] ?? $obsColors['otro'];
-                @endphp
-                <div class="obs-item">
-                    <div class="obs-dot" style="background:{{ $c['bg'] }};">
-                        <i class="fas {{ $c['icon'] }}" style="color:{{ $c['color'] }};"></i>
-                    </div>
-                    <div class="obs-body">
-                        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;flex-wrap:wrap;">
-                            <span class="obs-titulo">{{ $c['label'] }}</span>
-                            <span class="obs-tipo-badge"
-                                  style="background:{{ $c['bg'] }};color:{{ $c['color'] }};border:1px solid {{ $c['color'] }}33;">
-                                {{ $c['label'] }}
-                            </span>
-                        </div>
-                        <div class="obs-desc">{{ $obs->descripcion }}</div>
-                        <div class="obs-meta">
-                            @if($obs->profesor)
-                                <span>
-                                    <i class="fas fa-chalkboard-teacher me-1"></i>
-                                    {{ $obs->profesor->nombre }} {{ $obs->profesor->apellido }}
+                        {{-- Estado ✅ CORREGIDO: estado es boolean (1/0) --}}
+                        <td class="tc">
+                            @if($padre->estado)
+                                <span class="bpill b-green">
+                                    <i class="fas fa-circle" style="font-size:.4rem;vertical-align:middle;"></i> Activo
+                                </span>
+                            @else
+                                <span class="bpill b-red">
+                                    <i class="fas fa-circle" style="font-size:.4rem;vertical-align:middle;"></i> Inactivo
                                 </span>
                             @endif
-                            <span>
-                                <i class="fas fa-clock me-1"></i>
-                                {{ $obs->created_at->diffForHumans() }}
-                            </span>
-                            <span>
-                                <i class="fas fa-calendar me-1"></i>
-                                {{ $obs->created_at->format('d/m/Y') }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        @else
-            <div class="empty-state">
-                <i class="fas fa-comment-slash"></i>
-                <p>No hay observaciones registradas para este estudiante aún.</p>
-            </div>
+                        </td>
+
+                        {{-- Acciones --}}
+                        <td class="tc">
+                            <div style="display:inline-flex;gap:.4rem;align-items:center;">
+                                <a href="{{ route('padres.show', $padre->id) }}"
+                                   class="act-btn act-view" title="Ver detalle">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ route('padres.edit', $padre->id) }}"
+                                   class="act-btn act-edit" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button"
+                                        class="act-btn act-del"
+                                        data-route="{{ route('padres.destroy', $padre->id) }}"
+                                        data-message="¿Estás seguro de eliminar a este padre/tutor?"
+                                        data-name="{{ $padre->nombre }} {{ $padre->apellido }}"
+                                        onclick="mostrarModalDeleteData(this)"
+                                        title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7">
+                            <div class="pad-empty">
+                                <i class="fas fa-users"></i>
+                                <p>No hay padres/tutores registrados</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Footer paginación --}}
+        @if($padres->hasPages())
+        <div class="pad-footer">
+            <span class="pad-pages">
+                Mostrando {{ $padres->firstItem() }}–{{ $padres->lastItem() }} de {{ $padres->total() }}
+            </span>
+            {{ $padres->appends(request()->query())->links() }}
+        </div>
         @endif
     </div>
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function cambiarPerPage(valor) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', valor);
+    url.searchParams.set('page', 1);
+    window.location.href = url.toString();
+}
+</script>
+@endpush

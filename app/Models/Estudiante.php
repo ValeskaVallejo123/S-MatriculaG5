@@ -12,6 +12,7 @@ class Estudiante extends Model
     protected $table = 'estudiantes';
 
     protected $fillable = [
+        'user_id',
         'nombre1',
         'nombre2',
         'apellido1',
@@ -24,6 +25,7 @@ class Estudiante extends Model
         'direccion',
         'grado',
         'seccion',
+        'grado_id',
         'estado',
         'observaciones',
         'nombre_padre',
@@ -46,7 +48,7 @@ class Estudiante extends Model
 
     public function getNombreCompletoAttribute()
     {
-        $nombre = trim("{$this->nombre1} {$this->nombre2}");
+        $nombre   = trim("{$this->nombre1} {$this->nombre2}");
         $apellido = trim("{$this->apellido1} {$this->apellido2}");
         return trim("{$nombre} {$apellido}");
     }
@@ -79,6 +81,22 @@ class Estudiante extends Model
     public function calificaciones()
     {
         return $this->hasMany(Calificacion::class, 'estudiante_id');
+    }
+
+    /**
+     * Matrículas del estudiante
+     */
+    public function matriculas()
+    {
+        return $this->hasMany(Matricula::class, 'estudiante_id');
+    }
+
+    /**
+     * Grado asignado (relación con tabla grados)
+     */
+    public function gradoAsignado()
+    {
+        return $this->belongsTo(Grado::class, 'grado_id');
     }
 
     /**
@@ -117,7 +135,7 @@ class Estudiante extends Model
             'comunicarse_profesores',
             'autorizar_salidas',
             'subir_documentos_matricula',
-            'notas_adicionales'
+            'notas_adicionales',
         ])->withTimestamps();
     }
 
@@ -158,5 +176,19 @@ class Estudiante extends Model
     public static function secciones()
     {
         return ['A', 'B', 'C'];
+    }
+
+    /**
+     * Accesor: historial académico agrupado por año del período
+     */
+    public function getHistorialAcademicoAttribute()
+    {
+        return $this->calificaciones()
+            ->with(['materia', 'periodo'])
+            ->get()
+            ->groupBy(function($calificacion) {
+                // Agrupa por el año del periodo académico
+                return $calificacion->periodo->anio ?? 'Sin Año';
+            });
     }
 }

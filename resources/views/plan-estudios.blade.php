@@ -1,13 +1,13 @@
-php<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Grados</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         /* Base e Importación de Estilos */
         body {
@@ -32,7 +32,7 @@ php<!DOCTYPE html>
         .stat-card:nth-child(5) { border-top-color: #003b73; }
 
         .stat-icon {
-            width: 48px; height: 48px; border-radius: 12px; display: flex; 
+            width: 48px; height: 48px; border-radius: 12px; display: flex;
             align-items: center; justify-content: center; font-size: 1.25rem; color: white; flex-shrink: 0;
         }
         .total-icon { background: linear-gradient(135deg, #00508f, #003b73); }
@@ -199,10 +199,10 @@ php<!DOCTYPE html>
                     </div>
 
                     <div class="gcard-actions">
-                        <a href="{{ route('plan-estudios.show', $grado) }}" class="action-btn view-btn">
+                        <a href="{{ route('portal.plan-estudios.show', $grado) }}" class="action-btn view-btn">
     <i class="fas fa-eye"></i> Ver
 </a>
-                        <a href="{{ route('grados.edit', $grado) }}" class="action-btn edit-btn"><i class="fas fa-edit"></i> Editar</a>
+                        <a href="{{ route('superadmin.grados.edit', $grado) }}" class="action-btn edit-btn"><i class="fas fa-edit"></i> Editar</a>
                     </div>
                 </div>
             @empty

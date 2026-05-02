@@ -11,14 +11,14 @@ return new class extends Migration
     Schema::create('observaciones', function (Blueprint $table) {
         $table->id();
 
-        $table->foreignId('estudiante_id')
-              ->constrained('estudiantes')
-              ->onDelete('cascade');
-
-        $table->foreignId('profesor_id')
-              ->nullable()
-              ->constrained('profesores')
-              ->onDelete('set null');
+            // Relaciones
+            $table->foreignId('estudiante_id')
+                ->constrained('estudiantes')
+                ->onDelete('cascade');
+            $table->string('tipo')->after('profesor_id');
+            $table->foreignId('profesor_id')
+                ->constrained('profesores')
+                ->onDelete('cascade');
 
         $table->string('tipo')->default('academica');
         $table->text('descripcion');

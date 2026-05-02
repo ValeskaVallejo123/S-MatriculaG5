@@ -3,12 +3,6 @@
 @section('title', 'Editar Asignación')
 @section('page-title', 'Editar Asignación Docente')
 
-@section('topbar-actions')
-    <a href="{{ route('profesor_materia.index') }}"
-       style="background:white;color:#00508f;padding:0.5rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:0.5rem;border:2px solid #00508f;font-size:0.9rem;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @section('content')
 <div class="container" style="max-width: 680px;">
@@ -23,7 +17,7 @@
 
     <div class="card border-0 shadow-sm" style="border-radius:10px;">
         <div class="card-body p-4">
-            <form method="POST" action="{{ route('profesor_materia.update', $profesor_materia_grado->id)}}">
+            <form method="POST" action="{{ route('profesor_materia_grado.update', $profesor_materia_grado->id) }}">
                 @csrf
                 @method('PUT')
 
@@ -80,9 +74,7 @@
                         @foreach($grados as $g)
                             <option value="{{ $g->id }}"
                                 {{ old('grado_id', $profesor_materia_grado->grado_id) == $g->id ? 'selected' : '' }}>
-                                {{ $g->numero }}° Grado
-                                @if($g->seccion) — Sección {{ $g->seccion }} @endif
-                                ({{ ucfirst($g->nivel) }})
+                                {{ $g->numero }}° {{ ucfirst($g->nivel) }} - Sección {{ $g->seccion }} ({{ $g->anio_lectivo }})
                             </option>
                         @endforeach
                     </select>
@@ -119,7 +111,7 @@
                             style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border:none;padding:0.5rem 1.5rem;border-radius:8px;box-shadow:0 2px 8px rgba(78,199,210,0.3);">
                         <i class="fas fa-save me-2"></i>Actualizar Asignación
                     </button>
-                    <a href="{{ route('profesor_materia.index') }}" class="small text-muted" style="text-decoration:none;">
+                    <a href="{{ route('profesor_materia_grado.index') }}" class="small text-muted" style="text-decoration:none;">
                         Cancelar
                     </a>
                 </div>

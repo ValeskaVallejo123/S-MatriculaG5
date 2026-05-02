@@ -3,11 +3,6 @@
 @section('title', 'Carga Docente')
 @section('page-title', 'Carga Docente')
 
-@section('topbar-actions')
-    <a href="{{ route('superadmin.dashboard') }}" class="btn btn-outline-secondary btn-sm">
-        <i class="fas fa-arrow-left me-1"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
 <style>

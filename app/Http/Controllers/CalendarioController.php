@@ -5,34 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\EventoAcademico;
-use Illuminate\Contracts\View\View;
 
 class CalendarioController extends Controller
 {
     /**
-     * Muestra todos los eventos en formato JSON simple (index básico).
+     * Muestra la vista del calendario.
      */
     public function index()
     {
-        $eventos = EventoAcademico::all();
-
-        return response()->json($eventos->map(function ($evento) {
-            return [
-                'id'    => $evento->id,
-                'title' => $evento->titulo,
-                'start' => $evento->fecha_inicio,
-                'end'   => $evento->fecha_fin,
-                'color' => $evento->color,
-                'extendedProps' => [
-                    'description' => $evento->descripcion,
-                    'type'        => $evento->tipo,
-                ],
-            ];
-        }));
+        return view('calendario.index');
     }
 
     /**
-     * Alias público para obtenerEventos
+     * Alias público para obtenerEventos (sin autenticación).
      */
     public function eventosPublicos()
     {
@@ -41,16 +26,16 @@ class CalendarioController extends Controller
 
     /**
      * Obtiene todos los eventos en formato JSON para FullCalendar.
-     * CORRECCIÓN: usar ->copy()->addDay() para no mutar el objeto original.
-     * CORRECCIÓN: manejo de fecha_fin nula usando fecha_inicio como fallback.
+     * Usar ->copy()->addDay() para no mutar el objeto original.
+     * Manejo de fecha_fin nula usando fecha_inicio como fallback.
      */
     public function obtenerEventos()
     {
         try {
-            $eventos = EventoAcademico::all()->map(function($evento) {
-                // CORRECCIÓN: No usar addDay() directamente sobre el objeto
-                // Crear una copia para no modificar el original
-                $fechaFin = $evento->fecha_fin ? $evento->fecha_fin->copy()->addDay() : $evento->fecha_inicio->copy()->addDay();
+            $eventos = EventoAcademico::all()->map(function ($evento) {
+                $fechaFin = $evento->fecha_fin
+                    ? $evento->fecha_fin->copy()->addDay()
+                    : $evento->fecha_inicio->copy()->addDay();
 
                 return [
                     'id'              => $evento->id,
@@ -66,27 +51,12 @@ class CalendarioController extends Controller
                     ],
                 ];
             });
-        $eventos = EventoAcademico::all()->map(function($evento) {
-            return [
-                'id' => $evento->id,
-                'title' => $evento->titulo,
-                'start' => $evento->fecha_inicio->format('Y-m-d'),
-                'end' => $evento->fecha_fin->copy()->addDay()->format('Y-m-d'),
-                'backgroundColor' => $evento->color,
-                'borderColor' => $evento->color,
-                'allDay' => (bool) $evento->todo_el_dia,
-                'extendedProps' => [
-                    'description' => $evento->descripcion,
-                    'type' => $evento->tipo
-                ]
-            ];
-        });
 
             return response()->json($eventos);
 
         } catch (\Exception $e) {
             return response()->json([
-                'exito'  => false,
+                'exito'   => false,
                 'mensaje' => 'Error al obtener eventos: ' . $e->getMessage(),
             ], 500);
         }
@@ -125,12 +95,11 @@ class CalendarioController extends Controller
 
     /**
      * Actualiza un evento existente.
-     * CORRECCIÓN: primero validar permisos, luego buscar el evento,
-     * luego actualizar — en ese orden correcto.
+     * Primero validar permisos, luego buscar el evento, luego actualizar.
      */
     public function actualizar(Request $request, $id)
     {
-        if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) {
+        if (!in_array(Auth::user()->user_type, ['super_admin', 'admin'])) {
             return response()->json([
                 'exito'   => false,
                 'mensaje' => 'No tienes permisos',
@@ -138,15 +107,7 @@ class CalendarioController extends Controller
         }
 
         try {
-            $validado = $request->validate([
-                'titulo'       => 'required|string|max:255',
-                'descripcion'  => 'nullable|string',
-                'fecha_inicio' => 'required|date',
-                'fecha_fin'    => 'required|date|after_or_equal:fecha_inicio',
-                'tipo'         => 'required|in:clase,examen,festivo,evento,vacaciones,prematricula,matricula',
-                'color'        => 'required|string',
-                'todo_el_dia'  => 'boolean',
-            ]);
+            $validado = $this->validarEvento($request);
 
             if ($request->has('todo_el_dia')) {
                 $validado['todo_el_dia'] = $request->boolean('todo_el_dia');
@@ -180,7 +141,7 @@ class CalendarioController extends Controller
      */
     public function eliminar(EventoAcademico $evento)
     {
-        if (!in_array(Auth::user()->role, ['super_admin', 'admin'])) {
+        if (!in_array(Auth::user()->user_type, ['super_admin', 'admin'])) {
             return response()->json([
                 'exito'   => false,
                 'mensaje' => 'No tienes permisos',
@@ -205,7 +166,6 @@ class CalendarioController extends Controller
 
     /**
      * Validación compartida entre store() y actualizar().
-     * Extraída del archivo 2 para evitar duplicar reglas.
      */
     private function validarEvento(Request $request): array
     {

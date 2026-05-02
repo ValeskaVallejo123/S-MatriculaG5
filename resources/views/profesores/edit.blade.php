@@ -3,11 +3,6 @@
 @section('title', 'Editar Profesor')
 @section('page-title', 'Editar Profesor')
 
-@section('topbar-actions')
-    <a href="{{ route('profesores.index') }}" class="adm-btn-outline">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
 <style>
@@ -455,9 +450,6 @@
                                     <option value="inactivo" {{ old('estado', $profesor->estado) == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
                                     <option value="licencia" {{ old('estado', $profesor->estado) == 'licencia' ? 'selected' : '' }}>En Licencia</option>
                                 </select>
-                                @error('estado')
-                                    <div class="invalid-feedback"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div>
-                                @enderror
                             </div>
                             @error('estado')
                                 <div class="f-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>

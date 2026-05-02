@@ -3,12 +3,6 @@
 @section('title', 'Perfil del Profesor')
 @section('page-title', 'Perfil del Profesor')
 
-@section('topbar-actions')
-    <a href="{{ route('profesores.index') }}"
-       style="background:white;color:#00508f;padding:.45rem 1.1rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;border:1.5px solid #00508f;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
 <style>

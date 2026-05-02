@@ -369,14 +369,15 @@ async function guardarEvento() {
 
 async function eliminarEvento() {
     const eventoId = document.getElementById('eventId').value;
-    if (!confirm('¿Eliminar este evento?')) return;
-    try {
-        const resp = await fetch(`/calendario/eventos/${eventoId}`, {
-            method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
-        });
-        if (resp.ok) { modalEvento.hide(); calendario.refetchEvents(); }
-    } catch(e) { console.error(e); alert('Error al eliminar el evento.'); }
+    sysConfirm('¿Eliminar este evento?', async () => {
+        try {
+            const resp = await fetch(`/calendario/eventos/${eventoId}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+            });
+            if (resp.ok) { modalEvento.hide(); calendario.refetchEvents(); }
+        } catch(e) { console.error(e); alert('Error al eliminar el evento.'); }
+    });
 }
 
 async function actualizarFechasEvento(evento) {

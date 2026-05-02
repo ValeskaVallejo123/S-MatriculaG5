@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Matricula;
+use App\Models\Estudiante;
+use App\Models\Grado;
+use App\Models\Profesor;
 use Illuminate\Http\Request;
 //use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;

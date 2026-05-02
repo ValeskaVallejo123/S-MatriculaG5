@@ -5,10 +5,6 @@
 @section('page-title', 'Calificaciones')
 
 @section('topbar-actions')
-    <a href="{{ route('superadmin.dashboard') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
-    </a>
     <a href="{{ route('calificaciones.create') }}" class="btn fw-semibold ms-2" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; box-shadow: 0 2px 8px rgba(78,199,210,0.3); padding: 0.5rem 1.2rem; border-radius: 8px; font-size: 0.9rem;">
         <i class="fas fa-plus me-1"></i> Nueva Calificación
     </a>
@@ -116,7 +112,7 @@
                                             <i class="fas fa-edit" style="font-size: 0.75rem;"></i>
                                         </a>
                                         <form method="POST" action="{{ route('calificaciones.destroy', $cal) }}"
-                                              onsubmit="return confirm('¿Eliminar esta calificación?')" class="m-0">
+                                              data-confirm="¿Eliminar esta calificación?" class="m-0">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-sm" title="Eliminar"
                                                     style="background: rgba(244,67,54,0.08); color: #d32f2f; border: 1px solid #ef9a9a; border-radius: 6px; padding: 0.25rem 0.5rem;">

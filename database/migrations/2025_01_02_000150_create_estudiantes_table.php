@@ -54,9 +54,9 @@ return new class extends Migration
             // Relación con Padre
             $table->unsignedBigInteger('padre_id')->nullable();
             $table->foreign('padre_id')
-                  ->references('id')
-                  ->on('padres')
-                  ->nullOnDelete();
+                ->references('id')
+                ->on('padres')
+                ->nullOnDelete();
 
             $table->timestamps();
         });

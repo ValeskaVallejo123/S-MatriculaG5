@@ -49,6 +49,12 @@ class Kernel extends HttpKernel
     // Permisos
     'permiso' => \App\Http\Middleware\VerificarPermiso::class,
     'permiso.padre' => \App\Http\Middleware\VerificarPermisoPadre::class,
+
+
+            // AGREGA ESTA LÍNEA AQUÍ:
+            'padre.auth' => \App\Http\Middleware\PadreAuth::class,
+
+
 ];
 
 

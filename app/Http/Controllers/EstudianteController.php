@@ -9,13 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 
 class EstudianteController extends Controller
 {
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
+            // Si la ruta que se está pidiendo es el historial, DEJA PASAR al estudiante
+            if ($request->routeIs('estudiante.historial')) {
+                return $next($request);
+            }
+
+            // Para todo lo demás (crear, editar, borrar), se mantiene la regla de tus compañeros
             if (!Auth::check() || !in_array(Auth::user()->id_rol, [1, 2])) {
                 abort(403, 'No tienes permisos para gestionar estudiantes.');
             }
@@ -36,46 +41,31 @@ class EstudianteController extends Controller
        LISTAR ESTUDIANTES
        ============================================================ */
     public function index(Request $request)
-{
-    $perPage = in_array($request->get('per_page'), [10, 25, 50])
-               ? (int) $request->get('per_page')
-               : 10;
+    {
+        $perPage = (int) $request->input('per_page', 10);
+        $perPage = in_array($perPage, [10, 25, 50]) ? $perPage : 10;
 
-    $query = Estudiante::orderBy('apellido1')
-        ->orderBy('apellido2')
-        ->orderBy('nombre1')
-        ->orderBy('nombre2');
+        $estudiantes = Estudiante::orderBy('apellido1')
+            ->orderBy('apellido2')
+            ->orderBy('nombre1')
+            ->orderBy('nombre2')
+            ->paginate($perPage)
+            ->withQueryString();
 
-    // ↓ Búsqueda en toda la BD
-    if ($request->filled('buscar')) {
-        $q = $request->buscar;
-        $query->where(function ($sub) use ($q) {
-            $sub->where('nombre1',   'like', "%{$q}%")
-                ->orWhere('nombre2',   'like', "%{$q}%")
-                ->orWhere('apellido1', 'like', "%{$q}%")
-                ->orWhere('apellido2', 'like', "%{$q}%")
-                ->orWhere('dni',       'like', "%{$q}%")
-                ->orWhere('grado',     'like', "%{$q}%")
-                ->orWhere('seccion',   'like', "%{$q}%")
-                ->orWhereRaw("CONCAT(nombre1,' ',apellido1) LIKE ?", ["%{$q}%"])
-                ->orWhereRaw("CONCAT(nombre1,' ',nombre2,' ',apellido1,' ',apellido2) LIKE ?", ["%{$q}%"]);
-        });
+        // Conteos reales sobre toda la tabla (no solo la página actual)
+        $totalEstudiantes = Estudiante::count();
+        $totalActivos     = Estudiante::where('estado', 'activo')->count();
+        $totalInactivos   = Estudiante::where('estado', '!=', 'activo')->count();
+        $nuevosHoy        = Estudiante::whereDate('created_at', today())->count();
+
+        return view('estudiantes.index', compact(
+            'estudiantes',
+            'totalEstudiantes',
+            'totalActivos',
+            'totalInactivos',
+            'nuevosHoy'
+        ));
     }
-
-    $estudiantes = $query->paginate($perPage)->appends($request->query());
-    if ($request->ajax() || $request->get('ajax')) {
-    $lista = $estudiantes->getCollection()->map(fn($e) => [
-        'nombre'  => $e->nombre_completo,
-        'grado'   => $e->grado,
-        'seccion' => $e->seccion,
-    ]);
-    return response()->json(['estudiantes' => $lista]);
-}
-
-return view('estudiantes.index', compact('estudiantes'));
-
-    return view('estudiantes.index', compact('estudiantes'));
-}
 
     /* ============================================================
        BUSCAR ESTUDIANTES
@@ -87,6 +77,7 @@ return view('estudiantes.index', compact('estudiantes'));
         $grado   = $request->input('grado');
         $estado  = $request->input('estado');
 
+        // Se considera que hay búsqueda si al menos un campo fue enviado
         $busquedaRealizada = $request->hasAny(['nombre','dni','grado','estado'])
             && ($nombre || $dni || $grado || $estado);
 
@@ -100,8 +91,8 @@ return view('estudiantes.index', compact('estudiantes'));
                         ->orWhereRaw("CONCAT(nombre1, ' ', nombre2, ' ', apellido1, ' ', apellido2) LIKE ?", ["%{$nombre}%"]);
                 });
             })
-            ->when($dni,    fn($q) => $q->where('dni',    'like', "%{$dni}%"))
-            ->when($grado,  fn($q) => $q->where('grado',  'like', "%{$grado}%"))
+            ->when($dni, fn($q) => $q->where('dni', 'like', "%{$dni}%"))
+            ->when($grado, fn($q) => $q->where('grado', 'like', "%{$grado}%"))
             ->when($estado, fn($q) => $q->where('estado', $estado))
             ->orderBy('apellido1')
             ->orderBy('nombre1')
@@ -110,13 +101,13 @@ return view('estudiantes.index', compact('estudiantes'));
 
         return view('estudiantes.buscar', compact('estudiantes', 'busquedaRealizada'));
     }
-
     /* ============================================================
        CONSULTA PÚBLICA
        ============================================================ */
     public function consultarPublico(Request $request)
     {
-        $dni        = $request->input('dni');
+        $dni = $request->input('dni');
+
         $estudiante = Estudiante::where('dni', $dni)->first();
 
         return view('publico.consultar-estudiante', compact('estudiante', 'dni'));
@@ -176,36 +167,22 @@ return view('estudiantes.index', compact('estudiantes'));
             $data['foto'] = $request->file('foto')->store('estudiantes', 'public');
         }
 
-        DB::beginTransaction();
-        try {
-            $estudiante = Estudiante::create($data);
+        $estudiante = Estudiante::create($data);
 
-            Documento::create([
-                'estudiante_id'   => $estudiante->id,
-                'foto'            => $estudiante->foto ?? null,
-                'acta_nacimiento' => $request->file('acta_nacimiento')->store('documentos/actas', 'public'),
-                'calificaciones'  => $request->file('calificaciones')->store('documentos/calificaciones', 'public'),
-            ]);
+        Documento::create([
+            'estudiante_id'   => $estudiante->id,
+            'foto'            => $estudiante->foto ?? null,
+            'acta_nacimiento' => $request->file('acta_nacimiento')->store('documentos/actas', 'public'),
+            'calificaciones'  => $request->file('calificaciones')->store('documentos/calificaciones', 'public'),
+        ]);
 
-            // Solo crear usuario si no existe ya uno con ese email
-            if (!\App\Models\User::where('email', $email)->exists()) {
-                \App\Models\User::create([
-                    'name'     => $estudiante->nombre_completo,
-                    'email'    => $email,
-                    'password' => Hash::make('egm2025'),
-                    'id_rol'   => 4,
-                    'activo'   => 1,
-                ]);
-            }
-
-            DB::commit();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()
-                ->withInput()
-                ->with('error', 'Error al registrar el estudiante: ' . $e->getMessage());
-        }
+        \App\Models\User::create([
+            'name'     => $estudiante->nombre_completo,
+            'email'    => $email,
+            'password' => Hash::make('egm2025'),
+            'id_rol'   => 4,
+            'activo'   => 1,
+        ]);
 
         return redirect()
             ->route('estudiantes.show', $estudiante->id)
@@ -327,5 +304,91 @@ return view('estudiantes.index', compact('estudiantes'));
         $notificacion->update(['leida' => true]);
 
         return back()->with('success', 'Notificación marcada como leída.');
+    }
+
+    /* ============================================================
+   HISTORIAL PARA EL ESTUDIANTE (Solo Lectura)
+   ============================================================ */
+    public function historial()
+    {
+        $user = auth()->user();
+
+        // Buscamos al estudiante por el correo del usuario autenticado
+        $estudiante = \App\Models\Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])
+            ->where('email', $user->email)
+            ->first();
+
+        if (!$estudiante) {
+            // Si no encuentra al estudiante, redirige al dashboard con error en lugar de tirar 403/404
+            return redirect()->route('estudiante.dashboard')->with('error', 'No se encontró tu perfil de estudiante.');
+        }
+
+        $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
+        $historialAgrupado = $estudiante->calificaciones->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
+
+        // IMPORTANTE: Asegúrate de que la ruta de la vista sea la correcta
+        // Si tu archivo se llama 'historial.blade.php' y está dentro de 'views/estudiante/':
+        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))->with('readonly', true);    }
+
+    /* ============================================================
+       HISTORIAL PARA ADMIN (Lectura y Edición)
+       ============================================================ */
+    public function verHistorialAdmin($id)
+    {
+        $estudiante = \App\Models\Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])
+            ->findOrFail($id);
+
+        $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
+        $historialAgrupado = $estudiante->calificaciones->groupBy(fn($n) => $n->periodo->anio_lectivo ?? 'Ciclo Actual');
+
+        // Aquí NO enviamos 'readonly', por lo que el admin verá los botones de editar notas
+        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'))->with('readonly', false);
+    }
+
+    public function editHistorialAdmin($id)
+    {
+        // 1. Buscamos al estudiante o lanzamos error 404 si no existe
+        $estudiante = \App\Models\Estudiante::findOrFail($id);
+
+        // 2. Cargamos sus calificaciones actuales
+        $calificaciones = \App\Models\Calificacion::where('estudiante_id', $id)
+            ->with('materia') // Asegúrate de tener la relación 'materia' en tu modelo Calificacion
+            ->get();
+
+        // 3. Retornamos la vista de edición (Asegúrate de que esta vista exista)
+        return view('historial.edit', compact('estudiante', 'calificaciones'));
+    }
+    public function updateHistorialAdmin(Request $request, $id)
+    {
+        // 1. Validar al estudiante
+        $estudiante = \App\Models\Estudiante::findOrFail($id);
+        $cambiosRealizados = false;
+
+        // 2. Procesar las notas si vienen en el request
+        if ($request->has('notas')) {
+            foreach ($request->notas as $calificacionId => $nuevoValor) {
+                $calificacion = \App\Models\Calificacion::find($calificacionId);
+
+                if ($calificacion && $calificacion->estudiante_id == $id) {
+                    // Comparamos el valor actual con el nuevo
+                    if ($calificacion->nota != $nuevoValor) {
+                        $calificacion->update(['nota' => $nuevoValor]);
+                        $cambiosRealizados = true;
+                    }
+                }
+            }
+        }
+
+        // 3. Respuesta condicional según si hubo cambios o no
+        if ($cambiosRealizados) {
+            return redirect()
+                ->route('superadmin.estudiantes.historial.show', $id)
+                ->with('success', '¡Éxito! Los cambios se han guardado correctamente.');
+
+        } else {
+            return redirect()
+                ->route('superadmin.estudiantes.historial.show', $id)
+                ->with('info', 'No se realizaron cambios en el historial académico.');
+        }
     }
 }

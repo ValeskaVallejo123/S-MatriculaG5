@@ -3,12 +3,6 @@
 @section('title', 'Nuevo Curso')
 @section('page-title', 'Crear Nuevo Curso')
 
-@section('topbar-actions')
-    <a href="{{ route('h20cursos.index') }}" class="btn-back"
-       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; box-shadow: 0 2px 8px rgba(0, 80, 143, 0.2); font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @section('content')
     <div class="container" style="max-width: 900px;">

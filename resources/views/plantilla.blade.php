@@ -1223,7 +1223,7 @@
   </div>
   <h3>Plan de Estudios</h3>
   <p>Consulta las materias, objetivos pedagógicos y competencias por grado escolar.</p>
-  <a href="{{ route('plan-estudios.index') }}" class="btn-feature">Ver Plan</a>
+  <a href="{{ route('portal.plan-estudios.index') }}" class="btn-feature">Ver Plan</a>
   </div>
 
       <div class="feature-card">

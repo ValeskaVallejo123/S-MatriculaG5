@@ -3,16 +3,6 @@
 @section('title', 'Nuevo Grado')
 @section('page-title', 'Crear Nuevo Grado')
 
-@section('topbar-actions')
-    <a href="{{ route('grados.index') }}"
-       class="btn-back"
-       style="background:white; color:#00508f; padding:0.5rem 1.2rem; border-radius:8px;
-              text-decoration:none; font-weight:600; display:inline-flex; align-items:center;
-              gap:0.5rem; transition:all 0.3s ease; border:2px solid #00508f;
-              box-shadow:0 2px 8px rgba(0,80,143,0.2); font-size:0.9rem;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @section('content')
 <div class="container" style="max-width:900px;">
@@ -39,7 +29,7 @@
 
                 <div class="row g-3">
 
-                    <!-- Nivel Educativo -->
+                    {{-- Nivel Educativo --}}
                     <div class="col-md-6">
                         <label for="nivel" class="form-label fw-semibold" style="color:#003b73;">
                             <i class="fas fa-layer-group text-primary me-1"></i>Nivel Educativo
@@ -49,7 +39,7 @@
                                 class="form-select @error('nivel') is-invalid @enderror"
                                 style="border:2px solid #bfd9ea; border-radius:8px; padding:0.6rem 1rem;">
                             <option value="">Seleccionar nivel...</option>
-                            {{-- Values en minúsculas: coinciden con ENUM BD y validación del controlador --}}
+                            {{-- Valores en minúsculas: coinciden con ENUM de la BD y validación del controlador --}}
                             <option value="primaria"   {{ old('nivel') === 'primaria'   ? 'selected' : '' }}>
                                 Primaria (1° - 6° Grado)
                             </option>
@@ -95,7 +85,7 @@
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar sección...</option>
-                            {{-- Solo A, B, C, D → coincide con ENUM BD y validación 'in:A,B,C,D' --}}
+                            {{-- Solo A, B, C, D → coincide con ENUM de la BD y validación 'in:A,B,C,D' --}}
                             @foreach(['A','B','C','D'] as $sec)
                                 <option value="{{ $sec }}" {{ old('seccion') === $sec ? 'selected' : '' }}>
                                     Sección {{ $sec }}
@@ -137,7 +127,9 @@
                         </div>
                     </div>
 
-                <!-- Info contextual según nivel -->
+                </div>{{-- fin fila --}}
+
+                {{-- Información contextual según nivel --}}
                 <div id="info-primaria" class="alert mt-3 d-none d-flex align-items-start"
                      style="border-radius: 8px; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
                     <i class="fas fa-magic me-2 mt-1" style="color: #10b981;"></i>
@@ -238,14 +230,14 @@ document.addEventListener('DOMContentLoaded', function () {
             opt.style.display = rango ? (n >= rango.min && n <= rango.max ? '' : 'none') : '';
         });
 
-        // Reset número si el valor actual no es válido para el nivel elegido
+        // Restablecer número si el valor actual no es válido para el nivel elegido
         const current = parseInt(numeroSelect.value);
         const rango = RANGOS[nivel];
         if (rango && (current < rango.min || current > rango.max)) {
             numeroSelect.value = '';
         }
 
-        // Mostrar info contextual
+        // Mostrar información contextual
         infoPrimaria.classList.add('d-none');
         infoSecundaria.classList.add('d-none');
         infoDefault.classList.add('d-none');
@@ -266,4 +258,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-

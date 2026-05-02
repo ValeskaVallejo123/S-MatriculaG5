@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User; // ← Asegúrate de importar tu modelo User
 
 class PadreDashboardController extends Controller
 {
@@ -54,22 +55,23 @@ class PadreDashboardController extends Controller
     }
 
     public function cambiarPassword(Request $request)
-{
-    $request->validate([
-        'password_actual'               => 'required',
-        'password_nuevo'                => 'required|min:8|confirmed',
-    ]);
+    {
+        $request->validate([
+            'password_actual' => 'required',
+            'password_nuevo'  => 'required|min:8|confirmed',
+        ]);
 
-    $user = auth()->user();
+        /** @var User $user */  // ← Este comentario elimina el "undefined method" del IDE
+        $user = Auth::user();   // ← Unificado con Auth facade
 
-    if (!Hash::check($request->password_actual, $user->password)) {
-        return back()->with('pw_error', 'La contraseña actual es incorrecta.');
+        if (!Hash::check($request->password_actual, $user->password)) {
+            return back()->with('pw_error', 'La contraseña actual es incorrecta.');
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password_nuevo),
+        ]);
+
+        return back()->with('pw_success', 'Contraseña actualizada correctamente.');
     }
-
-    $user->update([
-        'password' => Hash::make($request->password_nuevo),
-    ]);
-
-    return back()->with('pw_success', 'Contraseña actualizada correctamente.');
-}
 }

@@ -30,16 +30,15 @@ class ProfesorMateriaGrado extends Model
         return $this->belongsTo(Profesor::class, 'profesor_id');
     }
 
-    public function materia()
-    {
-        return $this->belongsTo(Materia::class, 'materia_id');
-    }
-
     public function grado()
     {
         return $this->belongsTo(Grado::class, 'grado_id');
     }
 
+    public function materia()
+    {
+        return $this->belongsTo(Materia::class, 'materia_id');
+    }
     /**
      * Verifica si ya existe una asignación
      * Profesor - Materia - Grado - Sección

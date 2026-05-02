@@ -196,7 +196,7 @@
             </div>
             <div>
                 <div class="pad-stat-lbl">Total Padres</div>
-                <div class="pad-stat-num">{{ $padres->total() }}</div>
+                <div class="pad-stat-num">{{ $totalPadres }}</div>
             </div>
         </div>
         <div class="pad-stat">
@@ -205,7 +205,7 @@
             </div>
             <div>
                 <div class="pad-stat-lbl">Activos</div>
-                <div class="pad-stat-num">{{ $padres->getCollection()->where('estado','activo')->count() }}</div>
+                <div class="pad-stat-num">{{ $totalActivos }}</div>
             </div>
         </div>
         <div class="pad-stat">
@@ -214,7 +214,7 @@
             </div>
             <div>
                 <div class="pad-stat-lbl">Con Hijos Vinculados</div>
-                <div class="pad-stat-num">{{ $padres->getCollection()->filter(fn($p) => $p->estudiantes->count() > 0)->count() }}</div>
+                <div class="pad-stat-num">{{ $totalConHijos }}</div>
             </div>
         </div>
     </div>
@@ -334,7 +334,7 @@
 
                         {{-- Estado --}}
                         <td class="tc">
-                            @if($padre->estado === 'activo')
+                            @if($padre->estado)
                                 <span class="bpill b-green"><i class="fas fa-circle" style="font-size:.4rem;vertical-align:middle;"></i> Activo</span>
                             @else
                                 <span class="bpill b-red"><i class="fas fa-circle" style="font-size:.4rem;vertical-align:middle;"></i> Inactivo</span>

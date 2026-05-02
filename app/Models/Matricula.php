@@ -15,6 +15,7 @@ class Matricula extends Model
         'codigo_matricula',
         'estudiante_id',
         'padre_id',
+        'seccion_id',          // ← agregado
         'anio_lectivo',
         'fecha_matricula',
         'foto_estudiante',
@@ -30,8 +31,8 @@ class Matricula extends Model
     ];
 
     protected $casts = [
-        'fecha_matricula' => 'datetime',
-        'fecha_confirmacion' => 'datetime',
+        'fecha_matricula'   => 'datetime',
+        'fecha_confirmacion'=> 'datetime',
     ];
 
     /*
@@ -50,6 +51,12 @@ class Matricula extends Model
         return $this->belongsTo(Padre::class, 'padre_id');
     }
 
+    // ← Relación con la tabla 'seccion'
+    public function seccion()
+    {
+        return $this->belongsTo(Seccion::class, 'seccion_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | MÉTODOS DE ESTADO
@@ -63,9 +70,9 @@ class Matricula extends Model
         }
 
         $this->update([
-            'estado' => 'aprobada',
+            'estado'             => 'aprobada',
             'fecha_confirmacion' => now(),
-            'motivo_rechazo' => null,
+            'motivo_rechazo'     => null,
         ]);
 
         return true;
@@ -74,11 +81,11 @@ class Matricula extends Model
     public function rechazar(string $motivo)
     {
         if ($this->estado === 'aprobada') {
-            return false; // No puedes rechazar algo ya aprobado
+            return false;
         }
 
         $this->update([
-            'estado' => 'rechazada',
+            'estado'         => 'rechazada',
             'motivo_rechazo' => $motivo,
         ]);
 
@@ -88,7 +95,7 @@ class Matricula extends Model
     public function cancelar(string $motivo = null)
     {
         $this->update([
-            'estado' => 'cancelada',
+            'estado'         => 'cancelada',
             'motivo_rechazo' => $motivo,
         ]);
     }
@@ -116,4 +123,5 @@ class Matricula extends Model
             ? $this->estudiante->nombre_completo
             : 'N/A';
     }
+
 }

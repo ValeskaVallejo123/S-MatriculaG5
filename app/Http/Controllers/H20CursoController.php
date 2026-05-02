@@ -3,13 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\H20Curso;
+use App\Models\Grado;
 
 class H20CursoController extends Controller
 {
     public function index()
     {
-        $cursos = H20Curso::paginate(15);
+        $cursos = Grado::where('nivel', 'secundaria')
+            ->where('anio_lectivo', date('Y'))
+            ->withCount('estudiantes')
+            ->orderBy('numero')
+            ->orderBy('seccion')
+            ->get();
+
         return view('h20cursos.index', compact('cursos'));
     }
 

@@ -27,11 +27,13 @@ return new class extends Migration
             $table->decimal('salario', 10, 2)->nullable();
 
             $table->enum('tipo_contrato', ['tiempo_completo', 'medio_tiempo', 'por_horas'])
-                  ->default('tiempo_completo');
+                ->default('tiempo_completo');
 
             $table->date('fecha_ingreso');
 
             $table->text('observaciones')->nullable();
+            $table->enum('genero', ['masculino', 'femenino']);
+
 
             $table->timestamps();
         });

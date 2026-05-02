@@ -3,17 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Curso;
 use App\Models\Estudiante;
+use App\Models\Grado;
+use App\Models\ProfesorMateriaGrado;
 
 class ConsultaestudiantexcursoController extends Controller
 {
     public function index()
     {
+        // Agrupa estudiantes por grado+seccion (texto real de la BD)
         $cursos = Estudiante::select('grado', 'seccion')
             ->selectRaw('COUNT(*) as total_estudiantes')
+            ->whereNotNull('grado')
+            ->whereNotNull('seccion')
+            ->where('grado', '!=', '')
+            ->where('seccion', '!=', '')
             ->groupBy('grado', 'seccion')
-            ->paginate(15);
+            ->orderBy('grado')
+            ->orderBy('seccion')
+            ->get();
 
         return view('consultaestudiantesxcurso.index', compact('cursos'));
     }
@@ -22,10 +30,12 @@ class ConsultaestudiantexcursoController extends Controller
     {
         $estudiantes = Estudiante::where('grado', $grado)
             ->where('seccion', $seccion)
+            ->orderBy('apellido1')
+            ->orderBy('nombre1')
             ->get();
 
-        return view('consultaestudiantesxcurso.show', compact('estudiantes', 'grado', 'seccion'));
+        return view('consultaestudiantesxcurso.show', compact(
+            'estudiantes', 'grado', 'seccion'
+        ));
     }
-
-
 }

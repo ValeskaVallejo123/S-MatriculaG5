@@ -4,12 +4,6 @@
 
 @section('page-title', 'Editar Documentos')
 
-@section('topbar-actions')
-    <a href="{{ route('documentos.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
-    </a>
-@endsection
 
 @section('content')
     <div class="container" style="max-width: 900px;">
@@ -136,8 +130,6 @@
             img:hover { transform: scale(1.05); }
         </style>
     @endpush
-<<<<<<< HEAD
 @endsection
-=======
 @endsection
->>>>>>> dev/valeska
+
