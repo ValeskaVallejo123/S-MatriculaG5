@@ -1,207 +1,408 @@
 @extends('layouts.app')
 
 @section('title', 'Buscar Estudiante')
-
 @section('page-title', 'Buscar Estudiante')
 
+@section('topbar-actions')
+    <a href="{{ route('estudiantes.create') }}" class="adm-btn-solid" style="text-decoration:none;">
+        <i class="fas fa-plus"></i> Nuevo Estudiante
+    </a>
+@endsection
+
+@push('styles')
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.est-wrap { font-family: 'Inter', sans-serif; }
+
+.adm-btn-solid {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    color: #fff; border: none; text-decoration: none; transition: opacity .15s; cursor: pointer;
+}
+.adm-btn-solid:hover { opacity: .88; color: #fff; }
+
+.adm-btn-outline {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+    background: #fff; color: #64748b; border: 1.5px solid #e2e8f0;
+    text-decoration: none; transition: background .15s; cursor: pointer;
+}
+.adm-btn-outline:hover { background: #f1f5f9; color: #334155; }
+
+/* ── Toolbar de búsqueda ── */
+.est-toolbar {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; margin-bottom: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.est-toolbar-head {
+    background: #003b73; padding: .85rem 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+}
+.est-toolbar-head i { color: #4ec7d2; font-size: 1rem; }
+.est-toolbar-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+.est-toolbar-head small { color: rgba(255,255,255,.6); font-size: .78rem; margin-left: auto; }
+
+.est-toolbar-body { padding: 1.25rem; }
+
+.form-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1rem; }
+@media(max-width:992px){ .form-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:576px){ .form-grid { grid-template-columns: 1fr; } }
+
+.form-group label {
+    display: flex; align-items: center; gap: .35rem;
+    font-size: .78rem; font-weight: 600; color: #334155; margin-bottom: .4rem;
+}
+.form-group label i { color: #00508f; }
+.form-group input,
+.form-group select {
+    width: 100%; padding: .48rem .85rem;
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: .82rem; color: #0f172a; background: #f8fafc;
+    outline: none; transition: border .15s; font-family: 'Inter', sans-serif;
+}
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #4ec7d2; background: #fff;
+    box-shadow: 0 0 0 3px rgba(78,199,210,.1);
+}
+.form-group input::placeholder { color: #94a3b8; }
+
+.form-actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+
+/* ── Card de resultados ── */
+.est-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.est-card-head {
+    background: #003b73; padding: .85rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+}
+.est-card-head-left { display: flex; align-items: center; gap: .6rem; }
+.est-card-head i { color: #4ec7d2; font-size: 1rem; }
+.est-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+
+.results-badge {
+    background: rgba(255,255,255,.18); color: #fff;
+    padding: .22rem .85rem; border-radius: 999px; font-size: .75rem; font-weight: 700;
+    border: 1px solid rgba(255,255,255,.25);
+}
+
+/* ── Tabla ── */
+.est-tbl { width: 100%; border-collapse: collapse; }
+.est-tbl thead th {
+    background: #f8fafc; padding: .65rem 1rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+}
+.est-tbl thead th.tc { text-align: center; }
+.est-tbl thead th.tr { text-align: right; }
+.est-tbl tbody td {
+    padding: .7rem 1rem; border-bottom: 1px solid #f1f5f9;
+    font-size: .82rem; color: #334155; vertical-align: middle;
+}
+.est-tbl tbody td.tc { text-align: center; }
+.est-tbl tbody td.tr { text-align: right; }
+.est-tbl tbody tr:last-child td { border-bottom: none; }
+.est-tbl tbody tr { transition: background .12s; }
+.est-tbl tbody tr:hover { background: #f8fafc; }
+
+.est-num {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: #f1f5f9; color: #64748b;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700;
+}
+
+.est-photo {
+    width: 36px; height: 36px; border-radius: 50%;
+    object-fit: cover; border: 2px solid #4ec7d2; display: block;
+}
+.est-photo-placeholder {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #e8f8f9; border: 2px solid #4ec7d2;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.est-name  { font-weight: 600; color: #0f172a; font-size: .83rem; }
+.est-email { font-size: .73rem; color: #94a3b8; margin-top: .1rem; }
+.est-dni   { font-family: monospace; font-size: .8rem; color: #00508f; }
+
+.bpill {
+    display: inline-flex; align-items: center; gap: .25rem;
+    padding: .22rem .65rem; border-radius: 999px;
+    font-size: .7rem; font-weight: 600; white-space: nowrap;
+}
+.b-cyan   { background: #e8f8f9; color: #00508f; border: 1px solid #b2e8ed; }
+.b-green  { background: #ecfdf5; color: #059669; }
+.b-red    { background: #fef2f2; color: #dc2626; }
+.b-orange { background: #fff7ed; color: #c2410c; }
+.b-gray   { background: #f1f5f9; color: #64748b; }
+
+.act-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
+}
+.act-btn:hover { transform: translateY(-1px); }
+.act-view { background: #f0f9ff; color: #0369a1; }
+.act-view:hover { background: #0369a1; color: #fff; }
+.act-edit { background: #e8f8f9; color: #00508f; }
+.act-edit:hover { background: #4ec7d2; color: #fff; }
+.act-del  { background: #fef2f2; color: #ef4444; }
+.act-del:hover { background: #ef4444; color: #fff; }
+
+/* Empty / inicial */
+.est-empty { padding: 3.5rem 1rem; text-align: center; }
+.est-empty-icon {
+    width: 72px; height: 72px; border-radius: 16px;
+    background: #f1f5f9; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto .85rem; font-size: 1.75rem; color: #94a3b8;
+}
+.est-empty h5 { color: #0f172a; font-weight: 700; margin-bottom: .4rem; font-size: .95rem; }
+.est-empty p  { color: #94a3b8; font-size: .82rem; margin: 0 0 1rem; }
+
+.tips-list { display: flex; flex-direction: column; gap: .5rem; max-width: 360px; margin: 0 auto; }
+.tip-item {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem .9rem; background: #f8fafc; border-radius: 9px;
+    color: #64748b; font-size: .8rem;
+}
+.tip-item i { color: #4ec7d2; }
+
+/* Footer / paginación */
+.est-footer {
+    padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafafa; flex-wrap: wrap; gap: .5rem;
+}
+.est-pages { font-size: .78rem; color: #94a3b8; }
+
+.pagination { margin: 0; gap: 3px; display: flex; }
+.pagination .page-link {
+    border-radius: 7px; padding: .3rem .65rem;
+    font-size: .78rem; font-weight: 500;
+    border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
+}
+.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-color: #4ec7d2; color: #fff;
+}
+.pagination .page-item.disabled .page-link { opacity: .45; }
+</style>
+@endpush
+
 @section('content')
-<div class="container-fluid px-4">
-    
-    <!-- Formulario de Búsqueda -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="search-card">
-                <div class="search-card-header">
-                    <div class="d-flex align-items-center">
-                        <div class="header-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div>
-                            <h5 class="header-title">Buscar Estudiante</h5>
-                            <p class="header-subtitle">Ingresa al menos un criterio de búsqueda</p>
-                        </div>
+<div class="est-wrap" style="max-width:1400px; margin:0 auto;">
+
+    {{-- ── Formulario de búsqueda ── --}}
+    <div class="est-toolbar">
+        <div class="est-toolbar-head">
+            <i class="fas fa-search"></i>
+            <span>Buscar Estudiante</span>
+            <small>Ingresa al menos un criterio de búsqueda</small>
+        </div>
+        <div class="est-toolbar-body">
+            <form action="{{ route('estudiantes.buscar') }}" method="GET">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Nombre o Apellido</label>
+                        <input type="text" name="nombre"
+                               placeholder="Ej: María López"
+                               value="{{ request('nombre') }}">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-id-card"></i> DNI / Identidad</label>
+                        <input type="text" name="dni"
+                               placeholder="Ej: 0801-2010-12345"
+                               value="{{ request('dni') }}">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-graduation-cap"></i> Grado</label>
+                        <input type="text" name="grado"
+                               placeholder="Ej: 5°"
+                               value="{{ request('grado') }}">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Estado</label>
+                        <select name="estado">
+                            <option value="">Todos</option>
+                            <option value="activo"     {{ request('estado') === 'activo'     ? 'selected' : '' }}>Activo</option>
+                            <option value="inactivo"   {{ request('estado') === 'inactivo'   ? 'selected' : '' }}>Inactivo</option>
+                            <option value="retirado"   {{ request('estado') === 'retirado'   ? 'selected' : '' }}>Retirado</option>
+                            <option value="suspendido" {{ request('estado') === 'suspendido' ? 'selected' : '' }}>Suspendido</option>
+                        </select>
                     </div>
                 </div>
-                <div class="search-card-body">
-                    <form action="{{ route('estudiantes.buscar') }}" method="GET">
-                        <div class="row g-4">
-                            <div class="col-md-3">
-                                <div class="form-group-modern">
-                                    <label class="form-label-modern">
-                                        <i class="fas fa-user"></i>
-                                        Nombre
-                                    </label>
-                                    <input type="text" 
-                                           name="nombre" 
-                                           class="form-control-modern" 
-                                           placeholder="Nombre del estudiante"
-                                           value="{{ request('nombre') }}">
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="form-group-modern">
-                                    <label class="form-label-modern">
-                                        <i class="fas fa-id-card"></i>
-                                        DNI/Identidad
-                                    </label>
-                                    <input type="text" 
-                                           name="dni" 
-                                           class="form-control-modern" 
-                                           placeholder="Número de identidad"
-                                           value="{{ request('dni') }}">
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="form-group-modern">
-                                    <label class="form-label-modern">
-                                        <i class="fas fa-hashtag"></i>
-                                        Código
-                                    </label>
-                                    <input type="text" 
-                                           name="codigo" 
-                                           class="form-control-modern" 
-                                           placeholder="Código"
-                                           value="{{ request('codigo') }}">
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="form-group-modern">
-                                    <label class="form-label-modern">
-                                        <i class="fas fa-graduation-cap"></i>
-                                        Grado
-                                    </label>
-                                    <input type="text" 
-                                           name="grado" 
-                                           class="form-control-modern" 
-                                           placeholder="Ej: 5°"
-                                           value="{{ request('grado') }}">
-                                </div>
-                            </div>
-                            
-                            <div class="col-12">
-                                <div class="action-buttons">
-                                    <button type="submit" class="btn-search">
-                                        <i class="fas fa-search"></i>
-                                        Buscar Estudiantes
-                                    </button>
-                                    <a href="{{ route('estudiantes.index') }}" class="btn-cancel">
-                                        <i class="fas fa-times"></i>
-                                        Cancelar
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                <div class="form-actions">
+                    <button type="submit" class="adm-btn-solid">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    <a href="{{ route('estudiantes.buscar') }}" class="adm-btn-outline">
+                        <i class="fas fa-times"></i> Limpiar
+                    </a>
+                    <a href="{{ route('estudiantes.index') }}" class="adm-btn-outline">
+                        <i class="fas fa-list"></i> Ver todos
+                    </a>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
-    <!-- Resultados -->
-    @if($busquedaRealizada)
-    <div class="row">
-        <div class="col-12">
-            <div class="results-card">
-                <div class="results-header">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <div class="results-icon">
-                                <i class="fas fa-list"></i>
-                            </div>
-                            <h6 class="results-title">Resultados de Búsqueda</h6>
-                        </div>
-                        <span class="results-badge">
-                            {{ $estudiantes->count() }} {{ $estudiantes->count() == 1 ? 'encontrado' : 'encontrados' }}
-                        </span>
-                    </div>
+    {{-- ── Resultados ── --}}
+    @if($busquedaRealizada ?? false)
+
+        <div class="est-card">
+            <div class="est-card-head">
+                <div class="est-card-head-left">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Resultados de Búsqueda</span>
                 </div>
-                <div class="results-body">
-                    @if($estudiantes->count() > 0)
-                        @foreach($estudiantes as $estudiante)
-                        <div class="student-result-card">
-                            <div class="row align-items-center g-3">
-                                <div class="col-lg-6">
-                                    <div class="student-info">
-                                        <div class="student-avatar-small">
-                                            @if($estudiante->nombre && $estudiante->apellido)
-                                                {{ substr($estudiante->nombre, 0, 1) }}{{ substr($estudiante->apellido, 0, 1) }}
-                                            @else
-                                                {{ substr($estudiante->nombre ?? 'E', 0, 1) }}{{ substr($estudiante->apellido ?? 'S', 0, 1) }}
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <h6 class="student-name-small">{{ $estudiante->nombre }} {{ $estudiante->apellido }}</h6>
-                                            <div class="student-meta-small">
-                                                @if($estudiante->dni)
-                                                <span class="meta-badge">
-                                                    <i class="fas fa-id-card"></i>
-                                                    {{ $estudiante->dni }}
-                                                </span>
-                                                @endif
-                                                @if($estudiante->codigo)
-                                                <span class="meta-badge">
-                                                    <i class="fas fa-hashtag"></i>
-                                                    {{ $estudiante->codigo }}
-                                                </span>
-                                                @endif
-                                                @if($estudiante->grado)
-                                                <span class="meta-badge meta-badge-primary">
-                                                    <i class="fas fa-graduation-cap"></i>
-                                                    {{ $estudiante->grado }}
-                                                </span>
-                                                @endif
-                                            </div>
-                                        </div>
+                <span class="results-badge">
+                    {{ $estudiantes->total() }}
+                    {{ $estudiantes->total() == 1 ? 'encontrado' : 'encontrados' }}
+                </span>
+            </div>
+
+            <div style="overflow-x:auto;">
+                @if($estudiantes->count() > 0)
+                <table class="est-tbl">
+                    <thead>
+                        <tr>
+                            <th class="tc">#</th>
+                            <th>Foto</th>
+                            <th>Nombre</th>
+                            <th>DNI</th>
+                            <th class="tc">Grado</th>
+                            <th class="tc">Sección</th>
+                            <th class="tc">Estado</th>
+                            <th class="tr">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($estudiantes as $index => $est)
+                        <tr>
+                            <td class="tc">
+                                <span class="est-num">{{ $estudiantes->firstItem() + $index }}</span>
+                            </td>
+                            <td>
+                                @if($est->foto)
+                                    <img src="{{ asset('storage/' . $est->foto) }}"
+                                         class="est-photo" alt="Foto">
+                                @else
+                                    <div class="est-photo-placeholder">
+                                        <i class="fas fa-user" style="color:#4ec7d2;font-size:.85rem;"></i>
                                     </div>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="est-name">
+                                    {{ trim(($est->nombre1 ?? '') . ' ' . ($est->nombre2 ?? '') . ' ' . ($est->apellido1 ?? '') . ' ' . ($est->apellido2 ?? '')) }}
                                 </div>
-                                <div class="col-lg-6 text-lg-end">
-                                    <a href="{{ route('estudiantes.show', $estudiante->id) }}" class="btn-view-student">
+                                @if($est->email ?? false)
+                                    <div class="est-email">{{ $est->email }}</div>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="est-dni">{{ $est->dni ?? '—' }}</span>
+                            </td>
+                            <td class="tc">
+                                <span class="bpill b-cyan">{{ $est->grado ?? '—' }}</span>
+                            </td>
+                            <td class="tc">
+                                <span class="bpill b-cyan">{{ $est->seccion ?? '—' }}</span>
+                            </td>
+                            <td class="tc">
+                                @php $estado = $est->estado ?? 'inactivo'; @endphp
+                                @if($estado === 'activo')
+                                    <span class="bpill b-green">
+                                        <i class="fas fa-circle" style="font-size:.4rem;"></i> Activo
+                                    </span>
+                                @elseif($estado === 'suspendido')
+                                    <span class="bpill b-orange">
+                                        <i class="fas fa-circle" style="font-size:.4rem;"></i> Suspendido
+                                    </span>
+                                @elseif($estado === 'retirado')
+                                    <span class="bpill b-gray">
+                                        <i class="fas fa-circle" style="font-size:.4rem;"></i> Retirado
+                                    </span>
+                                @else
+                                    <span class="bpill b-red">
+                                        <i class="fas fa-circle" style="font-size:.4rem;"></i> Inactivo
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="tr">
+                                <div style="display:inline-flex;gap:.35rem;align-items:center;">
+                                    <a href="{{ route('estudiantes.show', $est->id) }}"
+                                       class="act-btn act-view" title="Ver">
                                         <i class="fas fa-eye"></i>
-                                        Ver Detalles
                                     </a>
+                                    <a href="{{ route('estudiantes.edit', $est->id) }}"
+                                       class="act-btn act-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="act-btn act-del"
+                                            data-route="{{ route('estudiantes.destroy', $est->id) }}"
+                                            data-name="{{ ($est->nombre1 ?? '') }} {{ ($est->apellido1 ?? '') }}"
+                                            onclick="mostrarModalDeleteData(this)"
+                                            title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                         @endforeach
-                    @else
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <h5 class="empty-title">{{ $mensaje ?? 'No se encontraron resultados' }}</h5>
-                        <p class="empty-text">Intenta con otros criterios de búsqueda.</p>
-                    </div>
-                    @endif
+                    </tbody>
+                </table>
+
+                @if($estudiantes->hasPages())
+                <div class="est-footer">
+                    <span class="est-pages">
+                        Mostrando {{ $estudiantes->firstItem() }}–{{ $estudiantes->lastItem() }}
+                        de {{ $estudiantes->total() }} estudiantes
+                    </span>
+                    {{ $estudiantes->appends(request()->query())->links() }}
                 </div>
+                @endif
+
+                @else
+                <div class="est-empty">
+                    <div class="est-empty-icon"><i class="fas fa-search"></i></div>
+                    <h5>Sin resultados</h5>
+                    <p>No se encontró ningún estudiante con los criterios ingresados.<br>Intenta con otros datos.</p>
+                    <a href="{{ route('estudiantes.buscar') }}" class="adm-btn-outline" style="margin:0 auto;">
+                        <i class="fas fa-redo"></i> Nueva búsqueda
+                    </a>
+                </div>
+                @endif
             </div>
         </div>
-    </div>
+
     @else
-    <!-- Estado inicial -->
-    <div class="row">
-        <div class="col-12">
-            <div class="initial-state-card">
-                <div class="initial-state-content">
-                    <div class="initial-state-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h4 class="initial-state-title">Busca un estudiante</h4>
-                    <p class="initial-state-text">
-                        Completa el formulario con al menos un criterio de búsqueda para encontrar estudiantes.
-                    </p>
-                    <div class="initial-state-tips">
-                        <div class="tip-item">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>Puedes buscar por nombre, DNI, código o grado</span>
-                        </div>
-                        <div class="tip-item">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Los resultados se mostrarán automáticamente</span>
-                        </div>
-                    </div>
+    {{-- Estado inicial --}}
+    <div class="est-card">
+        <div class="est-empty">
+            <div class="est-empty-icon"
+                 style="background:linear-gradient(135deg,rgba(0,80,143,.08),rgba(78,199,210,.12));">
+                <i class="fas fa-user-graduate" style="color:#00508f;"></i>
+            </div>
+            <h5>Busca un estudiante</h5>
+            <p>Completa el formulario con al menos un criterio<br>para encontrar estudiantes registrados.</p>
+            <div class="tips-list">
+                <div class="tip-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Puedes buscar por nombre, DNI, grado o estado</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Los resultados se mostrarán debajo del formulario</span>
                 </div>
             </div>
         </div>
@@ -209,387 +410,4 @@
     @endif
 
 </div>
-
-@push('styles')
-<style>
-:root {
-    --primary: #00508f;
-    --secondary: #4ec7d2;
-    --light: #f8fafc;
-    --dark: #1e293b;
-    --border: #e2e8f0;
-}
-
-.search-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.search-card-header {
-    background: linear-gradient(135deg, var(--light) 0%, #e2e8f0 100%);
-    padding: 1.5rem 2rem;
-    border-bottom: 2px solid var(--border);
-}
-
-.header-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.25rem;
-    margin-right: 1rem;
-}
-
-.header-title {
-    color: var(--primary);
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 0;
-}
-
-.header-subtitle {
-    color: #64748b;
-    font-size: 0.875rem;
-    margin: 0;
-}
-
-.search-card-body {
-    padding: 2rem;
-}
-
-.form-group-modern {
-    margin-bottom: 0;
-}
-
-.form-label-modern {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--dark);
-    font-weight: 600;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-}
-
-.form-label-modern i {
-    color: var(--primary);
-}
-
-.form-control-modern {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    font-size: 0.938rem;
-    transition: all 0.3s ease;
-}
-
-.form-control-modern:focus {
-    outline: none;
-    border-color: var(--secondary);
-    box-shadow: 0 0 0 4px rgba(78, 199, 210, 0.1);
-}
-
-.action-buttons {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.btn-search {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
-    border: none;
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.938rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 80, 143, 0.2);
-}
-
-.btn-search:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 80, 143, 0.3);
-}
-
-.btn-cancel {
-    background: white;
-    color: #64748b;
-    border: 2px solid var(--border);
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.938rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.btn-cancel:hover {
-    background: var(--light);
-}
-
-.results-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.results-header {
-    background: white;
-    padding: 1.5rem 2rem;
-    border-bottom: 2px solid var(--border);
-}
-
-.results-icon {
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 80, 143, 0.1);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    margin-right: 1rem;
-}
-
-.results-title {
-    color: var(--dark);
-    font-weight: 700;
-    margin: 0;
-}
-
-.results-badge {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
-    padding: 0.5rem 1.25rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-.results-body {
-    padding: 1.5rem;
-}
-
-.student-result-card {
-    background: white;
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
-
-.student-result-card:last-child {
-    margin-bottom: 0;
-}
-
-.student-result-card:hover {
-    border-color: var(--secondary);
-    box-shadow: 0 4px 12px rgba(78, 199, 210, 0.15);
-    transform: translateY(-2px);
-}
-
-.student-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.student-avatar-small {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-}
-
-.student-name-small {
-    color: var(--dark);
-    font-weight: 700;
-    font-size: 1rem;
-    margin: 0 0 0.5rem 0;
-}
-
-.student-meta-small {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.meta-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.25rem 0.75rem;
-    background: #f1f5f9;
-    color: #64748b;
-    border-radius: 6px;
-    font-size: 0.813rem;
-    font-weight: 500;
-}
-
-.meta-badge-primary {
-    background: rgba(0, 80, 143, 0.1);
-    color: var(--primary);
-}
-
-.btn-view-student {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.btn-view-student:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 80, 143, 0.2);
-    color: white;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-}
-
-.empty-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, rgba(0, 80, 143, 0.1) 0%, rgba(78, 199, 210, 0.1) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    font-size: 2rem;
-    margin: 0 auto 1.5rem;
-}
-
-.empty-title {
-    color: var(--dark);
-    font-weight: 700;
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-}
-
-.empty-text {
-    color: #64748b;
-    margin-bottom: 0;
-}
-
-.initial-state-card {
-    background: linear-gradient(135deg, var(--light) 0%, white 100%);
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 3rem 2rem;
-}
-
-.initial-state-content {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.initial-state-icon {
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(135deg, rgba(0, 80, 143, 0.1) 0%, rgba(78, 199, 210, 0.1) 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    font-size: 2.5rem;
-    margin: 0 auto 1.5rem;
-}
-
-.initial-state-title {
-    color: var(--dark);
-    font-weight: 700;
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.initial-state-text {
-    color: #64748b;
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-}
-
-.initial-state-tips {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.tip-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: white;
-    border-radius: 10px;
-    color: #64748b;
-    font-size: 0.875rem;
-}
-
-.tip-item i {
-    color: var(--secondary);
-    font-size: 1.25rem;
-}
-
-@media (max-width: 767px) {
-    .search-card-body {
-        padding: 1.5rem;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-    }
-    
-    .btn-search,
-    .btn-cancel {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .btn-view-student {
-        width: 100%;
-        justify-content: center;
-    }
-}
-</style>
-@endpush
 @endsection

@@ -11,28 +11,36 @@ class ProfesorFactory extends Factory
 
     public function definition(): array
     {
+        // Obtener opciones desde el modelo
         $especialidades = Profesor::especialidades();
         $tiposContrato = array_keys(Profesor::tiposContrato());
 
-        // Generar un correo personalizado con el dominio profesor.egm.edu.hn
-        $nombre = strtolower($this->faker->firstName());
-        $apellido = strtolower($this->faker->lastName());
+        // Generar nombres limpios para construir el correo institucional
+        $nombre    = strtolower($this->faker->firstName());
+        $apellido  = strtolower($this->faker->lastName());
+
         $email = "{$nombre}.{$apellido}@profesor.egm.edu.hn";
 
         return [
-            'nombre' => ucfirst($nombre),
-            'apellido' => ucfirst($apellido),
-            'email' => $email,
-            'telefono' => $this->faker->phoneNumber(),
-            'dni' => $this->faker->unique()->numerify('#########'),
-            'fecha_nacimiento' => $this->faker->date('Y-m-d', '1995-01-01'),
-            'direccion' => $this->faker->address(),
-            'especialidad' => $this->faker->randomElement($especialidades),
-            'salario' => $this->faker->randomFloat(2, 8000, 25000),
-            'tipo_contrato' => $this->faker->randomElement($tiposContrato),
-            'fecha_ingreso' => $this->faker->date('Y-m-d'),
-            'estado' => $this->faker->randomElement(['activo', 'inactivo']),
-            'observaciones' => $this->faker->sentence(),
+            'nombre'           => ucfirst($nombre),
+            'apellido'         => ucfirst($apellido),
+            'email'            => $email,
+
+            'telefono'         => $this->faker->numerify('########'),
+            'dni'              => $this->faker->unique()->numerify('#########'),
+
+            // ⚠ Corregido: la fecha que estabas usando es *incorrecta*.
+            'fecha_nacimiento' => $this->faker->dateTimeBetween('-60 years', '-25 years')->format('Y-m-d'),
+
+            'direccion'        => $this->faker->address(),
+            'especialidad'     => $this->faker->randomElement($especialidades),
+
+            'salario'          => $this->faker->randomFloat(2, 8000, 25000),
+
+            'tipo_contrato'    => $this->faker->randomElement($tiposContrato),
+            'fecha_ingreso'    => $this->faker->date('Y-m-d'),
+
+            'observaciones'    => $this->faker->optional()->sentence(),
         ];
     }
 }

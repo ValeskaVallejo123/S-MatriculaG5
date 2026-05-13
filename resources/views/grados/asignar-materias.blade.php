@@ -4,13 +4,6 @@
 
 @section('page-title', 'Asignar Materias al Grado')
 
-@section('topbar-actions')
-    <a href="{{ route('grados.show', $grado) }}" 
-       style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #4ec7d2; font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
-    </a>
-@endsection
 
 @section('content')
 <div class="container-fluid">
@@ -21,13 +14,13 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h4 class="mb-2 fw-bold">
-                        <i class="fas fa-school"></i> {{ $grado->numero }}° Grado 
+                        <i class="fas fa-school"></i> {{ $grado->numero }}° Grado
                         @if($grado->seccion)
                             <span style="opacity: 0.9;">- Sección {{ $grado->seccion }}</span>
                         @endif
                     </h4>
                     <p class="mb-0" style="opacity: 0.9; font-size: 0.938rem;">
-                        <i class="fas fa-calendar-alt me-1"></i>Año Lectivo: {{ $grado->anio_lectivo }} 
+                        <i class="fas fa-calendar-alt me-1"></i>Año Lectivo: {{ $grado->anio_lectivo }}
                         <span class="mx-2">|</span>
                         <i class="fas fa-layer-group me-1"></i>Nivel: {{ ucfirst($grado->nivel) }}
                     </p>
@@ -68,7 +61,7 @@
                     </div>
                     <h5 class="fw-bold mb-2" style="color: #003b73;">No hay materias disponibles</h5>
                     <p class="text-muted mb-4">Para el nivel {{ ucfirst($grado->nivel) }}. Por favor, crea materias primero antes de asignarlas a este grado.</p>
-                    <a href="{{ route('materias.create') }}" 
+                    <a href="{{ route('materias.create') }}"
                        style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.6rem 1.5rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
                         <i class="fas fa-plus"></i>Crear Materia
                     </a>
@@ -81,8 +74,8 @@
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <div class="form-check form-switch" style="padding-left: 2.5rem;">
-                                <input class="form-check-input" 
-                                       type="checkbox" 
+                                <input class="form-check-input"
+                                       type="checkbox"
                                        id="selectAll"
                                        style="width: 3rem; height: 1.5rem; cursor: pointer;">
                                 <label class="form-check-label fw-semibold" for="selectAll" style="color: #003b73; margin-left: 0.5rem; cursor: pointer;">
@@ -130,8 +123,8 @@
                                 @foreach($materias as $materia)
                                 <tr style="border-bottom: 1px solid #e2e8f0; transition: all 0.2s ease;" class="materia-row">
                                     <td class="px-4 py-3 text-center">
-                                        <input type="checkbox" 
-                                               name="materias[]" 
+                                        <input type="checkbox"
+                                               name="materias[]"
                                                value="{{ $materia->id }}"
                                                class="form-check-input materia-checkbox"
                                                {{ in_array($materia->id, $materiasAsignadas) ? 'checked' : '' }}
@@ -153,21 +146,21 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <select name="profesores[{{ $materia->id }}]" 
+                                        <select name="profesores[{{ $materia->id }}]"
                                                 class="form-select form-select-sm"
                                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.5rem 0.875rem; font-size: 0.875rem;">
                                             <option value="">Sin asignar</option>
                                             @foreach($profesores as $profesor)
                                                 <option value="{{ $profesor->id }}"
                                                     {{ $grado->materias->find($materia->id)?->pivot->profesor_id == $profesor->id ? 'selected' : '' }}>
-                                                    {{ $profesor->name }}
+                                                    {{ $profesor->nombre }} {{ $profesor->apellido }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <input type="number" 
-                                               name="horas[{{ $materia->id }}]" 
+                                        <input type="number"
+                                               name="horas[{{ $materia->id }}]"
                                                class="form-control form-control-sm text-center"
                                                min="1"
                                                max="10"
@@ -207,7 +200,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                            <button type="submit" 
+                            <button type="submit"
                                     style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 8px; padding: 0.6rem 1.5rem; font-weight: 600; border: none; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); transition: all 0.3s ease;">
                                 <i class="fas fa-save me-1"></i>Guardar Asignación
                             </button>
@@ -298,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Actualizar el estado del checkbox "seleccionar todo"
         const allChecked = selectedCount === materiaCheckboxes.length;
         const someChecked = selectedCount > 0 && selectedCount < materiaCheckboxes.length;
-        
+
         selectAllCheckbox.checked = allChecked;
         selectAllHeader.checked = allChecked;
         selectAllCheckbox.indeterminate = someChecked;
@@ -341,12 +334,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', function(e) {
             const checkedBoxes = document.querySelectorAll('.materia-checkbox:checked');
-            
             if (checkedBoxes.length === 0) {
-                e.preventDefault();
-                alert('Por favor, selecciona al menos una materia para asignar al grado.');
-                return false;
-            }
+    e.preventDefault();
+    alert('Por favor, selecciona al menos una materia para asignar al grado.');
+    return false;
+}
         });
     }
 });

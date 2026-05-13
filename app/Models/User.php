@@ -5,51 +5,97 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Rol;
+use App\Models\Notificacion;
+use App\Models\NotificacionPreferencia;
+use App\Models\Padre;
+use App\Models\Profesor;
+use App\Models\AsignacionAcademica;
+use Illuminate\Support\Facades\Schema;
+use App\Models\Observacion;
 
+/**
+ * @method static \App\Models\User|null find($id)
+ * @method static \Illuminate\Database\Eloquent\Builder with($relations)
+ *
+ * @property int         $id
+ * @property string      $name
+ * @property string      $email
+ * @property int|null    $id_rol
+ * @property bool        $activo
+ * @property string|null $user_type
+ * @property bool        $is_super_admin
+ * @property bool        $is_protected
+ * @property array|null  $permissions
+ * @property string|null $email_verified_at
+ * @property string|null $fecha_registro
+ *
+ * @property-read \App\Models\Rol|null                     $rol
+ * @property-read \App\Models\Padre|null                   $padre
+ * @property-read \App\Models\Profesor|null                $docente
+ * @property-read \Illuminate\Support\Collection           $notificaciones
+ * @property-read \App\Models\NotificacionPreferencia|null $notificacionPreferencias
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
-        'email', 
+        'email',
         'password',
         'id_rol',
         'activo',
         'user_type',
-        'fecha_registro'
+        'fecha_registro',
+        'is_super_admin',
+        'is_protected',
+        'permissions',
+        'email_verified_at',
     ];
 
     protected $hidden = [
-        'password', 
-        'remember_token'
+        'password',
+        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'permissions' => 'array',
-            'activo' => 'boolean',
-            'fecha_registro' => 'datetime',
-            'is_super_admin' => 'boolean',
-            'is_protected' => 'boolean'
+            'password'          => 'hashed',
+            'permissions'       => 'array',
+            'activo'            => 'boolean',
+            'fecha_registro'    => 'datetime',
+            'is_super_admin'    => 'boolean',
+            'is_protected'      => 'boolean',
         ];
     }
 
-    // ===================================
+    // =========================================================================
     // RELACIONES
-    // ===================================
+    // =========================================================================
 
     public function rol()
     {
-        return $this->belongsTo(Rol::class, 'id_rol', 'id'); //  Usa 'id_rol' de users y 'id' de roles
+        return $this->belongsTo(Rol::class, 'id_rol', 'id');
     }
 
+    /**
+     * Relación con Padre via user_id.
+     */
     public function padre()
     {
         return $this->hasOne(Padre::class, 'user_id');
+    }
+
+    /**
+     * La tabla `profesores` NO tiene columna user_id.
+     * Se busca el profesor por coincidencia de email.
+     */
+    public function getDocenteAttribute(): ?Profesor
+    {
+        return Profesor::where('email', $this->email)->first();
     }
 
     public function estudiante()
@@ -57,158 +103,210 @@ class User extends Authenticatable
         return $this->hasOne(Estudiante::class, 'user_id');
     }
 
-    public function docente()
+    public function asignaciones()
     {
-        return $this->hasOne(Profesor::class, 'user_id');
+        return $this->hasMany(AsignacionAcademica::class, 'user_id');
     }
 
-    // ===================================
-    // MÉTODOS DE PERMISOS
-    // ===================================
-
-    public function tienePermiso($nombrePermiso)
+    public function notificaciones()
     {
-        if (!$this->rol || !$this->rol->permisos) {
-            return false;
-        }
-
-        return $this->rol->permisos->contains('nombre', $nombrePermiso);
+        return $this->hasMany(Notificacion::class, 'user_id');
     }
 
-    public function tieneAlgunPermiso(array $permisos)
+    public function notificacionPreferencias()
     {
-        foreach ($permisos as $permiso) {
-            if ($this->tienePermiso($permiso)) {
-                return true;
-            }
-        }
-        return false;
+        return $this->hasOne(NotificacionPreferencia::class, 'user_id');
     }
 
-    public function tieneTodosLosPermisos(array $permisos)
+    // =========================================================================
+    // ROLES
+    // =========================================================================
+
+    public function tieneRol(string $nombreRol): bool
     {
-        foreach ($permisos as $permiso) {
-            if (!$this->tienePermiso($permiso)) {
-                return false;
-            }
-        }
-        return true;
+        return $this->rol &&
+            strtolower(trim($this->rol->nombre)) === strtolower(trim($nombreRol));
     }
 
-    public function obtenerPermisos()
-    {
-        if (!$this->rol || !$this->rol->permisos) {
-            return collect([]);
-        }
-        
-        return $this->rol->permisos;
-    }
-
-    // ===================================
-    // MÉTODOS DE ROLES
-    // ===================================
-
-    public function tieneRol($nombreRol)
-    {
-        if (!$this->rol) {
-            return false;
-        }
-        
-        return strtolower($this->rol->nombre) === strtolower($nombreRol);
-    }
-
-    public function hasRole($role)
+    /** Alias en inglés para compatibilidad */
+    public function hasRole($role): bool
     {
         return $this->tieneRol($role);
     }
 
-    public function hasAnyRole(array $roles)
+    public function hasAnyRole(array $roles): bool
     {
-        if (!$this->rol) {
-            return false;
-        }
-        
         foreach ($roles as $role) {
-            if ($this->tieneRol($role)) {
-                return true;
-            }
+            if ($this->tieneRol($role)) return true;
         }
-        
         return false;
     }
 
-    // ===================================
-    // MÉTODOS HELPER DE ROLES
-    // ===================================
-
-    public function isSuperAdmin()
+    public function isSuperAdmin(): bool
     {
-        return $this->tieneRol('Super Administrador') 
+        return $this->is_super_admin === true
+            || $this->id_rol == 1
+            || $this->tieneRol('Super Administrador')
             || $this->tieneRol('superadmin')
-            || $this->tieneRol('Super Admin')
-            || $this->is_super_admin == 1;
+            || $this->tieneRol('Super Admin');
     }
 
-    public function isAdministrador()
+    public function isAdmin(): bool
     {
-        return $this->tieneRol('Administrador') 
-            || $this->tieneRol('administrador')
-            || $this->tieneRol('admin');
+        return $this->isSuperAdmin()
+            || $this->id_rol == 2
+            || $this->tieneRol('Administrador')
+            || $this->tieneRol('Admin');
     }
 
-    public function isDocente()
+    /** Alias para compatibilidad con código antiguo */
+    public function isAdministrador(): bool
     {
-        return $this->tieneRol('Docente') 
-            || $this->tieneRol('docente')
+        return $this->isAdmin();
+    }
+
+    public function isDocente(): bool
+    {
+        return $this->id_rol == 3
             || $this->tieneRol('Profesor')
-            || $this->tieneRol('profesor');
+            || $this->tieneRol('Docente');
     }
 
-    public function isEstudiante()
+    public function isEstudiante(): bool
     {
-        return $this->tieneRol('Estudiante') 
-            || $this->tieneRol('estudiante')
-            || $this->tieneRol('Alumno')
-            || $this->tieneRol('alumno');
+        return $this->id_rol == 4
+            || $this->tieneRol('Estudiante')
+            || $this->tieneRol('Alumno');
     }
 
-    public function isPadre()
+    public function isPadre(): bool
     {
-        return $this->tieneRol('Padre') 
-            || $this->tieneRol('padre')
-            || $this->tieneRol('Tutor')
-            || $this->tieneRol('tutor');
+        return $this->id_rol == 5
+            || $this->user_type === 'padre'
+            || $this->tieneRol('Padre')
+            || $this->tieneRol('Tutor');
     }
 
-    // ===================================
-    // MÉTODOS DE ESTADO
-    // ===================================
+    // =========================================================================
+    // ESTADOS
+    // =========================================================================
 
-    public function estaActivo()
+    public function estaActivo(): bool
     {
         return $this->activo === true;
     }
 
-    public function estaPendiente()
+    public function estaPendiente(): bool
     {
         return $this->activo === false;
     }
 
-    public function activar()
+    public function activar(): void
     {
-        $this->activo = true;
-        $this->save();
+        $this->update(['activo' => true]);
     }
 
-    public function desactivar()
+    public function desactivar(): void
     {
-        $this->activo = false;
-        $this->save();
+        $this->update(['activo' => false]);
     }
 
-    // ===================================
-    // SCOPES (Consultas frecuentes)
-    // ===================================
+    // =========================================================================
+    // PERMISOS
+    // =========================================================================
+
+    public function tienePermiso(string $permiso): bool
+    {
+        $permiso   = strtolower(trim($permiso));
+        $jsonPerms = $this->permissions ?? [];
+
+        if (is_array($jsonPerms)) {
+            $keys = array_map('strtolower', array_keys($jsonPerms));
+            $idx  = array_search($permiso, $keys);
+            if ($idx !== false && $jsonPerms[array_keys($jsonPerms)[$idx]] === true) {
+                return true;
+            }
+        }
+
+        if ($this->rol && method_exists($this->rol, 'tienePermiso')) {
+            return $this->rol->tienePermiso($permiso);
+        }
+
+        return false;
+    }
+
+    public function tieneAlgunPermiso(array $permisos): bool
+    {
+        foreach ($permisos as $permiso) {
+            if ($this->tienePermiso($permiso)) return true;
+        }
+        return false;
+    }
+
+    public function tieneTodosLosPermisos(array $permisos): bool
+    {
+        foreach ($permisos as $permiso) {
+            if (!$this->tienePermiso($permiso)) return false;
+        }
+        return true;
+    }
+
+    /** Alias en inglés para compatibilidad */
+    public function hasPermission(string $permission): bool
+    {
+        return $this->tienePermiso($permission);
+    }
+
+    public function obtenerPermisos(): array
+    {
+        $lista = [];
+
+        if (is_array($this->permissions)) {
+            foreach ($this->permissions as $key => $value) {
+                if ($value === true) {
+                    $lista[] = strtolower($key);
+                }
+            }
+        }
+
+        if ($this->rol && $this->rol->permisos instanceof \Illuminate\Support\Collection) {
+            $lista = array_merge(
+                $lista,
+                $this->rol->permisos
+                    ->pluck('nombre')
+                    ->map(fn($n) => strtolower($n))
+                    ->toArray()
+            );
+        }
+
+        return array_values(array_unique(array_filter($lista)));
+    }
+
+    // =========================================================================
+    // SEGURIDAD
+    // =========================================================================
+
+    public function canBeDeleted(): bool
+    {
+        if ($this->is_protected) {
+            return false;
+        }
+
+        if ($this->isSuperAdmin()) {
+            $totalSuperAdmins = User::where('is_super_admin', true)
+                ->where('activo', true)
+                ->count();
+            if ($totalSuperAdmins <= 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // =========================================================================
+    // SCOPES
+    // =========================================================================
 
     public function scopeActivos($query)
     {
@@ -223,5 +321,111 @@ class User extends Authenticatable
     public function scopePorRol($query, $rolId)
     {
         return $query->where('id_rol', $rolId);
+    }
+
+    // =========================================================================
+    // QUERIES POR ROL
+    // =========================================================================
+
+    public function observacionesPermitidas()
+    {
+        if ($this->isSuperAdmin() || $this->isAdmin()) {
+            return Observacion::query();
+        }
+
+        if ($this->isDocente()) {
+            $profesorId = Profesor::where('email', $this->email)->value('id');
+            if ($profesorId) {
+                return Observacion::where('profesor_id', $profesorId);
+            }
+        }
+
+        if ($this->isEstudiante()) {
+            return Observacion::whereRaw('0 = 1');
+        }
+
+        if ($this->isPadre() && $this->padre) {
+            $estudianteIds = $this->padre
+                ->estudiantes()
+                ->pluck('estudiantes.id');
+            return Observacion::whereIn('estudiante_id', $estudianteIds);
+        }
+
+        return Observacion::whereRaw('0 = 1');
+    }
+
+    // BUG CORREGIDO: la versión anterior usaba Observacion::whereIn() por error.
+    public function padresPermitidos()
+    {
+        if ($this->isSuperAdmin() || $this->isAdmin() || $this->isDocente()) {
+            return Padre::query();
+        }
+
+        if ($this->isPadre() && $this->padre) {
+            return Padre::where('id', $this->padre->id);
+        }
+
+        return Padre::whereRaw('0 = 1');
+    }
+
+    // =========================================================================
+    // NOTIFICACIONES
+    // =========================================================================
+
+    public function notificacionesPermitidas()
+    {
+        return $this->notificaciones()->latest();
+    }
+
+    public function notificacionesNoLeidas()
+    {
+        return $this->notificaciones()->where('leida', false);
+    }
+
+    public function getTotalNotificacionesNoLeidasAttribute(): int
+    {
+        return $this->notificaciones()->where('leida', false)->count();
+    }
+
+    public function notificacionesRecientes(int $limite = 5)
+    {
+        return $this->notificacionesPermitidas()->take($limite)->get();
+    }
+
+    // =========================================================================
+    // INFO HELPERS
+    // =========================================================================
+
+    public function infoParaObservaciones(): array
+    {
+        // Verificamos si la columna existe físicamente en la tabla para evitar el error 1054
+        $tieneColumnaPadre = Schema::hasColumn('padres', 'user_id');
+
+        return [
+            'profesor_id'   => Profesor::where('email', $this->email)->value('id'),
+            'estudiante_id' => null,
+            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
+        ];
+    }
+
+    public function infoParaSistema(): array
+    {
+        $docente           = $this->docente; // usa el accessor ya definido
+        $tieneColumnaPadre = Schema::hasColumn('padres', 'user_id');
+
+        return [
+            'id'            => $this->id,
+            'nombre'        => $this->name,
+            'email'         => $this->email,
+            'rol'           => $this->rol?->nombre,
+            'es_superadmin' => $this->isSuperAdmin(),
+            'es_admin'      => $this->isAdmin(),
+            'es_docente'    => $this->isDocente(),
+            'es_estudiante' => $this->isEstudiante(),
+            'es_padre'      => $this->isPadre(),
+            'profesor_id'   => $docente?->id,
+            'estudiante_id' => null,
+            'padre_id'      => $tieneColumnaPadre ? $this->padre?->id : null,
+        ];
     }
 }

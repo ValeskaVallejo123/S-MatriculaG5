@@ -12,74 +12,73 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VerificarPermisoPadre
 {
-    /**
-     * Middleware para verificar que un padre tenga permiso específico
-     * para realizar una acción sobre un estudiante.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next, string $permiso): Response
     {
-        // Verificar autenticación
+        // 1. Autenticación
         if (!Auth::check()) {
             return redirect()->route('login')
                 ->with('error', 'Debe iniciar sesión.');
         }
 
         $user = Auth::user();
-        
-        // Obtener el rol del usuario
+
+        // 2. Validar rol asignado
         if (!$user->id_rol) {
-            return redirect()->back()
-                ->with('error', 'Usuario sin rol asignado.');
+            return back()->with('error', 'Usuario sin rol asignado.');
         }
 
+        // 3. Cargar rol
         $rol = Rol::find($user->id_rol);
-        
+
         if (!$rol) {
-            return redirect()->back()
-                ->with('error', 'Rol no encontrado.');
+            return back()->with('error', 'Rol no encontrado.');
         }
 
-        // Verificar si el rol es de padre/tutor
-        $nombreRol = strtolower($rol->nombre);
+        // 4. Verificar si el rol es padre/tutor
+        $nombreRol = strtolower(trim($rol->nombre));
         $esPadre = in_array($nombreRol, ['padre', 'tutor', 'padre/tutor']);
-        
+
         if (!$esPadre) {
-            return redirect()->back()
-                ->with('error', 'Esta acción solo está disponible para padres/tutores.');
+            return back()->with('error', 'Esta acción solo está disponible para padres/tutores.');
         }
 
-        // Buscar el registro del padre en la tabla padres
+        // 5. Buscar registro en la tabla padres
         $padre = Padre::where('user_id', $user->id)->first();
-        
+
         if (!$padre) {
-            return redirect()->back()
-                ->with('error', 'No se encontró el perfil de padre asociado a su usuario.');
+            return back()->with('error', 'No se encontró un perfil de padre asociado a este usuario.');
         }
-        
+
         $padreId = $padre->id;
-        $estudianteId = $request->route('estudiante') ?? $request->input('estudiante_id');
-        
+
+        // 6. Obtener ID del estudiante
+        $estudianteId = $request->route('estudiante')
+                        ?? $request->route('id')
+                        ?? $request->input('estudiante_id');
+
         if (!$estudianteId) {
             return back()->with('error', 'No se especificó el estudiante.');
         }
-        
-        // Buscar el permiso
+
+        // 7. Buscar configuración de permisos para ese estudiante
         $permisoConfig = PadrePermiso::where('padre_id', $padreId)
-                                    ->where('estudiante_id', $estudianteId)
-                                    ->first();
-        
-        // Si no existe configuración, denegar por defecto
+            ->where('estudiante_id', $estudianteId)
+            ->first();
+
         if (!$permisoConfig) {
             return back()->with('error', 'No tiene permisos configurados para este estudiante.');
         }
-        
-        // Verificar el permiso específico
-        if (!isset($permisoConfig->{$permiso}) || !$permisoConfig->{$permiso}) {
+
+        // 8. Validar que el permiso solicitado exista y sea true
+        if (!property_exists($permisoConfig, $permiso)) {
+            return back()->with('error', "El permiso '$permiso' no existe en la configuración.");
+        }
+
+        if (!$permisoConfig->{$permiso}) {
             return back()->with('error', 'No tiene autorización para realizar esta acción.');
         }
-        
+
+        // 9. Continuar
         return $next($request);
     }
 }

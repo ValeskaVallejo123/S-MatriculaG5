@@ -9,7 +9,7 @@ class RegistrarCalificacion extends Model
 {
     use HasFactory;
 
-    protected $table = 'registrarcalificaciones';
+    protected $table = 'registro_calificaciones';
 
     protected $fillable = [
         'profesor_id',
@@ -25,7 +25,6 @@ class RegistrarCalificacion extends Model
         'nota' => 'float',
     ];
 
-    // Relaciones
     public function profesor()
     {
         return $this->belongsTo(Profesor::class);

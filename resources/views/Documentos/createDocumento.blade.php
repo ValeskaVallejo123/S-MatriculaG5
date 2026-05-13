@@ -1,243 +1,83 @@
 @extends('layouts.app')
 
-@section('title', 'Subir Documentos')
-
-@section('page-title', 'Documentos del Estudiante')
-
-@section('topbar-actions')
-    <a href="{{ route('documentos.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
-    </a>
-@endsection
-
 @section('content')
-    <div class="container" style="max-width: 900px;">
-
-        <!-- Header compacto -->
-        <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 10px;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center">
-                    <div class="icon-box me-3" style="width: 45px; height: 45px; background: rgba(78, 199, 210, 0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-file-earmark-arrow-up text-white" style="font-size: 1.3rem;"></i>
-                    </div>
-                    <div class="text-white">
-                        <h5 class="mb-0 fw-bold" style="font-size: 1.1rem;">Información y Documentos</h5>
-                        <p class="mb-0 opacity-90" style="font-size: 0.8rem;">Complete los datos y cargue los documentos requeridos</p>
-                    </div>
-                </div>
+    <div class="container py-5" style="max-width: 900px;">
+        <div class="card shadow-sm border-0" style="border-radius: 12px;">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="fas fa-folder-plus me-2"></i>Subir Nuevo Expediente Digital
+                </h5>
             </div>
-        </div>
-
-        <!-- Formulario compacto -->
-        <div class="card border-0 shadow-sm" style="border-radius: 10px;">
-            <div class="card-body p-3">
+            <div class="card-body p-4">
+                {{-- Formulario apuntando al método store del controlador --}}
                 <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    <!-- Información del estudiante -->
+                    {{-- Selección de Estudiante --}}
                     <div class="mb-4">
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-user" style="color: white; font-size: 0.9rem;"></i>
-                            </div>
-                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Información del Estudiante</h6>
+                        <label class="form-label small fw-bold text-primary">Seleccionar Estudiante *</label>
+                        <select name="estudiante_id" id="estudiante_id" required
+                                class="form-select @error('estudiante_id') is-invalid @enderror"
+                                style="border: 2px solid #bfd9ea; border-radius: 8px; height: 45px;">
+                            <option value="" selected disabled>Seleccione al alumno de la lista...</option>
+
+                            @forelse($estudiantes as $est)
+                                <option value="{{ $est->id }}" {{ old('estudiante_id') == $est->id ? 'selected' : '' }}>
+                                    {{-- Usamos las columnas nombre1, nombre2, apellido1, apellido2 --}}
+                                    {{ $est->nombre1 }} {{ $est->nombre2 }} {{ $est->apellido1 }} {{ $est->apellido2 }}
+                                </option>
+                            @empty
+                                <option value="" disabled>⚠️ No hay estudiantes registrados en el sistema</option>
+                            @endforelse
+                        </select>
+                        @error('estudiante_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        {{-- Foto del Estudiante --}}
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Foto Estudiante (JPG/PNG) *</label>
+                            <input type="file" name="foto" class="form-control @error('foto') is-invalid @enderror"
+                                   accept="image/*" required style="border: 2px solid #bfd9ea;">
+                            @error('foto') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
-                        <div class="row g-3">
-                            <!-- Foto del Estudiante -->
-                            <div class="col-md-6">
-                                <label for="foto" class="form-label small fw-semibold" style="color: #003b73;">
-                                    Foto del Estudiante <span style="color: #ef4444;">*</span>
-                                </label>
-                                <div class="position-relative">
-                                    <i class="fas fa-image position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                                    <input type="file"
-                                           accept=".jpg,.png"
-                                           class="form-control ps-5 @error('foto') is-invalid @enderror"
-                                           id="foto"
-                                           name="foto"
-                                           required
-                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
-                                    <p class="text-muted small mt-1" style="font-size: 0.75rem;">JPG o PNG (máx. 5 MB)</p>
-                                    @error('foto')
-                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
-                                    @enderror
-                                </div>
-                            </div>
+                        {{-- Acta de Nacimiento --}}
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Acta Nacimiento (PDF/JPG)</label>
+                            <input type="file" name="acta_nacimiento" class="form-control"
+                                   accept=".pdf,.jpg,.png" required style="border: 2px solid #bfd9ea;">
+                        </div>
+
+                        {{-- Calificaciones --}}
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Calificaciones (PDF/JPG)</label>
+                            <input type="file" name="calificaciones" class="form-control"
+                                   accept=".pdf,.jpg,.png" required style="border: 2px solid #bfd9ea;">
                         </div>
                     </div>
 
-                    <!-- Documentos -->
-                    <div class="mb-4">
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-file" style="color: white; font-size: 0.9rem;"></i>
-                            </div>
-                            <h6 class="mb-0 fw-bold" style="color: #003b73; font-size: 1rem;">Documentos Requeridos</h6>
-                        </div>
-
-                        <div class="row g-3">
-                            <!-- Acta de Nacimiento -->
-                            <div class="col-md-6">
-                                <label for="acta_nacimiento" class="form-label small fw-semibold" style="color: #003b73;">
-                                    Acta de Nacimiento <span style="color: #ef4444;">*</span>
-                                </label>
-                                <div class="position-relative">
-                                    <i class="fas fa-file-pdf position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                                    <input type="file"
-                                           accept=".jpg,.png,.pdf"
-                                           class="form-control ps-5 @error('acta_nacimiento') is-invalid @enderror"
-                                           id="acta_nacimiento"
-                                           name="acta_nacimiento"
-                                           required
-                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
-                                    <p class="text-muted small mt-1" style="font-size: 0.75rem;">JPG, PNG o PDF (máx. 5 MB)</p>
-                                    @error('acta_nacimiento')
-                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Calificaciones -->
-                            <div class="col-md-6">
-                                <label for="calificaciones" class="form-label small fw-semibold" style="color: #003b73;">
-                                    Calificaciones <span style="color: #ef4444;">*</span>
-                                </label>
-                                <div class="position-relative">
-                                    <i class="fas fa-file-pdf position-absolute" style="left: 12px; top: 50%; transform: translateY(-50%); color: #00508f; font-size: 0.85rem; z-index: 10;"></i>
-                                    <input type="file"
-                                           accept=".jpg,.png,.pdf"
-                                           class="form-control ps-5 @error('calificaciones') is-invalid @enderror"
-                                           id="calificaciones"
-                                           name="calificaciones"
-                                           required
-                                           style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem 0.6rem 2.8rem; transition: all 0.3s ease;">
-                                    <p class="text-muted small mt-1" style="font-size: 0.75rem;">JPG, PNG o PDF (máx. 5 MB)</p>
-                                    @error('calificaciones')
-                                    <div class="invalid-feedback" style="font-size: 0.8rem;">
-                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
-                                    </div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Botones compactos -->
-                    <div class="d-flex gap-2 pt-2 border-top">
-                        <button type="submit" class="btn btn-sm fw-semibold flex-fill" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); padding: 0.6rem; border-radius: 8px;">
-                            <i class="fas fa-upload me-1"></i>Subir Documentos
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary py-3 fw-bold shadow-sm"
+                                style="background: linear-gradient(to right, #4ec7d2, #00508f); border: none; border-radius: 8px;">
+                            <i class="fas fa-cloud-upload-alt me-2"></i>GUARDAR EXPEDIENTE
                         </button>
-                        <a href="{{ route('documentos.index') }}" class="btn btn-sm fw-semibold flex-fill" style="border: 2px solid #00508f; color: #00508f; background: white; padding: 0.6rem; border-radius: 8px;">
-                            <i class="fas fa-times me-1"></i>Cancelar
+                        <a href="{{ route('documentos.index') }}" class="btn btn-light border py-2 fw-bold" style="border-radius: 8px;">
+                            CANCELAR
                         </a>
                     </div>
                 </form>
             </div>
         </div>
-
-        <!-- Nota compacta -->
-        <div class="alert border-0 mt-2 py-2 px-3" style="border-radius: 8px; background: rgba(78, 199, 210, 0.1); border-left: 3px solid #4ec7d2 !important; font-size: 0.85rem;">
-            <div class="d-flex align-items-start">
-                <i class="fas fa-info-circle me-2 mt-1" style="font-size: 0.9rem; color: #00508f;"></i>
-                <div>
-                    <strong style="color: #00508f;">Información importante:</strong>
-                    <span class="text-muted"> Todos los archivos deben cumplir con los formatos y tamaños especificados.</span>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    @push('styles')
-        <style>
-            .form-control, .form-select {
-                border-radius: 6px;
-                border: 1.5px solid #e2e8f0;
-                padding: 0.5rem 0.75rem;
-                transition: all 0.3s ease;
-                font-size: 0.875rem;
-            }
-
-            .form-control:focus, .form-select:focus {
-                border-color: #4ec7d2;
-                box-shadow: 0 0 0 0.15rem rgba(78, 199, 210, 0.15);
-            }
-
-            .form-label {
-                color: #003b73;
-                font-size: 0.85rem;
-                margin-bottom: 0.3rem;
-            }
-
-            small.text-muted {
-                font-size: 0.7rem;
-                display: block;
-                margin-top: 0.15rem;
-                color: #6b7280 !important;
-            }
-
-            .btn:hover {
-                transform: translateY(-2px);
-                transition: all 0.3s ease;
-            }
-
-            .btn-back:hover {
-                background: #00508f !important;
-                color: white !important;
-                transform: translateY(-2px);
-            }
-
-            button[type="submit"]:hover {
-                box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important;
-            }
-
-            .border-bottom {
-                border-color: rgba(0, 80, 143, 0.15) !important;
-            }
-
-            .ps-5 {
-                padding-left: 2.5rem !important;
-            }
-        </style>
-    @endpush
-
+    {{-- Script para asegurar que el selector funcione si usas librerías de terceros --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                const maxSize = 5 * 1024 * 1024; // 5 MB
-                const allowedFiles = {
-                    foto: ['image/jpeg','image/png'],
-                    otros: ['image/jpeg','image/png','application/pdf']
-                };
-
-                const foto = document.getElementById('foto').files[0];
-                const acta = document.getElementById('acta_nacimiento').files[0];
-                const calif = document.getElementById('calificaciones').files[0];
-
-                let errorMessage = '';
-
-                if (!foto) {
-                    errorMessage = 'La Foto del Estudiante es obligatoria.';
-                } else if (!allowedFiles.foto.includes(foto.type) || foto.size > maxSize) {
-                    errorMessage = 'La Foto debe ser JPG o PNG y no superar 5 MB.';
-                } else if (acta && (!allowedFiles.otros.includes(acta.type) || acta.size > maxSize)) {
-                    errorMessage = 'El Acta de Nacimiento debe ser JPG, PNG o PDF y no superar 5 MB.';
-                } else if (calif && (!allowedFiles.otros.includes(calif.type) || calif.size > maxSize)) {
-                    errorMessage = 'Las Calificaciones deben ser JPG, PNG o PDF y no superar 5 MB.';
-                }
-
-                if (errorMessage) {
-                    e.preventDefault();
-                    alert(errorMessage);
-                }
-            });
+        document.addEventListener("DOMContentLoaded", function() {
+            var select = document.getElementById('estudiante_id');
+            if (window.jQuery && jQuery.fn.select2) {
+                $(select).select2('destroy');
+            }
         });
     </script>
 @endsection

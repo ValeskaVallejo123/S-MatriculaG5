@@ -1,157 +1,184 @@
 @extends('layouts.app')
 
-@section('title', 'Listado de Documentos')
+@section('title', 'Documentos')
+@section('page-title', 'Documentos')
 
-@section('page-title', 'Gestión de Documentos')
+@push('styles')
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-@section('topbar-actions')
-    <a href="{{ route('documentos.create') }}" class="btn-back" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: none; box-shadow: 0 2px 8px rgba(78, 199, 210, 0.3); font-size: 0.9rem;">
-        <i class="fas fa-plus"></i>
-        Subir Documentos
-    </a>
-@endsection
+.doc-wrap { font-family: 'Inter', sans-serif; }
+
+.doc-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.doc-card-head {
+    background: #003b73; padding: .85rem 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+}
+.doc-card-head i { color: #4ec7d2; font-size: 1rem; }
+.doc-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+
+.doc-tbl { width: 100%; border-collapse: collapse; }
+.doc-tbl thead th {
+    background: #f8fafc; padding: .6rem 1rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
+}
+.doc-tbl tbody td {
+    padding: .65rem 1rem; border-bottom: 1px solid #f1f5f9;
+    font-size: .82rem; color: #334155; vertical-align: middle;
+}
+.doc-tbl tbody tr:last-child td { border-bottom: none; }
+.doc-tbl tbody tr:hover { background: #fafbfc; }
+
+.act-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
+}
+.act-edit { background: #e8f8f9; color: #00508f; }
+.act-edit:hover { background: #4ec7d2; color: #fff; }
+.act-del  { background: #fef2f2; color: #ef4444; }
+.act-del:hover  { background: #ef4444; color: #fff; }
+
+.doc-empty { padding: 3.5rem 1rem; text-align: center; }
+.doc-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
+.doc-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
+
+.doc-footer {
+    padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafafa; flex-wrap: wrap; gap: .5rem;
+}
+.doc-footer-info { font-size: .78rem; color: #64748b; }
+.pagination { margin: 0; }
+.pagination .page-item .page-link {
+    font-size: .78rem; padding: .3rem .65rem; border-radius: 6px;
+    color: #00508f; border-color: #e2e8f0; font-family: 'Inter', sans-serif;
+}
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #4ec7d2, #00508f);
+    border-color: #4ec7d2; color: #fff;
+}
+.pagination .page-item.disabled .page-link { color: #cbd5e1; }
+</style>
+@endpush
 
 @section('content')
-    <div class="container" style="max-width: 1400px;">
+<div class="doc-wrap container-fluid px-4">
 
-        {{-- Mensaje de éxito --}}
-        @if(session('success'))
-            <div class="alert border-0 mb-3" style="background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4caf50 !important; border-radius: 8px;">
-                <div class="d-flex align-items-start">
-                    <i class="fas fa-check-circle me-2 mt-1" style="font-size: 0.9rem; color: #4caf50;"></i>
-                    <div>
-                        <strong style="color: #2e7d32;">{{ session('success') }}</strong>
-                    </div>
-                </div>
-            </div>
-        @endif
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert"
+             style="border-left:4px solid #ef4444;border-radius:8px;font-size:.82rem;">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            @foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
-        <!-- Tabla compacta de Documentos -->
-        <div class="card border-0 shadow-sm" style="border-radius: 10px;">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                        <tr>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Foto</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Acta de Nacimiento</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Calificaciones</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold text-end" style="font-size: 0.7rem; letter-spacing: 0.3px; color: #003b73;">Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @forelse ($documentos as $doc)
-                            <tr style="border-bottom: 1px solid #f1f5f9; transition: all 0.2s ease;">
-                                {{-- FOTO --}}
-                                <td class="px-3 py-2">
-                                    @if($doc->foto && file_exists(storage_path('app/public/' . $doc->foto)))
-                                        <a href="{{ asset('storage/' . $doc->foto) }}" target="_blank">
-                                            <img src="{{ asset('storage/' . $doc->foto) }}"
-                                                 alt="Foto del estudiante"
-                                                 class="rounded-circle object-fit-cover"
-                                                 style="width: 35px; height: 35px; border: 2px solid #4ec7d2;">
-                                        </a>
-                                    @else
-                                        <span class="text-muted" style="font-size: 0.85rem;">No hay foto</span>
-                                    @endif
-                                </td>
-
-                                {{-- ACTA --}}
-                                <td class="px-3 py-2">
-                                    @if($doc->acta_nacimiento && file_exists(storage_path('app/public/' . $doc->acta_nacimiento)))
-                                        <a href="{{ asset('storage/' . $doc->acta_nacimiento) }}" target="_blank"
-                                           class="btn btn-sm"
-                                           style="border: 1.5px solid #00508f; color: #00508f; background: white; border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.8rem; text-decoration: none;"
-                                           onmouseover="this.style.background='#00508f'; this.style.color='white';"
-                                           onmouseout="this.style.background='white'; this.style.color='#00508f';">
-                                            Ver Acta
-                                        </a>
-                                    @else
-                                        <span class="text-muted" style="font-size: 0.85rem;">No hay acta</span>
-                                    @endif
-                                </td>
-
-                                {{-- CALIFICACIONES --}}
-                                <td class="px-3 py-2">
-                                    @if($doc->calificaciones && file_exists(storage_path('app/public/' . $doc->calificaciones)))
-                                        <a href="{{ asset('storage/' . $doc->calificaciones) }}" target="_blank"
-                                           class="btn btn-sm"
-                                           style="border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.8rem; text-decoration: none;"
-                                           onmouseover="this.style.background='#4ec7d2'; this.style.color='white';"
-                                           onmouseout="this.style.background='white'; this.style.color='#4ec7d2';">
-                                            Ver Calificaciones
-                                        </a>
-                                    @else
-                                        <span class="text-muted" style="font-size: 0.85rem;">No hay calificaciones</span>
-                                    @endif
-                                </td>
-
-                                {{-- ACCIONES --}}
-                                <td class="px-3 py-2 text-end">
-                                    <div class="btn-group" role="group">
-                                        <a href="{{ route('documentos.edit', $doc->id) }}"
-                                           class="btn btn-sm"
-                                           style="border-radius: 6px 0 0 6px; border: 1.5px solid #4ec7d2; color: #4ec7d2; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
-                                           onmouseover="this.style.background='#4ec7d2'; this.style.color='white';"
-                                           onmouseout="this.style.background='white'; this.style.color='#4ec7d2';">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('documentos.destroy', $doc->id) }}" method="POST" class="d-inline"
-                                              onsubmit="return confirm('¿Eliminar documentos?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="btn btn-sm"
-                                                    style="border-radius: 0 6px 6px 0; border: 1.5px solid #ef4444; border-left: none; color: #ef4444; background: white; padding: 0.3rem 0.6rem; font-size: 0.8rem;"
-                                                    onmouseover="this.style.background='#ef4444'; this.style.color='white';"
-                                                    onmouseout="this.style.background='white'; this.style.color='#ef4444';">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="fas fa-inbox fa-2x mb-2" style="color: #00508f; opacity: 0.5;"></i>
-                                        <h6 style="color: #003b73;">No hay documentos registrados</h6>
-                                        <p class="small mb-3">Comienza cargando los primeros documentos</p>
-                                        <a href="{{ route('documentos.create') }}" class="btn btn-sm" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 8px; padding: 0.5rem 1.2rem; text-decoration: none; display: inline-block;">
-                                            <i class="fas fa-plus me-1"></i>Subir Documentos
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <div class="doc-card">
+        <div class="doc-card-head">
+            <i class="fas fa-folder-open"></i>
+            <span>Expedientes Digitales</span>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="doc-tbl">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Estudiante</th>
+                        <th style="text-align:center;">Foto</th>
+                        <th style="text-align:center;">Acta Nacimiento</th>
+                        <th style="text-align:center;">Calificaciones</th>
+                        <th style="text-align:center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($documentos as $doc)
+                    <tr>
+                        <td style="color:#64748b;font-weight:600;">
+                            {{ $documentos->firstItem() + $loop->index }}
+                        </td>
+                        <td>
+                            <div style="font-weight:600;color:#0f172a;">
+                                {{ $doc->estudiante->nombre1 ?? 'N/A' }}
+                                {{ $doc->estudiante->apellido1 ?? '' }}
+                            </div>
+                            <small style="color:#94a3b8;">ID: {{ $doc->estudiante_id }}</small>
+                        </td>
+                        <td style="text-align:center;">
+                            @if($doc->foto)
+                                <a href="{{ asset('storage/' . $doc->foto) }}" target="_blank">
+                                    <img src="{{ asset('storage/' . $doc->foto) }}"
+                                         class="rounded-circle"
+                                         style="width:38px;height:38px;object-fit:cover;border:2px solid #4ec7d2;">
+                                </a>
+                            @else
+                                <i class="fas fa-user-circle" style="font-size:1.6rem;color:#cbd5e1;"></i>
+                            @endif
+                        </td>
+                        <td style="text-align:center;">
+                            @if($doc->acta_nacimiento)
+                                <a href="{{ asset('storage/' . $doc->acta_nacimiento) }}" target="_blank"
+                                   style="display:inline-flex;align-items:center;gap:.3rem;padding:.22rem .65rem;border-radius:999px;background:#e8f8f9;color:#00508f;font-size:.7rem;font-weight:600;text-decoration:none;">
+                                    <i class="fas fa-file-pdf"></i> Ver
+                                </a>
+                            @else
+                                <span style="color:#cbd5e1;font-size:.75rem;">—</span>
+                            @endif
+                        </td>
+                        <td style="text-align:center;">
+                            @if($doc->calificaciones)
+                                <a href="{{ asset('storage/' . $doc->calificaciones) }}" target="_blank"
+                                   style="display:inline-flex;align-items:center;gap:.3rem;padding:.22rem .65rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:.7rem;font-weight:600;text-decoration:none;">
+                                    <i class="fas fa-file-alt"></i> Ver
+                                </a>
+                            @else
+                                <span style="color:#cbd5e1;font-size:.75rem;">—</span>
+                            @endif
+                        </td>
+                        <td style="text-align:center;">
+                            <div style="display:inline-flex;gap:.4rem;align-items:center;">
+                                <a href="{{ route('documentos.edit', $doc->id) }}"
+                                   class="act-btn act-edit" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('documentos.destroy', $doc->id) }}" method="POST" class="d-inline"
+                                      data-confirm="¿Eliminar este expediente?">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="act-btn act-del" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6">
+                            <div class="doc-empty">
+                                <i class="fas fa-folder-open"></i>
+                                <p>No hay expedientes digitales registrados</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
 
+        @if($documentos->hasPages())
+        <div class="doc-footer">
+            <div class="doc-footer-info">
+                Mostrando {{ $documentos->firstItem() }}–{{ $documentos->lastItem() }} de {{ $documentos->total() }} expedientes
+            </div>
+            {{ $documentos->links() }}
+        </div>
+        @endif
     </div>
 
-    @push('styles')
-        <style>
-            .table > :not(caption) > * > * {
-                padding: 0.6rem 0.75rem;
-            }
-
-            .btn-group .btn:hover {
-                transform: translateY(-1px);
-                z-index: 1;
-            }
-
-            .table tbody tr:hover {
-                background-color: rgba(191, 217, 234, 0.08);
-            }
-
-            .btn-back:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important;
-            }
-        </style>
-    @endpush
+</div>
 @endsection

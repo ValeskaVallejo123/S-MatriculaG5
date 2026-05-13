@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class MateriaController extends Controller
 {
+    public function __construct()
+    {
+        // Solo el superadmin puede crear, editar o eliminar materias
+        $this->middleware('role:superadmin')->only([
+            'create', 'store', 'edit', 'update', 'destroy'
+        ]);
+    }
+
     public function index()
     {
         $materias = Materia::orderBy('nivel')->orderBy('nombre')->paginate(15);
@@ -25,8 +33,7 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo',
             'descripcion' => 'nullable|string',
             'nivel' => 'required|in:primaria,secundaria',
-            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana',
-            'activo' => 'boolean',
+            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana,Química,Física,Biología,Historia,Geografía',
         ]);
 
         Materia::create($request->all());
@@ -53,7 +60,7 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo,' . $materia->id,
             'descripcion' => 'nullable|string',
             'nivel' => 'required|in:primaria,secundaria',
-            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana',
+            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana,Química,Física,Biología,Historia,Geografía',
             'activo' => 'boolean',
         ]);
 
@@ -63,11 +70,11 @@ class MateriaController extends Controller
                         ->with('success', 'Materia actualizada exitosamente');
     }
 
-    public function destroy(Materia $materia)
+    public function destroy(Request $request, Materia $materia)
     {
         $materia->delete();
 
-        return redirect()->route('materias.index')
+        return redirect()->route('materias.index', ['page' => $request->input('page', 1)])
                         ->with('success', 'Materia eliminada exitosamente');
     }
 }

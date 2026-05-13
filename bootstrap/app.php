@@ -11,12 +11,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Registrar middleware con alias
+
         $middleware->alias([
             'verificar.permiso' => \App\Http\Middleware\VerificarPermiso::class,
-            'verificar.rol' => \App\Http\Middleware\VerificarRol::class,
+            'verificar.rol'     => \App\Http\Middleware\VerificarRol::class,
+            'role'              => \App\Http\Middleware\RoleMiddleware::class,
+            'rol'               => \App\Http\Middleware\RoleMiddleware::class,
+            'es.padre'          => \App\Http\Middleware\EsPadre::class,
         ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->create();

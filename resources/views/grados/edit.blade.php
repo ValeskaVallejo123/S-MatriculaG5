@@ -4,12 +4,6 @@
 
 @section('page-title', 'Editar Grado')
 
-@section('topbar-actions')
-    <a href="{{ route('grados.index') }}" class="btn-back" style="background: white; color: #00508f; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; border: 2px solid #00508f; box-shadow: 0 2px 8px rgba(0, 80, 143, 0.2); font-size: 0.9rem;">
-        <i class="fas fa-arrow-left"></i>
-        Volver
-    </a>
-@endsection
 
 @section('content')
 <div class="container" style="max-width: 900px;">
@@ -31,8 +25,8 @@
                         <label for="nivel" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-layer-group text-primary"></i> Nivel Educativo *
                         </label>
-                        <select class="form-select @error('nivel') is-invalid @enderror" 
-                                id="nivel" 
+                        <select class="form-select @error('nivel') is-invalid @enderror"
+                                id="nivel"
                                 name="nivel"
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
@@ -54,8 +48,8 @@
                         <label for="numero" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-sort-numeric-up text-success"></i> Número de Grado *
                         </label>
-                        <select class="form-select @error('numero') is-invalid @enderror" 
-                                id="numero" 
+                        <select class="form-select @error('numero') is-invalid @enderror"
+                                id="numero"
                                 name="numero"
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
@@ -80,8 +74,8 @@
                         <label for="seccion" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-list-ol text-info"></i> Sección
                         </label>
-                        <select class="form-select @error('seccion') is-invalid @enderror" 
-                                id="seccion" 
+                        <select class="form-select @error('seccion') is-invalid @enderror"
+                                id="seccion"
                                 name="seccion"
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Sin sección</option>
@@ -101,10 +95,10 @@
                         <label for="anio_lectivo" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-calendar-alt text-warning"></i> Año Lectivo *
                         </label>
-                        <input type="number" 
-                               class="form-control @error('anio_lectivo') is-invalid @enderror" 
-                               id="anio_lectivo" 
-                               name="anio_lectivo" 
+                        <input type="number"
+                               class="form-control @error('anio_lectivo') is-invalid @enderror"
+                               id="anio_lectivo"
+                               name="anio_lectivo"
                                value="{{ old('anio_lectivo', $grado->anio_lectivo) }}"
                                min="2020"
                                max="2100"
@@ -118,10 +112,10 @@
                     <!-- Estado Activo -->
                     <div class="col-12">
                         <div class="form-check form-switch" style="padding-left: 2.5rem;">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
-                                   id="activo" 
-                                   name="activo" 
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="activo"
+                                   name="activo"
                                    value="1"
                                    {{ old('activo', $grado->activo) ? 'checked' : '' }}
                                    style="width: 3rem; height: 1.5rem; cursor: pointer;">
@@ -184,12 +178,12 @@
         const nivel = this.value;
         const numeroSelect = document.getElementById('numero');
         const options = numeroSelect.querySelectorAll('option');
-        
+
         options.forEach(option => {
             if (option.value === '') return;
-            
+
             const numero = parseInt(option.value);
-            
+
             if (nivel === 'primaria') {
                 option.style.display = (numero >= 1 && numero <= 6) ? '' : 'none';
             } else if (nivel === 'secundaria') {
@@ -198,7 +192,7 @@
                 option.style.display = '';
             }
         });
-        
+
         // Reset selection if current value is not valid
         const currentValue = parseInt(numeroSelect.value);
         if (nivel === 'primaria' && (currentValue < 1 || currentValue > 6)) {
@@ -207,7 +201,7 @@
             numeroSelect.value = '';
         }
     });
-    
+
     // Trigger on page load to filter initial options
     document.getElementById('nivel').dispatchEvent(new Event('change'));
 </script>

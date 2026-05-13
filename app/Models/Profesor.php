@@ -11,36 +11,46 @@ class Profesor extends Model
 
     protected $table = 'profesores';
 
-   protected $fillable = [
-    'nombre',
-    'apellido',
-    'dni',
-    'fecha_nacimiento',
-    'genero',
-    'telefono',
-    'email',
-    'direccion',
-    'especialidad',
-    'nivel_academico',
-    'fecha_contratacion',
-    'tipo_contrato',
-    'estado',
-];
-
-
-    protected $casts = [
-        'fecha_nacimiento' => 'date',
-        'fecha_ingreso' => 'date',
-        'salario' => 'decimal:2'
+    protected $fillable = [
+        'user_id',           // ← agregado
+        'grado_guia_id',     // ← agregado
+        'seccion_guia',      // ← agregado
+        'nombre',
+        'apellido',
+        'dni',
+        'fecha_nacimiento',
+        'genero',
+        'telefono',
+        'email',
+        'direccion',
+        'especialidad',
+        'nivel_academico',
+        'fecha_contratacion',
+        'fecha_ingreso',     // ← agregado
+        'salario',           // ← agregado
+        'tipo_contrato',
+        'estado',
+        'observaciones',     // ← agregado
     ];
 
-    // Accessor para nombre completo
+    protected $casts = [
+        'fecha_nacimiento'   => 'date',
+        'fecha_ingreso'      => 'date',
+        'fecha_contratacion' => 'date',
+        'salario'            => 'decimal:2',
+    ];
+
+    /**
+     * Nombre completo del profesor
+     */
     public function getNombreCompletoAttribute()
     {
-        return "{$this->nombre} {$this->apellido}";
+        return trim("{$this->nombre} {$this->apellido}");
     }
 
-    // Especialidades disponibles
+    /**
+     * Especialidades disponibles
+     */
     public static function especialidades()
     {
         return [
@@ -57,17 +67,52 @@ class Profesor extends Model
             'Física',
             'Biología',
             'Historia',
-            'Geografía'
+            'Geografía',
+            'General',          // ← agregado
         ];
     }
 
-    // Tipos de contrato
+    /**
+     * Tipos de contrato
+     */
     public static function tiposContrato()
     {
         return [
             'tiempo_completo' => 'Tiempo Completo',
-            'medio_tiempo' => 'Medio Tiempo',
-            'por_horas' => 'Por Horas'
+            'medio_tiempo'    => 'Medio Tiempo',
+            'por_horas'       => 'Por Horas',
         ];
+    }
+
+    /**
+     * Relación con el usuario del sistema
+     */
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Relación: Grado del cual es guía
+     */
+    public function gradoGuia()
+    {
+        return $this->belongsTo(Grado::class, 'grado_guia_id');
+    }
+
+    /**
+     * Relación: Asignaciones a grados/secciones
+     */
+    public function gradosAsignados()
+    {
+        return $this->hasMany(ProfesorGradoSeccion::class, 'profesor_id');
+    }
+
+    /**
+     * Relación: Materias que imparte por grado y sección
+     */
+    public function materiasGrupos()
+    {
+        return $this->hasMany(ProfesorMateriaGrado::class, 'profesor_id');
     }
 }

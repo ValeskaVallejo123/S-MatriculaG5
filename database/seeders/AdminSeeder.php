@@ -13,7 +13,7 @@ class AdminSeeder extends Seeder
         $apellidos = ['Martínez', 'García', 'Hernández', 'López', 'Ramírez'];
 
         for ($i = 0; $i < 5; $i++) {
-            DB::table('admins')->insert([
+            DB::table('admin')->insert([
                 'nombre' => $nombres[$i],
                 'apellido' => $apellidos[$i],
                 'email' => strtolower($nombres[$i]) . '@sistema.edu',

@@ -9,23 +9,90 @@ class Curso extends Model
 {
     use HasFactory;
 
-    // Nombre de la tabla en la base de datos
     protected $table = 'cursos';
 
-    // Columnas que se pueden asignar masivamente
     protected $fillable = [
         'nombre',
+        'grado',
         'cupo_maximo',
         'jornada',
         'seccion',
     ];
 
+    public $timestamps = false;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relaciones
+    |--------------------------------------------------------------------------
+    */
+
     /**
-     * Relación: un curso tiene muchos estudiantes
+     * Un curso tiene muchos estudiantes
      */
     public function estudiantes()
     {
         return $this->hasMany(Estudiante::class, 'curso_id');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes (Filtros)
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeJornada($query, $jornada)
+    {
+        return $query->where('jornada', strtolower($jornada));
+    }
+
+    public function scopeSeccion($query, $seccion)
+    {
+        return $query->where('seccion', strtoupper($seccion));
+    }
+
+    public function scopeGrado($query, $grado)
+    {
+        return $query->where('grado', $grado);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Determina secciones válidas según grado y jornada
+     */
+    public static function seccionesDisponibles($grado, $jornada)
+    {
+        $jornada = strtolower($jornada);
+
+        if ($grado >= 1 && $grado <= 6) {
+            return $jornada === 'mañana'
+                ? ['A', 'B', 'C']
+                : ['A', 'B'];
+        }
+
+        if ($grado >= 9 && $grado <= 12) {
+            return ['A', 'B'];
+        }
+
+        return [];
+    }
+
+    /**
+     * Nombre completo del curso
+     */
+    public function getNombreCompletoAttribute()
+    {
+        return "{$this->grado}° {$this->seccion} - " . ucfirst($this->jornada);
+    }
+
+
+    public function historiales()
+    {
+        return $this->hasMany(HistorialAcademico::class, 'curso_id');
+    }
 }

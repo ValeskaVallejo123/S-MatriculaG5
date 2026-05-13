@@ -10,13 +10,13 @@ class AccionesImportantesController extends Controller
 {
     public function index()
     {
-        // Últimas matrículas
+        // Últimas 5 matrículas con relación estudiante
         $matriculasRecientes = Matricula::with('estudiante')
             ->latest()
             ->take(5)
             ->get();
 
-        // Solicitudes pendientes
+        // Últimas 5 solicitudes pendientes con relación estudiante
         $solicitudesPendientes = Solicitud::with('estudiante')
             ->where('estado', 'pendiente')
             ->latest()
@@ -29,6 +29,7 @@ class AccionesImportantesController extends Controller
             ->take(5)
             ->get();
 
+        // Retornar la vista con los datos
         return view('acciones_importantes.index', compact(
             'matriculasRecientes',
             'solicitudesPendientes',
