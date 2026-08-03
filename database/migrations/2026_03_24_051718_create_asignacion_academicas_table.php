@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // El Docente
         $table->foreignId('seccion_id')->constrained('secciones')->onDelete('cascade');
-        $table->foreignId('asignatura_id')->constrained('asignaturas')->onDelete('cascade');
+        $table->foreignId('asignatura_id')->constrained('materias')->onDelete('cascade');
         $table->string('periodo_lectivo'); // Ejemplo: "2026"
         $table->timestamps();
     });
