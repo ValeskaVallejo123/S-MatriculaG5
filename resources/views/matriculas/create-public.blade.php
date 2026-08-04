@@ -218,7 +218,9 @@
                             </label>
                             <input type="text" id="ui_nombre1"
                                    class="form-control @error('estudiante_nombre') is-invalid @enderror"
-                                   placeholder="Ej: María" required>
+                                   placeholder="Ej: María"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
                             @error('estudiante_nombre')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -226,7 +228,9 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Segundo Nombre</label>
-                            <input type="text" id="ui_nombre2" class="form-control" placeholder="Opcional">
+                            <input type="text" id="ui_nombre2" class="form-control" placeholder="Opcional"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                         </div>
 
                         <div class="col-md-6">
@@ -235,7 +239,9 @@
                             </label>
                             <input type="text" id="ui_apellido1"
                                    class="form-control @error('estudiante_apellido') is-invalid @enderror"
-                                   placeholder="Ej: López" required>
+                                   placeholder="Ej: López"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
                             @error('estudiante_apellido')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -243,7 +249,9 @@
 
                         <div class="col-md-6">
                             <label class="form-label">Segundo Apellido</label>
-                            <input type="text" id="ui_apellido2" class="form-control" placeholder="Opcional">
+                            <input type="text" id="ui_apellido2" class="form-control" placeholder="Opcional"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                         </div>
 
                         <div class="col-md-4">
@@ -253,7 +261,9 @@
                             <input type="text" name="estudiante_dni"
                                    class="form-control @error('estudiante_dni') is-invalid @enderror"
                                    value="{{ old('estudiante_dni') }}"
-                                   placeholder="0000000000000" maxlength="13" required>
+                                   placeholder="0000000000000" maxlength="13"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                             @error('estudiante_dni')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -306,7 +316,9 @@
                             <label class="form-label">Teléfono del Estudiante</label>
                             <input type="text" name="estudiante_telefono"
                                    class="form-control @error('estudiante_telefono') is-invalid @enderror"
-                                   value="{{ old('estudiante_telefono') }}" placeholder="99999999" maxlength="8">
+                                   value="{{ old('estudiante_telefono') }}" placeholder="99999999" maxlength="8"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             @error('estudiante_telefono')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -361,7 +373,9 @@
                             </label>
                             <input type="text" name="padre_nombre" id="ui_padre_nombre"
                                    class="form-control @error('padre_nombre') is-invalid @enderror"
-                                   value="{{ old('padre_nombre') }}" placeholder="Nombre" required>
+                                   value="{{ old('padre_nombre') }}" placeholder="Nombre"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
                             @error('padre_nombre')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -373,7 +387,9 @@
                             </label>
                             <input type="text" name="padre_apellido" id="ui_padre_apellido"
                                    class="form-control @error('padre_apellido') is-invalid @enderror"
-                                   value="{{ old('padre_apellido') }}" placeholder="Apellido" required>
+                                   value="{{ old('padre_apellido') }}" placeholder="Apellido"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
                             @error('padre_apellido')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -386,7 +402,9 @@
                             <input type="text" name="padre_dni"
                                    class="form-control @error('padre_dni') is-invalid @enderror"
                                    value="{{ old('padre_dni') }}"
-                                   placeholder="0000000000000" maxlength="13" required>
+                                   placeholder="0000000000000" maxlength="13"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                             @error('padre_dni')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -415,7 +433,9 @@
                             <input type="text" name="padre_parentesco_otro"
                                    class="form-control @error('padre_parentesco_otro') is-invalid @enderror"
                                    value="{{ old('padre_parentesco_otro') }}"
-                                   placeholder="Ej: Abuelo, Tío...">
+                                   placeholder="Ej: Abuelo, Tío..."
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                             @error('padre_parentesco_otro')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -428,7 +448,9 @@
                             <input type="text" name="padre_telefono"
                                    class="form-control @error('padre_telefono') is-invalid @enderror"
                                    value="{{ old('padre_telefono') }}"
-                                   placeholder="99999999" maxlength="8" required>
+                                   placeholder="99999999" maxlength="8" required
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             @error('padre_telefono')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -811,3 +833,4 @@
 </script>
 </body>
 </html>
+
