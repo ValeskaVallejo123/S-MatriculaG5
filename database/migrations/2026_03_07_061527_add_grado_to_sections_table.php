@@ -6,32 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    // Si la tabla ya existe y quieres agregar columnas:
-    Schema::table('seccions', function (Blueprint $table) {
-        if (!Schema::hasColumn('seccions', 'grado')) {
-            $table->string('grado'); // Para guardar "1er Grado"
-        }
-        if (!Schema::hasColumn('seccions', 'nombre')) {
-            $table->string('nombre'); // Para guardar "A"
-        }
-        if (!Schema::hasColumn('seccions', 'capacidad')) {
-            $table->integer('capacidad')->default(40);
-        }
-    });
-}
+    {
+        // grado/nombre/capacidad ya existen desde create_secciones_table.php;
+        // se dejan estos guards de forma segura e idempotente.
+        Schema::table('secciones', function (Blueprint $table) {
+            if (!Schema::hasColumn('secciones', 'grado')) {
+                $table->string('grado');
+            }
+            if (!Schema::hasColumn('secciones', 'nombre')) {
+                $table->string('nombre');
+            }
+            if (!Schema::hasColumn('secciones', 'capacidad')) {
+                $table->integer('capacidad')->default(40);
+            }
+        });
+    }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('section', function (Blueprint $table) {
-            //
-        });
+        // No se revierte nada: estas columnas pertenecen a
+        // 2026_02_10_173336_create_secciones_table.php.
     }
 };

@@ -7,21 +7,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Esta migración quedó duplicada: las columnas grado_id y seccion ya se
+     * crean dentro de 2025_01_04_000600_create_profesor_materia_table.php,
+     * junto con su índice único (profesor_materia_grado_unique).
+     * Se deja como no-op para no romper el historial de migraciones.
      */
-   public function up()
-{
-    Schema::table('profesor_materia', function (Blueprint $table) {
-        $table->foreignId('grado_id')->nullable()->constrained('grados')->onDelete('cascade');
-        $table->string('seccion')->nullable();
-    });
-}
+    public function up(): void
+    {
+        //
+    }
 
-public function down()
-{
-    Schema::table('profesor_materia', function (Blueprint $table) {
-        $table->dropForeign(['grado_id']);
-        $table->dropColumn(['grado_id', 'seccion']);
-    });
-}
+    public function down(): void
+    {
+        //
+    }
 };
