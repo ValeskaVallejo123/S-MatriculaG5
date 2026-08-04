@@ -1,5 +1,5 @@
 {{-- resources/views/matriculas/create-public.blade.php --}}
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
@@ -30,7 +30,7 @@
         }
         @keyframes bgPulse { 0%,100%{opacity:1} 50%{opacity:.6} }
 
-        .form-wrapper { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+        .form-wrapper { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; width: 100%; }
 
         /* ── Card ── */
         .card-form {
@@ -42,7 +42,7 @@
 
         /* ── Sidebar derecho de pasos ── */
         .card-sidebar {
-            width: 190px; flex-shrink: 0;
+            width: 220px; flex-shrink: 0;
             background: linear-gradient(175deg, #002d5a 0%, #003b73 55%, #00508f 100%);
             padding: 36px 20px;
             display: flex; flex-direction: column; align-items: center;
@@ -120,7 +120,7 @@
         .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(78,199,210,.4); }
         .btn-submit {
             background: linear-gradient(135deg,#003b73,#00508f); color: white;
-            padding: 14px 48px; border-radius: 50px; font-weight: 700; font-size: 1rem;
+            padding: 14px 38px; border-radius: 50px; font-weight: 700; font-size: 1rem;
             border: none; cursor: pointer; transition: all .3s;
             box-shadow: 0 8px 25px rgba(0,59,115,.3); display: inline-flex; align-items: center; gap: 8px;
         }
@@ -134,10 +134,10 @@
         }
 
         /* ── Resumen paso 4 ── */
-        .summary-block { background: #f8fbff; border-radius: 14px; border: 1.5px solid #e3eef7; padding: 22px 28px; margin-bottom: 20px; }
-        .summary-block h6 { color: #4ec7d2; font-weight: 700; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; }
-        .summary-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: .875rem; flex-wrap: wrap; }
-        .summary-row .lbl { color: #6c757d; min-width: 170px; }
+        .summary-block { background: #f8fbff; border-radius: 14px; border: 1.5px solid #e3eef7; padding: 18px 24px; margin-bottom: 16px; }
+        .summary-block h6 { color: #4ec7d2; font-weight: 700; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+        .summary-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: .85rem; flex-wrap: wrap; }
+        .summary-row .lbl { color: #6c757d; min-width: 150px; }
         .summary-row .val { color: #003b73; font-weight: 600; }
 
         .alert-form { border-radius: 12px; border: none; padding: 14px 18px; font-size: .875rem; }
@@ -156,24 +156,9 @@
         .email-autogen-badge i { color: #4ec7d2; font-size: .7rem; }
         .form-control.autogenerado { border-color: #4ec7d2; background: rgba(78,199,210,.04); }
 
-        /* ── Credenciales en resumen ── */
-        .cred-box {
-            background: linear-gradient(135deg, rgba(0,59,115,.05), rgba(78,199,210,.08));
-            border: 1.5px solid rgba(78,199,210,.3); border-radius: 12px;
-            padding: 16px 20px; margin-top: 16px;
-        }
-        .cred-box h6 { color: #003b73; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
-        .cred-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: white; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
-        .cred-row:last-child { margin-bottom: 0; }
-        .cred-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg,#4ec7d2,#003b73); display:flex;align-items:center;justify-content:center;flex-shrink:0; }
-        .cred-icon i { color: white; font-size: .75rem; }
-        .cred-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #94a3b8; }
-        .cred-val { font-size: .83rem; font-weight: 700; color: #003b73; }
-
         @media(max-width:600px){
             .form-section { padding: 22px 16px; }
             .form-nav { padding: 14px 16px; }
-            .form-header h1 { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -185,765 +170,667 @@
         {{-- ── Contenido principal ── --}}
         <div class="card-main">
 
-        {{-- Errores del servidor --}}
-        @if ($errors->any())
-            <div class="alert alert-danger alert-form m-4 mb-0">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <strong>Corrige los siguientes errores:</strong>
-                <ul class="mb-0 mt-2">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        {{--
-            ╔══════════════════════════════════════════════════════════════╗
-            ║  Apunta al store() del MatriculaController existente.        ║
-            ║  El campo "publico=1" activa la rama pública del store().    ║
-            ║  El store() usa explode(' ', estudiante_nombre, 2) para      ║
-            ║  separar nombre1 y nombre2 — por eso usamos campos hidden    ║
-            ║  que combinamos con JS justo antes de enviar.                ║
-            ╚══════════════════════════════════════════════════════════════╝
-        --}}
-        <form action="{{ route('matriculas.store') }}"
-              method="POST"
-              enctype="multipart/form-data"
-              id="matriculaForm"
-              novalidate>
-            @csrf
-
-            {{-- Flags requeridos por el store() --}}
-            <input type="hidden" name="publico"      value="1">
-            <input type="hidden" name="anio_lectivo" value="{{ date('Y') }}">
-            <input type="hidden" name="estado"       value="pendiente">
-
-            {{-- Campos que el store() recibe y separa internamente con explode() --}}
-            <input type="hidden" name="estudiante_nombre"   id="campo_est_nombre">
-            <input type="hidden" name="estudiante_apellido" id="campo_est_apellido">
-
-
-            {{-- ════════════════════════════════
-                 PASO 1 — Datos del Estudiante
-            ═════════════════════════════════ --}}
-            <div class="form-section active" id="section-1">
-                <div class="section-title">
-                    <i class="fas fa-user-graduate me-2" style="color:#4ec7d2"></i>Datos del Estudiante
+            {{-- Errores del servidor --}}
+            @if ($errors->any())
+                <div class="alert alert-danger alert-form m-4 mb-0">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Corrige los siguientes errores:</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-                <div class="section-divider"></div>
-                <p class="section-subtitle">Información personal del alumno a matricular.</p>
+            @endif
 
-                <div class="row g-3">
+            <form action="{{ route('matriculas.store') }}"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  id="matriculaForm"
+                  novalidate>
+                @csrf
 
-                    {{-- Campos UI — se concatenan al campo hidden al enviar --}}
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            Primer Nombre <span class="required-star">*</span>
-                        </label>
-                        <input type="text" id="ui_nombre1"
-                               class="form-control @error('estudiante_nombre') is-invalid @enderror"
-                               placeholder="Ej: María" required>
-                        @error('estudiante_nombre')
+                {{-- Flags requeridos por el store() --}}
+                <input type="hidden" name="publico"      value="1">
+                <input type="hidden" name="anio_lectivo" value="{{ date('Y') }}">
+                <input type="hidden" name="estado"       value="pendiente">
+
+                {{-- Campos que el store() recibe y separa internamente con explode() --}}
+                <input type="hidden" name="estudiante_nombre"   id="campo_est_nombre">
+                <input type="hidden" name="estudiante_apellido" id="campo_est_apellido">
+
+
+                {{-- ════════════════════════════════
+                     PASO 1 — Datos del Estudiante
+                ═════════════════════════════════ --}}
+                <div class="form-section active" id="section-1">
+                    <div class="section-title">
+                        <i class="fas fa-user-graduate me-2" style="color:#4ec7d2"></i>Datos del Estudiante
+                    </div>
+                    <div class="section-divider"></div>
+                    <p class="section-subtitle">Información personal del alumno a matricular.</p>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Primer Nombre <span class="required-star">*</span>
+                            </label>
+                            <input type="text" id="ui_nombre1"
+                                   class="form-control @error('estudiante_nombre') is-invalid @enderror"
+                                   placeholder="Ej: María"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
+                            @error('estudiante_nombre')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Segundo Nombre</label>
-                        <input type="text" id="ui_nombre2" class="form-control" placeholder="Opcional">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            Primer Apellido <span class="required-star">*</span>
-                        </label>
-                        <input type="text" id="ui_apellido1"
-                               class="form-control @error('estudiante_apellido') is-invalid @enderror"
-                               placeholder="Ej: López" required>
-                        @error('estudiante_apellido')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Segundo Apellido</label>
-                        <input type="text" id="ui_apellido2" class="form-control" placeholder="Opcional">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">
-                            DNI (Identidad) <span class="required-star">*</span>
-                        </label>
-                        <input type="text" name="estudiante_dni"
-                               class="form-control @error('estudiante_dni') is-invalid @enderror"
-                               value="{{ old('estudiante_dni') }}"
-                               placeholder="0000-0000-00000" maxlength="13" required>
-                        @error('estudiante_dni')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">
-                            Fecha de Nacimiento <span class="required-star">*</span>
-                        </label>
-                        <input type="date" name="estudiante_fecha_nacimiento"
-                               class="form-control @error('estudiante_fecha_nacimiento') is-invalid @enderror"
-                               value="{{ old('estudiante_fecha_nacimiento') }}" required>
-                        @error('estudiante_fecha_nacimiento')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Sexo <span class="required-star">*</span></label>
-                        <select name="estudiante_sexo"
-                                class="form-select @error('estudiante_sexo') is-invalid @enderror" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="masculino" {{ old('estudiante_sexo')=='masculino'?'selected':'' }}>Masculino</option>
-                            <option value="femenino"  {{ old('estudiante_sexo')=='femenino' ?'selected':'' }}>Femenino</option>
-                        </select>
-                        @error('estudiante_sexo')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">
-                            Grado que Solicita <span class="required-star">*</span>
-                        </label>
-                        {{-- Mismos valores que usa MatriculaController::GRADOS --}}
-                        <select name="estudiante_grado"
-                                class="form-select @error('estudiante_grado') is-invalid @enderror" required>
-                            <option value="">Seleccionar grado...</option>
-                            @foreach(['Primer Grado','Segundo Grado','Tercer Grado','Cuarto Grado','Quinto Grado','Sexto Grado','Séptimo Grado','Octavo Grado','Noveno Grado'] as $g)
-                                <option value="{{ $g }}" {{ old('estudiante_grado')==$g?'selected':'' }}>
-                                    {{ $g }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('estudiante_grado')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Teléfono del Estudiante</label>
-                        <input type="text" name="estudiante_telefono"
-                               class="form-control @error('estudiante_telefono') is-invalid @enderror"
-                               value="{{ old('estudiante_telefono') }}" placeholder="+504 9999-9999">
-                        @error('estudiante_telefono')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Correo del Estudiante</label>
-                        <div class="email-autogen-wrap">
-                            <input type="email" name="estudiante_email" id="est_email_field"
-                                   class="form-control @error('estudiante_email') is-invalid @enderror"
-                                   value="{{ old('estudiante_email') }}"
-                                   placeholder="Se genera automáticamente">
-                            <span class="email-autogen-badge" id="badge_est_email">
-                                <i class="fas fa-magic"></i> Correo de acceso generado
-                            </span>
+                            @enderror
                         </div>
-                        @error('estudiante_email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
 
-                    <div class="col-12">
-                        <label class="form-label">Dirección del Estudiante</label>
-                        <input type="text" name="estudiante_direccion"
-                               class="form-control @error('estudiante_direccion') is-invalid @enderror"
-                               value="{{ old('estudiante_direccion') }}"
-                               placeholder="Barrio, Colonia, Municipio...">
-                        @error('estudiante_direccion')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                </div>
-            </div>{{-- /section-1 --}}
-
-
-            {{-- ════════════════════════════════
-                 PASO 2 — Datos del Padre/Tutor
-            ═════════════════════════════════ --}}
-            <div class="form-section" id="section-2">
-                <div class="section-title">
-                    <i class="fas fa-users me-2" style="color:#4ec7d2"></i>Datos del Padre / Tutor
-                </div>
-                <div class="section-divider"></div>
-                <p class="section-subtitle">Información del responsable legal del estudiante.</p>
-
-                <div class="row g-3">
-
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            Nombre(s) <span class="required-star">*</span>
-                        </label>
-                        <input type="text" name="padre_nombre"
-                               class="form-control @error('padre_nombre') is-invalid @enderror"
-                               value="{{ old('padre_nombre') }}" placeholder="Nombre" required>
-                        @error('padre_nombre')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            Apellido(s) <span class="required-star">*</span>
-                        </label>
-                        <input type="text" name="padre_apellido"
-                               class="form-control @error('padre_apellido') is-invalid @enderror"
-                               value="{{ old('padre_apellido') }}" placeholder="Apellido" required>
-                        @error('padre_apellido')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">
-                            DNI del Tutor <span class="required-star">*</span>
-                        </label>
-                        <input type="text" name="padre_dni"
-                               class="form-control @error('padre_dni') is-invalid @enderror"
-                               value="{{ old('padre_dni') }}"
-                               placeholder="0000-0000-00000" maxlength="13" required>
-                        @error('padre_dni')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{--
-                        store() valida padre_parentesco in:padre,madre,otro
-                        Solo esos 3 valores son aceptados.
-                    --}}
-                    <div class="col-md-4">
-                        <label class="form-label">
-                            Parentesco <span class="required-star">*</span>
-                        </label>
-                        <select name="padre_parentesco"
-                                class="form-select @error('padre_parentesco') is-invalid @enderror"
-                                id="parentescoSelect" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="padre" {{ old('padre_parentesco')=='padre'?'selected':'' }}>Padre</option>
-                            <option value="madre" {{ old('padre_parentesco')=='madre'?'selected':'' }}>Madre</option>
-                            <option value="otro"  {{ old('padre_parentesco')=='otro' ?'selected':'' }}>Otro (abuelo, tío, tutor…)</option>
-                        </select>
-                        @error('padre_parentesco')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4" id="wrap-parentesco-otro"
-                         style="{{ old('padre_parentesco')=='otro' ? '' : 'display:none' }}">
-                        <label class="form-label">Especificar parentesco</label>
-                        <input type="text" name="padre_parentesco_otro"
-                               class="form-control @error('padre_parentesco_otro') is-invalid @enderror"
-                               value="{{ old('padre_parentesco_otro') }}"
-                               placeholder="Ej: Abuelo, Tío...">
-                        @error('padre_parentesco_otro')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            Teléfono Principal <span class="required-star">*</span>
-                        </label>
-                        <input type="text" name="padre_telefono"
-                               class="form-control @error('padre_telefono') is-invalid @enderror"
-                               value="{{ old('padre_telefono') }}"
-                               placeholder="+504 9999-9999" required>
-                        @error('padre_telefono')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{--
-                        padre_email es OPCIONAL.
-                        Si se provee → store() crea usuario padre con activo=0.
-                        Al aprobar la matrícula → procesarAprobacion() activa el usuario.
-                        Contraseña inicial = DNI del padre.
-                    --}}
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            Correo Electrónico
-                            <small class="text-muted fw-normal">(será su usuario de acceso)</small>
-                        </label>
-                        <div class="email-autogen-wrap">
-                            <input type="email" name="padre_email" id="padre_email_field"
-                                   class="form-control @error('padre_email') is-invalid @enderror"
-                                   value="{{ old('padre_email') }}"
-                                   placeholder="Se genera automáticamente">
-                            <span class="email-autogen-badge" id="badge_padre_email">
-                                <i class="fas fa-magic"></i> Correo de acceso generado
-                            </span>
+                        <div class="col-md-6">
+                            <label class="form-label">Segundo Nombre</label>
+                            <input type="text" id="ui_nombre2" class="form-control" placeholder="Opcional"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                         </div>
-                        @error('padre_email')
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Primer Apellido <span class="required-star">*</span>
+                            </label>
+                            <input type="text" id="ui_apellido1"
+                                   class="form-control @error('estudiante_apellido') is-invalid @enderror"
+                                   placeholder="Ej: López"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
+                            @error('estudiante_apellido')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                            @enderror
+                        </div>
 
-                    <div class="col-12">
-                        <label class="form-label">
-                            Dirección <span class="required-star">*</span>
-                        </label>
-                        <input type="text" name="padre_direccion"
-                               class="form-control @error('padre_direccion') is-invalid @enderror"
-                               value="{{ old('padre_direccion') }}"
-                               placeholder="Barrio, Colonia, Municipio..." required>
-                        @error('padre_direccion')
+                        <div class="col-md-6">
+                            <label class="form-label">Segundo Apellido</label>
+                            <input type="text" id="ui_apellido2" class="form-control" placeholder="Opcional"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                DNI (Identidad) <span class="required-star">*</span>
+                            </label>
+                            <input type="text" name="estudiante_dni"
+                                   class="form-control @error('estudiante_dni') is-invalid @enderror"
+                                   value="{{ old('estudiante_dni') }}"
+                                   placeholder="0000000000000" maxlength="13"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                            @error('estudiante_dni')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                </div>
-            </div>{{-- /section-2 --}}
-
-
-            {{-- ════════════════════════════════
-                 PASO 3 — Documentos
-                 store() acepta: foto_perfil, acta_nacimiento, calificaciones
-            ═════════════════════════════════ --}}
-            <div class="form-section" id="section-3">
-                <div class="section-title">
-                    <i class="fas fa-file-upload me-2" style="color:#4ec7d2"></i>Documentos
-                </div>
-                <div class="section-divider"></div>
-                <p class="section-subtitle">
-                    Todos opcionales en línea. Podrás presentar originales en tu cita presencial.
-                </p>
-
-                <div class="row g-4">
-
-                    <div class="col-md-4">
-                        <label class="form-label">Foto del Estudiante</label>
-                        <div class="upload-zone" onclick="document.getElementById('foto_perfil').click()">
-                            <i class="fas fa-camera"></i>
-                            <p>Clic para subir foto<br><small>JPG, PNG – máx. 2 MB</small></p>
-                            <input type="file" id="foto_perfil" name="foto_perfil"
-                                   accept="image/jpg,image/jpeg,image/png"
-                                   onchange="mostrarArchivo(this,'lbl_foto')">
-                            <div class="file-chosen" id="lbl_foto"></div>
+                            @enderror
                         </div>
-                        @error('foto_perfil')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label">Acta de Nacimiento</label>
-                        <div class="upload-zone" onclick="document.getElementById('acta_nacimiento').click()">
-                            <i class="fas fa-file-alt"></i>
-                            <p>Clic para subir acta<br><small>PDF, JPG, PNG – máx. 5 MB</small></p>
-                            <input type="file" id="acta_nacimiento" name="acta_nacimiento"
-                                   accept=".pdf,image/*"
-                                   onchange="mostrarArchivo(this,'lbl_acta')">
-                            <div class="file-chosen" id="lbl_acta"></div>
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                Fecha de Nacimiento <span class="required-star">*</span>
+                            </label>
+                            <input type="date" name="estudiante_fecha_nacimiento"
+                                   class="form-control @error('estudiante_fecha_nacimiento') is-invalid @enderror"
+                                   value="{{ old('estudiante_fecha_nacimiento') }}" required>
+                            @error('estudiante_fecha_nacimiento')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-                        @error('acta_nacimiento')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label">Certificado / Calificaciones Previas</label>
-                        <div class="upload-zone" onclick="document.getElementById('calificaciones').click()">
-                            <i class="fas fa-certificate"></i>
-                            <p>Clic para subir certificado<br><small>PDF, JPG, PNG – máx. 5 MB</small></p>
-                            <input type="file" id="calificaciones" name="calificaciones"
-                                   accept=".pdf,image/*"
-                                   onchange="mostrarArchivo(this,'lbl_cert')">
-                            <div class="file-chosen" id="lbl_cert"></div>
+                        <div class="col-md-4">
+                            <label class="form-label">Sexo <span class="required-star">*</span></label>
+                            <select name="estudiante_sexo"
+                                    class="form-select @error('estudiante_sexo') is-invalid @enderror" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="masculino" {{ old('estudiante_sexo')=='masculino'?'selected':'' }}>Masculino</option>
+                                <option value="femenino"  {{ old('estudiante_sexo')=='femenino' ?'selected':'' }}>Femenino</option>
+                            </select>
+                            @error('estudiante_sexo')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-                        @error('calificaciones')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                        @enderror
+
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                Grado que Solicita <span class="required-star">*</span>
+                            </label>
+                            <select name="estudiante_grado"
+                                    class="form-select @error('estudiante_grado') is-invalid @enderror" required>
+                                <option value="">Seleccionar grado...</option>
+                                @foreach(['Primer Grado','Segundo Grado','Tercer Grado','Cuarto Grado','Quinto Grado','Sexto Grado','Séptimo Grado','Octavo Grado','Noveno Grado'] as $g)
+                                    <option value="{{ $g }}" {{ old('estudiante_grado')==$g?'selected':'' }}>
+                                        {{ $g }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('estudiante_grado')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Teléfono del Estudiante</label>
+                            <input type="text" name="estudiante_telefono"
+                                   class="form-control @error('estudiante_telefono') is-invalid @enderror"
+                                   value="{{ old('estudiante_telefono') }}" placeholder="99999999" maxlength="8"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            @error('estudiante_telefono')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Correo del Estudiante</label>
+                            <div class="email-autogen-wrap">
+                                <input type="email" name="estudiante_email" id="est_email_field"
+                                       class="form-control @error('estudiante_email') is-invalid @enderror"
+                                       value="{{ old('estudiante_email') }}"
+                                       placeholder="Se genera automáticamente">
+                                <span class="email-autogen-badge" id="badge_est_email">
+                                    <i class="fas fa-magic"></i> Correo de acceso generado
+                                </span>
+                            </div>
+                            @error('estudiante_email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Dirección del Estudiante</label>
+                            <input type="text" name="estudiante_direccion"
+                                   class="form-control @error('estudiante_direccion') is-invalid @enderror"
+                                   value="{{ old('estudiante_direccion') }}"
+                                   placeholder="Barrio, Colonia, Municipio...">
+                            @error('estudiante_direccion')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                     </div>
-
-                </div>
-
-                <div class="alert alert-info alert-form mt-4">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Si proporcionas tu correo, recibirás una notificación cuando la solicitud sea revisada.
-                    Si es aprobada, podrás acceder al portal con tu DNI como contraseña inicial.
-                </div>
-            </div>{{-- /section-3 --}}
+                </div>{{-- /section-1 --}}
 
 
-            {{-- ════════════════════════════════
-                 PASO 4 — Resumen y confirmación
-            ═════════════════════════════════ --}}
-            <div class="form-section" id="section-4">
-                <div class="section-title">
-                    <i class="fas fa-check-circle me-2" style="color:#4ec7d2"></i>Confirma tu Solicitud
-                </div>
-                <div class="section-divider"></div>
-                <p class="section-subtitle">Revisa que todo esté correcto antes de enviar.</p>
+                {{-- ════════════════════════════════
+                     PASO 2 — Datos del Padre/Tutor
+                ═════════════════════════════════ --}}
+                <div class="form-section" id="section-2">
+                    <div class="section-title">
+                        <i class="fas fa-users me-2" style="color:#4ec7d2"></i>Datos del Padre / Tutor
+                    </div>
+                    <div class="section-divider"></div>
+                    <p class="section-subtitle">Información del responsable legal del estudiante.</p>
 
-                <div class="summary-block">
-                    <h6><i class="fas fa-user-graduate me-1"></i> Estudiante</h6>
-                    <div id="resumen-estudiante"></div>
-                </div>
+                    <div class="row g-3">
 
-                <div class="summary-block">
-                    <h6><i class="fas fa-users me-1"></i> Padre / Tutor</h6>
-                    <div id="resumen-padre"></div>
-                </div>
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Nombre(s) <span class="required-star">*</span>
+                            </label>
+                            <input type="text" name="padre_nombre" id="ui_padre_nombre"
+                                   class="form-control @error('padre_nombre') is-invalid @enderror"
+                                   value="{{ old('padre_nombre') }}" placeholder="Nombre"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
+                            @error('padre_nombre')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div class="summary-block">
-                    <h6><i class="fas fa-paperclip me-1"></i> Documentos Adjuntos</h6>
-                    <div id="resumen-docs"></div>
-                </div>
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Apellido(s) <span class="required-star">*</span>
+                            </label>
+                            <input type="text" name="padre_apellido" id="ui_padre_apellido"
+                                   class="form-control @error('padre_apellido') is-invalid @enderror"
+                                   value="{{ old('padre_apellido') }}" placeholder="Apellido"
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" required>
+                            @error('padre_apellido')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div class="summary-block" id="resumen-credenciales-block" style="display:none;border:1.5px solid rgba(78,199,210,.5);background:rgba(78,199,210,.06);">
-                    <h6 style="color:#4ec7d2"><i class="fas fa-key me-1"></i> Acceso futuro al sistema</h6>
-                    <p style="font-size:.78rem;color:#6c757d;margin-bottom:.6rem">
-                        Cuando tu matrícula sea aprobada, podrás ingresar al sistema con las siguientes credenciales:
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                DNI del Tutor <span class="required-star">*</span>
+                            </label>
+                            <input type="text" name="padre_dni"
+                                   class="form-control @error('padre_dni') is-invalid @enderror"
+                                   value="{{ old('padre_dni') }}"
+                                   placeholder="0000000000000" maxlength="13"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                            @error('padre_dni')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">
+                                Parentesco <span class="required-star">*</span>
+                            </label>
+                            <select name="padre_parentesco"
+                                    class="form-select @error('padre_parentesco') is-invalid @enderror"
+                                    id="parentescoSelect" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="padre" {{ old('padre_parentesco')=='padre'?'selected':'' }}>Padre</option>
+                                <option value="madre" {{ old('padre_parentesco')=='madre'?'selected':'' }}>Madre</option>
+                                <option value="otro"  {{ old('padre_parentesco')=='otro' ?'selected':'' }}>Otro (abuelo, tío, tutor…)</option>
+                            </select>
+                            @error('padre_parentesco')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4" id="wrap-parentesco-otro"
+                             style="{{ old('padre_parentesco')=='otro' ? '' : 'display:none' }}">
+                            <label class="form-label">Especificar parentesco</label>
+                            <input type="text" name="padre_parentesco_otro"
+                                   class="form-control @error('padre_parentesco_otro') is-invalid @enderror"
+                                   value="{{ old('padre_parentesco_otro') }}"
+                                   placeholder="Ej: Abuelo, Tío..."
+                                   onkeypress="return (event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || event.charCode === 209 || event.charCode === 241 || event.charCode === 193 || event.charCode === 201 || event.charCode === 205 || event.charCode === 211 || event.charCode === 218 || event.charCode === 225 || event.charCode === 233 || event.charCode === 237 || event.charCode === 243 || event.charCode === 250 || event.charCode === 32"
+                                   oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                            @error('padre_parentesco_otro')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Teléfono Principal <span class="required-star">*</span> <small class="text-muted">(8 dígitos)</small>
+                            </label>
+                            <input type="text" name="padre_telefono"
+                                   class="form-control @error('padre_telefono') is-invalid @enderror"
+                                   value="{{ old('padre_telefono') }}"
+                                   placeholder="99999999" maxlength="8" required
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            @error('padre_telefono')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Correo Electrónico
+                                <small class="text-muted fw-normal">(será su usuario de acceso)</small>
+                            </label>
+                            <div class="email-autogen-wrap">
+                                <input type="email" name="padre_email" id="padre_email_field"
+                                       class="form-control @error('padre_email') is-invalid @enderror"
+                                       value="{{ old('padre_email') }}"
+                                       placeholder="Se genera automáticamente">
+                                <span class="email-autogen-badge" id="badge_padre_email">
+                                    <i class="fas fa-magic"></i> Correo de acceso generado
+                                </span>
+                            </div>
+                            @error('padre_email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">
+                                Dirección <span class="required-star">*</span>
+                            </label>
+                            <input type="text" name="padre_direccion"
+                                   class="form-control @error('padre_direccion') is-invalid @enderror"
+                                   value="{{ old('padre_direccion') }}"
+                                   placeholder="Barrio, Colonia, Municipio..." required>
+                            @error('padre_direccion')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>{{-- /section-2 --}}
+
+
+                {{-- ════════════════════════════════
+                     PASO 3 — Documentos
+                ═════════════════════════════════ --}}
+                <div class="form-section" id="section-3">
+                    <div class="section-title">
+                        <i class="fas fa-file-upload me-2" style="color:#4ec7d2"></i>Documentos
+                    </div>
+                    <div class="section-divider"></div>
+                    <p class="section-subtitle">
+                        Todos opcionales en línea. Podrás presentar originales en tu cita presencial.
                     </p>
-                    <div id="resumen-credenciales"></div>
-                </div>
 
-                <div class="alert alert-warning alert-form">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Al enviar, un administrador revisará tu solicitud y te contactará para continuar el proceso.
-                </div>
-            </div>{{-- /section-4 --}}
+                    <div class="row g-4">
+
+                        <div class="col-md-4">
+                            <label class="form-label">Foto del Estudiante</label>
+                            <div class="upload-zone" onclick="document.getElementById('foto_perfil').click()">
+                                <i class="fas fa-camera"></i>
+                                <p>Clic para subir foto<br><small>JPG, PNG – máx. 2 MB</small></p>
+                                <input type="file" id="foto_perfil" name="foto_perfil"
+                                       accept="image/jpg,image/jpeg,image/png"
+                                       onchange="mostrarArchivo(this,'lbl_foto')">
+                                <div class="file-chosen" id="lbl_foto"></div>
+                            </div>
+                            @error('foto_perfil')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Acta de Nacimiento</label>
+                            <div class="upload-zone" onclick="document.getElementById('acta_nacimiento').click()">
+                                <i class="fas fa-file-alt"></i>
+                                <p>Clic para subir acta<br><small>PDF, JPG, PNG – máx. 5 MB</small></p>
+                                <input type="file" id="acta_nacimiento" name="acta_nacimiento"
+                                       accept=".pdf,image/*"
+                                       onchange="mostrarArchivo(this,'lbl_acta')">
+                                <div class="file-chosen" id="lbl_acta"></div>
+                            </div>
+                            @error('acta_nacimiento')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Certificado / Calificaciones Previas</label>
+                            <div class="upload-zone" onclick="document.getElementById('calificaciones').click()">
+                                <i class="fas fa-certificate"></i>
+                                <p>Clic para subir certificado<br><small>PDF, JPG, PNG – máx. 5 MB</small></p>
+                                <input type="file" id="calificaciones" name="calificaciones"
+                                       accept=".pdf,image/*"
+                                       onchange="mostrarArchivo(this,'lbl_cert')">
+                                <div class="file-chosen" id="lbl_cert"></div>
+                            </div>
+                            @error('calificaciones')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    <div class="alert alert-info alert-form mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Si proporcionas tu correo, recibirás una notificación cuando la solicitud sea revisada.
+                    </div>
+                </div>{{-- /section-3 --}}
 
 
-            {{-- Navegación del wizard --}}
-            <div class="form-nav">
-                <button type="button" class="btn-nav btn-prev" id="btnPrev"
-                        onclick="cambiarPaso(-1)" style="visibility:hidden">
-                    <i class="fas fa-arrow-left"></i> Anterior
-                </button>
+                {{-- ════════════════════════════════
+                     PASO 4 — Resumen y confirmación
+                ═════════════════════════════════ --}}
+                <div class="form-section" id="section-4">
+                    <div class="section-title">
+                        <i class="fas fa-check-circle me-2" style="color:#4ec7d2"></i>Resumen y Confirmación
+                    </div>
+                    <div class="section-divider"></div>
+                    <p class="section-subtitle">Revisa que todo esté correcto antes de enviar.</p>
 
-                <span style="font-size:.8rem;color:#adb5bd" id="contador-paso">Paso 1 de 4</span>
+                    <div class="summary-block">
+                        <h6><i class="fas fa-user-graduate me-1"></i> Estudiante</h6>
+                        <div id="resumen-estudiante"></div>
+                    </div>
 
-                <div>
+                    <div class="summary-block">
+                        <h6><i class="fas fa-users me-1"></i> Padre / Tutor</h6>
+                        <div id="resumen-padre"></div>
+                    </div>
+
+                    <div class="summary-block">
+                        <h6><i class="fas fa-paperclip me-1"></i> Documentos Adjuntos</h6>
+                        <div id="resumen-docs"></div>
+                    </div>
+
+                    <div class="summary-block" id="resumen-credenciales-block" style="display:none;border:1.5px solid rgba(78,199,210,.5);background:rgba(78,199,210,.06);">
+                        <h6 style="color:#4ec7d2"><i class="fas fa-key me-1"></i> Acceso futuro al sistema</h6>
+                        <p style="font-size:.78rem;color:#6c757d">Se generarán credenciales automáticas para que puedas consultar el estado de tu matrícula.</p>
+                    </div>
+
+                </div>{{-- /section-4 --}}
+
+
+                {{-- Botones de Navegación del Asistente --}}
+                <div class="form-nav">
+                    <button type="button" class="btn-nav btn-prev" id="btnPrev" style="display:none;" onclick="cambiarPaso(-1)">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <div></div> <!-- Espaciador -->
                     <button type="button" class="btn-nav btn-next" id="btnNext" onclick="cambiarPaso(1)">
                         Siguiente <i class="fas fa-arrow-right"></i>
                     </button>
-                    <button type="submit" class="btn-submit" id="btnSubmit"
-                            style="display:none" onclick="combinarNombres()">
-                        <i class="fas fa-paper-plane"></i> Enviar Solicitud
+                    <button type="submit" class="btn-submit" id="btnSubmit" style="display:none;">
+                        <i class="fas fa-paper-plane"></i> Enviar Matrícula
                     </button>
                 </div>
-            </div>
 
-        </form>
-        </div>{{-- /card-main --}}
+            </form>
+        </div>
 
-        {{-- ── Sidebar derecho con pasos ── --}}
+        {{-- ── Sidebar de Pasos ── --}}
         <div class="card-sidebar">
-            <div class="sidebar-logo"><i class="fas fa-graduation-cap"></i></div>
-            <div class="sidebar-title-main">Matrícula en Línea {{ date('Y') }}</div>
-            <div class="sidebar-heading">C.E.B. Gabriela Mistral</div>
-            <div class="sidebar-sub">Danlí, El Paraíso</div>
+            <div class="sidebar-logo">
+                <i class="fas fa-school"></i>
+            </div>
+            <div class="sidebar-title-main">Escuela Gabriela Mistral</div>
+            <div class="sidebar-heading">MATRÍCULAS EN LÍNEA</div>
+            <div class="sidebar-sub">Ciclo Lectivo {{ date('Y') }}</div>
             <div class="sidebar-divider"></div>
 
             <div class="vsteps">
-                <div class="vstep-item active" id="step-ind-1">
+                <div class="vstep-item active" id="vstep-1">
                     <div class="vstep-circle">1</div>
                     <div class="vstep-label">Estudiante</div>
                 </div>
-                <div class="vstep-line" id="line-1"></div>
-                <div class="vstep-item" id="step-ind-2">
+                <div class="vstep-line" id="vline-1"></div>
+
+                <div class="vstep-item" id="vstep-2">
                     <div class="vstep-circle">2</div>
                     <div class="vstep-label">Padre / Tutor</div>
                 </div>
-                <div class="vstep-line" id="line-2"></div>
-                <div class="vstep-item" id="step-ind-3">
+                <div class="vstep-line" id="vline-2"></div>
+
+                <div class="vstep-item" id="vstep-3">
                     <div class="vstep-circle">3</div>
                     <div class="vstep-label">Documentos</div>
                 </div>
-                <div class="vstep-line" id="line-3"></div>
-                <div class="vstep-item" id="step-ind-4">
+                <div class="vstep-line" id="vline-3"></div>
+
+                <div class="vstep-item" id="vstep-4">
                     <div class="vstep-circle">4</div>
-                    <div class="vstep-label">Confirmar</div>
+                    <div class="vstep-label">Confirmación</div>
                 </div>
             </div>
+        </div>
 
-            <div style="margin-top:auto;padding-top:24px;text-align:center;">
-                <p style="color:rgba(255,255,255,.4);font-size:.6rem;margin-bottom:6px;">¿Ya enviaste tu solicitud?</p>
-                <a href="{{ route('matriculas.index') }}"
-                   style="color:#4ec7d2;font-weight:700;font-size:.65rem;text-decoration:none;">
-                    Consultar estado →
-                </a>
-            </div>
-        </div>{{-- /card-sidebar --}}
+    </div>
 
-    </div>{{-- /card-form --}}
+</div>
 
-</div>{{-- /form-wrapper --}}
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ── Wizard: estado ──────────────────────────────────────────────────────────
-let pasoActual = 1;
-const TOTAL    = 4;
+    let currentStep = 1;
+    const totalSteps = 4;
 
-function cambiarPaso(dir) {
-    if (dir === 1 && !validarPaso(pasoActual)) return;
-
-    // Quitar active del paso actual
-    document.getElementById('section-'  + pasoActual).classList.remove('active');
-    document.getElementById('step-ind-' + pasoActual).classList.remove('active');
-
-    if (dir === 1) {
-        // Marcar como completado al avanzar
-        document.getElementById('step-ind-' + pasoActual).classList.add('done');
-    } else {
-        // Al retroceder, quitar "done" del paso al que volvemos
-        document.getElementById('step-ind-' + pasoActual).classList.remove('done');
+    function mostrarArchivo(input, labelId) {
+        const label = document.getElementById(labelId);
+        if (input.files && input.files[0]) {
+            label.textContent = "Archivo: " + input.files[0].name;
+        } else {
+            label.textContent = "";
+        }
     }
 
-    pasoActual += dir;
+    function cambiarPaso(direccion) {
+        // Validaciones básicas antes de avanzar
+        if (direccion === 1) {
+            const currentSection = document.getElementById(`section-${currentStep}`);
+            const inputs = currentSection.querySelectorAll('[required]');
+            let valido = true;
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    valido = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            if (!valido) return;
+        }
 
-    document.getElementById('section-'  + pasoActual).classList.add('active');
-    document.getElementById('step-ind-' + pasoActual).classList.add('active');
+        document.getElementById(`section-${currentStep}`).classList.remove('active');
+        document.getElementById(`vstep-${currentStep}`).classList.remove('active');
+        document.getElementById(`vstep-${currentStep}`).classList.add('done');
+        if(currentStep < totalSteps) {
+            const line = document.getElementById(`vline-${currentStep}`);
+            if(line) line.classList.add('done');
+        }
 
-    // Actualizar líneas
-    for (let i = 1; i < TOTAL; i++) {
-        const ln = document.getElementById('line-' + i);
-        if (ln) ln.classList.toggle('done', i < pasoActual);
+        currentStep += direccion;
+
+        document.getElementById(`section-${currentStep}`).classList.add('active');
+        document.getElementById(`vstep-${currentStep}`).classList.add('active');
+
+        // Mostrar / Ocultar botones de navegación
+        document.getElementById('btnPrev').style.display = currentStep > 1 ? 'inline-flex' : 'none';
+        if (currentStep === totalSteps) {
+            document.getElementById('btnNext').style.display = 'none';
+            document.getElementById('btnSubmit').style.display = 'inline-flex';
+            generarResumen();
+        } else {
+            document.getElementById('btnNext').style.display = 'inline-flex';
+            document.getElementById('btnSubmit').style.display = 'none';
+        }
     }
 
-    // Botones
-    document.getElementById('btnPrev').style.visibility = pasoActual > 1 ? 'visible' : 'hidden';
-    document.getElementById('btnNext').style.display    = pasoActual < TOTAL ? 'inline-flex' : 'none';
-    document.getElementById('btnSubmit').style.display  = pasoActual === TOTAL ? 'inline-flex' : 'none';
-    document.getElementById('contador-paso').textContent = `Paso ${pasoActual} de ${TOTAL}`;
+    function generarResumen() {
+        const n1 = document.getElementById('ui_nombre1').value;
+        const n2 = document.getElementById('ui_nombre2').value;
+        const a1 = document.getElementById('ui_apellido1').value;
+        const a2 = document.getElementById('ui_apellido2').value;
+        const dni = document.querySelector('input[name="estudiante_dni"]').value;
+        const grado = document.querySelector('select[name="estudiante_grado"]').value;
+        const estEmail = document.getElementById('est_email_field').value;
 
-    if (pasoActual === 4) construirResumen();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+        document.getElementById('resumen-estudiante').innerHTML = `
+            <div class="summary-row"><span class="lbl">Nombre completo:</span><span class="val">${n1} ${n2} ${a1} ${a2}</span></div>
+            <div class="summary-row"><span class="lbl">DNI:</span><span class="val">${dni}</span></div>
+            <div class="summary-row"><span class="lbl">Grado solicitado:</span><span class="val">${grado}</span></div>
+            <div class="summary-row"><span class="lbl">Correo institucional:</span><span class="val">${estEmail || 'No asignado'}</span></div>
+        `;
 
-// ── Validación cliente por paso ─────────────────────────────────────────────
-function validarPaso(paso) {
-    const sec    = document.getElementById('section-' + paso);
-    const campos = sec.querySelectorAll('[required]');
-    let ok = true;
+        const pNombre = document.getElementById('ui_padre_nombre').value;
+        const pApellido = document.getElementById('ui_padre_apellido').value;
+        const pDni = document.querySelector('input[name="padre_dni"]').value;
+        const pTel = document.querySelector('input[name="padre_telefono"]').value;
+        const pEmail = document.getElementById('padre_email_field').value;
 
-    campos.forEach(c => {
-        c.classList.remove('is-invalid');
-        if (!c.value.trim()) {
-            c.classList.add('is-invalid');
-            ok = false;
+        document.getElementById('resumen-padre').innerHTML = `
+            <div class="summary-row"><span class="lbl">Tutor:</span><span class="val">${pNombre} ${pApellido}</span></div>
+            <div class="summary-row"><span class="lbl">DNI Tutor:</span><span class="val">${pDni}</span></div>
+            <div class="summary-row"><span class="lbl">Teléfono:</span><span class="val">${pTel}</span></div>
+            <div class="summary-row"><span class="lbl">Correo:</span><span class="val">${pEmail || 'No asignado'}</span></div>
+        `;
+
+        const foto = document.getElementById('foto_perfil').files[0];
+        const acta = document.getElementById('acta_nacimiento').files[0];
+        const cert = document.getElementById('calificaciones').files[0];
+
+        document.getElementById('resumen-docs').innerHTML = `
+            <div class="summary-row"><span class="lbl">Foto Estudiante:</span><span class="val">${foto ? foto.name : 'No adjuntada'}</span></div>
+            <div class="summary-row"><span class="lbl">Acta de Nacimiento:</span><span class="val">${acta ? acta.name : 'No adjuntada'}</span></div>
+            <div class="summary-row"><span class="lbl">Certificado:</span><span class="val">${cert ? cert.name : 'No adjuntado'}</span></div>
+        `;
+
+        if (estEmail || pEmail) {
+            document.getElementById('resumen-credenciales-block').style.display = 'block';
+        }
+    }
+
+    // Lógica para autogenerar correos electrónicos y concatenar nombres
+    document.addEventListener('DOMContentLoaded', function () {
+        const nombre1 = document.getElementById('ui_nombre1');
+        const apellido1 = document.getElementById('ui_apellido1');
+        const estEmailField = document.getElementById('est_email_field');
+        const badgeEstEmail = document.getElementById('badge_est_email');
+
+        const campoEstNombre = document.getElementById('campo_est_nombre');
+        const campoEstApellido = document.getElementById('campo_est_apellido');
+
+        const padreNombre = document.getElementById('ui_padre_nombre');
+        const padreApellido = document.getElementById('ui_padre_apellido');
+        const padreEmailField = document.getElementById('padre_email_field');
+        const badgePadreEmail = document.getElementById('badge_padre_email');
+
+        const limpiarTexto = (texto) => {
+            return texto.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]/g, '');
+        };
+
+        function actualizarDatosEstudiante() {
+            const n1 = nombre1.value.trim();
+            const n2 = document.getElementById('ui_nombre2').value.trim();
+            const a1 = apellido1.value.trim();
+            const a2 = document.getElementById('ui_apellido2').value.trim();
+
+            campoEstNombre.value = n2 ? `${n1} ${n2}` : n1;
+            campoEstApellido.value = a2 ? `${a1} ${a2}` : a1;
+
+            if (n1 && a1) {
+                const emailGenerado = `${limpiarTexto(n1)}.${limpiarTexto(a1)}@gabrielamistral.edu.hn`;
+                if (!estEmailField.value || estEmailField.dataset.autogenerated === "true") {
+                    estEmailField.value = emailGenerado;
+                    estEmailField.dataset.autogenerated = "true";
+                    badgeEstEmail.classList.add('visible');
+                    estEmailField.classList.add('autogenerado');
+                }
+            }
+        }
+
+        function actualizarEmailPadre() {
+            const pn = padreNombre.value.trim();
+            const pa = padreApellido.value.trim();
+
+            if (pn && pa) {
+                const emailPadreGenerado = `${limpiarTexto(pn)}.${limpiarTexto(pa)}@tutor.gabrielamistral.edu.hn`;
+                if (!padreEmailField.value || padreEmailField.dataset.autogenerated === "true") {
+                    padreEmailField.value = emailPadreGenerado;
+                    padreEmailField.dataset.autogenerated = "true";
+                    badgePadreEmail.classList.add('visible');
+                    padreEmailField.classList.add('autogenerado');
+                }
+            }
+        }
+
+        if (nombre1 && apellido1) {
+            nombre1.addEventListener('input', actualizarDatosEstudiante);
+            apellido1.addEventListener('input', actualizarDatosEstudiante);
+            document.getElementById('ui_nombre2').addEventListener('input', actualizarDatosEstudiante);
+            document.getElementById('ui_apellido2').addEventListener('input', actualizarDatosEstudiante);
+        }
+
+        if (padreNombre && padreApellido) {
+            padreNombre.addEventListener('input', actualizarEmailPadre);
+            padreApellido.addEventListener('input', actualizarEmailPadre);
+        }
+
+        // Manejo del campo condicional de parentesco "Otro"
+        const parentescoSelect = document.getElementById('parentescoSelect');
+        const wrapParentescoOtro = document.getElementById('wrap-parentesco-otro');
+        if (parentescoSelect) {
+            parentescoSelect.addEventListener('change', function () {
+                if (this.value === 'otro') {
+                    wrapParentescoOtro.style.display = 'block';
+                } else {
+                    wrapParentescoOtro.style.display = 'none';
+                }
+            });
         }
     });
-
-    if (!ok) sec.querySelector('.is-invalid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return ok;
-}
-
-// ── Mostrar/ocultar campo "otro parentesco" ─────────────────────────────────
-document.getElementById('parentescoSelect').addEventListener('change', function () {
-    document.getElementById('wrap-parentesco-otro').style.display =
-        this.value === 'otro' ? '' : 'none';
-});
-
-// ── Auto-generación de emails ────────────────────────────────────────────────
-function slugifyEmail(str) {
-    return (str || '')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')   // quitar tildes
-        .replace(/ñ/g, 'n')
-        .replace(/[^a-z0-9\s]/g, '')
-        .trim()
-        .replace(/\s+/g, '.');
-}
-
-function generarEmail(nombre, apellido) {
-    const n = slugifyEmail(nombre);
-    const a = slugifyEmail(apellido);
-    if (!n || !a) return '';
-    return `${n}.${a}@escuela.edu`;
-}
-
-// Campos que disparan la generación del email del estudiante
-['ui_nombre1', 'ui_apellido1'].forEach(id => {
-    document.getElementById(id)?.addEventListener('input', () => {
-        const email = generarEmail(
-            document.getElementById('ui_nombre1').value,
-            document.getElementById('ui_apellido1').value
-        );
-        const campo = document.getElementById('est_email_field');
-        const badge = document.getElementById('badge_est_email');
-        if (email && !campo._editadoManual) {
-            campo.value = email;
-            campo.classList.add('autogenerado');
-            badge.classList.add('visible');
-        }
-    });
-});
-
-// Permitir edición manual del email del estudiante
-document.getElementById('est_email_field')?.addEventListener('input', function () {
-    this._editadoManual = true;
-    this.classList.remove('autogenerado');
-    document.getElementById('badge_est_email').classList.remove('visible');
-});
-
-// Campos que disparan la generación del email del padre
-['padre_nombre_input', 'padre_apellido_input'].forEach(id => {
-    document.getElementById(id)?.addEventListener('input', () => {
-        const email = generarEmail(
-            document.querySelector('[name="padre_nombre"]').value,
-            document.querySelector('[name="padre_apellido"]').value
-        );
-        const campo = document.getElementById('padre_email_field');
-        const badge = document.getElementById('badge_padre_email');
-        if (email && !campo._editadoManual) {
-            campo.value = email;
-            campo.classList.add('autogenerado');
-            badge.classList.add('visible');
-        }
-    });
-});
-
-// Disparar desde los inputs reales del padre
-document.querySelector('[name="padre_nombre"]')?.addEventListener('input', function() {
-    const email = generarEmail(this.value, document.querySelector('[name="padre_apellido"]').value);
-    const campo = document.getElementById('padre_email_field');
-    const badge = document.getElementById('badge_padre_email');
-    if (email && !campo._editadoManual) {
-        campo.value = email;
-        campo.classList.add('autogenerado');
-        badge.classList.add('visible');
-    }
-});
-document.querySelector('[name="padre_apellido"]')?.addEventListener('input', function() {
-    const email = generarEmail(document.querySelector('[name="padre_nombre"]').value, this.value);
-    const campo = document.getElementById('padre_email_field');
-    const badge = document.getElementById('badge_padre_email');
-    if (email && !campo._editadoManual) {
-        campo.value = email;
-        campo.classList.add('autogenerado');
-        badge.classList.add('visible');
-    }
-});
-
-// Permitir edición manual del email del padre
-document.getElementById('padre_email_field')?.addEventListener('input', function () {
-    this._editadoManual = true;
-    this.classList.remove('autogenerado');
-    document.getElementById('badge_padre_email').classList.remove('visible');
-});
-
-// ── Mostrar nombre del archivo ──────────────────────────────────────────────
-function mostrarArchivo(input, labelId) {
-    document.getElementById(labelId).textContent =
-        input.files.length ? '✔ ' + input.files[0].name : '';
-}
-
-// ── Combinar campos UI → hidden antes de enviar ─────────────────────────────
-// El store() hace: explode(' ', estudiante_nombre, 2) → nombre1 / nombre2
-//                  explode(' ', estudiante_apellido, 2) → apellido1 / apellido2
-function combinarNombres() {
-    const n1 = (document.getElementById('ui_nombre1').value   || '').trim();
-    const n2 = (document.getElementById('ui_nombre2').value   || '').trim();
-    const a1 = (document.getElementById('ui_apellido1').value || '').trim();
-    const a2 = (document.getElementById('ui_apellido2').value || '').trim();
-
-    document.getElementById('campo_est_nombre').value   = n2 ? `${n1} ${n2}` : n1;
-    document.getElementById('campo_est_apellido').value = a2 ? `${a1} ${a2}` : a1;
-}
-
-// ── Helpers para resumen ────────────────────────────────────────────────────
-function leer(name) {
-    const el = document.querySelector(`[name="${name}"]`);
-    if (!el) return '—';
-    if (el.tagName === 'SELECT') return el.options[el.selectedIndex]?.text || '—';
-    return el.value.trim() || '—';
-}
-function fila(lbl, val) {
-    if (!val || val === '—') return '';
-    return `<div class="summary-row"><span class="lbl">${lbl}</span><span class="val">${val}</span></div>`;
-}
-
-// ── Construir resumen en paso 4 ─────────────────────────────────────────────
-function construirResumen() {
-    const n1 = document.getElementById('ui_nombre1').value.trim();
-    const n2 = document.getElementById('ui_nombre2').value.trim();
-    const a1 = document.getElementById('ui_apellido1').value.trim();
-    const a2 = document.getElementById('ui_apellido2').value.trim();
-
-    document.getElementById('resumen-estudiante').innerHTML =
-        fila('Nombre completo',   [n1,n2,a1,a2].filter(Boolean).join(' ')) +
-        fila('DNI',               leer('estudiante_dni')) +
-        fila('Fecha nacimiento',  leer('estudiante_fecha_nacimiento')) +
-        fila('Sexo',              leer('estudiante_sexo')) +
-        fila('Grado solicitado',  leer('estudiante_grado')) +
-        fila('Teléfono',          leer('estudiante_telefono')) +
-        fila('Correo',            leer('estudiante_email')) +
-        fila('Dirección',         leer('estudiante_direccion'));
-
-    document.getElementById('resumen-padre').innerHTML =
-        fila('Nombre completo', leer('padre_nombre') + ' ' + leer('padre_apellido')) +
-        fila('DNI',             leer('padre_dni')) +
-        fila('Parentesco',      leer('padre_parentesco')) +
-        fila('Teléfono',        leer('padre_telefono')) +
-        fila('Correo',          leer('padre_email')) +
-        fila('Dirección',       leer('padre_direccion'));
-
-    const docs = [];
-    ['foto_perfil','acta_nacimiento','calificaciones'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el?.files?.length) docs.push(el.files[0].name);
-    });
-
-    document.getElementById('resumen-docs').innerHTML = docs.length
-        ? docs.map(d => `<div class="summary-row">
-                            <i class="fas fa-paperclip me-2" style="color:#4ec7d2"></i>
-                            <span class="val">${d}</span>
-                         </div>`).join('')
-        : '<div class="summary-row"><span class="lbl">Sin documentos adjuntos</span></div>';
-
-    // ── Credenciales generadas ───────────────────────────────────────────────
-    const estEmail  = (document.getElementById('est_email_field')?.value || '').trim();
-    const padEmail  = (document.getElementById('padre_email_field')?.value || '').trim();
-    const estDni    = (document.getElementById('estudiante_dni')?.value || leer('estudiante_dni')).trim();
-    const padDni    = (document.getElementById('padre_dni')?.value || leer('padre_dni')).trim();
-
-    const credBlock = document.getElementById('resumen-credenciales-block');
-    const credDiv   = document.getElementById('resumen-credenciales');
-
-    let credHtml = '';
-
-    if (estEmail) {
-        credHtml += `<div style="margin-bottom:.7rem">
-            <div style="font-size:.72rem;font-weight:600;color:#003b73;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.25rem">
-                <i class="fas fa-user-graduate me-1" style="color:#4ec7d2"></i> Estudiante
-            </div>
-            ${fila('Usuario / Correo', estEmail)}
-            ${estDni ? fila('Contraseña inicial', estDni + ' <span style="font-size:.7rem;color:#6c757d">(tu número de identidad)</span>') : ''}
-        </div>`;
-    }
-
-    if (padEmail) {
-        credHtml += `<div>
-            <div style="font-size:.72rem;font-weight:600;color:#003b73;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.25rem">
-                <i class="fas fa-user me-1" style="color:#4ec7d2"></i> Padre / Tutor
-            </div>
-            ${fila('Usuario / Correo', padEmail)}
-            ${padDni ? fila('Contraseña inicial', padDni + ' <span style="font-size:.7rem;color:#6c757d">(tu número de identidad)</span>') : ''}
-        </div>`;
-    }
-
-    if (credHtml) {
-        credDiv.innerHTML = credHtml;
-        credBlock.style.display = '';
-    } else {
-        credBlock.style.display = 'none';
-    }
-}
 </script>
 </body>
 </html>
+

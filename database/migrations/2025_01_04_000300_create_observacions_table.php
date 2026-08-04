@@ -11,20 +11,19 @@ return new class extends Migration
         Schema::create('observaciones', function (Blueprint $table) {
             $table->id();
 
+            // Relaciones
             $table->foreignId('estudiante_id')
-                  ->constrained('estudiantes')
-                  ->cascadeOnDelete();
-
+                ->constrained('estudiantes')
+                ->onDelete('cascade');
             $table->foreignId('profesor_id')
-                  ->constrained('profesores')
-                  ->cascadeOnDelete();
+                ->constrained('profesores')
+                ->onDelete('cascade');
 
-            $table->string('tipo')->default('academica');
             $table->text('descripcion');
 
             $table->timestamps();
         });
-    } 
+    }
 
     public function down(): void
     {

@@ -6,22 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Esta migración quedó duplicada: la tabla "sessions" ya se crea dentro
+     * de 2025_01_01_000100_create_users_table.php (junto con users y
+     * password_reset_tokens, que es el patrón por defecto de Laravel).
+     * Se deja como no-op para no romper el historial de migraciones.
+     */
     public function up(): void
     {
-        if (!Schema::hasTable('sessions')) {
-            Schema::create('sessions', function (Blueprint $table) {
-                $table->string('id')->primary();
-                $table->foreignId('user_id')->nullable()->index();
-                $table->string('ip_address', 45)->nullable();
-                $table->text('user_agent')->nullable();
-                $table->longText('payload');
-                $table->integer('last_activity')->index();
-            });
-        }
+        //
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('sessions');
+        //
     }
 };
