@@ -14,6 +14,7 @@ class Grado extends Model
         'numero',
         'seccion',
         'anio_lectivo',
+        'capacidad',
         'activo',
     ];
 

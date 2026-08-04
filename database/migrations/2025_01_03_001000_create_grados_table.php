@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('grado', function (Blueprint $table) {
+        Schema::create('grados', function (Blueprint $table) {
             $table->id();
 
             $table->enum('nivel', ['primaria', 'secundaria']);
@@ -21,6 +21,9 @@ return new class extends Migration
 
             // Año lectivo (ej: 2025)
             $table->year('anio_lectivo');
+
+            // Capacidad máxima de alumnos para este grado/sección
+            $table->integer('capacidad')->default(30);
 
             $table->boolean('activo')->default(true);
 
@@ -35,6 +38,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('grado');
+        Schema::dropIfExists('grados');
     }
 };

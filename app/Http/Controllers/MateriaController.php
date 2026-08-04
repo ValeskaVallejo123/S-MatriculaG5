@@ -29,11 +29,13 @@ class MateriaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'codigo' => 'required|string|max:20|unique:materias,codigo',
             'descripcion' => 'nullable|string',
             'nivel' => 'required|in:primaria,secundaria',
             'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana,Química,Física,Biología,Historia,Geografía',
+        ], [
+            'nombre.regex' => 'El nombre de la materia solo puede contener letras y espacios',
         ]);
 
         Materia::create($request->all());
@@ -56,12 +58,14 @@ class MateriaController extends Controller
     public function update(Request $request, Materia $materia)
     {
         $request->validate([
-            'nombre' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
             'codigo' => 'required|string|max:20|unique:materias,codigo,' . $materia->id,
             'descripcion' => 'nullable|string',
             'nivel' => 'required|in:primaria,secundaria',
             'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana,Química,Física,Biología,Historia,Geografía',
             'activo' => 'boolean',
+        ], [
+            'nombre.regex' => 'El nombre de la materia solo puede contener letras y espacios',
         ]);
 
         $materia->update($request->all());

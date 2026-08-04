@@ -109,6 +109,25 @@
                         @enderror
                     </div>
 
+                    <!-- Capacidad -->
+                    <div class="col-md-6">
+                        <label for="capacidad" class="form-label fw-semibold" style="color: #003b73;">
+                            <i class="fas fa-users text-primary"></i> Capacidad Máxima *
+                        </label>
+                        <input type="number"
+                               class="form-control @error('capacidad') is-invalid @enderror"
+                               id="capacidad"
+                               name="capacidad"
+                               value="{{ old('capacidad', $grado->capacidad) }}"
+                               min="1"
+                               max="60"
+                               required
+                               style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
+                        @error('capacidad')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <!-- Estado Activo -->
                     <div class="col-12">
                         <div class="form-check form-switch" style="padding-left: 2.5rem;">

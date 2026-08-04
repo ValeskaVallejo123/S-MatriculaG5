@@ -95,7 +95,7 @@ class SeccionController extends Controller
             }
         }
 
-        $matriculas = $query->paginate(20);
+        $inscripciones = $query->paginate(20);
 
         $conSeccion = Matricula::whereNotNull('seccion_id')->count();
         $sinSeccion = Matricula::whereNull('seccion_id')->count();
@@ -110,8 +110,13 @@ class SeccionController extends Controller
             ->whereNull('seccion_id')->get()
             ->groupBy(fn($m) => GradoHelper::normalizar($m->estudiante->grado ?? null));
 
+        // Alumnos con matrícula aprobada y sin sección asignada, para el modal "Nueva Asignación"
+        $alumnos = Estudiante::whereHas('matriculas', function ($q) {
+            $q->where('estado', 'aprobada')->whereNull('seccion_id');
+        })->orderBy('nombre1')->orderBy('apellido1')->get();
+
         return view('secciones.index', compact(
-            'matriculas', 'secciones', 'grados', 'letras',
+            'inscripciones', 'secciones', 'grados', 'letras', 'alumnos',
             'gradosSecciones', 'matriculasSinSeccionPorGrado',
             'conSeccion', 'sinSeccion', 'seccionesPorGrado'
         ));

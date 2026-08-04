@@ -71,7 +71,17 @@ class ObservacionController extends Controller
         $estudiantes = Estudiante::orderBy('nombre1')->get();
         $profesores  = Profesor::orderBy('nombre')->get();
 
-        return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
+        // Datos livianos para el buscador JS del modal "Seleccionar Estudiante"
+        $estudiantesJS = $estudiantes->map(fn($e) => [
+            'id'      => $e->id,
+            'nombre'  => $e->nombre_completo,
+            'dni'     => $e->dni,
+            'grado'   => $e->grado,
+            'seccion' => $e->seccion,
+            'foto'    => $e->foto ? asset('storage/' . $e->foto) : null,
+        ])->values();
+
+        return view('observaciones.createObservacion', compact('estudiantes', 'profesores', 'estudiantesJS'));
     }
 
     // ────────────────────────────────────────────────────────────────────────

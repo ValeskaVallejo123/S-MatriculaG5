@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
 
         // Ejecutar seeders en orden correcto
         $this->call([
+            RolesPermisosSeeder::class,   // Roles y permisos primero: los usuarios dependen de id_rol
             SuperAdminSeeder::class,
             ProfesorSeeder::class,
         ]);
