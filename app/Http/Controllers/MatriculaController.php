@@ -411,20 +411,44 @@ class MatriculaController extends Controller
 
     public function update(Request $request, Matricula $matricula)
     {
-        $request->validate([
-            'anio_lectivo'         => 'required|digits:4|integer|min:2020|max:2100',
-            'fecha_matricula'      => 'required|date',
-            'estado'               => 'required|in:pendiente,aprobada,rechazada,cancelada',
-            'motivo_rechazo'       => 'nullable|string|max:500',
-            'observaciones'        => 'nullable|string|max:1000',
-            'foto_estudiante'      => 'nullable|image|max:2048',
-            'acta_nacimiento'      => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
-            'certificado_estudios' => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
-            'constancia_conducta'  => 'nullable|mimes:pdf,jpg,jpeg,png|max:5120',
-            'foto_dni_estudiante'  => 'nullable|image|max:2048',
-            'foto_dni_padre'       => 'nullable|image|max:2048',
-        ]);
+        $validated = $request->validate([
+            // Padre/Tutor
+            'padre_nombre'                => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
+            'padre_apellido'              => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
+            'padre_dni'                   => ['required', 'string', 'max:13', 'regex:/^\d+$/'], // Solo números
+            'padre_parentesco'            => 'required|in:padre,madre,otro',
+            'padre_parentesco_otro'       => 'nullable|required_if:padre_parentesco,otro|string|max:50',
+            'padre_email'                 => 'nullable|email|max:100|unique:users,email',
+            'padre_telefono'              => 'required|string|min:8|max:15',
+            'padre_direccion'             => 'required|string|max:255',
 
+            // Estudiante
+            'estudiante_nombre'           => ['required', 'string', 'min:2', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
+            'estudiante_apellido'         => ['required', 'string', 'min:2', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
+            'estudiante_dni'              => ['required', 'string', 'max:13', 'unique:estudiantes,dni', 'regex:/^\d+$/'], // Solo números
+            'estudiante_fecha_nacimiento' => 'required|date|before:today',
+            'estudiante_sexo'             => 'required|in:masculino,femenino',
+            'estudiante_email'            => 'nullable|email|max:100',
+            'estudiante_telefono'         => 'nullable|string|max:15',
+            'estudiante_direccion'        => 'nullable|string|max:255',
+            'estudiante_grado'            => 'required|string|max:20',
+
+            // Matrícula y Documentos
+            'anio_lectivo'                => 'required|digits:4|integer|min:2020|max:2100',
+            'estado'                      => 'nullable|in:pendiente,aprobada,rechazada,cancelada',
+            'observaciones'               => 'nullable|string|max:500',
+            'foto_perfil'                 => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'calificaciones'              => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'acta_nacimiento'             => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ], [
+            // Mensajes personalizados claros para el usuario
+            'estudiante_nombre.regex'   => 'El primer nombre del estudiante solo debe contener letras.',
+            'estudiante_apellido.regex' => 'El primer apellido del estudiante solo debe contener letras.',
+            'estudiante_dni.regex'      => 'El DNI del estudiante debe contener únicamente números.',
+            'padre_nombre.regex'        => 'El nombre del tutor solo debe contener letras.',
+            'padre_apellido.regex'      => 'El apellido del tutor solo debe contener letras.',
+            'padre_dni.regex'           => 'El DNI del tutor debe contener únicamente números.',
+        ]);
         $estadoAnterior = $matricula->estado;
         $estadoNuevo    = $request->estado;
 

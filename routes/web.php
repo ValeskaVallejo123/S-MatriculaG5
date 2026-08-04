@@ -159,7 +159,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/calendario/eventos/{evento}', [CalendarioController::class, 'eliminar']);
 
     });
-    
+
     Route::get   ('profesor-materia',         [ProfesorMateriaController::class, 'index'])  ->name('profesor_materia.index');
     Route::get   ('profesor-materia/create',  [ProfesorMateriaController::class, 'create']) ->name('profesor_materia.create');
     Route::post  ('profesor-materia',         [ProfesorMateriaController::class, 'store'])  ->name('profesor_materia.store');
@@ -169,15 +169,15 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('profesor-materia/asignacion/{id}',      [ProfesorMateriaController::class, 'destroyAsignacion'])->name('profesor_materia.destroyAsignacion');
 
     // routes/web.php — dentro de tu grupo de rutas autenticadas
-Route::post('padres/desvincular', [App\Http\Controllers\PadreController::class, 'desvincular'])
-    ->name('padres.desvincular');
+    Route::post('padres/desvincular', [App\Http\Controllers\PadreController::class, 'desvincular'])
+        ->name('padres.desvincular');
 
     Route::get('/profesor-grado',                    [ProfesorGradoAsignacionController::class, 'index'])->name('profesor_grado.index');
     Route::get('/profesor-grado/{id}/edit',          [ProfesorGradoAsignacionController::class, 'edit'])->name('profesor_grado.edit');
     Route::post('/profesor-grado/{id}',              [ProfesorGradoAsignacionController::class, 'store'])->name('profesor_grado.store');
     Route::delete('/profesor-grado/asignacion/{id}', [ProfesorGradoAsignacionController::class, 'destroy'])->name('profesor_grado.destroy');
 
-    Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar'); 
+    Route::get('/padres/buscar', [PadreController::class, 'buscar'])->name('padres.buscar');
 
     Route::resource('padres', PadreController::class);
 
@@ -363,13 +363,13 @@ Route::post('padres/desvincular', [App\Http\Controllers\PadreController::class, 
     |-------------------------------------------------------------------------
     */
     Route::prefix('profesor-materia')->name('profesor_materia_grado.')->group(function () {
-    Route::get('/',                                [ProfesorMateriaController::class, 'index'])->name('index');
-    Route::get('/create',                          [ProfesorMateriaController::class, 'create'])->name('create');
-    Route::post('/',                               [ProfesorMateriaController::class, 'store'])->name('store');
-    Route::get('/{profesor_materia_grado}/edit',   [ProfesorMateriaController::class, 'edit'])->name('edit');
-    Route::put('/{profesor_materia_grado}',        [ProfesorMateriaController::class, 'update'])->name('update');
-    Route::delete('/{profesor_materia_grado}',     [ProfesorMateriaController::class, 'destroy'])->name('destroy');
-});
+        Route::get('/',                                [ProfesorMateriaController::class, 'index'])->name('index');
+        Route::get('/create',                          [ProfesorMateriaController::class, 'create'])->name('create');
+        Route::post('/',                               [ProfesorMateriaController::class, 'store'])->name('store');
+        Route::get('/{profesor_materia_grado}/edit',   [ProfesorMateriaController::class, 'edit'])->name('edit');
+        Route::put('/{profesor_materia_grado}',        [ProfesorMateriaController::class, 'update'])->name('update');
+        Route::delete('/{profesor_materia_grado}',     [ProfesorMateriaController::class, 'destroy'])->name('destroy');
+    });
 
     /*
     |-------------------------------------------------------------------------
@@ -642,4 +642,5 @@ Route::post('padres/desvincular', [App\Http\Controllers\PadreController::class, 
 
 
 }); // fin middleware auth
+
 
