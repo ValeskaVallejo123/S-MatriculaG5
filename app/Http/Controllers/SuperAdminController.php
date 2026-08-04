@@ -84,7 +84,6 @@ class SuperAdminController extends Controller
             'name'           => $request->name,
             'email'          => $request->email,
             'password'       => Hash::make($request->password),
-            'role'           => 'user',
             'user_type'      => $isSuperAdmin ? 'super_admin' : 'admin',
             'permissions'    => $isSuperAdmin ? [] : ($request->permissions ?? []),
             'is_super_admin' => $isSuperAdmin,
@@ -227,14 +226,10 @@ class SuperAdminController extends Controller
     public function permisosRoles()
     {
         $usuarios = User::where(function ($query) {
-                $query->where('role', 'admin')
-                      ->orWhere('user_type', 'admin')
+                $query->where('user_type', 'admin')
                       ->orWhere(function ($q) {
-                          $q->where(function ($q2) {
-                              $q2->where('role', 'super_admin')
-                                 ->orWhere('user_type', 'super_admin');
-                          })
-                          ->where('is_protected', 0);
+                          $q->where('user_type', 'super_admin')
+                            ->where('is_protected', 0);
                       });
             })
             ->orderBy('name')

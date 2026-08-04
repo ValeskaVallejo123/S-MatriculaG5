@@ -2,131 +2,89 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Carbon\Carbon;
 
 class PasswordResetController extends Controller
 {
-    // ──────────────────────────────────────────────────────────────
-    // Formulario: solicitar enlace
-    // ──────────────────────────────────────────────────────────────
+
+public function sendResetLink(Request $request)
+{
+    $request->validate(['email' => 'required|email|exists:users,email'], [
+        'email.exists' => 'No encontramos un usuario con ese correo electrónico.'
+    ]);
+
+    // 1. Crear un token único
+    $token = Str::random(64);
+
+    // 2. Guardar en la tabla password_resets
+    DB::table('password_resets')->updateOrInsert(
+        ['email' => $request->email],
+        [
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => Carbon::now()
+        ]
+    );
+
+    // 3. Enviar el correo
+    Mail::send('recuperarcontrasenia.email_link', ['token' => $token, 'email' => $request->email], function($message) use($request){
+        $message->to($request->email);
+        $message->subject('Restablecer Contraseña - Escuela Gabriela Mistral');
+    });
+
+    return back()->with('status', '¡Hemos enviado un enlace de recuperación a tu correo!');
+}
+    // Muestra el formulario para ingresar el correo (solicitar.blade.php)
     public function showForgotForm()
     {
         return view('recuperarcontrasenia.solicitar');
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // Enviar enlace de recuperación al correo
-    // ──────────────────────────────────────────────────────────────
-    public function sendResetLink(Request $request)
+    // Muestra el formulario de los hexágonos (restablecer.blade.php)
+    public function showResetForm($token, Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
-
-        $email = $request->email;
-
-        // CORRECCIÓN: no revelar si el correo existe o no (seguridad)
-        $user = User::where('email', $email)->first();
-        if (!$user) {
-            // Mensaje genérico para no exponer qué correos existen
-            return back()->with('status', 'Si el correo está registrado, recibirás un enlace en breve.');
-        }
-
-        // Borrar tokens antiguos del mismo correo
-        DB::table('password_reset_tokens')->where('email', $email)->delete();
-
-        // Token plano para el enlace, hasheado para guardar en BD
-        $token = Str::random(64);
-
-        DB::table('password_reset_tokens')->insert([
-            'email'      => $email,
-            'token'      => Hash::make($token),
-            'created_at' => Carbon::now(),
-        ]);
-
-        // CORRECCIÓN: nombre de ruta correcto según web.php
-        $link = route('password.restablecer', ['token' => $token, 'email' => $email]);
-
-        // Enviar correo
-        Mail::send('emails.recuperar_contrasenia', ['link' => $link, 'user' => $user], function ($message) use ($email) {
-            $message->to($email)->subject('Recuperar contraseña - Escuela Gabriela Mistral');
-        });
-
-        return back()->with('status', 'Si el correo está registrado, recibirás un enlace en breve.');
-    }
-
-    // ──────────────────────────────────────────────────────────────
-    // Formulario: nueva contraseña (con token)
-    // ──────────────────────────────────────────────────────────────
-    public function showResetForm($token)
-    {
-        $email = request()->query('email');
-
-        // Verificar que el token exista antes de mostrar el formulario
-        $record = DB::table('password_reset_tokens')->where('email', $email)->first();
-
-        if (!$record || !Hash::check($token, $record->token)) {
-            return redirect()->route('password.solicitar')
-                ->withErrors(['email' => 'El enlace de recuperación no es válido o ya fue usado.']);
-        }
-
-        if (Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
-            DB::table('password_reset_tokens')->where('email', $email)->delete();
-            return redirect()->route('password.solicitar')
-                ->withErrors(['email' => 'El enlace ha expirado. Solicita uno nuevo.']);
-        }
-
         return view('recuperarcontrasenia.restablecer', [
-            'token' => $token,
-            'email' => $email,
+            'token' => $token, 
+            'email' => $request->email
         ]);
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // Guardar nueva contraseña
-    // ──────────────────────────────────────────────────────────────
+    // Procesa el cambio final de contraseña
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token'    => 'required',
-            'email'    => 'required|email',
-            'password' => 'required|confirmed|min:8', // CORRECCIÓN: mínimo 8 (buena práctica)
+            'token' => 'required',
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|confirmed|min:8',
+        ], [
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
         ]);
 
-        $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+        // 1. Verificar si el token existe y es válido para ese correo
+        $reset = DB::table('password_resets')
+            ->where([
+                'email' => $request->email,
+                'token' => $request->token,
+            ])->first();
 
-        // Token inválido
-        if (!$record || !Hash::check($request->token, $record->token)) {
-            return back()->withErrors(['email' => 'El enlace no es válido o ya fue utilizado.']);
+        if (!$reset) {
+            return back()->withErrors(['email' => 'El enlace es inválido o ha expirado.']);
         }
 
-        // Token expirado
-        if (Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
-            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
-            return redirect()->route('password.solicitar')
-                ->withErrors(['email' => 'El enlace ha expirado. Solicita uno nuevo.']);
-        }
+        // 2. Actualizar la contraseña en la tabla users
+        User::where('email', $request->email)
+            ->update(['password' => Hash::make($request->password)]);
 
-        // Actualizar contraseña
-        $user = User::where('email', $request->email)->first();
+        // 3. Borrar el token para que no se use de nuevo
+        DB::table('password_resets')->where(['email' => $request->email])->delete();
 
-        if (!$user) {
-            return back()->withErrors(['email' => 'Usuario no encontrado.']);
-        }
-
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        // Borrar token usado
-        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
-
-        // CORRECCIÓN: nombre de ruta correcto según web.php
-        return redirect()->route('login')->with('status', '✅ Contraseña restablecida correctamente. Ya puedes iniciar sesión.');
+        return redirect()->route('login')->with('status', '¡Contraseña restablecida con éxito!');
     }
 }

@@ -1,119 +1,79 @@
 <?php
+// ── Reemplaza solo estos dos métodos en EstudianteController.php ──────────────
 
-namespace App\Http\Controllers;
-
-use App\Models\Estudiante;
-use Illuminate\Http\Request;
-
-class HistorialController extends Controller
+/* ============================================================
+   HISTORIAL — FORMULARIO DE EDICIÓN (Admin)
+============================================================ */
+public function editHistorialAdmin($id)
 {
-    /**
-     * Muestra el historial académico (Vista SHOW)
-     */
-    public function showHistorial($id = null)
-    {
-        $user = auth()->user();
+    $estudiante = Estudiante::with([
+        'calificaciones.materia',
+        'calificaciones.periodo',
+    ])->findOrFail($id);
 
-        if (!$user) {
-            return redirect()->route('login');
-        }
+    return view('historial.edit', compact('estudiante'));
+}
 
-        // Si es estudiante, busca por su user_id (ignora el $id de la URL)
-        if ($user->isEstudiante()) {
-            $estudiante = \App\Models\Estudiante::where('user_id', $user->id)->first();
+/* ============================================================
+   HISTORIAL — GUARDAR CAMBIOS (Admin)
+============================================================ */
+public function updateHistorialAdmin(Request $request, $id)
+{
+    $estudiante = Estudiante::findOrFail($id);
 
-            if (!$estudiante) {
-                return redirect()->back()
-                    ->with('error', 'No se encontró un perfil de estudiante vinculado a tu cuenta.');
-            }
-        } else {
-            // Admin / SuperAdmin: usa el ID de la URL
-            $estudiante = \App\Models\Estudiante::findOrFail($id);
-        }
+    $request->validate([
+        'notas'              => ['required', 'array'],
+        'notas.*.nota_tarea'   => ['nullable', 'numeric', 'min:0', 'max:100'],
+        'notas.*.nota_parcial' => ['nullable', 'numeric', 'min:0', 'max:100'],
+        'notas.*.nota_final'   => ['nullable', 'numeric', 'min:0', 'max:100'],
+    ], [
+        'notas.required'               => 'Debes enviar al menos una nota.',
+        'notas.*.nota_tarea.numeric'   => 'La nota de tarea debe ser un número.',
+        'notas.*.nota_parcial.numeric' => 'La nota parcial debe ser un número.',
+        'notas.*.nota_final.numeric'   => 'La nota final debe ser un número.',
+        'notas.*.nota_tarea.min'       => 'Las notas no pueden ser menores a 0.',
+        'notas.*.nota_tarea.max'       => 'Las notas no pueden ser mayores a 100.',
+        'notas.*.nota_parcial.min'     => 'Las notas no pueden ser menores a 0.',
+        'notas.*.nota_parcial.max'     => 'Las notas no pueden ser mayores a 100.',
+        'notas.*.nota_final.min'       => 'Las notas no pueden ser menores a 0.',
+        'notas.*.nota_final.max'       => 'Las notas no pueden ser mayores a 100.',
+    ]);
 
-        // 2. Carga de relaciones
-        $estudiante->load([
-            'calificaciones.materia',
-            'calificaciones.periodo',
-            'matriculas.seccion'
-        ]);
+    $cambiosRealizados = false;
 
-        // 3. Cálculos para la vista
-        $promedio = $estudiante->calificaciones->avg('nota_final') ?? 0;
-        $historialAgrupado = $estudiante->calificaciones->groupBy(function($nota) {
-            return $nota->periodo->anio_lectivo ?? 'Ciclo Actual';
-        });
+    foreach ($request->notas as $calificacionId => $valores) {
+        if (!ctype_digit((string) $calificacionId)) continue;
 
-        // 4. Retorno a la vista
-        return view('historial.show', compact('estudiante', 'historialAgrupado', 'promedio'));
-    }
+        $calificacion = Calificacion::find((int) $calificacionId);
 
-    /**
-     * Formulario para EDITAR el historial (Vista EDIT)
-     */
-    public function editHistorial($id)
-    {
-        // Solo el SuperAdmin debería entrar aquí
-        $estudiante = Estudiante::with(['calificaciones.materia', 'calificaciones.periodo'])->findOrFail($id);
+        if (!$calificacion || $calificacion->estudiante_id != $estudiante->id) continue;
 
-        return view('historial.edit', compact('estudiante'));
-    }
+        $notaTarea   = isset($valores['nota_tarea'])   && $valores['nota_tarea']   !== '' ? (float) $valores['nota_tarea']   : null;
+        $notaParcial = isset($valores['nota_parcial']) && $valores['nota_parcial'] !== '' ? (float) $valores['nota_parcial'] : null;
+        $notaFinal   = isset($valores['nota_final'])   && $valores['nota_final']   !== '' ? (float) $valores['nota_final']   : null;
 
-    /**
-     * Guarda los cambios realizados (Acción UPDATE)
-     */
-    public function updateHistorial(Request $request, $id)
-    {
-        // Si el estudiante no tiene materias, 'notas' no llegará en el request.
-        // Cambiamos 'required' por 'nullable' para que no explote si está vacío.
-        $request->validate([
-            'notas' => 'nullable|array',
-            'notas.*.p1' => 'nullable|numeric|min:0|max:100',
-            'notas.*.p2' => 'nullable|numeric|min:0|max:100',
-            'notas.*.p3' => 'nullable|numeric|min:0|max:100',
-        ]);
+        if (
+            $calificacion->nota_tarea   != $notaTarea   ||
+            $calificacion->nota_parcial != $notaParcial ||
+            $calificacion->nota_final   != $notaFinal
+        ) {
+            // El modelo recalcula promedio y estado automáticamente en el evento saving()
+            $calificacion->nota_tarea   = $notaTarea;
+            $calificacion->nota_parcial = $notaParcial;
+            $calificacion->nota_final   = $notaFinal;
+            $calificacion->save();
 
-        try {
-            $cambiosRealizados = false;
-
-            // Si hay notas, las procesamos
-            if ($request->has('notas')) {
-                foreach ($request->notas as $notaId => $datos) {
-                    $calificacion = \App\Models\Calificacion::findOrFail($notaId);
-
-                    $p1 = (float)($datos['p1'] ?? 0);
-                    $p2 = (float)($datos['p2'] ?? 0);
-                    $p3 = (float)($datos['p3'] ?? 0);
-                    $nuevaNotaFinal = ($p1 + $p2 + $p3) / 3;
-
-                    if (
-                        (float)$calificacion->primer_parcial !== $p1 ||
-                        (float)$calificacion->segundo_parcial !== $p2 ||
-                        (float)$calificacion->tercer_parcial !== $p3
-                    ) {
-                        $calificacion->update([
-                            'primer_parcial'  => $p1,
-                            'segundo_parcial' => $p2,
-                            'tercer_parcial'  => $p3,
-                            'nota_final'      => $nuevaNotaFinal,
-                        ]);
-                        $cambiosRealizados = true;
-                    }
-                }
-            }
-
-            // Si no hubo cambios (porque las notas eran iguales O porque no había notas que editar)
-            if (!$cambiosRealizados) {
-                return redirect('/estudiantes')
-                    ->with('info', 'No se realizaron cambios (el estudiante no tiene materias o las notas son idénticas).');
-            }
-
-            return redirect()
-                ->route('superadmin.estudiantes.historial.show', $id)
-                ->with('success', 'Historial académico actualizado correctamente.');
-
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al procesar: ' . $e->getMessage());
+            $cambiosRealizados = true;
         }
     }
+
+    if ($cambiosRealizados) {
+        return redirect()
+            ->route('superadmin.estudiantes.historial.show', $id)
+            ->with('success', 'Calificaciones actualizadas correctamente.');
+    }
+
+    return redirect()
+        ->route('superadmin.estudiantes.historial.show', $id)
+        ->with('info', 'No se realizaron cambios en el historial académico.');
 }

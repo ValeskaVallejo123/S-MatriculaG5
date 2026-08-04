@@ -15,7 +15,7 @@ class NotificacionController extends Controller
     }
 
     /**
-     * Mostrar notificaciones según el rol del usuario
+     * Mostrar notificaciones — una sola vista para todos los roles
      */
     public function index()
     {
@@ -26,14 +26,7 @@ class NotificacionController extends Controller
             ->orderBy('created_at', 'DESC')
             ->get();
 
-        return match ($user->id_rol) {
-            4 => view('estudiante.notificaciones.index', compact('notificaciones')),
-            3 => view('profesor.notificaciones.index', compact('notificaciones')),
-            5 => view('padre.notificaciones.index', compact('notificaciones')),
-            1 => view('superadmin.notificaciones.index', compact('notificaciones')),
-            2 => view('admin.notificaciones.index', compact('notificaciones')),
-            default => abort(403, 'Rol no autorizado'),
-        };
+        return view('notificaciones.index', compact('notificaciones'));
     }
 
     /**
@@ -119,16 +112,13 @@ class NotificacionController extends Controller
         return back()->with('success', 'Notificación enviada a todos los usuarios del rol seleccionado.');
     }
 
-    /**
-     * Validar que solo SuperAdmin o Admin puedan enviar o eliminar notificaciones
-     */
     private function autorizarAdmin(): void
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-    if (!$user || (!$user->isSuperAdmin() && !$user->isAdmin())) {
-        abort(403, 'Solo administradores pueden realizar esta acción');
+        if (!$user || (!$user->isSuperAdmin() && !$user->isAdmin())) {
+            abort(403, 'Solo administradores pueden realizar esta acción');
+        }
     }
-}
 }

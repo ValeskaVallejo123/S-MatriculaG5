@@ -30,7 +30,7 @@ class CargaDocenteController extends Controller
                 'profesores.tipo_contrato',
                 DB::raw('COUNT(DISTINCT pmg.materia_id) as total_materias'),
                 DB::raw('COUNT(DISTINCT pmg.grado_id)   as total_grados'),
-                DB::raw('SUM(DISTINCT 0)                as total_horas'),   // placeholder
+                DB::raw('SUM(DISTINCT 0)                as total_horas'),
                 DB::raw('GROUP_CONCAT(DISTINCT materias.nombre ORDER BY materias.nombre SEPARATOR ", ") as nombres_materias'),
                 DB::raw('GROUP_CONCAT(DISTINCT
                     CONCAT(grados.numero, "° ", CONCAT(UPPER(SUBSTRING(grados.nivel,1,1)), LOWER(SUBSTRING(grados.nivel,2))), " — Sec. ", grados.seccion)
@@ -49,7 +49,6 @@ class CargaDocenteController extends Controller
         // ── 2. Para cada profesor: contar estudiantes y armar detalle ────────
         foreach ($profesores as $profesor) {
 
-            // Grados asignados a este profesor (filtrado por año)
             $gradoIds = DB::table('profesor_materia_grados as pmg')
                 ->join('grados', 'pmg.grado_id', '=', 'grados.id')
                 ->where('pmg.profesor_id', $profesor->id)
@@ -60,14 +59,13 @@ class CargaDocenteController extends Controller
                 ->toArray();
 
             if (empty($gradoIds)) {
-                $profesor->total_estudiantes    = 0;
-                $profesor->total_horas          = 0;
-                $profesor->estudiantes_detalle  = '[]';
+                $profesor->total_estudiantes     = 0;
+                $profesor->total_horas           = 0;
+                $profesor->estudiantes_detalle   = '[]';
                 $profesor->estudiantes_por_grado = '{}';
                 continue;
             }
 
-            // Estudiantes asignados a esos grados vía grado_id
             $estudiantes = DB::table('estudiantes')
                 ->join('grados', 'estudiantes.grado_id', '=', 'grados.id')
                 ->whereIn('estudiantes.grado_id', $gradoIds)
@@ -88,30 +86,25 @@ class CargaDocenteController extends Controller
                 ->orderBy('estudiantes.apellido1')
                 ->get();
 
-            // Detalle para el modal (nombre, dni, grado label)
             $detalle = $estudiantes->map(function ($e) {
                 $nombre = trim(
                     trim("{$e->nombre1} {$e->nombre2}") . ' ' .
                     trim("{$e->apellido1} {$e->apellido2}")
                 );
-                $gradoLabel = "{$e->numero}° " . ucfirst($e->nivel) . " — Sec. {$e->seccion}";
-
                 return [
-                    'nombre' => $nombre,
-                    'dni'    => $e->dni ?? '',
-                    'grado'  => $gradoLabel,
-                    'materia' => '',    // se podría agregar si se necesita
+                    'nombre'  => $nombre,
+                    'dni'     => $e->dni ?? '',
+                    'grado'   => "{$e->numero}° " . ucfirst($e->nivel) . " — Sec. {$e->seccion}",
+                    'materia' => '',
                 ];
             })->values()->toArray();
 
-            // Conteo por grado (para la columna expandible)
             $porGrado = [];
             foreach ($estudiantes as $e) {
                 $key = "{$e->numero}° " . ucfirst($e->nivel) . " — Sec. {$e->seccion}";
                 $porGrado[$key] = ($porGrado[$key] ?? 0) + 1;
             }
 
-            // Horas: materias asignadas × 4 horas semanales (aproximado)
             $totalHoras = DB::table('profesor_materia_grados as pmg')
                 ->join('grados', 'pmg.grado_id', '=', 'grados.id')
                 ->where('pmg.profesor_id', $profesor->id)
@@ -124,16 +117,14 @@ class CargaDocenteController extends Controller
             $profesor->estudiantes_por_grado = json_encode($porGrado);
         }
 
-        // ── 3. Solo profesores con materias asignadas, ordenados por estudiantes ─
-        $profesores = $profesores->filter(fn($p) => $p->total_materias > 0)
-                                  ->sortByDesc('total_estudiantes')
-                                  ->values();
+        // ── 3. Todos los profesores activos ordenados por estudiantes ────────
+        $profesores = $profesores->sortByDesc('total_estudiantes')->values();
 
         // ── 4. Stats globales ────────────────────────────────────────────────
-        $totalProfesores = $profesores->count();           // solo con carga
-        $totalConCarga   = $totalProfesores;
-        $totalSinCarga   = Profesor::where('estado', 'activo')->count() - $totalProfesores;
-        $promEstudiantes = $totalProfesores > 0
+        $totalProfesores = Profesor::where('estado', 'activo')->count();
+        $totalConCarga   = $profesores->filter(fn($p) => $p->total_materias > 0)->count();
+        $totalSinCarga   = $totalProfesores - $totalConCarga;
+        $promEstudiantes = $profesores->count() > 0       // ← ahora siempre se define
             ? round($profesores->avg('total_estudiantes'), 1)
             : 0;
 

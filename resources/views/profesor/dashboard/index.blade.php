@@ -90,7 +90,7 @@
 
 /* ── QUICK ACCESS ── */
 .pd-quick {
-    display: grid; grid-template-columns: repeat(4, 1fr);
+    display: grid; grid-template-columns: repeat(5, 1fr);
     gap: .9rem; margin-bottom: 1.5rem;
 }
 .pd-qcard {
@@ -102,12 +102,13 @@
     padding: 1.4rem 1rem; text-align: center;
     display: flex; flex-direction: column; align-items: center; gap: .55rem;
 }
-.pd-qcard-inner i   { font-size: 1.85rem; color: #fff; }
+.pd-qcard-inner i    { font-size: 1.85rem; color: #fff; }
 .pd-qcard-inner span { font-size: .78rem; font-weight: 700; color: #fff; line-height: 1.2; }
 .qc-1 { background: linear-gradient(135deg, #4ec7d2, #00508f); }
 .qc-2 { background: linear-gradient(135deg, #00508f, #003b73); }
 .qc-3 { background: linear-gradient(135deg, #003b73, #00508f); }
 .qc-4 { background: linear-gradient(135deg, #00508f, #4ec7d2); }
+.qc-5 { background: linear-gradient(135deg, #6366f1, #4338ca); }
 
 /* ── CARDS ── */
 .pd-card {
@@ -118,7 +119,7 @@
     background: #003b73; padding: .8rem 1.2rem;
     display: flex; align-items: center; gap: .55rem;
 }
-.pd-card-head i   { color: #4ec7d2; font-size: .95rem; }
+.pd-card-head i    { color: #4ec7d2; font-size: .95rem; }
 .pd-card-head span { color: #fff; font-weight: 700; font-size: .9rem; }
 .pd-card-body { padding: 1.1rem 1.2rem; }
 
@@ -146,9 +147,9 @@
     padding: .2rem .6rem; border-radius: 999px;
     font-size: .69rem; font-weight: 600; white-space: nowrap;
 }
-.b-teal   { background: #e8f8f9; color: #00508f; }
-.b-blue   { background: #eff6ff; color: #1d4ed8; }
-.b-green  { background: #dcfce7; color: #166534; }
+.b-teal  { background: #e8f8f9; color: #00508f; }
+.b-blue  { background: #eff6ff; color: #1d4ed8; }
+.b-green { background: #dcfce7; color: #166534; }
 
 /* ── ESTUDIANTES LIST ── */
 .pd-est-item {
@@ -184,11 +185,12 @@
 /* ── RESPONSIVE ── */
 @media(max-width: 992px) {
     .pd-stats  { grid-template-columns: repeat(2, 1fr); }
-    .pd-quick  { grid-template-columns: repeat(2, 1fr); }
+    .pd-quick  { grid-template-columns: repeat(3, 1fr); }
     .pd-bottom { grid-template-columns: 1fr; }
 }
 @media(max-width: 576px) {
     .pd-stats  { grid-template-columns: 1fr 1fr; }
+    .pd-quick  { grid-template-columns: repeat(2, 1fr); }
     .pd-hero   { padding: 1.4rem 1.2rem; }
     .pd-hero-name { font-size: 1.15rem; }
 }
@@ -263,7 +265,7 @@
                 <span>Mis Cursos</span>
             </div>
         </a>
-        <a href="{{ route('profesor.calificaciones.index') }}" class="pd-qcard qc-3">
+        <a href="{{ route('profesor.cuadro.index') }}" class="pd-qcard qc-3">
             <div class="pd-qcard-inner">
                 <i class="fas fa-clipboard-check"></i>
                 <span>Calificaciones</span>
@@ -273,6 +275,12 @@
             <div class="pd-qcard-inner">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Mi Horario</span>
+            </div>
+        </a>
+        <a href="{{ route('profesor.cambiarcontrasenia.edit') }}" class="pd-qcard qc-1">
+            <div class="pd-qcard-inner">
+                <i class="fas fa-key"></i>
+                <span>Cambiar Contraseña</span>
             </div>
         </a>
     </div>
@@ -331,7 +339,7 @@
             </div>
         </div>
 
-        {{-- Estudiantes Destacados --}}
+        {{-- Estudiantes Activos --}}
         <div class="pd-card">
             <div class="pd-card-head">
                 <i class="fas fa-star"></i>
@@ -344,9 +352,7 @@
                         <i class="fas fa-user-graduate"></i>
                     </div>
                     <div>
-                        <div class="pd-est-name">
-                            {{ $est->nombre1 }} {{ $est->apellido1 }}
-                        </div>
+                        <div class="pd-est-name">{{ $est->nombre1 }} {{ $est->apellido1 }}</div>
                         <div class="pd-est-sub">
                             @isset($est->grado_numero)
                                 {{ $est->grado_numero }}° {{ ucfirst($est->grado_nivel) }} — Sec. {{ $est->grado_seccion }}

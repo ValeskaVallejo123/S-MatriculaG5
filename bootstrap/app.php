@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role'              => \App\Http\Middleware\RoleMiddleware::class,
             'rol'               => \App\Http\Middleware\RoleMiddleware::class,
             'es.padre'          => \App\Http\Middleware\EsPadre::class,
+            'user_type'         => \App\Http\Middleware\CheckUserType::class,
         ]);
 
     })

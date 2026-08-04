@@ -7,30 +7,48 @@ use App\Models\Grado;
 
 class H20CursoController extends Controller
 {
-    public function index()
+   public function index()
+{
+    $cursosP = Grado::where('nivel', 'primaria')
+        ->where('anio_lectivo', date('Y'))
+        ->withCount('estudiantes')
+        ->orderBy('numero')->orderBy('seccion')
+        ->get();
+
+    $cursosS = Grado::where('nivel', 'secundaria')
+        ->where('anio_lectivo', date('Y'))
+        ->withCount('estudiantes')
+        ->orderBy('numero')->orderBy('seccion')
+        ->get();
+
+    return view('h20cursos.index', compact('cursosP', 'cursosS'));
+}
+    /**
+     * Vista de grados de primaria
+     */
+    public function primaria()
     {
-        $cursos = Grado::where('nivel', 'secundaria')
+        $cursos = Grado::where('nivel', 'primaria')
             ->where('anio_lectivo', date('Y'))
             ->withCount('estudiantes')
             ->orderBy('numero')
             ->orderBy('seccion')
             ->get();
 
-        return view('h20cursos.index', compact('cursos'));
+        return view('h20cursos.primaria', compact('cursos'));
     }
 
     public function create()
     {
-        // Muestra el formulario de creación
         return view('h20cursos.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|unique:h20_cursos,nombre',
+            'nombre'      => 'required|unique:h20_cursos,nombre',
             'cupo_maximo' => 'required|integer|min:1',
-            'seccion' => 'required|string',
+            'seccion'     => 'required|string',
         ]);
 
         H20Curso::create($request->all());
@@ -39,16 +57,15 @@ class H20CursoController extends Controller
 
     public function edit(H20Curso $h20curso)
     {
-        // Muestra el formulario de edición
         return view('h20cursos.edit', compact('h20curso'));
     }
 
     public function update(Request $request, H20Curso $h20curso)
     {
         $request->validate([
-            'nombre' => 'required|unique:h20_cursos,nombre,' . $h20curso->id,
+            'nombre'      => 'required|unique:h20_cursos,nombre,' . $h20curso->id,
             'cupo_maximo' => 'required|integer|min:1',
-            'seccion' => 'required|string',
+            'seccion'     => 'required|string',
         ]);
 
         $h20curso->update($request->all());

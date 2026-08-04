@@ -1,220 +1,200 @@
 @extends('layouts.app')
 
 @section('title', 'Registrar Padre / Tutor')
+@section('page-title', 'Registrar Padre / Tutor')
+
+@section('topbar-actions')
+    <a href="{{ route('padres.index') }}"
+       style="border:1.5px solid #e2e8f0;color:#6b7280;background:white;border-radius:8px;padding:.45rem 1rem;font-size:.88rem;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;">
+        <i class="fas fa-arrow-left"></i> Volver
+    </a>
+@endsection
 
 @push('styles')
 <style>
-/* ── Inputs, Selects, Textarea ── */
-.field input,
-.field select,
-.field textarea {
-    width: 100%;
-    padding: 0.68rem 1rem;
-    border: 2px solid #bfd9ea;
+:root {
+    --c-primary: #00508f;
+    --c-dark:    #003b73;
+    --c-teal:    #4ec7d2;
+    --c-green:   #10b981;
+    --c-red:     #ef4444;
+    --c-border:  #bfd9ea;
+    --c-surface: #f8fbfd;
+}
+
+.form-control, .form-select {
+    border: 2px solid var(--c-border) !important;
     border-radius: 10px;
-    font-size: .88rem;
-    color: #0d2137;
-    background: #fff;
-    transition: border-color .2s, box-shadow .2s;
-    box-sizing: border-box;
+    padding: 0.68rem 1rem 0.68rem 2.8rem !important;
+    font-size: .88rem !important;
+    transition: all 0.3s ease;
+    height: auto !important;
+    background: white;
     font-family: inherit;
-    height: auto;
+    color: #0d2137;
 }
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
+.form-control:focus, .form-select:focus {
+    border-color: var(--c-teal) !important;
+    box-shadow: 0 0 0 0.15rem rgba(78,199,210,.18) !important;
     outline: none;
-    border-color: #4ec7d2;
-    box-shadow: 0 0 0 0.15rem rgba(78,199,210,.15);
 }
-.field input.is-invalid,
-.field select.is-invalid,
-.field textarea.is-invalid {
-    border-color: #ef4444;
-    box-shadow: 0 0 0 0.15rem rgba(239,68,68,.1);
+.form-control.field-error, .form-select.field-error {
+    border-color: var(--c-red) !important;
+    background: rgba(239,68,68,.03) !important;
 }
-
-/* ── Labels ── */
-.field label {
-    font-size: .63rem;
-    font-weight: 700;
-    color: #003b73;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    display: flex;
-    align-items: center;
-    gap: .3rem;
-    margin-bottom: .22rem;
+.form-control.field-ok, .form-select.field-ok {
+    border-color: var(--c-green) !important;
+    background: rgba(16,185,129,.03) !important;
 }
-.field label .req { color: #4ec7d2; font-size: .95em; }
-
-/* ── Títulos de sección ── */
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    font-size: .75rem;
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: #00508f;
-    margin: 0 0 1.2rem;
-}
-.section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(78,199,210,.2), transparent);
-}
-
-/* ── Mensajes de error ── */
-.error-msg {
-    font-size: .7rem;
-    color: #ef4444;
-    display: flex;
-    align-items: center;
-    gap: .3rem;
-    margin-top: .2rem;
-}
-
-/* ── Texto ayuda ── */
-.hint-text { font-size: .68rem; color: #6b7a90; }
-
-/* ── Textarea ── */
-.field textarea {
-    resize: vertical;
+textarea.form-control {
+    padding-left: 2.6rem !important;
+    resize: none;
     min-height: 80px;
-    padding-left: 1rem;
 }
 
-/* ── Prefijo teléfono ── */
-.input-prefix {
-    display: flex;
-    border: 2px solid #bfd9ea;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: border-color .2s, box-shadow .2s;
+.field-wrap { position: relative; }
+.field-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--c-primary); font-size: .68rem; z-index: 5; pointer-events: none;
 }
-.input-prefix:focus-within {
-    border-color: #4ec7d2;
-    box-shadow: 0 0 0 0.15rem rgba(78,199,210,.15);
-}
-.prefix-tag {
-    background: rgba(78,199,210,.1);
-    color: #00508f;
-    font-weight: 700;
-    font-size: .78rem;
-    padding: 0 .75rem;
-    display: flex; align-items: center;
-    border-right: 2px solid #bfd9ea;
-    white-space: nowrap;
-}
-.input-prefix input {
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    flex: 1;
-}
+.field-icon-ta { top: 14px; transform: none; }
 
-/* ── Relación (radio cards) ── */
+.form-label {
+    color: var(--c-dark) !important;
+    font-size: .63rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .22rem;
+    display: flex; align-items: center; gap: .3rem;
+}
+.lbl-required { color: var(--c-red); font-size: .75rem; }
+.lbl-optional  { color: #94a3b8; font-weight: 400; text-transform: none; font-size: .7rem; letter-spacing: 0; }
+
+.field-msg {
+    font-size: .7rem; font-weight: 600; margin-top: .3rem;
+    display: flex; align-items: center; gap: .3rem;
+    min-height: 1.1rem;
+}
+.field-msg.err  { color: var(--c-red); }
+.field-msg.ok   { color: var(--c-green); }
+.field-msg.hint { color: #94a3b8; font-weight: 400; }
+
+.sec-title {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .75rem; font-weight: 700; color: var(--c-primary);
+    text-transform: uppercase; letter-spacing: .08em;
+    margin-bottom: .95rem; padding-bottom: .55rem;
+    border-bottom: 2px solid rgba(78,199,210,.15);
+}
+.sec-title i { color: var(--c-teal); font-size: .88rem; }
+
+/* Relación cards */
 .relation-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: .65rem;
 }
-@media (max-width: 500px) { .relation-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:768px){ .relation-grid { grid-template-columns: repeat(3,1fr); } }
+@media(max-width:480px){ .relation-grid { grid-template-columns: repeat(2,1fr); } }
 
 .relation-option { display: none; }
 .relation-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: .4rem;
-    padding: .75rem .5rem;
-    border: 2px solid #bfd9ea;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: border-color .2s, background .2s, transform .15s;
-    text-align: center;
-    font-size: .75rem;
-    font-weight: 600;
-    color: #6b7a90;
+    display: flex; flex-direction: column; align-items: center; gap: .4rem;
+    padding: .75rem .5rem; border: 2px solid var(--c-border); border-radius: 10px;
+    cursor: pointer; transition: all .2s; text-align: center;
+    font-size: .75rem; font-weight: 600; color: #6b7a90;
 }
-.relation-label .rl-icon {
-    font-size: 1.3rem;
-    color: #00508f;
-    line-height: 1;
-}
+.relation-label .rl-icon { font-size: 1.5rem; line-height: 1; }
 .relation-option:checked + .relation-label {
-    border-color: #4ec7d2;
-    background: rgba(78,199,210,.1);
-    color: #00508f;
-    transform: scale(1.03);
+    border-color: var(--c-teal); background: rgba(78,199,210,.1);
+    color: var(--c-primary); transform: scale(1.03);
 }
-.relation-label:hover { border-color: #00508f; background: #f0f6ff; }
+.relation-label:hover { border-color: var(--c-primary); background: #f0f6ff; }
+.relation-grid.has-error .relation-label { border-color: var(--c-red); }
 
-/* ── Alerta errores ── */
-.alert-padre {
-    margin-bottom: 1.2rem;
-    padding: .9rem 1.1rem;
-    border-radius: 10px;
-    font-size: .83rem;
-    display: flex;
-    align-items: flex-start;
-    gap: .6rem;
-    background: #fff0f0;
-    border: 1px solid #f5c0c0;
-    color: #b83232;
+/* Prefijo teléfono */
+.input-prefix {
+    display: flex; border: 2px solid var(--c-border);
+    border-radius: 10px; overflow: hidden;
+    transition: border-color .2s, box-shadow .2s;
+}
+.input-prefix:focus-within {
+    border-color: var(--c-teal);
+    box-shadow: 0 0 0 0.15rem rgba(78,199,210,.15);
+}
+.input-prefix.field-error { border-color: var(--c-red); }
+.input-prefix.field-ok    { border-color: var(--c-green); }
+.prefix-tag {
+    background: rgba(78,199,210,.1); color: var(--c-primary);
+    font-weight: 700; font-size: .78rem; padding: 0 .75rem;
+    display: flex; align-items: center; border-right: 2px solid var(--c-border);
+    white-space: nowrap; flex-shrink: 0;
+}
+.input-prefix input {
+    border: none !important; box-shadow: none !important;
+    border-radius: 0 !important; flex: 1;
+    padding: 0.68rem 1rem !important;
+    font-size: .88rem !important; font-family: inherit;
+    color: #0d2137; background: white; outline: none;
 }
 
-/* ── Grid layout ── */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; }
-.col-span-2 { grid-column: span 2; }
-.col-span-3 { grid-column: span 3; }
-.field { display: flex; flex-direction: column; gap: .35rem; }
-
-@media (max-width: 680px) {
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .col-span-2, .col-span-3 { grid-column: span 1; }
+/* Avatar */
+.foto-wrap { display: flex; flex-direction: column; align-items: center; gap: .75rem; }
+.avatar-preview {
+    width: 90px; height: 90px; border-radius: 50%;
+    border: 3px solid var(--c-border); object-fit: cover;
+    background: #f5f8fc; display: flex; align-items: center;
+    justify-content: center; overflow: hidden;
 }
+.avatar-preview svg { color: #bfd9ea; width: 42px; height: 42px; }
+.btn-upload {
+    font-size: .72rem; font-weight: 600; color: var(--c-primary);
+    background: none; border: 1.5px dashed var(--c-border);
+    border-radius: 8px; padding: .4rem .9rem; cursor: pointer;
+    transition: all .2s;
+}
+.btn-upload:hover { border-color: var(--c-teal); background: rgba(78,199,210,.1); }
 
-/* ── Botones ── */
-.btn-primary-custom {
-    flex: 1; min-width: 140px; justify-content: center;
-    background: linear-gradient(135deg, #4ec7d2, #00508f);
+/* Botones */
+.btn-submit {
+    background: linear-gradient(135deg, var(--c-teal), var(--c-primary));
     color: white; border: none; border-radius: 9px;
-    padding: .6rem .75rem; font-size: .83rem; font-weight: 600;
-    box-shadow: 0 2px 10px rgba(78,199,210,.3);
-    transition: all .2s;
-    display: inline-flex; align-items: center; gap: .45rem;
-    cursor: pointer;
+    padding: .65rem .9rem; font-size: .85rem; font-weight: 700;
+    box-shadow: 0 2px 10px rgba(78,199,210,.3); transition: all .2s;
+    display: inline-flex; align-items: center; gap: .4rem; cursor: pointer;
 }
-.btn-primary-custom:hover {
-    color: white;
-    box-shadow: 0 4px 16px rgba(78,199,210,.4);
-    transform: translateY(-2px);
+.btn-submit:hover { color: white; box-shadow: 0 4px 16px rgba(78,199,210,.45); transform: translateY(-2px); }
+.btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+.btn-cancel {
+    border: 1.5px solid var(--c-primary); color: var(--c-primary);
+    background: white; border-radius: 9px; padding: .65rem .9rem;
+    font-size: .85rem; font-weight: 700; transition: all .2s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: .4rem;
+    cursor: pointer; font-family: inherit;
 }
-.btn-cancel-custom {
-    flex: 1; min-width: 120px; justify-content: center;
-    border: 1.5px solid #00508f; color: #00508f;
-    background: white; border-radius: 9px;
-    padding: .6rem .75rem; font-size: .83rem; font-weight: 600;
-    transition: all .2s;
-    display: inline-flex; align-items: center; gap: .45rem;
-    cursor: pointer; text-decoration: none;
+.btn-cancel:hover { background: #eff6ff; color: var(--c-primary); transform: translateY(-2px); }
+
+/* Errores generales */
+.frm-alert-errors {
+    background: #fef2f2; border: 1px solid #fca5a5;
+    border-radius: 10px; padding: .9rem 1.1rem;
+    margin: 1rem 1.7rem 0;
 }
-.btn-cancel-custom:hover {
-    background: #eff6ff; color: #00508f;
-    transform: translateY(-2px);
+.frm-alert-errors-title {
+    font-size: .8rem; font-weight: 700; color: #991b1b;
+    display: flex; align-items: center; gap: .4rem; margin-bottom: .5rem;
 }
+.frm-alert-errors ul { margin: 0; padding-left: 1.25rem; }
+.frm-alert-errors ul li { font-size: .78rem; color: #b91c1c; margin-bottom: .2rem; }
 </style>
 @endpush
 
 @section('content')
 <div style="width:100%;">
 
-    {{-- HEADER --}}
+    {{-- Header --}}
     <div style="border-radius:14px 14px 0 0;
                 background:linear-gradient(135deg,#002d5a 0%,#00508f 55%,#0077b6 100%);
                 padding:2rem; position:relative; overflow:hidden;">
@@ -231,273 +211,442 @@
                 <i class="fas fa-user-friends" style="color:white;font-size:2rem;"></i>
             </div>
             <div>
-                <h2 style="font-size:1.45rem;font-weight:800;color:white;
-                           margin:0 0 .4rem;text-shadow:0 1px 4px rgba(0,0,0,.2);">
+                <h2 style="font-size:1.45rem;font-weight:800;color:white;margin:0 0 .4rem;">
                     Registrar Padre / Tutor
                 </h2>
                 <span style="display:inline-flex;align-items:center;gap:.3rem;
                              padding:.2rem .65rem;border-radius:999px;
                              background:rgba(255,255,255,.14);color:rgba(255,255,255,.92);
-                             font-size:.72rem;font-weight:600;
-                             border:1px solid rgba(255,255,255,.18);">
+                             font-size:.72rem;font-weight:600;border:1px solid rgba(255,255,255,.18);">
                     <i class="fas fa-pen"></i> Complete los datos del responsable
                 </span>
             </div>
         </div>
     </div>
 
-    {{-- BODY --}}
+    {{-- Body --}}
     <div style="background:white;border:1px solid #e8edf4;border-top:none;
                 border-radius:0 0 14px 14px;box-shadow:0 2px 16px rgba(0,59,115,.09);">
 
-        @if ($errors->any())
-        <div style="padding:1rem 1.7rem 0;">
-            <div class="alert-padre">
-                <i class="fas fa-exclamation-triangle" style="flex-shrink:0;margin-top:2px;"></i>
-                <div>
-                    <strong>Por favor corrige los siguientes errores:</strong>
-                    <ul style="margin:.3rem 0 0 1rem;padding:0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+        {{-- Errores del servidor --}}
+        @if($errors->any())
+        <div class="frm-alert-errors">
+            <div class="frm-alert-errors-title">
+                <i class="fas fa-exclamation-circle"></i>
+                Por favor corrige los siguientes errores:
             </div>
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
         @endif
 
-        <form action="{{ route('padres.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('padres.store') }}" method="POST"
+              enctype="multipart/form-data" id="frmPadre" novalidate>
             @csrf
 
-            {{-- SECCIÓN 1: DATOS PERSONALES --}}
+            {{-- ══ SECCIÓN 1: DATOS PERSONALES ══ --}}
             <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
-                <div class="section-title">
-                    <i class="fas fa-user" style="color:#4ec7d2;font-size:.88rem;"></i>
-                    Datos Personales
-                </div>
+                <div class="sec-title"><i class="fas fa-user"></i> Datos Personales</div>
 
-                <div class="grid-3" style="align-items:start;">
+                <div class="row g-3" style="align-items:start;">
 
                     {{-- Foto --}}
-                    <div class="foto-wrap" style="grid-row:span 2;">
-                        <div class="avatar-preview" id="avatarPreview">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                 stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-                            </svg>
+                    <div class="col-md-2 d-flex justify-content-center">
+                        <div class="foto-wrap">
+                            <div class="avatar-preview" id="avatarPreview">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+                                </svg>
+                            </div>
+                            <button type="button" class="btn-upload"
+                                    onclick="document.getElementById('fotoInput').click()">
+                                <i class="fas fa-camera"></i> Subir foto
+                            </button>
+                            <input type="file" id="fotoInput" name="foto" accept="image/*" style="display:none;">
+                            <span style="font-size:.68rem;color:#94a3b8;">JPG, PNG — máx. 2 MB</span>
+                            <div class="field-msg err" id="msg-foto" style="display:none;text-align:center;"></div>
                         </div>
-                        <button type="button" class="btn-upload"
-                                onclick="document.getElementById('fotoInput').click()">
-                            <i class="fas fa-camera"></i> Subir foto
-                        </button>
-                        <input type="file" id="fotoInput" name="foto" accept="image/*" style="display:none;">
-                        <span class="hint-text">JPG, PNG — máx. 2 MB</span>
                     </div>
 
-                    {{-- nombre = campo que espera el controlador --}}
-                    <div class="field">
-                        <label>Nombre(s) <span class="req">*</span></label>
-                        <input type="text" name="nombre" value="{{ old('nombre') }}"
-                               class="{{ $errors->has('nombre') ? 'is-invalid' : '' }}"
-                               placeholder="Ej: María Elena" maxlength="50" required>
-                        @error('nombre')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
+                    <div class="col-md-10">
+                        <div class="row g-3">
 
-                    {{-- apellido = campo que espera el controlador --}}
-                    <div class="field">
-                        <label>Apellido(s) <span class="req">*</span></label>
-                        <input type="text" name="apellido" value="{{ old('apellido') }}"
-                               class="{{ $errors->has('apellido') ? 'is-invalid' : '' }}"
-                               placeholder="Ej: García López" maxlength="50" required>
-                        @error('apellido')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
+                            {{-- Primer Nombre --}}
+                            <div class="col-md-6">
+                                <label class="form-label" for="nombre1">
+                                    Primer Nombre <span class="lbl-required">*</span>
+                                </label>
+                                <div class="field-wrap">
+                                    <i class="fas fa-user field-icon"></i>
+                                    <input type="text" id="nombre1" name="nombre1"
+                                           class="form-control {{ $errors->has('nombre1') ? 'field-error' : '' }}"
+                                           value="{{ old('nombre1') }}" placeholder="Ej: María"
+                                           maxlength="50" oninput="soloLetras(this);">
+                                </div>
+                                <div class="field-msg {{ $errors->has('nombre1') ? 'err' : 'hint' }}" id="msg-nombre1">
+                                    @error('nombre1')
+                                        <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                                    @else
+                                        <i class="fas fa-info-circle"></i> Solo letras y espacios
+                                    @enderror
+                                </div>
+                            </div>
 
-                    {{-- DNI --}}
-                    <div class="field">
-                        <label>DNI / Identidad</label>
-                        <input type="text" name="dni" value="{{ old('dni') }}"
-                               class="{{ $errors->has('dni') ? 'is-invalid' : '' }}"
-                               placeholder="0801-1990-XXXXX" maxlength="20">
-                        @error('dni')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
+                            {{-- Segundo Nombre --}}
+                            <div class="col-md-6">
+                                <label class="form-label" for="nombre2">
+                                    Segundo Nombre <span class="lbl-optional">(Opcional)</span>
+                                </label>
+                                <div class="field-wrap">
+                                    <i class="fas fa-user field-icon"></i>
+                                    <input type="text" id="nombre2" name="nombre2"
+                                           class="form-control"
+                                           value="{{ old('nombre2') }}" placeholder="Opcional"
+                                           maxlength="50" oninput="soloLetras(this);">
+                                </div>
+                                <div class="field-msg hint" id="msg-nombre2">
+                                    <i class="fas fa-info-circle"></i> Solo letras y espacios
+                                </div>
+                            </div>
 
-                    {{-- Estado --}}
-                    <div class="field">
-                        <label>Estado</label>
-                        <select name="estado">
-                            <option value="activo"   {{ old('estado', 'activo') == 'activo'   ? 'selected' : '' }}>Activo</option>
-                            <option value="inactivo" {{ old('estado') == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
-                        </select>
-                    </div>
+                            {{-- Primer Apellido --}}
+                            <div class="col-md-6">
+                                <label class="form-label" for="apellido1">
+                                    Primer Apellido <span class="lbl-required">*</span>
+                                </label>
+                                <div class="field-wrap">
+                                    <i class="fas fa-user field-icon"></i>
+                                    <input type="text" id="apellido1" name="apellido1"
+                                           class="form-control {{ $errors->has('apellido1') ? 'field-error' : '' }}"
+                                           value="{{ old('apellido1') }}" placeholder="Ej: García"
+                                           maxlength="50" oninput="soloLetras(this);">
+                                </div>
+                                <div class="field-msg {{ $errors->has('apellido1') ? 'err' : 'hint' }}" id="msg-apellido1">
+                                    @error('apellido1')
+                                        <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                                    @else
+                                        <i class="fas fa-info-circle"></i> Solo letras y espacios
+                                    @enderror
+                                </div>
+                            </div>
 
+                            {{-- Segundo Apellido --}}
+                            <div class="col-md-6">
+                                <label class="form-label" for="apellido2">
+                                    Segundo Apellido <span class="lbl-optional">(Opcional)</span>
+                                </label>
+                                <div class="field-wrap">
+                                    <i class="fas fa-user field-icon"></i>
+                                    <input type="text" id="apellido2" name="apellido2"
+                                           class="form-control"
+                                           value="{{ old('apellido2') }}" placeholder="Opcional"
+                                           maxlength="50" oninput="soloLetras(this);">
+                                </div>
+                                <div class="field-msg hint" id="msg-apellido2">
+                                    <i class="fas fa-info-circle"></i> Solo letras y espacios
+                                </div>
+                            </div>
+
+                            {{-- DNI --}}
+                            <div class="col-md-4">
+                                <label class="form-label" for="dni">
+                                    DNI / Identidad <span class="lbl-required">*</span>
+                                </label>
+                                <div class="field-wrap">
+                                    <i class="fas fa-id-card field-icon"></i>
+                                    <input type="text" id="dni" name="dni"
+                                           class="form-control {{ $errors->has('dni') ? 'field-error' : '' }}"
+                                           value="{{ old('dni') }}" placeholder="0801-1990-12345"
+                                           maxlength="15" oninput="formatearDNI(this);">
+                                </div>
+                                <div class="field-msg {{ $errors->has('dni') ? 'err' : 'hint' }}" id="msg-dni">
+                                    @error('dni')
+                                        <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                                    @else
+                                        <i class="fas fa-info-circle"></i> Formato: 0801-1990-12345
+                                    @enderror
+                                </div>
+                            </div>
+
+                            {{-- Fecha de Nacimiento --}}
+                            <div class="col-md-4">
+                                <label class="form-label" for="fecha_nacimiento">
+                                    Fecha de Nacimiento <span class="lbl-required">*</span>
+                                </label>
+                                <div class="field-wrap">
+                                    <i class="fas fa-calendar field-icon"></i>
+                                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento"
+                                           class="form-control {{ $errors->has('fecha_nacimiento') ? 'field-error' : '' }}"
+                                           value="{{ old('fecha_nacimiento') }}"
+                                           onchange="validarFechaPadre(this);">
+                                </div>
+                                <div class="field-msg {{ $errors->has('fecha_nacimiento') ? 'err' : 'hint' }}" id="msg-fecha_nacimiento">
+                                    @error('fecha_nacimiento')
+                                        <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                                    @else
+                                        <i class="fas fa-info-circle"></i> Debe tener entre 18 y 80 años
+                                    @enderror
+                                </div>
+                            </div>
+
+                            {{-- Género --}}
+                            <div class="col-md-4">
+                                <label class="form-label" for="genero">
+                                    Género <span class="lbl-required">*</span>
+                                </label>
+                                <div class="field-wrap">
+                                    <i class="fas fa-venus-mars field-icon" style="z-index:10;"></i>
+                                    <select id="genero" name="genero"
+                                            class="form-select {{ $errors->has('genero') ? 'field-error' : '' }}"
+                                            onchange="validarSelectField(this,'msg-genero','El género');">
+                                        <option value="">— Seleccionar —</option>
+                                        <option value="M" {{ old('genero')=='M' ? 'selected' : '' }}>Masculino</option>
+                                        <option value="F" {{ old('genero')=='F' ? 'selected' : '' }}>Femenino</option>
+                                        <option value="O" {{ old('genero')=='O' ? 'selected' : '' }}>Otro</option>
+                                    </select>
+                                </div>
+                                <div class="field-msg {{ $errors->has('genero') ? 'err' : '' }}" id="msg-genero">
+                                    @error('genero')<i class="fas fa-exclamation-circle"></i> {{ $message }}@enderror
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {{-- SECCIÓN 2: PARENTESCO --}}
+            {{-- ══ SECCIÓN 2: RELACIÓN CON EL ESTUDIANTE ══ --}}
             <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
-                <div class="section-title">
-                    <i class="fas fa-user-friends" style="color:#4ec7d2;font-size:.88rem;"></i>
-                    Parentesco con el Estudiante
+                <div class="sec-title"><i class="fas fa-user-friends"></i> Relación con el Estudiante</div>
+
+                <div class="relation-grid" id="relationGrid" style="grid-template-columns:repeat(3,1fr);max-width:480px;">
+                    <input type="radio" name="relacion" id="rel_padre"  value="padre"  class="relation-option" {{ old('relacion')=='padre'  ? 'checked' : '' }}>
+                    <label for="rel_padre"  class="relation-label"><i class="fas fa-male"  style="font-size:1.4rem;color:#00508f;"></i> Padre</label>
+
+                    <input type="radio" name="relacion" id="rel_madre"  value="madre"  class="relation-option" {{ old('relacion')=='madre'  ? 'checked' : '' }}>
+                    <label for="rel_madre"  class="relation-label"><i class="fas fa-female" style="font-size:1.4rem;color:#e879a0;"></i> Madre</label>
+
+                    <input type="radio" name="relacion" id="rel_otro"   value="otro"   class="relation-option" {{ old('relacion')=='otro'   ? 'checked' : '' }} onchange="toggleOtroRelacion();">
+                    <label for="rel_otro"   class="relation-label"><i class="fas fa-user-shield" style="font-size:1.4rem;color:#6366f1;"></i> Otro</label>
                 </div>
 
-                <div class="relation-grid">
-                    @php
-                        $parentescos = [
-                            ['value' => 'padre',       'label' => 'Padre',       'icon' => 'fa-male'],
-                            ['value' => 'madre',       'label' => 'Madre',       'icon' => 'fa-female'],
-                            ['value' => 'abuelo',      'label' => 'Abuelo/a',    'icon' => 'fa-user'],
-                            ['value' => 'tio',         'label' => 'Tío/a',       'icon' => 'fa-user-tie'],
-                            ['value' => 'tutor_legal', 'label' => 'Tutor Legal', 'icon' => 'fa-user-shield'],
-                            ['value' => 'otro',        'label' => 'Otro',        'icon' => 'fa-user-tag'],
-                        ];
-                    @endphp
-
-                    @foreach ($parentescos as $p)
-                        <input type="radio" name="parentesco" id="par_{{ $p['value'] }}"
-                               value="{{ $p['value'] }}" class="relation-option"
-                               {{ old('parentesco') == $p['value'] ? 'checked' : '' }}
-                               onchange="toggleOtro(this.value)">
-                        <label for="par_{{ $p['value'] }}" class="relation-label">
-                            <span class="rl-icon"><i class="fas {{ $p['icon'] }}"></i></span>
-                            {{ $p['label'] }}
-                        </label>
-                    @endforeach
-                </div>
-
-                {{-- Campo extra si elige "otro" --}}
-                <div id="campo-parentesco-otro" style="display:none;margin-top:.9rem;">
-                    <div class="field">
-                        <label>Especificar parentesco <span class="req">*</span></label>
-                        <input type="text" name="parentesco_otro" value="{{ old('parentesco_otro') }}"
-                               class="{{ $errors->has('parentesco_otro') ? 'is-invalid' : '' }}"
-                               placeholder="Ej: Padrino, Madrina..." maxlength="50">
-                        @error('parentesco_otro')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
+                {{-- Campo especificar si selecciona "Otro" --}}
+                <div id="wrap-otro-relacion" style="{{ old('relacion')=='otro' ? '' : 'display:none;' }} margin-top:.85rem;max-width:480px;">
+                    <label class="form-label" for="relacion_otro">
+                        Especifica la relación <span class="lbl-required">*</span>
+                    </label>
+                    <div class="field-wrap">
+                        <i class="fas fa-pen field-icon"></i>
+                        <input type="text" id="relacion_otro" name="relacion_otro"
+                               class="form-control {{ $errors->has('relacion_otro') ? 'field-error' : '' }}"
+                               value="{{ old('relacion_otro') }}"
+                               placeholder="Ej: Abuelo, Tío, Hermano..."
+                               maxlength="50" oninput="soloLetras(this);">
+                    </div>
+                    <div class="field-msg {{ $errors->has('relacion_otro') ? 'err' : 'hint' }}" id="msg-relacion_otro">
+                        @error('relacion_otro')
+                            <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                        @else
+                            <i class="fas fa-info-circle"></i> Solo letras y espacios
                         @enderror
                     </div>
                 </div>
 
-                @error('parentesco')
-                    <span class="error-msg" style="margin-top:.5rem;display:flex;">
-                        <i class="fas fa-exclamation-circle"></i> {{ $message }}
-                    </span>
+                <div class="field-msg err mt-2" id="msg-relacion" style="display:none;">
+                    <i class="fas fa-exclamation-circle"></i> Debes seleccionar la relación con el estudiante.
+                </div>
+                @error('relacion')
+                    <div class="field-msg err mt-2"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
                 @enderror
             </div>
 
-            {{-- SECCIÓN 3: CONTACTO --}}
+            {{-- ══ SECCIÓN 3: INFORMACIÓN DE CONTACTO ══ --}}
             <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
-                <div class="section-title">
-                    <i class="fas fa-phone" style="color:#4ec7d2;font-size:.88rem;"></i>
-                    Información de Contacto
-                </div>
+                <div class="sec-title"><i class="fas fa-phone"></i> Información de Contacto</div>
 
-                <div class="grid-2">
-                    <div class="field">
-                        <label>Teléfono Principal</label>
-                        <div class="input-prefix">
-                            <span class="prefix-tag">+504</span>
-                            <input type="tel" name="telefono" value="{{ old('telefono') }}"
-                                   class="{{ $errors->has('telefono') ? 'is-invalid' : '' }}"
-                                   placeholder="9999-9999" maxlength="15">
+                <div class="row g-3">
+
+                    {{-- Teléfono Principal --}}
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            Teléfono Principal <span class="lbl-required">*</span>
+                        </label>
+                        <div class="input-prefix" id="wrap-telefono">
+                            <span class="prefix-tag">HN +504</span>
+                            <input type="tel" id="telefono" name="telefono"
+                                   value="{{ old('telefono') }}"
+                                   placeholder="9999-9999" maxlength="9"
+                                   oninput="formatearTelefono(this, 'wrap-telefono', 'msg-telefono');">
                         </div>
-                        @error('telefono')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
+                        <div class="field-msg {{ $errors->has('telefono') ? 'err' : 'hint' }}" id="msg-telefono">
+                            @error('telefono')
+                                <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                            @else
+                                <i class="fas fa-info-circle"></i> Formato: 9999-9999
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Teléfono Alternativo --}}
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            Teléfono Alternativo <span class="lbl-optional">(Opcional)</span>
+                        </label>
+                        <div class="input-prefix" id="wrap-telefono_alt">
+                            <span class="prefix-tag">HN +504</span>
+                            <input type="tel" id="telefono_alt" name="telefono_alt"
+                                   value="{{ old('telefono_alt') }}"
+                                   placeholder="9999-9999" maxlength="9"
+                                   oninput="formatearTelefono(this, 'wrap-telefono_alt', 'msg-telefono_alt');">
+                        </div>
+                        <div class="field-msg hint" id="msg-telefono_alt">
+                            <i class="fas fa-info-circle"></i> Formato: 9999-9999
+                        </div>
+                    </div>
+
+                    {{-- Correo Electrónico --}}
+                    <div class="col-md-4">
+                        <label class="form-label" for="correo">
+                            Correo Electrónico <span class="lbl-optional">(Opcional)</span>
+                        </label>
+                        <div class="field-wrap">
+                            <i class="fas fa-envelope field-icon"></i>
+                            <input type="email" id="correo" name="correo"
+                                   class="form-control {{ $errors->has('correo') ? 'field-error' : '' }}"
+                                   value="{{ old('correo') }}"
+                                   placeholder="ejemplo@correo.com" maxlength="100"
+                                   oninput="validarEmail(this);">
+                        </div>
+                        <div class="field-msg {{ $errors->has('correo') ? 'err' : 'hint' }}" id="msg-correo">
+                            @error('correo')
+                                <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                            @else
+                                <i class="fas fa-info-circle"></i> Ingresa un correo válido
+                            @enderror
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ══ SECCIÓN 4: DIRECCIÓN Y OCUPACIÓN ══ --}}
+            <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
+                <div class="sec-title"><i class="fas fa-map-marker-alt"></i> Dirección y Ocupación</div>
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="departamento">
+                            Departamento <span class="lbl-optional">(Opcional)</span>
+                        </label>
+                        <div class="field-wrap">
+                            <i class="fas fa-map field-icon" style="z-index:10;"></i>
+                            <select id="departamento" name="departamento"
+                                    class="form-select {{ $errors->has('departamento') ? 'field-error' : '' }}">
+                                <option value="">— Seleccionar —</option>
+                                <option value="El Paraíso"        {{ old('departamento')=='El Paraíso'        ? 'selected' : '' }}>El Paraíso</option>
+                                <option value="Francisco Morazán" {{ old('departamento')=='Francisco Morazán' ? 'selected' : '' }}>Francisco Morazán</option>
+                                <option value="Choluteca"         {{ old('departamento')=='Choluteca'         ? 'selected' : '' }}>Choluteca</option>
+                                <option value="Olancho"           {{ old('departamento')=='Olancho'           ? 'selected' : '' }}>Olancho</option>
+                                <option value="Valle"             {{ old('departamento')=='Valle'             ? 'selected' : '' }}>Valle</option>
+                                <option value="Otro"              {{ old('departamento')=='Otro'              ? 'selected' : '' }}>Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="municipio">
+                            Municipio / Ciudad <span class="lbl-optional">(Opcional)</span>
+                        </label>
+                        <div class="field-wrap">
+                            <i class="fas fa-city field-icon"></i>
+                            <input type="text" id="municipio" name="municipio"
+                                   class="form-control {{ $errors->has('municipio') ? 'field-error' : '' }}"
+                                   value="{{ old('municipio') }}"
+                                   placeholder="Ej: Danlí" maxlength="80">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="ocupacion">
+                            Ocupación / Profesión <span class="lbl-optional">(Opcional)</span>
+                        </label>
+                        <div class="field-wrap">
+                            <i class="fas fa-briefcase field-icon"></i>
+                            <input type="text" id="ocupacion" name="ocupacion"
+                                   class="form-control {{ $errors->has('ocupacion') ? 'field-error' : '' }}"
+                                   value="{{ old('ocupacion') }}"
+                                   placeholder="Ej: Docente, Comerciante..." maxlength="80">
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label" for="direccion">
+                            Dirección Exacta <span class="lbl-optional">(Opcional)</span>
+                        </label>
+                        <div class="field-wrap">
+                            <i class="fas fa-map-marker-alt field-icon field-icon-ta"></i>
+                            <textarea id="direccion" name="direccion" rows="2" maxlength="255"
+                                      class="form-control {{ $errors->has('direccion') ? 'field-error' : '' }}"
+                                      placeholder="Barrio, colonia, calle, número de casa...">{{ old('direccion') }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="lugar_trabajo">
+                            Lugar de Trabajo <span class="lbl-optional">(Opcional)</span>
+                        </label>
+                        <div class="field-wrap">
+                            <i class="fas fa-building field-icon"></i>
+                            <input type="text" id="lugar_trabajo" name="lugar_trabajo"
+                                   class="form-control {{ $errors->has('lugar_trabajo') ? 'field-error' : '' }}"
+                                   value="{{ old('lugar_trabajo') }}"
+                                   placeholder="Nombre de la empresa" maxlength="100">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ══ SECCIÓN 5: OBSERVACIONES ══ --}}
+            <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
+                <div class="sec-title"><i class="fas fa-clipboard-list"></i> Observaciones</div>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label" for="observaciones">
+                            Notas adicionales <span class="lbl-optional">(Opcional)</span>
+                            <span id="char-obs" style="font-size:.65rem;color:#94a3b8;margin-left:auto;">0/300</span>
+                        </label>
+                        <div class="field-wrap">
+                            <i class="fas fa-sticky-note field-icon field-icon-ta"></i>
+                            <textarea id="observaciones" name="observaciones" rows="3" maxlength="300"
+                                      class="form-control {{ $errors->has('observaciones') ? 'field-error' : '' }}"
+                                      placeholder="Cualquier información relevante sobre el padre/tutor...">{{ old('observaciones') }}</textarea>
+                        </div>
+                        @error('observaciones')
+                            <div class="field-msg err mt-1"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
                         @enderror
                     </div>
-
-                    <div class="field">
-                        <label>Teléfono Secundario</label>
-                        <div class="input-prefix">
-                            <span class="prefix-tag">+504</span>
-                            <input type="tel" name="telefono_secundario" value="{{ old('telefono_secundario') }}"
-                                   placeholder="9999-9999" maxlength="15">
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label>Teléfono Trabajo</label>
-                        <div class="input-prefix">
-                            <span class="prefix-tag">+504</span>
-                            <input type="tel" name="telefono_trabajo" value="{{ old('telefono_trabajo') }}"
-                                   placeholder="9999-9999" maxlength="15">
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label>Correo Electrónico</label>
-                        <input type="email" name="correo" value="{{ old('correo') }}"
-                               class="{{ $errors->has('correo') ? 'is-invalid' : '' }}"
-                               placeholder="ejemplo@correo.com" maxlength="100">
-                        @error('correo')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
                 </div>
             </div>
 
-            {{-- SECCIÓN 4: DIRECCIÓN Y OCUPACIÓN --}}
-            <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
-                <div class="section-title">
-                    <i class="fas fa-map-marker-alt" style="color:#4ec7d2;font-size:.88rem;"></i>
-                    Dirección y Ocupación
-                </div>
-
-                <div class="grid-2">
-                    <div class="field col-span-2">
-                        <label>Dirección</label>
-                        <textarea name="direccion" rows="2"
-                                  placeholder="Barrio, colonia, calle, número de casa..."
-                                  maxlength="255">{{ old('direccion') }}</textarea>
-                    </div>
-
-                    <div class="field">
-                        <label>Ocupación / Profesión</label>
-                        <input type="text" name="ocupacion" value="{{ old('ocupacion') }}"
-                               placeholder="Ej: Docente, Comerciante..." maxlength="100">
-                    </div>
-
-                    <div class="field">
-                        <label>Lugar de Trabajo</label>
-                        <input type="text" name="lugar_trabajo" value="{{ old('lugar_trabajo') }}"
-                               placeholder="Nombre de la empresa o institución" maxlength="100">
-                    </div>
-                </div>
-            </div>
-
-            {{-- SECCIÓN 5: OBSERVACIONES --}}
-            <div style="padding:1.4rem 1.7rem;border-bottom:1px solid #f0f4f9;">
-                <div class="section-title">
-                    <i class="fas fa-clipboard-list" style="color:#4ec7d2;font-size:.88rem;"></i>
-                    Observaciones
-                </div>
-                <div class="field">
-                    <label>Notas adicionales</label>
-                    <textarea name="observaciones" rows="3"
-                              placeholder="Cualquier información relevante sobre el padre/tutor..."
-                              maxlength="500">{{ old('observaciones') }}</textarea>
-                </div>
-            </div>
-
-            {{-- BOTONES --}}
+            {{-- Botones --}}
             <div style="display:flex;gap:.6rem;flex-wrap:wrap;
-                        padding:1.1rem 1.7rem;
-                        background:#f5f8fc;border-top:1px solid #e8edf4;
-                        border-radius:0 0 14px 14px;">
-                <button type="submit" class="btn-primary-custom">
-                    <i class="fas fa-check-circle"></i> Guardar Registro
+                        padding:1.1rem 1.7rem;background:#f5f8fc;
+                        border-top:1px solid #e8edf4;border-radius:0 0 14px 14px;">
+                <button type="submit" class="btn-submit flex-fill" id="btnSubmit">
+                    <i class="fas fa-save"></i> Guardar Registro
                 </button>
-                <button type="reset" class="btn-cancel-custom"
-                        onclick="document.getElementById('campo-parentesco-otro').style.display='none'">
+                <button type="reset" class="btn-cancel flex-fill" onclick="limpiarForm();">
                     <i class="fas fa-redo"></i> Limpiar
                 </button>
-                <a href="{{ route('padres.index') }}" class="btn-cancel-custom">
+                <a href="{{ route('padres.index') }}" class="btn-cancel flex-fill">
                     <i class="fas fa-times"></i> Cancelar
                 </a>
             </div>
@@ -509,30 +658,361 @@
 
 @push('scripts')
 <script>
-    // Preview foto
-    document.getElementById('fotoInput').addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = e => {
-            document.getElementById('avatarPreview').innerHTML =
-                `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-        };
-        reader.readAsDataURL(file);
-    });
+/* ═══════════════════════════════════════════════
+   UTILIDADES
+═══════════════════════════════════════════════ */
+function setMsg(id, tipo, texto) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.className = 'field-msg ' + tipo;
+    el.style.display = '';
+    el.innerHTML = texto;
+}
+function setOk(input)      { input.classList.remove('field-error'); input.classList.add('field-ok'); }
+function setErr(input)     { input.classList.remove('field-ok');    input.classList.add('field-error'); }
+function setNeutral(input) { input.classList.remove('field-error', 'field-ok'); }
 
-    // Mostrar/ocultar campo otro parentesco
-    function toggleOtro(valor) {
-        document.getElementById('campo-parentesco-otro').style.display =
-            valor === 'otro' ? 'block' : 'none';
+/* ═══════════════════════════════════════════════
+   SOLO LETRAS
+═══════════════════════════════════════════════ */
+function soloLetras(input) {
+    var val    = input.value;
+    var limpio = val.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g, '');
+    if (val !== limpio) input.value = limpio;
+
+    var msgId = 'msg-' + input.id;
+    if (!limpio.trim() && (input.id === 'nombre1' || input.id === 'apellido1')) {
+        setErr(input);
+        setMsg(msgId, 'err', '<i class="fas fa-exclamation-circle"></i> Este campo es obligatorio.');
+    } else if (limpio.trim()) {
+        setOk(input);
+        setMsg(msgId, 'hint', '<i class="fas fa-info-circle"></i> Solo letras y espacios');
+    } else {
+        setNeutral(input);
+        setMsg(msgId, 'hint', '<i class="fas fa-info-circle"></i> Solo letras y espacios');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   DNI — formatea automáticamente
+═══════════════════════════════════════════════ */
+function formatearDNI(input) {
+    var digits    = input.value.replace(/\D/g, '').substring(0, 13);
+    var formatted = digits;
+    if (digits.length > 8)      formatted = digits.substring(0,4) + '-' + digits.substring(4,8) + '-' + digits.substring(8);
+    else if (digits.length > 4) formatted = digits.substring(0,4) + '-' + digits.substring(4);
+    input.value = formatted;
+
+    if (!formatted) {
+        setErr(input);
+        setMsg('msg-dni', 'err', '<i class="fas fa-exclamation-circle"></i> El DNI es obligatorio.');
+    } else if (/^\d{4}-\d{4}-\d{5}$/.test(formatted)) {
+        setOk(input);
+        setMsg('msg-dni', 'ok', '<i class="fas fa-check-circle"></i> DNI válido');
+    } else {
+        setErr(input);
+        setMsg('msg-dni', 'err', '<i class="fas fa-exclamation-circle"></i> Formato incompleto — debe ser 0801-1990-12345');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   TELÉFONO — formatea automáticamente
+═══════════════════════════════════════════════ */
+function formatearTelefono(input, wrapId, msgId) {
+    var digits = input.value.replace(/\D/g, '').substring(0, 8);
+    input.value = digits.length > 4 ? digits.substring(0,4) + '-' + digits.substring(4) : digits;
+
+    var wrap = document.getElementById(wrapId);
+    if (!digits) {
+        if (wrap) { wrap.classList.remove('field-error','field-ok'); }
+        setMsg(msgId, 'hint', '<i class="fas fa-info-circle"></i> Formato: 9999-9999');
+        return;
+    }
+    if (/^\d{4}-\d{4}$/.test(input.value)) {
+        if (wrap) { wrap.classList.remove('field-error'); wrap.classList.add('field-ok'); }
+        setMsg(msgId, 'ok', '<i class="fas fa-check-circle"></i> Teléfono válido');
+    } else {
+        if (wrap) { wrap.classList.remove('field-ok'); wrap.classList.add('field-error'); }
+        setMsg(msgId, 'err', '<i class="fas fa-exclamation-circle"></i> Formato incompleto — debe ser 9999-9999');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   EMAIL
+═══════════════════════════════════════════════ */
+function validarEmail(input) {
+    var val = input.value.trim();
+    if (!val) {
+        setNeutral(input);
+        setMsg('msg-correo', 'hint', '<i class="fas fa-info-circle"></i> Ingresa un correo válido');
+        return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+        setErr(input);
+        setMsg('msg-correo', 'err', '<i class="fas fa-exclamation-circle"></i> El correo electrónico no es válido.');
+    } else {
+        setOk(input);
+        setMsg('msg-correo', 'ok', '<i class="fas fa-check-circle"></i> Correo válido');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   FECHA NACIMIENTO — entre 18 y 80 años
+═══════════════════════════════════════════════ */
+function validarFechaPadre(input) {
+    if (!input.value) {
+        setErr(input);
+        setMsg('msg-fecha_nacimiento', 'err', '<i class="fas fa-exclamation-circle"></i> La fecha de nacimiento es obligatoria.');
+        return;
+    }
+    var edad = (new Date() - new Date(input.value)) / (1000*60*60*24*365.25);
+    if (edad < 18 || edad > 80) {
+        setErr(input);
+        setMsg('msg-fecha_nacimiento', 'err', '<i class="fas fa-exclamation-circle"></i> El padre/tutor debe tener entre 18 y 80 años.');
+    } else {
+        setOk(input);
+        setMsg('msg-fecha_nacimiento', 'ok', '<i class="fas fa-check-circle"></i> Fecha válida');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   SELECTS
+═══════════════════════════════════════════════ */
+function validarSelectField(input, msgId, label) {
+    if (!input.value) {
+        setErr(input);
+        setMsg(msgId, 'err', '<i class="fas fa-exclamation-circle"></i> ' + label + ' es obligatorio.');
+    } else {
+        setOk(input);
+        setMsg(msgId, 'ok', '<i class="fas fa-check-circle"></i> Seleccionado');
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   FOTO — preview y validación
+═══════════════════════════════════════════════ */
+document.getElementById('fotoInput').addEventListener('change', function() {
+    var file = this.files[0];
+    var msgEl = document.getElementById('msg-foto');
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+        msgEl.style.display = 'flex';
+        msgEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> La foto no puede superar 2 MB.';
+        this.value = '';
+        return;
+    }
+    msgEl.style.display = 'none';
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('avatarPreview').innerHTML =
+            '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    };
+    reader.readAsDataURL(file);
+});
+
+/* ═══════════════════════════════════════════════
+   LIMPIAR FORM
+═══════════════════════════════════════════════ */
+function limpiarForm() {
+    document.getElementById('avatarPreview').innerHTML =
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="color:#bfd9ea;width:42px;height:42px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+    document.getElementById('wrap-otro-relacion').style.display = 'none';
+    document.getElementById('relacion_otro').value = '';
+    document.querySelectorAll('.field-error,.field-ok').forEach(function(el) {
+        el.classList.remove('field-error','field-ok');
+    });
+    document.querySelectorAll('.field-msg').forEach(function(el) {
+        el.className = 'field-msg hint';
+        el.style.display = '';
+    });
+    document.getElementById('char-obs').textContent = '0/300';
+}
+
+/* ═══════════════════════════════════════════════
+   VALIDACIÓN AL ENVIAR
+═══════════════════════════════════════════════ */
+document.getElementById('frmPadre').addEventListener('submit', function(e) {
+    var errores = [];
+
+    // Primer nombre
+    var n1 = document.getElementById('nombre1');
+    if (!n1.value.trim()) {
+        setErr(n1); setMsg('msg-nombre1','err','<i class="fas fa-exclamation-circle"></i> El primer nombre es obligatorio.');
+        errores.push('El primer nombre es obligatorio.');
+    } else if (/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g.test(n1.value)) {
+        errores.push('El primer nombre solo puede contener letras.');
     }
 
-    // Si hay old('parentesco') === 'otro', mostrar el campo al cargar
-    document.addEventListener('DOMContentLoaded', function () {
-        const checked = document.querySelector('input[name="parentesco"]:checked');
-        if (checked && checked.value === 'otro') {
-            document.getElementById('campo-parentesco-otro').style.display = 'block';
+    // Primer apellido
+    var a1 = document.getElementById('apellido1');
+    if (!a1.value.trim()) {
+        setErr(a1); setMsg('msg-apellido1','err','<i class="fas fa-exclamation-circle"></i> El primer apellido es obligatorio.');
+        errores.push('El primer apellido es obligatorio.');
+    } else if (/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g.test(a1.value)) {
+        errores.push('El primer apellido solo puede contener letras.');
+    }
+
+    // DNI
+    var dni = document.getElementById('dni');
+    if (!dni.value.trim()) {
+        setErr(dni); setMsg('msg-dni','err','<i class="fas fa-exclamation-circle"></i> El DNI es obligatorio.');
+        errores.push('El DNI es obligatorio.');
+    } else if (!/^\d{4}-\d{4}-\d{5}$/.test(dni.value.trim())) {
+        setErr(dni); setMsg('msg-dni','err','<i class="fas fa-exclamation-circle"></i> El DNI debe tener el formato 0801-1990-12345.');
+        errores.push('El formato del DNI no es válido.');
+    }
+
+    // Fecha de nacimiento
+    var fecha = document.getElementById('fecha_nacimiento');
+    if (!fecha.value) {
+        setErr(fecha); setMsg('msg-fecha_nacimiento','err','<i class="fas fa-exclamation-circle"></i> La fecha de nacimiento es obligatoria.');
+        errores.push('La fecha de nacimiento es obligatoria.');
+    } else {
+        var edad = (new Date() - new Date(fecha.value)) / (1000*60*60*24*365.25);
+        if (edad < 18 || edad > 80) {
+            setErr(fecha); setMsg('msg-fecha_nacimiento','err','<i class="fas fa-exclamation-circle"></i> El padre/tutor debe tener entre 18 y 80 años.');
+            errores.push('La edad del padre/tutor debe estar entre 18 y 80 años.');
         }
+    }
+
+    // Género
+    var genero = document.getElementById('genero');
+    if (!genero.value) {
+        setErr(genero); setMsg('msg-genero','err','<i class="fas fa-exclamation-circle"></i> El género es obligatorio.');
+        errores.push('El género es obligatorio.');
+    }
+
+    // Relación
+    var relacionSeleccionada = document.querySelector('input[name="relacion"]:checked');
+    var msgRelacion = document.getElementById('msg-relacion');
+    var grid = document.getElementById('relationGrid');
+    if (!relacionSeleccionada) {
+        if (msgRelacion) { msgRelacion.style.display = 'flex'; }
+        if (grid) grid.classList.add('has-error');
+        errores.push('Debes seleccionar la relación con el estudiante.');
+    } else {
+        if (msgRelacion) { msgRelacion.style.display = 'none'; }
+        if (grid) grid.classList.remove('has-error');
+
+        // Si seleccionó "Otro", verificar que especificó la relación
+        if (relacionSeleccionada.value === 'otro') {
+            var otroInput = document.getElementById('relacion_otro');
+            if (!otroInput.value.trim()) {
+                setErr(otroInput);
+                setMsg('msg-relacion_otro', 'err', '<i class="fas fa-exclamation-circle"></i> Debes especificar la relación.');
+                errores.push('Debes especificar la relación cuando seleccionas "Otro".');
+            } else if (/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g.test(otroInput.value)) {
+                setErr(otroInput);
+                setMsg('msg-relacion_otro', 'err', '<i class="fas fa-exclamation-circle"></i> Solo puede contener letras y espacios.');
+                errores.push('La relación especificada solo puede contener letras.');
+            }
+        }
+    }
+
+    // Teléfono principal
+    var tel = document.getElementById('telefono');
+    if (!tel.value.trim()) {
+        var wrapTel = document.getElementById('wrap-telefono');
+        if (wrapTel) wrapTel.classList.add('field-error');
+        setMsg('msg-telefono','err','<i class="fas fa-exclamation-circle"></i> El teléfono principal es obligatorio.');
+        errores.push('El teléfono principal es obligatorio.');
+    } else if (!/^\d{4}-\d{4}$/.test(tel.value.trim())) {
+        var wrapTel2 = document.getElementById('wrap-telefono');
+        if (wrapTel2) wrapTel2.classList.add('field-error');
+        setMsg('msg-telefono','err','<i class="fas fa-exclamation-circle"></i> El teléfono debe tener el formato 9999-9999.');
+        errores.push('El formato del teléfono no es válido.');
+    }
+
+    // Teléfono alternativo (si fue llenado)
+    var telAlt = document.getElementById('telefono_alt');
+    if (telAlt.value.trim() && !/^\d{4}-\d{4}$/.test(telAlt.value.trim())) {
+        setMsg('msg-telefono_alt','err','<i class="fas fa-exclamation-circle"></i> El teléfono alternativo debe tener el formato 9999-9999.');
+        errores.push('El formato del teléfono alternativo no es válido.');
+    }
+
+    // Correo (si fue llenado)
+    var correo = document.getElementById('correo');
+    if (correo.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.value.trim())) {
+        setErr(correo); setMsg('msg-correo','err','<i class="fas fa-exclamation-circle"></i> El correo electrónico no es válido.');
+        errores.push('El correo electrónico no es válido.');
+    }
+
+    if (errores.length > 0) {
+        e.preventDefault();
+        var box = document.querySelector('.frm-alert-errors');
+        if (!box) {
+            box = document.createElement('div');
+            box.className = 'frm-alert-errors';
+            document.getElementById('frmPadre').before(box);
+        }
+        box.innerHTML = '<div class="frm-alert-errors-title"><i class="fas fa-exclamation-circle"></i> Por favor corrige los siguientes errores:</div><ul>' +
+            errores.map(function(err){ return '<li>' + err + '</li>'; }).join('') + '</ul>';
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+        document.getElementById('btnSubmit').disabled = true;
+        document.getElementById('btnSubmit').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    }
+});
+
+/* ═══════════════════════════════════════════════
+   CONTADOR + INICIALIZAR old()
+═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   RELACIÓN — mostrar/ocultar campo "Otro"
+═══════════════════════════════════════════════ */
+function toggleOtroRelacion() {
+    var wrap = document.getElementById('wrap-otro-relacion');
+    var input = document.getElementById('relacion_otro');
+    var rel = document.querySelector('input[name="relacion"]:checked');
+    if (rel && rel.value === 'otro') {
+        wrap.style.display = 'block';
+        input.focus();
+    } else {
+        wrap.style.display = 'none';
+        input.value = '';
+        input.classList.remove('field-error','field-ok');
+    }
+}
+
+// También aplicar toggle a padre y madre para ocultar el campo
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('input[name="relacion"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            toggleOtroRelacion();
+            // limpiar error de relación al seleccionar
+            var msgRel = document.getElementById('msg-relacion');
+            var grid   = document.getElementById('relationGrid');
+            if (msgRel) msgRel.style.display = 'none';
+            if (grid)   grid.classList.remove('has-error');
+        });
     });
+    var obsEl  = document.getElementById('observaciones');
+    var charEl = document.getElementById('char-obs');
+    if (obsEl && charEl) {
+        obsEl.addEventListener('input', function() {
+            var len = this.value.length;
+            charEl.textContent = len + '/300';
+            charEl.style.color = len > 270 ? '#ef4444' : '#94a3b8';
+        });
+        if (obsEl.value) charEl.textContent = obsEl.value.length + '/300';
+    }
+
+    // Inicializar old()
+    ['nombre1','nombre2','apellido1','apellido2'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && el.value) soloLetras(el);
+    });
+    var dniEl  = document.getElementById('dni');
+    var fechaEl= document.getElementById('fecha_nacimiento');
+    var telEl  = document.getElementById('telefono');
+    var telAlt = document.getElementById('telefono_alt');
+    var correoEl = document.getElementById('correo');
+    if (dniEl    && dniEl.value)    formatearDNI(dniEl);
+    if (fechaEl  && fechaEl.value)  validarFechaPadre(fechaEl);
+    if (telEl    && telEl.value)    formatearTelefono(telEl, 'wrap-telefono', 'msg-telefono');
+    if (telAlt   && telAlt.value)   formatearTelefono(telAlt, 'wrap-telefono_alt', 'msg-telefono_alt');
+    if (correoEl && correoEl.value) validarEmail(correoEl);
+});
 </script>
 @endpush

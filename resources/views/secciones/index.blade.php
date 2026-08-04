@@ -4,199 +4,163 @@
 @section('page-title', 'Gestión de Inscripciones')
 
 @section('topbar-actions')
-    <button type="button" class="sec-btn-new"
+    <button type="button" class="sec-topbar-btn"
             data-bs-toggle="modal" data-bs-target="#nuevaInscripcionModal">
-        <i class="fas fa-plus"></i> Nueva Asignación
+        <i class="fas fa-plus"></i>
+        <span class="sec-btn-text">Nueva Asignación</span>
     </button>
 @endsection
 
 @push('styles')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    .sec-wrap { font-family: 'Inter', sans-serif; }
-
-    /* Topbar */
-    .sec-btn-new {
-        background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%);
-        color: white; padding: .5rem 1.2rem; border-radius: 8px; font-weight: 600;
-        display: inline-flex; align-items: center; gap: .5rem; border: none;
-        box-shadow: 0 2px 8px rgba(78,199,210,.3); font-size: .9rem; cursor: pointer; transition: all .2s;
+    .sec-topbar-btn {
+        display: inline-flex; align-items: center; gap: .45rem;
+        background: linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
+        color: white; padding: .5rem .9rem; border-radius: 8px;
+        font-weight: 600; font-size: .83rem; border: none; cursor: pointer;
+        box-shadow: 0 2px 8px rgba(78,199,210,0.3); white-space: nowrap; transition: opacity .15s;
     }
-    .sec-btn-new:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(78,199,210,.45); }
+    .sec-topbar-btn:hover { opacity: .88; color: white; }
+    @media(max-width:600px) {
+        .sec-btn-text { display: none; }
+        .sec-topbar-btn { padding: .5rem .65rem; }
+    }
+
+    :root {
+        --blue-dark: #003b73; --blue-mid: #00508f;
+        --teal: #4ec7d2; --teal-light: rgba(78,199,210,0.12);
+        --border: #e8edf4; --surface: #f5f8fc;
+        --text-main: #0d2137; --text-muted: #6b7a90;
+        --green: #10b981; --amber: #f59e0b; --red: #ef4444;
+        --radius-lg: 14px; --radius-sm: 7px;
+        --shadow-sm: 0 1px 4px rgba(0,59,115,0.07);
+        --shadow-md: 0 4px 16px rgba(0,59,115,0.10);
+    }
 
     /* Stats */
-    .sec-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.25rem; }
-    @media(max-width:768px){ .sec-stats { grid-template-columns: 1fr; } }
+    .sec-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    @media(max-width:768px){ .sec-stats { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:480px){ .sec-stats { grid-template-columns: 1fr; } }
 
     .sec-stat {
-        background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
-        padding: 1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,.05);
+        background: white; border-radius: var(--radius-lg); border: 1px solid var(--border);
+        padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem;
+        box-shadow: var(--shadow-sm); transition: transform .2s, box-shadow .2s;
+        position: relative; overflow: hidden;
     }
-    .sec-stat-icon { width: 46px; height: 46px; border-radius: 11px; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center; }
-    .sec-stat-icon i { font-size: 1.15rem; color: #fff; }
-    .sec-stat-lbl { font-size: .7rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .05em; color: #94a3b8; margin-bottom: .15rem; }
-    .sec-stat-num { font-size: 1.6rem; font-weight: 700; color: #0f172a; line-height: 1; }
+    .sec-stat::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 4px 0 0 4px; }
+    .ss-total::before { background: var(--teal); }
+    .ss-con::before   { background: var(--green); }
+    .ss-sin::before   { background: var(--amber); }
+    .sec-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
-    /* Filtros card */
-    .sec-filter-card {
-        background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 3px rgba(0,0,0,.05); padding: 1rem 1.25rem; margin-bottom: 1.25rem;
-    }
-    .sec-input, .sec-select {
-        border: 2px solid #bfd9ea; border-radius: 8px; padding: .4rem .8rem;
-        font-size: .88rem; color: #1e293b; background: white; transition: border-color .2s;
-        font-family: 'Inter', sans-serif; width: 100%;
-    }
-    .sec-input:focus, .sec-select:focus { border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.12); outline: none; }
-    .sec-filter-label { font-size: .72rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .5px; color: #003b73; margin-bottom: .35rem; display: block; }
-    .sec-btn-filter {
-        background: linear-gradient(135deg, #4ec7d2, #00508f); color: white;
-        border: none; border-radius: 8px; padding: .45rem 1rem; font-weight: 600;
-        font-size: .88rem; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem;
-        white-space: nowrap; transition: opacity .15s; width: 100%;
-        justify-content: center;
-    }
+    .sec-stat-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.15rem; }
+    .ss-total .sec-stat-icon { background: var(--teal-light); color: var(--teal); }
+    .ss-con   .sec-stat-icon { background: rgba(16,185,129,.12); color: var(--green); }
+    .ss-sin   .sec-stat-icon { background: rgba(245,158,11,.12); color: var(--amber); }
+
+    .sec-stat-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: .2rem; }
+    .sec-stat-num { font-size: 1.75rem; font-weight: 800; color: var(--blue-dark); line-height: 1; margin-bottom: .1rem; }
+    .sec-stat-sub { font-size: .73rem; color: var(--text-muted); }
+
+    /* Filtros */
+    .sec-filter-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .9rem 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
+    .sec-filter-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--blue-dark); margin-bottom: .35rem; display: block; }
+    .sec-input, .sec-select { width: 100%; border: 2px solid #bfd9ea; border-radius: 8px; padding: .45rem .8rem; font-size: .88rem; color: var(--text-main); background: white; font-family: inherit; outline: none; transition: border-color .2s; }
+    .sec-input:focus, .sec-select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(78,199,210,.12); }
+    .sec-btn-filter { background: linear-gradient(135deg, var(--teal), var(--blue-mid)); color: white; border: none; border-radius: 8px; padding: .47rem 1rem; font-weight: 600; font-size: .88rem; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; font-family: inherit; transition: opacity .15s; }
     .sec-btn-filter:hover { opacity: .88; }
-    .sec-btn-clear {
-        border: 1.5px solid #e2e8f0; color: #6b7280; background: white;
-        border-radius: 8px; padding: .35rem .9rem; font-size: .82rem; font-weight: 500;
-        text-decoration: none; display: inline-flex; align-items: center; gap: .4rem;
-    }
-    .sec-btn-clear:hover { border-color: #4ec7d2; color: #00508f; }
+    .sec-btn-clear { border: 1.5px solid var(--border); color: var(--text-muted); background: white; border-radius: 8px; padding: .4rem .9rem; font-size: .82rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; width: 100%; justify-content: center; transition: all .15s; }
+    .sec-btn-clear:hover { border-color: var(--teal); color: var(--blue-mid); }
 
-    /* Lista */
-    .sec-card {
-        background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 3px rgba(0,0,0,.05); margin-bottom: .6rem;
-        transition: transform .18s, box-shadow .18s;
-    }
-    .sec-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,59,115,.1); }
-    .sec-card-body { padding: .85rem 1.25rem; }
+    /* Cards lista */
+    .sec-card { background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: .6rem; transition: transform .18s, box-shadow .18s; }
+    .sec-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .sec-card-body { padding: .9rem 1.25rem; }
 
-    .sec-avatar {
-        width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
-        background: linear-gradient(135deg, #00508f, #003b73);
-        display: flex; align-items: center; justify-content: center;
-        border: 2px solid #4ec7d2; font-weight: 700; color: white; font-size: .95rem;
-    }
-    .sec-name { font-weight: 600; color: #003b73; font-size: .9rem; }
-    .sec-sub  { font-size: .73rem; color: #94a3b8; margin-top: .1rem; }
+    .sec-avatar { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; background: linear-gradient(135deg, var(--teal), var(--blue-mid)); display: flex; align-items: center; justify-content: center; border: 2px solid rgba(78,199,210,.3); font-weight: 700; color: white; font-size: .95rem; }
+    .sec-name { font-weight: 600; color: var(--blue-dark); font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sec-sub  { font-size: .73rem; color: var(--text-muted); margin-top: .1rem; }
+    .sec-date { font-size: .8rem; color: var(--blue-dark); font-weight: 500; }
+    .sec-code { font-size: .72rem; color: var(--text-muted); margin-top: .1rem; }
 
-    .sec-badge-sec  { background: rgba(78,199,210,.12); color: #00508f; border: 1px solid #4ec7d2;
-        border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
-        display: inline-flex; align-items: center; gap: .3rem; }
-    .sec-badge-pend { background: rgba(255,193,7,.12); color: #b45309; border: 1px solid #ffc107;
-        border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
-        display: inline-flex; align-items: center; gap: .3rem; }
-    .sec-badge-ok   { background: rgba(16,185,129,.1); color: #065f46; border: 1px solid #6ee7b7;
-        border-radius: 20px; padding: .28rem .7rem; font-size: .75rem; font-weight: 600;
-        display: inline-flex; align-items: center; gap: .3rem; }
+    .bpill { display: inline-flex; align-items: center; gap: .3rem; padding: .25rem .7rem; border-radius: 999px; font-size: .73rem; font-weight: 600; }
+    .b-teal  { background: var(--teal-light); color: var(--blue-mid); border: 1px solid rgba(78,199,210,.4); }
+    .b-amber { background: rgba(245,158,11,.1); color: #92400e; border: 1px solid rgba(245,158,11,.3); }
+    .b-green { background: rgba(16,185,129,.1); color: #065f46; border: 1px solid rgba(16,185,129,.35); }
 
-    .sec-date  { font-size: .8rem; color: #003b73; }
-    .sec-code  { font-size: .72rem; color: #94a3b8; margin-top: .1rem; }
-
-    .sec-btn-assign {
-        border: 1.5px solid #4ec7d2; color: #00508f; background: white;
-        border-radius: 7px; padding: .32rem .7rem; font-size: .8rem;
-        cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; transition: all .15s;
-    }
-    .sec-btn-assign:hover { background: #00508f; color: white; border-color: #00508f; }
-    .sec-btn-assign.assigned { border-color: #00508f; }
+    .btn-asignar { width: 32px; height: 32px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--teal); color: var(--blue-mid); background: white; cursor: pointer; font-size: .8rem; transition: all .15s; }
+    .btn-asignar:hover { background: var(--blue-mid); color: white; border-color: var(--blue-mid); transform: translateY(-1px); }
+    .btn-asignar.asignado { border-color: var(--blue-mid); }
 
     /* Empty */
-    .sec-empty { text-align: center; padding: 3.5rem 1rem; }
-    .sec-empty i { font-size: 3rem; color: #c3d9ee; margin-bottom: 1rem; display: block; }
-    .sec-empty h5 { color: #003b73; margin-bottom: .5rem; }
-    .sec-empty p { color: #6b7280; font-size: .9rem; }
+    .sec-empty { text-align: center; padding: 4rem 1rem; }
+    .sec-empty i  { font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: 1rem; }
+    .sec-empty h6 { color: var(--blue-dark); font-weight: 600; margin-bottom: .4rem; }
+    .sec-empty p  { color: var(--text-muted); font-size: .85rem; margin: 0; }
 
     /* Paginación */
-    .sec-pag-footer {
-        padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
-        display: flex; align-items: center; justify-content: space-between;
-        background: #fafafa; flex-wrap: wrap; gap: .5rem;
-        border-radius: 0 0 12px 12px;
-    }
-    .sec-pag-info { font-size: .78rem; color: #94a3b8; }
-    .pagination { margin: 0; gap: 3px; display: flex; }
-    .pagination .page-link {
-        border-radius: 7px; padding: .3rem .65rem; font-size: .78rem; font-weight: 500;
-        border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
-    }
-    .pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
-    .pagination .page-item.active .page-link {
-        background: linear-gradient(135deg, #4ec7d2, #00508f);
-        border-color: #4ec7d2; color: #fff;
-    }
+    .sec-pag-footer { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .85rem 1.25rem; margin-top: .5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+    .sec-pag-info { font-size: .78rem; color: var(--text-muted); }
+    .pagination { margin: 0; }
+    .pagination .page-link { border-radius: 7px; margin: 0 2px; border: 1.5px solid var(--border); color: var(--blue-mid); padding: .28rem .6rem; font-size: .82rem; transition: all .15s; }
+    .pagination .page-link:hover { background: var(--teal-light); border-color: var(--teal); }
+    .pagination .page-item.active .page-link { background: linear-gradient(135deg, var(--teal), var(--blue-mid)); border-color: var(--teal); color: white; }
     .pagination .page-item.disabled .page-link { opacity: .45; }
 
     /* Modales */
-    .sec-modal-header {
-        background: linear-gradient(135deg, #4ec7d2, #00508f);
-        border-radius: 12px 12px 0 0; border: none; padding: 1rem 1.5rem;
-    }
-    .sec-modal-label { font-size: .78rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: .5px; color: #003b73; margin-bottom: .4rem; display: block; }
-    .sec-modal-input, .sec-modal-select {
-        width: 100%; border: 2px solid #bfd9ea; border-radius: 8px;
-        padding: .45rem .85rem; font-size: .92rem; color: #1e293b;
-        background: white; font-family: 'Inter', sans-serif;
-    }
-    .sec-modal-input:focus, .sec-modal-select:focus {
-        border-color: #4ec7d2; box-shadow: 0 0 0 3px rgba(78,199,210,.15); outline: none;
-    }
-    .sec-modal-input:disabled { background: #f8fafc; }
+    .sec-modal-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid)); border-radius: 12px 12px 0 0; border: none; padding: 1rem 1.5rem; }
+    .sec-modal-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--blue-dark); margin-bottom: .4rem; display: block; }
+    .sec-modal-input, .sec-modal-select { width: 100%; border: 2px solid #bfd9ea; border-radius: 8px; padding: .48rem .85rem; font-size: .92rem; color: var(--text-main); background: white; font-family: inherit; outline: none; transition: border-color .2s; }
+    .sec-modal-input:focus, .sec-modal-select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(78,199,210,.12); }
+    .sec-modal-input:disabled { background: var(--surface); }
+    .btn-modal-cancel { border: 1.5px solid var(--red); color: var(--red); background: white; border-radius: 8px; padding: .4rem 1.1rem; font-weight: 600; font-size: .82rem; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .btn-modal-cancel:hover { background: var(--red); color: white; }
+    .btn-modal-confirm { background: linear-gradient(135deg, var(--teal), var(--blue-mid)); color: white; border: none; border-radius: 8px; padding: .4rem 1.1rem; font-weight: 600; font-size: .82rem; cursor: pointer; font-family: inherit; transition: opacity .15s; }
+    .btn-modal-confirm:hover { opacity: .88; }
 </style>
 @endpush
 
 @section('content')
-<div class="sec-wrap container-fluid px-4">
+<div>
 
-    {{-- Error alert --}}
     @if(session('error'))
-        <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;color:#991b1b;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span>{{ session('error') }}</span>
-            <button type="button" onclick="this.parentElement.remove()"
-                    style="margin-left:auto;background:none;border:none;color:#991b1b;font-size:1.2rem;cursor:pointer;line-height:1;">&times;</button>
-        </div>
+    <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;color:#991b1b;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>{{ session('error') }}</span>
+        <button onclick="this.parentElement.remove()" style="margin-left:auto;background:none;border:none;color:#991b1b;font-size:1.2rem;cursor:pointer;">&times;</button>
+    </div>
     @endif
 
-    {{-- Stats --}}
+    {{-- ── STATS ── --}}
     <div class="sec-stats">
-        <div class="sec-stat">
-            <div class="sec-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
-                <i class="fas fa-clipboard-check"></i>
-            </div>
+        <div class="sec-stat ss-total">
+            <div class="sec-stat-icon"><i class="fas fa-clipboard-check"></i></div>
             <div>
-                <div class="sec-stat-lbl">Total Inscripciones</div>
+                <div class="sec-stat-lbl">Total</div>
                 <div class="sec-stat-num">{{ $inscripciones->total() }}</div>
+                <div class="sec-stat-sub">Inscripciones</div>
             </div>
         </div>
-        <div class="sec-stat">
-            <div class="sec-stat-icon" style="background:linear-gradient(135deg,#10b981,#059669);">
-                <i class="fas fa-check-circle"></i>
-            </div>
+        <div class="sec-stat ss-con">
+            <div class="sec-stat-icon"><i class="fas fa-check-circle"></i></div>
             <div>
                 <div class="sec-stat-lbl">Con Sección</div>
-                <div class="sec-stat-num" style="color:#059669;">{{ \App\Models\Matricula::whereNotNull('seccion_id')->count() }}</div>
+                <div class="sec-stat-num">{{ \App\Models\Matricula::whereNotNull('seccion_id')->count() }}</div>
+                <div class="sec-stat-sub">Asignadas</div>
             </div>
         </div>
-        <div class="sec-stat">
-            <div class="sec-stat-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);">
-                <i class="fas fa-clock"></i>
-            </div>
+        <div class="sec-stat ss-sin">
+            <div class="sec-stat-icon"><i class="fas fa-clock"></i></div>
             <div>
                 <div class="sec-stat-lbl">Sin Asignar</div>
-                <div class="sec-stat-num" style="color:#b45309;">{{ \App\Models\Matricula::whereNull('seccion_id')->count() }}</div>
+                <div class="sec-stat-num">{{ \App\Models\Matricula::whereNull('seccion_id')->count() }}</div>
+                <div class="sec-stat-sub">Pendientes</div>
             </div>
         </div>
     </div>
 
-    {{-- Filtros --}}
+    {{-- ── FILTROS ── --}}
     <div class="sec-filter-card">
         <form action="{{ request()->url() }}" method="GET">
             <div class="row g-2 align-items-end">
@@ -230,8 +194,8 @@
         </form>
     </div>
 
-    {{-- Lista --}}
-    <div class="sec-list-wrap">
+    {{-- ── LISTA ── --}}
+    <div>
         @forelse($inscripciones as $inscripcion)
             @php $estudiante = $inscripcion->estudiante; @endphp
             @if(!$estudiante) @continue @endif
@@ -240,58 +204,62 @@
                 <div class="sec-card-body">
                     <div class="row align-items-center g-2">
 
-                        {{-- Avatar + nombre --}}
                         <div class="col-lg-4">
-                            <div class="d-flex align-items-center gap-2">
+                            <div style="display:flex;align-items:center;gap:.75rem;">
                                 <div class="sec-avatar">
                                     {{ strtoupper(substr($estudiante->nombre1 ?? 'N', 0, 1) . substr($estudiante->apellido1 ?? 'A', 0, 1)) }}
                                 </div>
-                                <div class="overflow-hidden">
-                                    <div class="sec-name text-truncate">
+                                <div style="overflow:hidden;min-width:0;">
+                                    <div class="sec-name">
                                         {{ trim(($estudiante->nombre1 ?? '') . ' ' . ($estudiante->nombre2 ?? '') . ' ' . ($estudiante->apellido1 ?? '') . ' ' . ($estudiante->apellido2 ?? '')) }}
                                     </div>
                                     <div class="sec-sub">
-                                        <i class="fas fa-envelope me-1"></i>{{ $estudiante->email ?? 'Sin email' }}
+                                        <i class="fas fa-envelope" style="font-size:.65rem;"></i>
+                                        {{ $estudiante->email ?? 'Sin email' }}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Sección --}}
                         <div class="col-lg-3">
                             @if($inscripcion->seccion)
-                                <span class="sec-badge-sec">
-                                    <i class="fas fa-chalkboard"></i> {{ $inscripcion->seccion->nombre }}
+                                <span class="bpill b-teal">
+                                    <i class="fas fa-chalkboard" style="font-size:.65rem;"></i>
+                                    {{ $inscripcion->seccion->nombre }}
                                 </span>
                                 <div class="sec-sub mt-1">
-                                    <i class="fas fa-users me-1"></i>Cap: {{ $inscripcion->seccion->capacidad }}
+                                    <i class="fas fa-users" style="font-size:.65rem;"></i>
+                                    Cap: {{ $inscripcion->seccion->capacidad }}
                                 </div>
                             @else
-                                <span class="sec-badge-pend">
-                                    <i class="fas fa-exclamation-triangle"></i> Sin asignar
+                                <span class="bpill b-amber">
+                                    <i class="fas fa-exclamation-triangle" style="font-size:.65rem;"></i>
+                                    Sin asignar
                                 </span>
                             @endif
                         </div>
 
-                        {{-- Fecha / código --}}
                         <div class="col-lg-3">
                             <div class="sec-date">
-                                <i class="fas fa-calendar-alt text-muted me-1"></i>
+                                <i class="fas fa-calendar-alt" style="color:var(--text-muted);font-size:.75rem;margin-right:.3rem;"></i>
                                 {{ $inscripcion->fecha_matricula ? \Carbon\Carbon::parse($inscripcion->fecha_matricula)->format('d/m/Y') : '—' }}
                             </div>
                             <div class="sec-code">Código: {{ $inscripcion->codigo_matricula }}</div>
                         </div>
 
-                        {{-- Estado + botón --}}
                         <div class="col-lg-2">
-                            <div class="d-flex align-items-center justify-content-end gap-2">
+                            <div style="display:flex;align-items:center;justify-content:flex-end;gap:.5rem;">
                                 @if($inscripcion->seccion)
-                                    <span class="sec-badge-ok"><i class="fas fa-check-circle"></i> Asignada</span>
+                                    <span class="bpill b-green">
+                                        <i class="fas fa-check-circle" style="font-size:.65rem;"></i> Asignada
+                                    </span>
                                 @else
-                                    <span class="sec-badge-pend"><i class="fas fa-clock"></i> Pendiente</span>
+                                    <span class="bpill b-amber">
+                                        <i class="fas fa-clock" style="font-size:.65rem;"></i> Pendiente
+                                    </span>
                                 @endif
                                 <button type="button"
-                                        class="sec-btn-assign {{ $inscripcion->seccion ? 'assigned' : '' }}"
+                                        class="btn-asignar {{ $inscripcion->seccion ? 'asignado' : '' }}"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalAsignar{{ $inscripcion->id }}"
                                         title="{{ $inscripcion->seccion ? 'Cambiar sección' : 'Asignar sección' }}">
@@ -307,9 +275,9 @@
             {{-- Modal asignar sección --}}
             <div class="modal fade" id="modalAsignar{{ $inscripcion->id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 4px 20px rgba(0,0,0,.15);">
+                    <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 8px 30px rgba(0,0,0,.15);">
                         <div class="modal-header sec-modal-header">
-                            <h5 class="modal-title text-white fw-700">
+                            <h5 class="modal-title text-white fw-bold">
                                 <i class="fas fa-user-check me-2"></i>Asignar Sección
                             </h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -324,8 +292,10 @@
                                            value="{{ trim(($estudiante->nombre1 ?? '') . ' ' . ($estudiante->apellido1 ?? '')) }}"
                                            disabled>
                                 </div>
-                                <div class="mb-1">
-                                    <label class="sec-modal-label"><i class="fas fa-chalkboard me-1"></i> Sección <span style="color:#ef4444;">*</span></label>
+                                <div>
+                                    <label class="sec-modal-label">
+                                        <i class="fas fa-chalkboard me-1"></i> Sección <span style="color:var(--red);">*</span>
+                                    </label>
                                     <select name="seccion_id" class="sec-modal-select" required>
                                         <option value="">— Seleccione una sección —</option>
                                         @foreach($secciones as $s)
@@ -336,13 +306,11 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="modal-footer" style="border-top:1px solid #f1f5f9;padding:.85rem 1.5rem;justify-content:space-between;">
-                                <button type="button" class="btn btn-sm" data-bs-dismiss="modal"
-                                        style="border:2px solid #ef4444;color:#ef4444;background:white;border-radius:8px;padding:.4rem 1.1rem;font-weight:600;">
+                            <div class="modal-footer" style="border-top:1px solid var(--border);padding:.85rem 1.5rem;justify-content:space-between;">
+                                <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
                                     <i class="fas fa-times me-1"></i> Cancelar
                                 </button>
-                                <button type="submit" class="btn btn-sm"
-                                        style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border:none;border-radius:8px;padding:.4rem 1.1rem;font-weight:600;">
+                                <button type="submit" class="btn-modal-confirm">
                                     <i class="fas fa-check me-1"></i> Confirmar
                                 </button>
                             </div>
@@ -355,7 +323,7 @@
             <div class="sec-card">
                 <div class="sec-empty">
                     <i class="fas fa-clipboard-list"></i>
-                    <h5>No hay inscripciones registradas</h5>
+                    <h6>No hay inscripciones registradas</h6>
                     <p>
                         @if(request('buscar') || request('estado'))
                             No se encontraron resultados con los filtros aplicados.
@@ -367,11 +335,11 @@
             </div>
         @endforelse
 
-        {{-- Paginación --}}
         @if($inscripciones->hasPages())
-            <div class="sec-pag-footer" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-top:.5rem;">
+            <div class="sec-pag-footer">
                 <span class="sec-pag-info">
-                    Mostrando {{ $inscripciones->firstItem() }}–{{ $inscripciones->lastItem() }} de {{ $inscripciones->total() }} inscripciones
+                    Mostrando {{ $inscripciones->firstItem() }}–{{ $inscripciones->lastItem() }}
+                    de {{ $inscripciones->total() }} inscripciones
                 </span>
                 {{ $inscripciones->appends(request()->query())->links() }}
             </div>
@@ -383,9 +351,9 @@
 {{-- Modal nueva asignación --}}
 <div class="modal fade" id="nuevaInscripcionModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 4px 20px rgba(0,0,0,.15);">
+        <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 8px 30px rgba(0,0,0,.15);">
             <div class="modal-header sec-modal-header">
-                <h5 class="modal-title text-white fw-700">
+                <h5 class="modal-title text-white fw-bold">
                     <i class="fas fa-plus-circle me-2"></i>Nueva Asignación de Sección
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -394,7 +362,9 @@
                 @csrf
                 <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="sec-modal-label"><i class="fas fa-user me-1"></i> Alumno <span style="color:#ef4444;">*</span></label>
+                        <label class="sec-modal-label">
+                            <i class="fas fa-user me-1"></i> Alumno <span style="color:var(--red);">*</span>
+                        </label>
                         <select name="estudiante_id" class="sec-modal-select" required>
                             <option value="">— Seleccione un alumno —</option>
                             @foreach($alumnos as $alumno)
@@ -404,8 +374,10 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="mb-1">
-                        <label class="sec-modal-label"><i class="fas fa-chalkboard me-1"></i> Sección <span style="color:#ef4444;">*</span></label>
+                    <div>
+                        <label class="sec-modal-label">
+                            <i class="fas fa-chalkboard me-1"></i> Sección <span style="color:var(--red);">*</span>
+                        </label>
                         <select name="seccion_id" class="sec-modal-select" required>
                             <option value="">— Seleccione una sección —</option>
                             @foreach($secciones as $s)
@@ -414,13 +386,11 @@
                         </select>
                     </div>
                 </div>
-                <div class="modal-footer" style="border-top:1px solid #f1f5f9;padding:.85rem 1.5rem;justify-content:space-between;">
-                    <button type="button" class="btn btn-sm" data-bs-dismiss="modal"
-                            style="border:2px solid #ef4444;color:#ef4444;background:white;border-radius:8px;padding:.4rem 1.1rem;font-weight:600;">
+                <div class="modal-footer" style="border-top:1px solid var(--border);padding:.85rem 1.5rem;justify-content:space-between;">
+                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i> Cancelar
                     </button>
-                    <button type="submit" class="btn btn-sm"
-                            style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border:none;border-radius:8px;padding:.4rem 1.1rem;font-weight:600;">
+                    <button type="submit" class="btn-modal-confirm">
                         <i class="fas fa-check me-1"></i> Confirmar Asignación
                     </button>
                 </div>

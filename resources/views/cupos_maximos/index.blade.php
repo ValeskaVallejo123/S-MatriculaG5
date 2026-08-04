@@ -4,248 +4,278 @@
 @section('page-title', 'Cupos Máximos')
 
 @section('topbar-actions')
-    <a href="{{ route('superadmin.cupos_maximos.create') }}" class="adm-btn-solid">
-        <i class="fas fa-plus"></i> Nuevo Cupo
+    <a href="{{ route('superadmin.cupos_maximos.create') }}" class="cupo-topbar-btn">
+        <i class="fas fa-plus"></i>
+        <span class="cupo-btn-text">Nuevo Cupo</span>
     </a>
 @endsection
 
 @push('styles')
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+<style>
+    /* ── Botón topbar ── */
+    .cupo-topbar-btn {
+        display: inline-flex; align-items: center; gap: .45rem;
+        background: linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
+        color: white; padding: .5rem .9rem; border-radius: 8px;
+        text-decoration: none; font-weight: 600; font-size: .83rem;
+        box-shadow: 0 2px 8px rgba(78,199,210,0.3); white-space: nowrap;
+    }
+    .cupo-topbar-btn:hover { opacity: .88; color: white; }
+    @media(max-width:600px) {
+        .cupo-btn-text { display: none; }
+        .cupo-topbar-btn { padding: .5rem .65rem; }
+    }
 
-        .adm-wrap { font-family: 'Inter', sans-serif; }
+    /* ── Variables ── */
+    :root {
+        --blue-dark: #003b73; --blue-mid: #00508f;
+        --teal: #4ec7d2; --teal-light: rgba(78,199,210,0.12);
+        --border: #e8edf4; --surface: #f5f8fc;
+        --text-main: #0d2137; --text-muted: #6b7a90;
+        --green: #10b981; --amber: #f59e0b; --red: #ef4444;
+        --radius-lg: 14px; --radius-sm: 7px;
+        --shadow-sm: 0 1px 4px rgba(0,59,115,0.07);
+        --shadow-md: 0 4px 16px rgba(0,59,115,0.10);
+    }
 
-        .adm-btn-solid {
-            display: inline-flex; align-items: center; gap: .4rem;
-            padding: .42rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
-            background: linear-gradient(135deg, #4ec7d2, #00508f);
-            color: #fff; border: none; text-decoration: none; transition: opacity .15s;
-        }
-        .adm-btn-solid:hover { opacity: .88; color: #fff; }
+    /* ── Stats ── */
+    .cupo-stats {
+        display: grid; grid-template-columns: repeat(3,1fr);
+        gap: 1rem; margin-bottom: 1.5rem;
+    }
+    @media(max-width:768px){ .cupo-stats { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:480px){ .cupo-stats { grid-template-columns: 1fr; } }
 
-        /* Stats */
-        .adm-stats {
-            display: grid; grid-template-columns: repeat(3,1fr);
-            gap: 1rem; margin-bottom: 1.5rem;
-        }
-        @media(max-width:640px){ .adm-stats { grid-template-columns: 1fr; } }
+    .cupo-stat {
+        background: white; border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem;
+        box-shadow: var(--shadow-sm);
+        transition: transform .2s, box-shadow .2s;
+        position: relative; overflow: hidden;
+    }
+    .cupo-stat::before {
+        content: ''; position: absolute; top: 0; left: 0;
+        width: 4px; height: 100%; border-radius: 4px 0 0 4px;
+    }
+    .cs-total::before     { background: var(--teal); }
+    .cs-matutina::before  { background: var(--amber); }
+    .cs-vespertina::before{ background: #818cf8; }
+    .cupo-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
-        .adm-stat {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-            padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,.05);
-        }
-        .adm-stat-icon {
-            width: 44px; height: 44px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .adm-stat-icon i { font-size: 1.15rem; color: #fff; }
-        .adm-stat-lbl { font-size: .72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .15rem; }
-        .adm-stat-num { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
+    .cupo-stat-icon {
+        width: 46px; height: 46px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; font-size: 1.15rem;
+    }
+    .cs-total      .cupo-stat-icon { background: var(--teal-light);      color: var(--teal); }
+    .cs-matutina   .cupo-stat-icon { background: rgba(245,158,11,.12);    color: var(--amber); }
+    .cs-vespertina .cupo-stat-icon { background: rgba(129,140,248,.15);   color: #4f46e5; }
 
-        /* Toolbar */
-        .adm-toolbar {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-            padding: .85rem 1.25rem; margin-bottom: 1.25rem;
-            display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0,0,0,.05); gap: .75rem; flex-wrap: wrap;
-        }
-        .adm-search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 320px; }
-        .adm-search-icon { position: absolute; left: .65rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: .75rem; pointer-events: none; }
-        .adm-search-input {
-            width: 100%; padding: .35rem .75rem .35rem 2rem;
-            border: 1.5px solid #e2e8f0; border-radius: 7px;
-            font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none;
-            font-family: 'Inter', sans-serif;
-        }
-        .adm-search-input:focus { border-color: #4ec7d2; }
+    .cupo-stat-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: .2rem; }
+    .cupo-stat-num { font-size: 1.75rem; font-weight: 800; color: var(--blue-dark); line-height: 1; margin-bottom: .1rem; }
+    .cupo-stat-sub { font-size: .73rem; color: var(--text-muted); }
 
-        .adm-filters { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
-        .adm-filter-sel {
-            padding: .35rem .75rem; border: 1.5px solid #e2e8f0; border-radius: 7px;
-            font-size: .8rem; color: #0f172a; background: #f8fafc; outline: none; cursor: pointer;
-            font-family: 'Inter', sans-serif;
-        }
-        .adm-filter-sel:focus { border-color: #4ec7d2; }
+    /* ── Toolbar ── */
+    .cupo-toolbar {
+        background: white; border: 1px solid var(--border);
+        border-radius: var(--radius-lg); padding: .9rem 1.25rem;
+        margin-bottom: 1.25rem;
+        display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+        box-shadow: var(--shadow-sm);
+    }
+    .cupo-search-wrap { position: relative; flex: 1; min-width: 200px; }
+    .cupo-search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--blue-mid); font-size: .85rem; pointer-events: none; }
+    .cupo-search {
+        width: 100%; padding: .5rem 1rem .5rem 2.4rem;
+        border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+        font-size: .85rem; background: var(--surface); outline: none;
+        transition: border-color .2s, box-shadow .2s; font-family: inherit; color: var(--text-main);
+    }
+    .cupo-search:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(78,199,210,.15); background: white; }
 
-        .adm-btn-filter {
-            display: inline-flex; align-items: center; gap: .35rem;
-            padding: .35rem .9rem; border-radius: 7px; font-size: .8rem; font-weight: 600;
-            background: linear-gradient(135deg, #4ec7d2, #00508f); color: #fff;
-            border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity .15s;
-        }
-        .adm-btn-filter:hover { opacity: .88; }
-        .adm-btn-clear {
-            display: inline-flex; align-items: center; gap: .35rem;
-            padding: .35rem .9rem; border-radius: 7px; font-size: .8rem; font-weight: 600;
-            background: #fff; color: #64748b; border: 1.5px solid #e2e8f0;
-            text-decoration: none; font-family: 'Inter', sans-serif; transition: all .15s;
-        }
-        .adm-btn-clear:hover { border-color: #94a3b8; color: #334155; background: #f8fafc; }
+    .cupo-filter-sel {
+        padding: .45rem .75rem; border: 1.5px solid var(--border); border-radius: 7px;
+        font-size: .82rem; color: var(--text-main); background: var(--surface);
+        outline: none; cursor: pointer; font-family: inherit;
+    }
+    .cupo-filter-sel:focus { border-color: var(--teal); }
 
-        /* Card + Table */
-        .adm-card {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-            overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05);
-        }
-        .adm-card-head {
-            background: #003b73; padding: .85rem 1.25rem;
-            display: flex; align-items: center; gap: .6rem;
-        }
-        .adm-card-head i { color: #4ec7d2; font-size: 1rem; }
-        .adm-card-head span { color: #fff; font-weight: 700; font-size: .95rem; }
+    .cupo-btn-filter {
+        display: inline-flex; align-items: center; gap: .35rem;
+        padding: .45rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+        background: linear-gradient(135deg, var(--teal), var(--blue-mid));
+        color: white; border: none; cursor: pointer; font-family: inherit; transition: opacity .15s;
+    }
+    .cupo-btn-filter:hover { opacity: .88; }
+    .cupo-btn-clear {
+        display: inline-flex; align-items: center; gap: .35rem;
+        padding: .45rem 1rem; border-radius: 7px; font-size: .82rem; font-weight: 600;
+        background: white; color: var(--text-muted); border: 1.5px solid var(--border);
+        text-decoration: none; transition: all .15s;
+    }
+    .cupo-btn-clear:hover { border-color: var(--teal); color: var(--blue-mid); }
 
-        .adm-tbl { width: 100%; border-collapse: collapse; }
-        .adm-tbl thead th {
-            background: #f8fafc; padding: .6rem 1rem;
-            font-size: .7rem; font-weight: 700; letter-spacing: .07em;
-            text-transform: uppercase; color: #64748b;
-            border-bottom: 1.5px solid #e2e8f0; white-space: nowrap;
-        }
-        .adm-tbl thead th.tc { text-align: center; }
-        .adm-tbl tbody td {
-            padding: .65rem 1rem; border-bottom: 1px solid #f1f5f9;
-            font-size: .82rem; color: #334155; vertical-align: middle;
-        }
-        .adm-tbl tbody td.tc { text-align: center; }
-        .adm-tbl tbody tr:last-child td { border-bottom: none; }
-        .adm-tbl tbody tr:hover { background: #fafbfc; }
+    /* ── Tabla card ── */
+    .cupo-card {
+        background: white; border: 1px solid var(--border);
+        border-radius: var(--radius-lg); overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+    .cupo-card-head {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+        padding: .9rem 1.4rem; display: flex; align-items: center; gap: .6rem;
+    }
+    .cupo-card-head i    { color: var(--teal); font-size: 1rem; }
+    .cupo-card-head span { color: white; font-weight: 700; font-size: .95rem; }
 
-        .adm-num {
-            width: 28px; height: 28px; border-radius: 6px;
-            background: #f1f5f9; color: #64748b;
-            display: inline-flex; align-items: center; justify-content: center;
-            font-size: .75rem; font-weight: 700;
-        }
+    .cupo-tbl { width: 100%; border-collapse: collapse; }
+    .cupo-tbl thead th {
+        background: var(--surface); padding: .65rem 1rem;
+        font-size: .68rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .07em; color: var(--text-muted);
+        border-bottom: 1.5px solid var(--border); white-space: nowrap;
+    }
+    .cupo-tbl thead th.tc { text-align: center; }
+    .cupo-tbl tbody td { padding: .75rem 1rem; border-bottom: 1px solid #f1f5f9; font-size: .84rem; color: var(--text-main); vertical-align: middle; }
+    .cupo-tbl tbody td.tc { text-align: center; }
+    .cupo-tbl tbody tr:last-child td { border-bottom: none; }
+    .cupo-tbl tbody tr { transition: background .15s; }
+    .cupo-tbl tbody tr:hover { background: #f7fbff; }
 
-        .bpill {
-            display: inline-flex; align-items: center; gap: .25rem;
-            padding: .22rem .65rem; border-radius: 999px;
-            font-size: .7rem; font-weight: 600; white-space: nowrap;
-        }
-        .b-blue   { background: #e8f8f9; color: #00508f; }
-        .b-yellow { background: #fef9c3; color: #854d0e; }
-        .b-purple { background: #f3e8ff; color: #6b21a8; }
-        .b-green  { background: #dcfce7; color: #166534; }
+    .row-num {
+        width: 26px; height: 26px; border-radius: 7px;
+        background: var(--surface); border: 1px solid var(--border);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: .72rem; font-weight: 700; color: var(--text-muted);
+    }
 
-        .act-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 30px; height: 30px; border-radius: 7px; border: none;
-            cursor: pointer; font-size: .75rem; text-decoration: none; transition: all .15s;
-        }
-        .act-btn:hover { transform: translateY(-1px); }
-        .act-edit { background: #e8f8f9; color: #00508f; }
-        .act-edit:hover { background: #4ec7d2; color: #fff; }
-        .act-del  { background: #fef2f2; color: #ef4444; }
-        .act-del:hover  { background: #ef4444; color: #fff; }
+    .bpill {
+        display: inline-flex; align-items: center; gap: .25rem;
+        padding: .22rem .65rem; border-radius: 999px;
+        font-size: .72rem; font-weight: 600; white-space: nowrap;
+    }
+    .b-teal    { background: var(--teal-light); color: var(--blue-mid); border: 1px solid rgba(78,199,210,.35); }
+    .b-amber   { background: rgba(245,158,11,.1); color: #92400e; border: 1px solid rgba(245,158,11,.3); }
+    .b-purple  { background: rgba(99,102,241,.1); color: #4f46e5; border: 1px solid rgba(99,102,241,.25); }
+    .b-green   { background: rgba(16,185,129,.1); color: #059669; border: 1px solid rgba(16,185,129,.3); }
 
-        .adm-empty { padding: 3.5rem 1rem; text-align: center; }
-        .adm-empty i { font-size: 2rem; color: #cbd5e1; margin-bottom: .75rem; display: block; }
-        .adm-empty p { color: #94a3b8; font-size: .85rem; margin: 0; }
+    .act-btn {
+        width: 30px; height: 30px; border-radius: 7px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 1.5px solid; font-size: .78rem;
+        background: white; cursor: pointer; transition: all .15s; text-decoration: none;
+    }
+    .act-edit  { border-color: var(--teal); color: var(--teal); }
+    .act-del   { border-color: var(--red);  color: var(--red); }
+    .act-edit:hover { background: var(--teal); color: white; transform: translateY(-1px); }
+    .act-del:hover  { background: var(--red);  color: white; transform: translateY(-1px); }
 
-        /* Pagination footer */
-        .adm-footer {
-            padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
-            display: flex; align-items: center; justify-content: space-between;
-            background: #fafafa; flex-wrap: wrap; gap: .5rem;
-        }
-        .adm-footer-info { font-size: .78rem; color: #64748b; }
-        .pagination { margin: 0; }
-        .pagination .page-item .page-link {
-            font-size: .78rem; padding: .3rem .65rem; border-radius: 6px;
-            color: #00508f; border-color: #e2e8f0; font-family: 'Inter', sans-serif;
-        }
-        .pagination .page-item.active .page-link {
-            background: linear-gradient(135deg, #4ec7d2, #00508f);
-            border-color: #4ec7d2; color: #fff;
-        }
-        .pagination .page-item.disabled .page-link { color: #cbd5e1; }
-    </style>
+    .cupo-empty { padding: 4rem 1rem; text-align: center; }
+    .cupo-empty i  { font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: 1rem; }
+    .cupo-empty h6 { color: var(--blue-dark); font-weight: 600; margin-bottom: .4rem; }
+    .cupo-empty p  { font-size: .83rem; color: var(--text-muted); margin: 0; }
+
+    .cupo-footer {
+        padding: .85rem 1.25rem; border-top: 1px solid var(--border);
+        background: var(--surface);
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+    }
+    .cupo-footer-info { font-size: .78rem; color: var(--text-muted); }
+
+    .pagination { margin: 0; }
+    .pagination .page-link {
+        border-radius: 7px; margin: 0 2px; border: 1.5px solid var(--border);
+        color: var(--blue-mid); padding: .28rem .6rem; font-size: .82rem; transition: all .15s;
+    }
+    .pagination .page-link:hover { background: var(--teal-light); border-color: var(--teal); }
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--teal), var(--blue-mid));
+        border-color: var(--teal); color: white; box-shadow: 0 2px 6px rgba(78,199,210,.35);
+    }
+    .pagination .page-item.disabled .page-link { opacity: .45; }
+</style>
 @endpush
 
 @section('content')
-<div class="adm-wrap container-fluid px-4">
+<div>
 
-    {{-- Stats --}}
-    <div class="adm-stats">
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#4ec7d2,#00508f);">
-                <i class="fas fa-users-cog"></i>
-            </div>
+    {{-- ── STATS ── --}}
+    <div class="cupo-stats">
+        <div class="cupo-stat cs-total">
+            <div class="cupo-stat-icon"><i class="fas fa-users-cog"></i></div>
             <div>
-                <div class="adm-stat-lbl">Total Cupos</div>
-                <div class="adm-stat-num">{{ $totalCupos }}</div>
+                <div class="cupo-stat-lbl">Total Cupos</div>
+                <div class="cupo-stat-num">{{ $totalCupos }}</div>
+                <div class="cupo-stat-sub">Registrados</div>
             </div>
         </div>
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#fbbf24,#d97706);">
-                <i class="fas fa-sun"></i>
-            </div>
+        <div class="cupo-stat cs-matutina">
+            <div class="cupo-stat-icon"><i class="fas fa-sun"></i></div>
             <div>
-                <div class="adm-stat-lbl">Jornada Matutina</div>
-                <div class="adm-stat-num">{{ $totalMatutina }}</div>
+                <div class="cupo-stat-lbl">Matutina</div>
+                <div class="cupo-stat-num">{{ $totalMatutina }}</div>
+                <div class="cupo-stat-sub">Jornada mañana</div>
             </div>
         </div>
-        <div class="adm-stat">
-            <div class="adm-stat-icon" style="background:linear-gradient(135deg,#818cf8,#4f46e5);">
-                <i class="fas fa-moon"></i>
-            </div>
+        <div class="cupo-stat cs-vespertina">
+            <div class="cupo-stat-icon"><i class="fas fa-moon"></i></div>
             <div>
-                <div class="adm-stat-lbl">Jornada Vespertina</div>
-                <div class="adm-stat-num">{{ $totalVespertina }}</div>
+                <div class="cupo-stat-lbl">Vespertina</div>
+                <div class="cupo-stat-num">{{ $totalVespertina }}</div>
+                <div class="cupo-stat-sub">Jornada tarde</div>
             </div>
         </div>
     </div>
 
-    {{-- Toolbar con filtros server-side --}}
-    <form method="GET" action="{{ route('superadmin.cupos_maximos.index') }}" id="frmFiltro">
-        <div class="adm-toolbar">
-            <div class="adm-search-wrap">
-                <i class="fas fa-search adm-search-icon"></i>
-                <input type="text" name="buscar" class="adm-search-input"
+    {{-- ── TOOLBAR ── --}}
+    <form method="GET" action="{{ route('superadmin.cupos_maximos.index') }}">
+        <div class="cupo-toolbar">
+            <div class="cupo-search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" name="buscar" class="cupo-search"
                        placeholder="Buscar por curso..."
                        value="{{ request('buscar') }}">
             </div>
-            <div class="adm-filters">
-                <select name="jornada" class="adm-filter-sel" onchange="this.form.submit()">
-                    <option value="">Jornada...</option>
-                    <option value="Matutina"   {{ request('jornada') === 'Matutina'   ? 'selected' : '' }}>Matutina</option>
-                    <option value="Vespertina" {{ request('jornada') === 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
-                </select>
-                <select name="seccion" class="adm-filter-sel" onchange="this.form.submit()">
-                    <option value="">Sección...</option>
-                    @foreach(['A','B','C','D'] as $s)
-                        <option value="{{ $s }}" {{ request('seccion') === $s ? 'selected' : '' }}>{{ $s }}</option>
-                    @endforeach
-                </select>
-                <select name="per_page" class="adm-filter-sel" onchange="this.form.submit()">
-                    @foreach([10,15,25,50] as $n)
-                        <option value="{{ $n }}" {{ request('per_page', 15) == $n ? 'selected' : '' }}>{{ $n }} / pág</option>
-                    @endforeach
-                </select>
-                <button type="submit" class="adm-btn-filter">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
-                @if(request()->hasAny(['buscar','jornada','seccion']))
-                    <a href="{{ route('superadmin.cupos_maximos.index') }}" class="adm-btn-clear">
-                        <i class="fas fa-times"></i> Limpiar
-                    </a>
-                @endif
-            </div>
+            <select name="jornada" class="cupo-filter-sel" onchange="this.form.submit()">
+                <option value="">Todas las jornadas</option>
+                <option value="Matutina"   {{ request('jornada') === 'Matutina'   ? 'selected' : '' }}>Matutina</option>
+                <option value="Vespertina" {{ request('jornada') === 'Vespertina' ? 'selected' : '' }}>Vespertina</option>
+            </select>
+            <select name="seccion" class="cupo-filter-sel" onchange="this.form.submit()">
+                <option value="">Todas las secciones</option>
+                @foreach(['A','B','C','D'] as $s)
+                    <option value="{{ $s }}" {{ request('seccion') === $s ? 'selected' : '' }}>Sección {{ $s }}</option>
+                @endforeach
+            </select>
+            <select name="per_page" class="cupo-filter-sel" onchange="this.form.submit()">
+                @foreach([10,15,25,50] as $n)
+                    <option value="{{ $n }}" {{ request('per_page', 15) == $n ? 'selected' : '' }}>{{ $n }} por página</option>
+                @endforeach
+            </select>
+            <button type="submit" class="cupo-btn-filter">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+            @if(request()->hasAny(['buscar','jornada','seccion']))
+                <a href="{{ route('superadmin.cupos_maximos.index') }}" class="cupo-btn-clear">
+                    <i class="fas fa-times"></i> Limpiar
+                </a>
+            @endif
         </div>
     </form>
 
-    {{-- Tabla --}}
-    <div class="adm-card">
-        <div class="adm-card-head">
+    {{-- ── TABLA ── --}}
+    <div class="cupo-card">
+        <div class="cupo-card-head">
             <i class="fas fa-users-cog"></i>
             <span>Lista de Cupos Máximos</span>
         </div>
+
         <div style="overflow-x:auto;">
-            <table class="adm-tbl">
+            <table class="cupo-tbl">
                 <thead>
                     <tr>
-                        <th class="tc">#</th>
+                        <th class="tc" style="width:50px;">#</th>
                         <th>Nombre del Curso</th>
                         <th class="tc">Cupo Máximo</th>
                         <th class="tc">Jornada</th>
@@ -254,43 +284,45 @@
                     </tr>
                 </thead>
                 <tbody>
-                @forelse($cursos as $curso)
+                    @forelse($cursos as $curso)
                     <tr>
                         <td class="tc">
-                            <span class="adm-num">{{ $cursos->firstItem() + $loop->index }}</span>
+                            <span class="row-num">{{ $cursos->firstItem() + $loop->index }}</span>
                         </td>
-                        <td style="font-weight:600;color:#0f172a;">{{ $curso->nombre }}</td>
+                        <td>
+                            <span style="font-weight:600;color:var(--blue-dark);">{{ $curso->nombre }}</span>
+                        </td>
                         <td class="tc">
-                            <span class="bpill b-blue">
-                                <i class="fas fa-users"></i> {{ $curso->cupo_maximo }} alumnos
+                            <span class="bpill b-teal">
+                                <i class="fas fa-users" style="font-size:.65rem;"></i>
+                                {{ $curso->cupo_maximo }} alumnos
                             </span>
                         </td>
                         <td class="tc">
                             @if($curso->jornada === 'Matutina')
-                                <span class="bpill b-yellow"><i class="fas fa-sun"></i> Matutina</span>
+                                <span class="bpill b-amber"><i class="fas fa-sun" style="font-size:.65rem;"></i> Matutina</span>
                             @elseif($curso->jornada === 'Vespertina')
-                                <span class="bpill b-purple"><i class="fas fa-moon"></i> Vespertina</span>
+                                <span class="bpill b-purple"><i class="fas fa-moon" style="font-size:.65rem;"></i> Vespertina</span>
                             @else
-                                <span style="color:#cbd5e1;">—</span>
+                                <span style="color:#cbd5e1;font-size:.75rem;">—</span>
                             @endif
                         </td>
                         <td class="tc">
                             @if($curso->seccion)
                                 <span class="bpill b-green">{{ $curso->seccion }}</span>
                             @else
-                                <span style="color:#cbd5e1;">—</span>
+                                <span style="color:#cbd5e1;font-size:.75rem;">—</span>
                             @endif
                         </td>
                         <td class="tc">
-                            <div style="display:inline-flex;gap:.4rem;align-items:center;">
+                            <div style="display:inline-flex;gap:.35rem;align-items:center;">
                                 <a href="{{ route('superadmin.cupos_maximos.edit', $curso->id) }}"
                                    class="act-btn act-edit" title="Editar">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-pen"></i>
                                 </a>
                                 <button type="button"
-                                        class="act-btn act-del"
-                                        title="Eliminar"
-                                        onclick="sysConfirm('¿Eliminar el cupo de {{ addslashes($curso->nombre) }}? Esta acción no se puede deshacer.', () => {
+                                        class="act-btn act-del" title="Eliminar"
+                                        onclick="sysConfirm('¿Eliminar el cupo de {{ addslashes($curso->nombre) }}? Esta acción no se puede deshacer.', function() {
                                             document.getElementById('form-del-idx').action='{{ route('superadmin.cupos_maximos.destroy', $curso->id) }}';
                                             document.getElementById('form-del-idx').submit();
                                         })">
@@ -299,28 +331,29 @@
                             </div>
                         </td>
                     </tr>
-                @empty
+                    @empty
                     <tr>
                         <td colspan="6">
-                            <div class="adm-empty">
-                                <i class="fas fa-inbox"></i>
-                                <p>No hay cupos registrados</p>
+                            <div class="cupo-empty">
+                                <i class="fas fa-users-cog"></i>
+                                <h6>No hay cupos registrados</h6>
+                                <p>Comienza agregando el primer cupo máximo al sistema</p>
                             </div>
                         </td>
                     </tr>
-                @endforelse
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
-        {{-- Pagination footer --}}
         @if($cursos->hasPages())
-        <div class="adm-footer">
-            <div class="adm-footer-info">
-                Mostrando {{ $cursos->firstItem() }}–{{ $cursos->lastItem() }} de {{ $cursos->total() }} cupos
+            <div class="cupo-footer">
+                <span class="cupo-footer-info">
+                    Mostrando {{ $cursos->firstItem() }}–{{ $cursos->lastItem() }}
+                    de {{ $cursos->total() }} cupos
+                </span>
+                {{ $cursos->appends(request()->query())->links() }}
             </div>
-            {{ $cursos->appends(request()->query())->links() }}
-        </div>
         @endif
     </div>
 

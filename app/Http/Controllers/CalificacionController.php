@@ -4,277 +4,234 @@ namespace App\Http\Controllers;
 
 use App\Models\Calificacion;
 use App\Models\Estudiante;
+use App\Models\Grado;
+use App\Models\MateriaPorcentaje;
+use App\Models\Materia;
 use App\Models\PeriodoAcademico;
 use App\Models\Profesor;
-use App\Models\ProfesorMateriaGrado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CalificacionController extends Controller
 {
-    public function __construct()
+    // ══════════════════════════════════════════
+    //  PANEL DEL PROFESOR
+    // ══════════════════════════════════════════
+
+    public function indexProfesor(Request $request)
     {
-        $this->middleware('auth');
-        $this->middleware('role:profesor');
-    }
+        $profesor  = Profesor::where('user_id', Auth::id())->firstOrFail();
+        $periodos  = PeriodoAcademico::orderBy('fecha_inicio')->get();
+        $periodoId = $request->get('periodo_id', PeriodoAcademico::activos()->first()?->id ?? $periodos->first()?->id);
+        $gradoId   = $request->get('grado_id');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers privados
-    |--------------------------------------------------------------------------
-    */
+        // Grados donde imparte este profesor (vía profesor_materia_grados)
+        $grados = Grado::whereHas('profesorMateriaGrados', fn($q) =>
+            $q->where('profesor_id', $profesor->id)
+        )->get();
 
-    /** Devuelve el Profesor asociado al usuario autenticado o aborta */
-    private function profesorActual(): Profesor
-    {
-        $profesor = Profesor::where('user_id', Auth::id())->first();
-
-        if (!$profesor) {
-            abort(403, 'No tienes un perfil de profesor asociado a tu cuenta.');
+        if (!$gradoId && $grados->isNotEmpty()) {
+            $gradoId = $grados->first()->id;
         }
 
-        return $profesor;
-    }
+        // Materias del profesor en ese grado
+        $materias = Materia::whereHas('profesorMateriaGrados', fn($q) =>
+            $q->where('profesor_id', $profesor->id)
+              ->where('grado_id', $gradoId)
+        )->get();
 
-    /**
-     * Verifica que el profesor tenga asignado ese grado/sección/materia.
-     * Usa grado_id (FK a tabla grados) que viene de ProfesorMateriaGrado.
-     */
-    private function verificarAcceso(Profesor $profesor, int $gradoId, string $seccion, int $materiaId): ProfesorMateriaGrado
-    {
-        $asignacion = ProfesorMateriaGrado::with(['grado', 'materia'])
+        // Estudiantes del grado
+        $estudiantes = $gradoId
+            ? Estudiante::where('grado_id', $gradoId)->orderBy('apellido1')->get()
+            : collect();
+
+        // Calificaciones existentes agrupadas por estudiante_materia
+        $calificaciones = Calificacion::with(['estudiante', 'materia'])
             ->where('profesor_id', $profesor->id)
-            ->where('grado_id',    $gradoId)
-            ->where('seccion',     $seccion)
-            ->where('materia_id',  $materiaId)
-            ->first();
-
-        if (!$asignacion) {
-            abort(403, 'No tienes permiso para gestionar calificaciones en este grupo.');
-        }
-
-        return $asignacion;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | INDEX — grupos asignados al profesor
-    | GET /profesor/calificaciones
-    |--------------------------------------------------------------------------
-    */
-    public function index()
-    {
-        $profesor = $this->profesorActual();
-
-        // Todas las asignaciones del profesor con grado y materia cargados
-        $asignaciones = ProfesorMateriaGrado::with(['grado', 'materia'])
-            ->where('profesor_id', $profesor->id)
-            ->orderBy('grado_id')
-            ->orderBy('seccion')
-            ->get();
-
-        // Agrupar por "grado_id - seccion" para mostrar tarjetas por grupo
-        $grupos = $asignaciones->groupBy(fn($a) => $a->grado_id . '|' . $a->seccion);
-
-        return view('profesor.calificaciones.index', compact('grupos', 'profesor'));
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | LISTAR — tabla de estudiantes con notas por grupo/materia/periodo
-    | GET /profesor/calificaciones/{gradoId}/{seccion}/{materiaId}
-    |--------------------------------------------------------------------------
-    */
-    public function listar(int $gradoId, string $seccion, int $materiaId, Request $request)
-    {
-        $profesor   = $this->profesorActual();
-        $asignacion = $this->verificarAcceso($profesor, $gradoId, $seccion, $materiaId);
-
-        $periodos  = PeriodoAcademico::orderBy('nombre_periodo')->get();
-        $periodoId = $request->periodo_id ?? $periodos->first()?->id;
-
-        // Buscar estudiantes por grado_id (FK directo, más confiable que el campo texto)
-        $nombreGrado = $asignacion->grado->nombre;
-
-        $estudiantes = Estudiante::where('grado_id', $gradoId)
-            ->where('seccion', $seccion)
-            ->where('estado',  'activo')
-            ->orderBy('apellido1')
-            ->orderBy('nombre1')
-            ->get();
-
-        // Calificaciones ya registradas, indexadas por estudiante_id
-        $calificaciones = Calificacion::where('grado_id',   $gradoId)
-            ->where('seccion',    $seccion)
-            ->where('materia_id', $materiaId)
             ->where('periodo_id', $periodoId)
+            ->where('grado_id', $gradoId)
             ->get()
-            ->keyBy('estudiante_id');
+            ->groupBy(fn($c) => $c->estudiante_id . '_' . $c->materia_id);
 
-        return view('profesor.calificaciones.listar', compact(
-            'asignacion', 'estudiantes', 'calificaciones',
-            'periodos', 'periodoId', 'gradoId', 'seccion', 'materiaId', 'nombreGrado'
+        // Porcentajes configurados
+        $porcentajes = MateriaPorcentaje::where('profesor_id', $profesor->id)
+            ->where('periodo_id', $periodoId)
+            ->whereIn('materia_id', $materias->pluck('id'))
+            ->get()
+            ->keyBy('materia_id');
+
+        return view('calificaciones.profesor', compact(
+            'profesor', 'periodos', 'periodoId',
+            'grados', 'gradoId', 'estudiantes', 'materias',
+            'calificaciones', 'porcentajes'
         ));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GUARDAR MASIVO — tabla de notas completa
-    | POST /profesor/calificaciones/{gradoId}/{seccion}/{materiaId}/guardar
-    |--------------------------------------------------------------------------
-    */
-    public function guardarMasivo(Request $request, int $gradoId, string $seccion, int $materiaId)
+    public function guardarPorcentajes(Request $request)
     {
-        $profesor   = $this->profesorActual();
-        $asignacion = $this->verificarAcceso($profesor, $gradoId, $seccion, $materiaId);
-
-        $request->validate([
-            'periodo_id'                        => 'required|exists:periodos_academicos,id',
-            'calificaciones'                    => 'required|array',
-            'calificaciones.*.estudiante_id'    => 'required|exists:estudiantes,id',
-            'calificaciones.*.primer_parcial'   => 'nullable|numeric|min:0|max:100',
-            'calificaciones.*.segundo_parcial'  => 'nullable|numeric|min:0|max:100',
-            'calificaciones.*.tercer_parcial'   => 'nullable|numeric|min:0|max:100',
-            'calificaciones.*.recuperacion'     => 'nullable|numeric|min:0|max:100',
-            'calificaciones.*.observacion'      => 'nullable|string|max:500',
+        $validated = $request->validate([
+            'materia_id'         => 'required|exists:materias,id',
+            'periodo_id'         => 'required|exists:periodos_academicos,id',
+            'porcentaje_tarea'   => 'required|numeric|min:0|max:100',
+            'porcentaje_parcial' => 'required|numeric|min:0|max:100',
+            'porcentaje_final'   => 'required|numeric|min:0|max:100',
         ]);
 
-        foreach ($request->calificaciones as $data) {
-            // Verificar que el estudiante pertenezca a este grupo
-            $estudianteValido = Estudiante::where('id',      $data['estudiante_id'])
-                ->where('grado',   $asignacion->grado->nombre)
-                ->where('seccion', $seccion)
-                ->exists();
+        $suma = $validated['porcentaje_tarea'] +
+                $validated['porcentaje_parcial'] +
+                $validated['porcentaje_final'];
 
-            if (!$estudianteValido) continue; // saltar si alguien manipuló el form
+        if (round($suma, 2) !== 100.00) {
+            return back()->withErrors(['porcentajes' => 'Los porcentajes deben sumar exactamente 100%.']);
+        }
 
-            $cal = Calificacion::firstOrNew([
-                'estudiante_id' => $data['estudiante_id'],
-                'materia_id'    => $materiaId,
-                'periodo_id'    => $request->periodo_id,
-                'grado_id'      => $gradoId,
-                'seccion'       => $seccion,
-            ]);
+        $profesor = Profesor::where('user_id', Auth::id())->firstOrFail();
 
-            $cal->profesor_id     = $profesor->id;
-            $cal->grado_nombre    = $asignacion->grado->nombre;
-            $cal->primer_parcial  = $data['primer_parcial']  ?? null;
-            $cal->segundo_parcial = $data['segundo_parcial'] ?? null;
-            $cal->tercer_parcial  = $data['tercer_parcial']  ?? null;
-            $cal->recuperacion    = $data['recuperacion']    ?? null;
-            $cal->observacion     = $data['observacion']     ?? null;
+        MateriaPorcentaje::updateOrCreate(
+            [
+                'materia_id'  => $validated['materia_id'],
+                'periodo_id'  => $validated['periodo_id'],
+                'profesor_id' => $profesor->id,
+            ],
+            [
+                'porcentaje_tarea'   => $validated['porcentaje_tarea'],
+                'porcentaje_parcial' => $validated['porcentaje_parcial'],
+                'porcentaje_final'   => $validated['porcentaje_final'],
+            ]
+        );
 
-            // Calcular nota_final manualmente (evita el problema de los mutadores)
-            $parciales = array_filter([
-                $cal->primer_parcial,
-                $cal->segundo_parcial,
-                $cal->tercer_parcial,
-            ], fn($p) => $p !== null);
+        return back()->with('success', 'Porcentajes guardados correctamente.');
+    }
 
-            $promedio = count($parciales) > 0
-                ? array_sum($parciales) / count($parciales)
-                : null;
+    public function guardar(Request $request)
+    {
+        $validated = $request->validate([
+            'periodo_id'                      => 'required|exists:periodos_academicos,id',
+            'grado_id'                        => 'required|exists:grados,id',
+            'calificaciones'                  => 'required|array',
+            'calificaciones.*.estudiante_id'  => 'required|exists:estudiantes,id',
+            'calificaciones.*.materia_id'     => 'required|exists:materias,id',
+            'calificaciones.*.nota_tarea'     => 'nullable|numeric|min:0|max:100',
+            'calificaciones.*.nota_parcial'   => 'nullable|numeric|min:0|max:100',
+            'calificaciones.*.nota_final'     => 'nullable|numeric|min:0|max:100',
+            'calificaciones.*.observaciones'  => 'nullable|string|max:500',
+        ]);
 
-            if ($promedio !== null && $promedio < 60 && $cal->recuperacion !== null) {
-                $cal->nota_final = max($promedio, $cal->recuperacion);
-            } else {
-                $cal->nota_final = $promedio;
+        $profesor = Profesor::where('user_id', Auth::id())->firstOrFail();
+
+        DB::transaction(function () use ($validated, $profesor) {
+            foreach ($validated['calificaciones'] as $item) {
+                Calificacion::updateOrCreate(
+                    [
+                        'estudiante_id' => $item['estudiante_id'],
+                        'materia_id'    => $item['materia_id'],
+                        'periodo_id'    => $validated['periodo_id'],
+                    ],
+                    [
+                        'profesor_id'   => $profesor->id,
+                        'grado_id'      => $validated['grado_id'],
+                        'nota_tarea'    => $item['nota_tarea']    ?? null,
+                        'nota_parcial'  => $item['nota_parcial']  ?? null,
+                        'nota_final'    => $item['nota_final']    ?? null,
+                        'observaciones' => $item['observaciones'] ?? null,
+                    ]
+                );
+            }
+        });
+
+        return back()->with('success', 'Calificaciones guardadas correctamente.');
+    }
+
+    // ══════════════════════════════════════════
+    //  PANEL DEL PADRE
+    // ══════════════════════════════════════════
+
+    public function indexPadre(Request $request)
+    {
+        // Estudiantes vinculados a este padre vía matriculas
+        $padre       = Auth::user()->padre ?? null;
+        $estudiantes = $padre
+            ? Estudiante::whereHas('matriculas', fn($q) => $q->where('padre_id', $padre->id))->get()
+            : collect();
+
+        $periodos     = PeriodoAcademico::orderBy('fecha_inicio')->get();
+        $estudianteId = $request->get('estudiante_id', $estudiantes->first()?->id);
+        $periodoId    = $request->get('periodo_id');
+
+        $estudianteSeleccionado = $estudiantes->find($estudianteId);
+
+        $calificaciones = collect();
+        $promedioGeneral = null;
+
+        if ($estudianteId) {
+            $query = Calificacion::with(['materia', 'periodo'])
+                ->where('estudiante_id', $estudianteId);
+
+            if ($periodoId) {
+                $query->where('periodo_id', $periodoId);
             }
 
-            $cal->save();
+            $calificaciones = $query->get()
+                ->groupBy('materia_id')
+                ->map(fn($grupo) => [
+                    'materia'          => $grupo->first()->materia,
+                    'periodos'         => $grupo->keyBy('periodo_id'),
+                    'promedio_general' => round($grupo->whereNotNull('promedio')->avg('promedio'), 2),
+                ]);
+
+            $promedioGeneral = round(
+                $calificaciones->pluck('promedio_general')->filter()->avg(),
+                2
+            );
         }
 
-        return redirect()
-            ->route('profesor.calificaciones.listar', [
-                'gradoId'   => $gradoId,
-                'seccion'   => $seccion,
-                'materiaId' => $materiaId,
-            ])
-            ->withInput(['periodo_id' => $request->periodo_id])
-            ->with('success', '✅ Calificaciones guardadas correctamente.');
+        return view('calificaciones.padre', compact(
+            'estudiantes', 'estudianteSeleccionado', 'periodos',
+            'periodoId', 'calificaciones', 'promedioGeneral'
+        ));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | EDIT — formulario individual de una calificación
-    | GET /profesor/calificaciones/{calificacion}/editar
-    |--------------------------------------------------------------------------
-    */
-    public function edit(Calificacion $calificacion)
-{
-    $profesor = $this->profesorActual();
+    // ══════════════════════════════════════════
+    //  PANEL DEL ESTUDIANTE
+    // ══════════════════════════════════════════
 
-    if ($calificacion->profesor_id !== $profesor->id) {
-        abort(403, 'No puedes editar calificaciones que no registraste tú.');
-    }
-
-    $periodos = PeriodoAcademico::orderBy('nombre_periodo')->get();
-
-    return view('profesor.calificaciones.editar', compact('calificacion', 'periodos'));
-}
-
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE — guardar edición individual
-    | PUT /profesor/calificaciones/{calificacion}
-    |--------------------------------------------------------------------------
-    */
-    public function update(Request $request, Calificacion $calificacion)
+    public function indexAlumno(Request $request)
     {
-        $profesor = $this->profesorActual();
+        $estudiante = Estudiante::where('user_id', Auth::id())->firstOrFail();
+        $periodos   = PeriodoAcademico::orderBy('fecha_inicio')->get();
+        $periodoId  = $request->get('periodo_id');
 
-        if ($calificacion->profesor_id !== $profesor->id) {
-            abort(403, 'No puedes editar calificaciones que no registraste tú.');
+        $query = Calificacion::with(['materia', 'periodo'])
+            ->where('estudiante_id', $estudiante->id);
+
+        if ($periodoId) {
+            $query->where('periodo_id', $periodoId);
         }
 
-        $validated = $request->validate([
-            'primer_parcial'  => 'nullable|numeric|min:0|max:100',
-            'segundo_parcial' => 'nullable|numeric|min:0|max:100',
-            'tercer_parcial'  => 'nullable|numeric|min:0|max:100',
-            'recuperacion'    => 'nullable|numeric|min:0|max:100',
-            'observacion'     => 'nullable|string|max:500',
-        ]);
+        $calificaciones = $query->get()
+            ->groupBy('materia_id')
+            ->map(fn($grupo) => [
+                'materia'          => $grupo->first()->materia,
+                'periodos'         => $grupo->keyBy('periodo_id'),
+                'promedio_general' => round($grupo->whereNotNull('promedio')->avg('promedio'), 2),
+                'estado_final'     => $this->estadoFinal($grupo->whereNotNull('promedio')->avg('promedio')),
+            ]);
 
-        $calificacion->fill($validated);
-        $calificacion->calcularNotaFinal();
-        $calificacion->save();
+        $promedioGeneral     = round($calificaciones->pluck('promedio_general')->filter()->avg(), 2);
+        $materias_aprobadas  = $calificaciones->where('estado_final', 'aprobado')->count();
+        $materias_reprobadas = $calificaciones->where('estado_final', 'reprobado')->count();
 
-        return redirect()
-            ->route('profesor.calificaciones.listar', [
-                'gradoId'   => $calificacion->grado_id,
-                'seccion'   => $calificacion->seccion,
-                'materiaId' => $calificacion->materia_id,
-            ])
-            ->with('success', '✅ Calificación actualizada correctamente.');
+        return view('calificaciones.alumno', compact(
+            'estudiante', 'periodos', 'periodoId',
+            'calificaciones', 'promedioGeneral',
+            'materias_aprobadas', 'materias_reprobadas'
+        ));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | DESTROY — eliminar calificación individual
-    | DELETE /profesor/calificaciones/{calificacion}
-    |--------------------------------------------------------------------------
-    */
-    public function destroy(Calificacion $calificacion)
+    private function estadoFinal(?float $promedio): string
     {
-        $profesor = $this->profesorActual();
-
-        if ($calificacion->profesor_id !== $profesor->id) {
-            abort(403, 'No puedes eliminar calificaciones que no registraste tú.');
-        }
-
-        // Guardar para redirección antes de eliminar
-        $gradoId   = $calificacion->grado_id;
-        $seccion   = $calificacion->seccion;
-        $materiaId = $calificacion->materia_id;
-
-        $calificacion->delete();
-
-        return redirect()
-            ->route('profesor.calificaciones.listar', [
-                'gradoId'   => $gradoId,
-                'seccion'   => $seccion,
-                'materiaId' => $materiaId,
-            ])
-            ->with('success', 'Calificación eliminada.');
+        if (is_null($promedio)) return 'pendiente';
+        return $promedio >= 60 ? 'aprobado' : 'reprobado';
     }
 }

@@ -19,21 +19,15 @@ class RegistrarCalificacionController extends Controller
      * Primero intenta por user_id; si no, busca por email.
      */
     private function getProfesorActual(): ?Profesor
-    {
-        $user = Auth::user();
-        if (!$user) return null;
+{
+    $user = Auth::user();
+    if (!$user) return null;
 
-        // Intentar por user_id
-        $profesor = Profesor::where('user_id', $user->id)->first();
+    // Asignar el resultado a $profesor
+    $profesor = Profesor::where('email', $user->email)->first();
 
-        // Si no, buscar por email (los profesores se vinculan por email)
-        if (!$profesor && $user->email) {
-            $profesor = Profesor::where('email', $user->email)->first();
-        }
-
-        return $profesor;
-    }
-
+    return $profesor;
+}
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -278,6 +272,11 @@ class RegistrarCalificacionController extends Controller
             'materiasFiltro',
             'periodosFiltro',
             'profesorActual'
+
+
         ));
+
+        
     }
+
 }

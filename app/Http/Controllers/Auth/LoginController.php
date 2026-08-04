@@ -3,61 +3,117 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\User;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
-    /**
-     * Mostrar formulario de login.
-     */
+    // Máximo de intentos antes de bloquear
+    private const MAX_INTENTOS  = 5;
+    // Segundos de bloqueo tras superar intentos
+    private const SEGUNDOS_BLOQUEO = 60;
+
+    /* ============================================================
+       MOSTRAR FORMULARIO DE LOGIN
+    ============================================================ */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    /**
-     * Procesar el intento de login.
-     */
+    /* ============================================================
+       PROCESAR LOGIN
+    ============================================================ */
     public function login(Request $request)
     {
-        // ── Validación ──────────────────────────────────────────────
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required'],
+        // ── 1. Validación de inputs ────────────────────────────────
+        $request->validate([
+            'email'    => ['required', 'email:rfc', 'max:100'],
+            'password' => ['required', 'string', 'min:1', 'max:100'],
+        ], [
+            'email.required'    => 'El correo electrónico es obligatorio.',
+            'email.email'       => 'Ingresa un correo electrónico válido.',
+            'email.max'         => 'El correo no puede superar los 100 caracteres.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.max'      => 'La contraseña no puede superar los 100 caracteres.',
         ]);
 
-        // ── Intento de autenticación ────────────────────────────────
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-            Log::warning('Login fallido', ['email' => $request->email]);
+        // ── 2. Rate limiting — bloquear tras demasiados intentos ───
+        $throttleKey = $this->throttleKey($request);
+
+        if (RateLimiter::tooManyAttempts($throttleKey, self::MAX_INTENTOS)) {
+            $segundos = RateLimiter::availableIn($throttleKey);
+
+            Log::warning('Login bloqueado por rate limit', [
+                'email' => $request->email,
+                'ip'    => $request->ip(),
+            ]);
+
             return back()
-                ->withErrors(['email' => 'Credenciales incorrectas. Verifica tu correo y contraseña.'])
+                ->withErrors(['email' =>
+                    "Demasiados intentos fallidos. Intenta de nuevo en {$segundos} segundos."
+                ])
                 ->onlyInput('email');
         }
 
-        // FIX: cargar siempre con eager loading para evitar
-        // "Attempt to read property on null" al acceder a $usuario->rol->nombre
+        // ── 3. Intento de autenticación ────────────────────────────
+        $credentials = [
+            'email'    => strtolower(trim($request->input('email'))),
+            'password' => $request->input('password'),
+        ];
+
+        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+            // Registrar intento fallido
+            RateLimiter::hit($throttleKey, self::SEGUNDOS_BLOQUEO);
+
+            $intentosRestantes = self::MAX_INTENTOS - RateLimiter::attempts($throttleKey);
+
+            Log::warning('Login fallido', [
+                'email'    => $request->email,
+                'ip'       => $request->ip(),
+                'intentos' => RateLimiter::attempts($throttleKey),
+            ]);
+
+            $mensaje = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
+            if ($intentosRestantes <= 2 && $intentosRestantes > 0) {
+                $mensaje .= " Te quedan {$intentosRestantes} intento(s) antes del bloqueo.";
+            }
+
+            return back()
+                ->withErrors(['email' => $mensaje])
+                ->onlyInput('email');
+        }
+
+        // ── 4. Login exitoso — limpiar rate limiter ────────────────
+        RateLimiter::clear($throttleKey);
+
+        // Cargar usuario con relación rol
         $usuario = User::with('rol')->find(Auth::id());
         Auth::setUser($usuario);
 
         Log::info('Login exitoso', [
             'id'    => $usuario->id,
             'email' => $usuario->email,
+            'ip'    => $request->ip(),
         ]);
 
-        // ── Verificar que tenga rol ─────────────────────────────────
+        // ── 5. Verificar que tenga rol asignado ────────────────────
         if (!$usuario->rol) {
             Auth::logout();
+
             Log::error('Usuario sin rol', ['id' => $usuario->id]);
+
             return back()
                 ->withErrors(['email' => 'Tu cuenta no tiene un rol asignado. Contacta al administrador.'])
                 ->onlyInput('email');
         }
 
-        // ── Verificar cuenta activa ─────────────────────────────────
+        // ── 6. Verificar cuenta activa ─────────────────────────────
         if ($usuario->activo == 0 || $usuario->activo === false) {
 
             $esPadre = $usuario->isPadre();
@@ -68,8 +124,6 @@ class LoginController extends Controller
                     ->where('id', $usuario->id)
                     ->update(['activo' => 1]);
 
-                // FIX: recargar CON la relación rol para que isPadre()
-                // y redirigirSegunRol() funcionen correctamente después
                 $usuario = User::with('rol')->find($usuario->id);
                 Auth::setUser($usuario);
 
@@ -77,21 +131,29 @@ class LoginController extends Controller
 
             } else {
                 Auth::logout();
+
                 Log::warning('Login bloqueado — cuenta inactiva', ['id' => $usuario->id]);
+
                 return back()
                     ->withErrors(['email' => 'Tu cuenta está pendiente de aprobación por el administrador.'])
                     ->onlyInput('email');
             }
         }
 
-        Log::info('Redirigiendo', ['id' => $usuario->id, 'rol' => $usuario->rol->nombre]);
+        // ── 7. Regenerar sesión para prevenir session fixation ─────
+        $request->session()->regenerate();
+
+        Log::info('Redirigiendo', [
+            'id'  => $usuario->id,
+            'rol' => $usuario->rol->nombre ?? 'sin rol',
+        ]);
 
         return $this->redirigirSegunRol($usuario);
     }
 
-    /**
-     * Redirigir al dashboard según el rol del usuario.
-     */
+    /* ============================================================
+       REDIRIGIR SEGÚN ROL
+    ============================================================ */
     private function redirigirSegunRol(User $usuario): \Illuminate\Http\RedirectResponse
     {
         $nombreRol = strtolower(trim($usuario->rol->nombre ?? ''));
@@ -111,7 +173,7 @@ class LoginController extends Controller
             'tutor'               => 'padre.dashboard',
         ];
 
-        // Buscar por nombre de rol primero
+        // Buscar por nombre de rol
         if (isset($mapa[$nombreRol])) {
             Log::info('Redirigiendo por rol', [
                 'id'   => $usuario->id,
@@ -131,7 +193,7 @@ class LoginController extends Controller
             return redirect()->route($mapa[$userType]);
         }
 
-        // Fallback final: usar helpers del modelo User
+        // Fallback: helpers del modelo
         if ($usuario->isSuperAdmin()) return redirect()->route('superadmin.dashboard');
         if ($usuario->isAdmin())      return redirect()->route('admin.dashboard');
         if ($usuario->isDocente())    return redirect()->route('profesor.dashboard');
@@ -140,10 +202,11 @@ class LoginController extends Controller
 
         // Rol completamente desconocido
         Auth::logout();
+
         Log::error('Rol no reconocido', [
             'id'       => $usuario->id,
             'rol'      => $usuario->rol->nombre ?? 'null',
-            'userType' => $usuario->user_type ?? 'null',
+            'userType' => $usuario->user_type   ?? 'null',
         ]);
 
         return back()->withErrors([
@@ -151,9 +214,9 @@ class LoginController extends Controller
         ]);
     }
 
-    /**
-     * Cerrar sesión.
-     */
+    /* ============================================================
+       CERRAR SESIÓN
+    ============================================================ */
     public function logout(Request $request)
     {
         $id = Auth::id();
@@ -165,5 +228,14 @@ class LoginController extends Controller
         Log::info('Logout', ['id' => $id]);
 
         return redirect()->route('login');
+    }
+
+    /* ============================================================
+       HELPER: clave única para rate limiting
+    ============================================================ */
+    private function throttleKey(Request $request): string
+    {
+        // Combina email + IP para evitar bloqueos masivos por email
+        return Str::lower($request->input('email', '')) . '|' . $request->ip();
     }
 }

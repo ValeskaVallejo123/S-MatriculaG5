@@ -549,6 +549,26 @@
         html {
             scroll-behavior: smooth;
         }
+
+        /* NUEVO: botón ojo */
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #a0aec0;
+            font-size: 0.95rem;
+            padding: 0;
+            z-index: 3;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            color: #00508f;
+        }
     </style>
 </head>
 <body>
@@ -626,7 +646,12 @@
                         required
                         autocomplete="current-password"
                         class="@error('password') is-invalid @enderror"
+                        style="padding-right: 40px;"
                     >
+                    <!-- NUEVO: botón ver contraseña -->
+                    <button type="button" class="toggle-password" id="togglePassword" title="Mostrar contraseña">
+                        <i class="fas fa-eye" id="toggleIcon"></i>
+                    </button>
                     @error('password')
                     <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
@@ -704,6 +729,16 @@
                 rightSection.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
+    });
+
+    // NUEVO: mostrar / ocultar contraseña
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const pwd  = document.getElementById('password');
+        const icon = document.getElementById('toggleIcon');
+        const show = pwd.type === 'password';
+        pwd.type       = show ? 'text' : 'password';
+        icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+        this.title     = show ? 'Ocultar contraseña' : 'Mostrar contraseña';
     });
 </script>
 

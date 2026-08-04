@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User; // ← Asegúrate de importar tu modelo User
+use App\Models\User;
 
 class PadreDashboardController extends Controller
 {
@@ -19,12 +19,17 @@ class PadreDashboardController extends Controller
             abort(403, 'No tienes un perfil de padre/tutor vinculado.');
         }
 
+        // Matrículas aprobadas con estudiante y sus calificaciones
         $matriculas = $padre->matriculas()
-            ->with('estudiante')
+            ->with([
+                'estudiante.calificaciones.materia',
+                'estudiante.calificaciones.periodo',
+            ])
             ->where('estado', 'aprobada')
             ->orderBy('anio_lectivo', 'desc')
             ->get();
 
+        // Todas las matrículas (para historial)
         $todasMatriculas = $padre->matriculas()
             ->with('estudiante')
             ->orderBy('created_at', 'desc')
@@ -44,7 +49,10 @@ class PadreDashboardController extends Controller
         }
 
         $matricula = $padre->matriculas()
-            ->with('estudiante')
+            ->with([
+                'estudiante.calificaciones.materia',
+                'estudiante.calificaciones.periodo',
+            ])
             ->where('estudiante_id', $estudianteId)
             ->where('estado', 'aprobada')
             ->firstOrFail();
@@ -61,8 +69,8 @@ class PadreDashboardController extends Controller
             'password_nuevo'  => 'required|min:8|confirmed',
         ]);
 
-        /** @var User $user */  // ← Este comentario elimina el "undefined method" del IDE
-        $user = Auth::user();   // ← Unificado con Auth facade
+        /** @var User $user */
+        $user = Auth::user();
 
         if (!Hash::check($request->password_actual, $user->password)) {
             return back()->with('pw_error', 'La contraseña actual es incorrecta.');

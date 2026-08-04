@@ -88,4 +88,9 @@ class Materia extends Model
             default      => 'Desconocido',
         };
     }
+
+    public function profesorMateriaGrados()
+{
+    return $this->hasMany(\App\Models\ProfesorMateriaGrado::class, 'materia_id');
+}
 }

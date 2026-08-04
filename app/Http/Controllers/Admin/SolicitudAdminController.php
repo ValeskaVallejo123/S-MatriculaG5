@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin; // Namespace corregido
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CupoMaximo;
+use App\Models\Matricula;
 use Illuminate\Http\Request;
 
-// Nombre de clase corregido para que NO choque con CupoMaximoController
 class SolicitudAdminController extends Controller
 {
     public function __construct()
@@ -15,27 +14,39 @@ class SolicitudAdminController extends Controller
     }
 
     public function index()
+{
+    $matriculas = Matricula::with(['estudiante', 'padre'])
+        ->whereIn('estado', ['pendiente', 'aprobada', 'rechazada', 'cancelada'])
+        ->latest()
+        ->paginate(15);
+
+    return view('matriculas.index', compact('matriculas'));
+}
+
+    public function show($id)
     {
-        // Si este controlador no se usa para cupos, aquí irá la lógica de solicitudes
-        $cursos = CupoMaximo::orderBy('nombre')->get();
-        return view('cupos_maximos.index', compact('cursos'));
+        $matricula = Matricula::with(['estudiante', 'padre'])->findOrFail($id);
+        return view('matriculas.show', compact('matricula'));
     }
 
-    // He mantenido los métodos para que no falle si alguna ruta los llama,
-    // pero ahora bajo el nombre de SolicitudAdminController.
-
-    public function store(Request $request)
+    public function aprobar($id)
     {
-        return redirect()->route('superadmin.cupos_maximos.index');
+        $matricula = Matricula::findOrFail($id);
+        $matricula->update(['estado' => 'aprobada']);
+        return back()->with('success', 'Solicitud aprobada correctamente.');
     }
 
-    public function update(Request $request, string $id)
+    public function rechazar($id)
     {
-        return redirect()->route('superadmin.cupos_maximos.index');
+        $matricula = Matricula::findOrFail($id);
+        $matricula->update(['estado' => 'rechazada']);
+        return back()->with('success', 'Solicitud rechazada.');
     }
 
-    public function destroy(string $id)
+    public function pendiente($id)
     {
-        return redirect()->route('superadmin.cupos_maximos.index');
+        $matricula = Matricula::findOrFail($id);
+        $matricula->update(['estado' => 'pendiente']);
+        return back()->with('success', 'Solicitud marcada como pendiente.');
     }
 }

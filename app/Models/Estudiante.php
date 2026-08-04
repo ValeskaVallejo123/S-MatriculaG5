@@ -175,7 +175,7 @@ class Estudiante extends Model
 
     public static function secciones()
     {
-        return ['A', 'B', 'C'];
+        return ['A', 'B', 'C', 'D'];
     }
 
     /**

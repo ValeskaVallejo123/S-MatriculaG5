@@ -173,19 +173,22 @@ class HorarioController extends Controller
      * Método común — redirige según rol.
      */
     public function miHorario()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        if (!$user) {
-            return redirect()->route('login');
-        }
-
-        if ($user->id_rol == 3) {
-            return $this->miHorarioProfesor();
-        } elseif ($user->id_rol == 4) {
-            return $this->miHorarioEstudiante();
-        }
-
-        abort(403);
+    if (!$user) {
+        return redirect()->route('login');
     }
+
+    // Usa user_type o id_rol para detectar el rol
+    if ($user->isDocente() || $user->id_rol == 3) {
+        return $this->miHorarioProfesor();
+    }
+
+    if ($user->isEstudiante() || $user->id_rol == 4) {
+        return $this->miHorarioEstudiante();
+    }
+
+    abort(403, 'No tienes acceso al horario.');
+}
 }

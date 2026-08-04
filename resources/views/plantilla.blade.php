@@ -1028,10 +1028,10 @@
 <!-- ========== NAVBAR ========== -->
 <nav class="navbar navbar-expand-lg navbar-custom">
   <div class="container">
-    <a class="navbar-brand" href="{{ url('/') }}">
-      <i class="fas fa-graduation-cap"></i>
-      Escuela Gabriela Mistral
-    </a>
+ <a class="navbar-brand" href="{{ url('/plantilla') }}">
+    <i class="fas fa-graduation-cap"></i>
+    Escuela Gabriela Mistral
+</a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             style="background-color: rgba(78, 199, 210, 0.3); border: none;">

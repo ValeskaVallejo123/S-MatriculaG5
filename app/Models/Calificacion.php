@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Calificacion extends Model
 {
-    use HasFactory;
-
     protected $table = 'calificaciones';
 
     protected $fillable = [
@@ -17,122 +15,83 @@ class Calificacion extends Model
         'periodo_id',
         'profesor_id',
         'grado_id',
-        'grado_nombre',
-        'seccion',
-        'nota',
-        'observacion',
-        'nombre_alumno',
-        'primer_parcial',
-        'segundo_parcial',
-        'tercer_parcial',
-        'recuperacion',
+        'nota_tarea',
+        'nota_parcial',
         'nota_final',
+        'promedio',
+        'estado',
+        'observaciones',
     ];
 
     protected $casts = [
-        'primer_parcial'  => 'float',
-        'segundo_parcial' => 'float',
-        'tercer_parcial'  => 'float',
-        'recuperacion'    => 'float',
-        'nota_final'      => 'float',
+        'nota_tarea'   => 'float',
+        'nota_parcial' => 'float',
+        'nota_final'   => 'float',
+        'promedio'     => 'float',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relaciones
-    |--------------------------------------------------------------------------
-    */
-
-    public function estudiante()
+    protected static function booted(): void
     {
-        return $this->belongsTo(Estudiante::class, 'estudiante_id');
+        static::saving(function (Calificacion $c) {
+            $c->calcularPromedio();
+        });
     }
 
-    public function materia()
+    public function calcularPromedio(): void
     {
-        return $this->belongsTo(Materia::class, 'materia_id');
+        if (is_null($this->nota_tarea) || is_null($this->nota_parcial) || is_null($this->nota_final)) {
+            $this->promedio = null;
+            $this->estado   = 'pendiente';
+            return;
+        }
+
+        $porcentaje = MateriaPorcentaje::where('materia_id',  $this->materia_id)
+            ->where('periodo_id',  $this->periodo_id)
+            ->where('profesor_id', $this->profesor_id)
+            ->first();
+
+        $pT = $porcentaje?->porcentaje_tarea   ?? 20;
+        $pP = $porcentaje?->porcentaje_parcial ?? 30;
+        $pF = $porcentaje?->porcentaje_final   ?? 50;
+
+        $this->promedio = round(
+            ($this->nota_tarea * $pT / 100) +
+            ($this->nota_parcial * $pP / 100) +
+            ($this->nota_final * $pF / 100),
+            2
+        );
+
+        $this->estado = $this->promedio >= 60 ? 'aprobado' : 'reprobado';
     }
 
-    public function periodo()
+    // Relaciones
+    public function estudiante(): BelongsTo
+    {
+        return $this->belongsTo(Estudiante::class);
+    }
+
+    public function materia(): BelongsTo
+    {
+        return $this->belongsTo(Materia::class);
+    }
+
+    public function periodo(): BelongsTo
     {
         return $this->belongsTo(PeriodoAcademico::class, 'periodo_id');
     }
 
-    public function profesor()
+    public function profesor(): BelongsTo
     {
-        return $this->belongsTo(Profesor::class, 'profesor_id');
+        return $this->belongsTo(Profesor::class);
     }
 
-    public function grado()
+    public function grado(): BelongsTo
     {
-        return $this->belongsTo(Grado::class, 'grado_id');
+        return $this->belongsTo(Grado::class);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes
-    |--------------------------------------------------------------------------
-    */
-
-    public function scopeDeProfesor($query, $profesorId)
-    {
-        return $query->where('profesor_id', $profesorId);
-    }
-
-    public function scopeDeGradoSeccion($query, $gradoId, $seccion)
-    {
-        return $query->where('grado_id', $gradoId)->where('seccion', $seccion);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cálculo de notas
-    |--------------------------------------------------------------------------
-    */
-
-    public function calcularNotaFinal(): ?float
-    {
-        $parciales = array_filter([
-            $this->primer_parcial,
-            $this->segundo_parcial,
-            $this->tercer_parcial,
-        ], fn($p) => $p !== null);
-
-        $promedio = count($parciales) > 0
-            ? array_sum($parciales) / count($parciales)
-            : null;
-
-        if ($promedio !== null && $promedio < 60 && $this->recuperacion !== null) {
-            $this->nota_final = max($promedio, $this->recuperacion);
-        } else {
-            $this->nota_final = $promedio;
-        }
-
-        return $this->nota_final;
-    }
-
-    public function aprobo(): bool
-    {
-        return $this->nota_final !== null && $this->nota_final >= 60;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Atributos
-    |--------------------------------------------------------------------------
-    */
-
-    public function getEstadoAttribute(): string
-    {
-        if ($this->nota_final === null) return 'Pendiente';
-        return $this->nota_final >= 60 ? 'Aprobado' : 'Reprobado';
-    }
-
-    public function getEstadoColorAttribute(): string
-    {
-        if ($this->nota_final === null) return 'bg-gray-100 text-gray-800';
-        return $this->nota_final >= 60
-            ? 'bg-green-100 text-green-800'
-            : 'bg-red-100 text-red-800';
-    }
+    // Scopes
+    public function scopeDelProfesor($q, int $id) { return $q->where('profesor_id', $id); }
+    public function scopeDelEstudiante($q, int $id) { return $q->where('estudiante_id', $id); }
+    public function scopeDelPeriodo($q, int $id) { return $q->where('periodo_id', $id); }
 }

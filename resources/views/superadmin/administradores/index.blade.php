@@ -494,5 +494,12 @@ if (searchInput) {
         }, 500);
     });
 }
+
+// ── Adaptador para el modal de eliminación ──
+function mostrarModalDeleteData(btn) {
+    const url    = btn.dataset.route;
+    const nombre = btn.dataset.name;
+    mostrarModalDelete(url, nombre);
+}
 </script>
 @endpush

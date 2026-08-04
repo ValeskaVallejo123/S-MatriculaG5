@@ -1,199 +1,472 @@
 @extends('layouts.app')
 
-@section('title', 'Asignación Profesor-Materia-Grado')
-@section('page-title', 'Carga Docente Completa')
+@section('title', 'Asignación Maestros')
+@section('page-title', 'Asignación de Maestros')
 
 @section('topbar-actions')
-    <a href="{{ route('profesor_materia_grado.create') }}"
-       style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; padding: 0.5rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; border: none; box-shadow: 0 2px 8px rgba(78,199,210,0.3); font-size: 0.9rem;">
-        <i class="fas fa-plus"></i> Nueva Asignación
+    <a href="{{ route('profesor_materia_grado.create') }}" class="pm-topbar-btn">
+        <i class="fas fa-plus"></i>
+        <span class="pm-btn-text">Nueva Asignación</span>
     </a>
 @endsection
 
 @push('styles')
 <style>
-.pmgi-footer {
-    padding: .85rem 1.25rem; border-top: 1px solid #f1f5f9;
-    display: flex; align-items: center; justify-content: space-between;
-    background: #fafafa; flex-wrap: wrap; gap: .5rem;
-}
-.pmgi-pages { font-size: .78rem; color: #94a3b8; }
-.pagination { margin: 0; gap: 3px; display: flex; }
-.pagination .page-link {
-    border-radius: 7px; padding: .3rem .65rem;
-    font-size: .78rem; font-weight: 500;
-    border: 1px solid #e2e8f0; color: #00508f; transition: all .15s; line-height: 1.4;
-}
-.pagination .page-link:hover { background: #e8f8f9; border-color: #4ec7d2; }
-.pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, #4ec7d2, #00508f);
-    border-color: #4ec7d2; color: #fff;
-}
-.pagination .page-item.disabled .page-link { opacity: .45; }
+    .pm-topbar-btn {
+        display: inline-flex; align-items: center; gap: .45rem;
+        background: linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
+        color: white; padding: .5rem .9rem; border-radius: 8px;
+        text-decoration: none; font-weight: 600; font-size: .83rem;
+        box-shadow: 0 2px 8px rgba(78,199,210,0.3); white-space: nowrap;
+    }
+    .pm-topbar-btn:hover { opacity: .88; color: white; }
+    @media(max-width:600px) {
+        .pm-btn-text { display: none; }
+        .pm-topbar-btn { padding: .5rem .65rem; }
+    }
+
+    :root {
+        --blue-dark:  #003b73; --blue-mid: #00508f;
+        --teal:       #4ec7d2; --teal-light: rgba(78,199,210,0.12);
+        --border:     #e8edf4; --surface: #f5f8fc;
+        --text-main:  #0d2137; --text-muted: #6b7a90;
+        --green:      #10b981; --red: #ef4444;
+        --radius-lg:  14px; --radius-sm: 7px;
+        --shadow-sm:  0 1px 4px rgba(0,59,115,0.07);
+        --shadow-md:  0 4px 16px rgba(0,59,115,0.10);
+    }
+
+    /* ── Stats ── */
+    .pm-stats {
+        display: grid; grid-template-columns: repeat(3,1fr);
+        gap: 1rem; margin-bottom: 1.5rem;
+    }
+    @media(max-width:768px){ .pm-stats { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:480px){ .pm-stats { grid-template-columns: 1fr; } }
+
+    .pm-stat {
+        background: white; border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem;
+        box-shadow: var(--shadow-sm); transition: transform .2s, box-shadow .2s;
+        position: relative; overflow: hidden;
+    }
+    .pm-stat::before {
+        content: ''; position: absolute; top: 0; left: 0;
+        width: 4px; height: 100%; border-radius: 4px 0 0 4px;
+    }
+    .ps-prof::before   { background: var(--teal); }
+    .ps-asign::before  { background: var(--green); }
+    .ps-grupos::before { background: #818cf8; }
+    .pm-stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+    .pm-stat-icon {
+        width: 46px; height: 46px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; font-size: 1.15rem;
+    }
+    .ps-prof   .pm-stat-icon { background: var(--teal-light);    color: var(--teal); }
+    .ps-asign  .pm-stat-icon { background: rgba(16,185,129,.12); color: var(--green); }
+    .ps-grupos .pm-stat-icon { background: rgba(129,140,248,.15);color: #4f46e5; }
+
+    .pm-stat-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: .2rem; }
+    .pm-stat-num { font-size: 1.75rem; font-weight: 800; color: var(--blue-dark); line-height: 1; margin-bottom: .1rem; }
+    .pm-stat-sub { font-size: .73rem; color: var(--text-muted); }
+
+    /* ── Toolbar ── */
+    .pm-toolbar {
+        background: white; border: 1px solid var(--border);
+        border-radius: var(--radius-lg); padding: .9rem 1.25rem;
+        margin-bottom: 1.25rem;
+        display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+        box-shadow: var(--shadow-sm);
+    }
+    .pm-search-wrap { position: relative; flex: 1; min-width: 220px; }
+    .pm-search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--blue-mid); font-size: .85rem; pointer-events: none; }
+    .pm-search {
+        width: 100%; padding: .5rem 1rem .5rem 2.4rem;
+        border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+        font-size: .85rem; background: var(--surface); outline: none;
+        transition: border-color .2s, box-shadow .2s; font-family: inherit; color: var(--text-main);
+    }
+    .pm-search:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(78,199,210,.15); background: white; }
+
+    /* ── Card tabla ── */
+    .pm-card {
+        background: white; border: 1px solid var(--border);
+        border-radius: var(--radius-lg); overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+    .pm-card-head {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+        padding: .9rem 1.4rem; display: flex; align-items: center; gap: .6rem;
+    }
+    .pm-card-head i    { color: var(--teal); font-size: 1rem; }
+    .pm-card-head span { color: white; font-weight: 700; font-size: .95rem; }
+
+    .pm-tbl-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .pm-tbl { width: 100%; border-collapse: collapse; min-width: 700px; }
+    .pm-tbl thead th {
+        background: var(--surface); padding: .65rem 1rem;
+        font-size: .68rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: .07em; color: var(--text-muted);
+        border-bottom: 1.5px solid var(--border); white-space: nowrap;
+    }
+    .pm-tbl thead th.tc { text-align: center; }
+    .pm-tbl thead th.tr { text-align: right; }
+    .pm-tbl tbody td {
+        padding: .75rem 1rem; border-bottom: 1px solid #f1f5f9;
+        font-size: .83rem; color: var(--text-main); vertical-align: middle;
+    }
+    .pm-tbl tbody td.tc { text-align: center; }
+    .pm-tbl tbody td.tr { text-align: right; }
+    .pm-tbl tbody tr:last-child td { border-bottom: none; }
+    .pm-tbl tbody tr { transition: background .15s; }
+    .pm-tbl tbody tr:hover { background: #f7fbff; }
+    .pm-tbl tbody tr.hidden { display: none; }
+
+    /* ── Row num ── */
+    .row-num {
+        width: 24px; height: 24px; border-radius: 6px;
+        background: var(--surface); border: 1px solid var(--border);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: .7rem; font-weight: 700; color: var(--text-muted);
+    }
+
+    /* ── Avatar ── */
+    .pm-av {
+        width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+        background: linear-gradient(135deg, var(--teal), var(--blue-mid));
+        display: inline-flex; align-items: center; justify-content: center;
+        color: white; font-weight: 700; font-size: .9rem;
+        border: 2px solid rgba(78,199,210,.3);
+    }
+    .pm-name { font-weight: 600; color: var(--blue-dark); font-size: .88rem; }
+    .pm-sub  { font-size: .73rem; color: var(--text-muted); margin-top: .1rem; }
+
+    /* ── Chips ── */
+    .grado-chip {
+        display: inline-flex; align-items: center; gap: .25rem;
+        padding: .18rem .5rem; border-radius: 6px;
+        font-size: .68rem; font-weight: 600;
+        background: rgba(0,80,143,.06); color: var(--blue-dark);
+        border: 1px solid rgba(0,80,143,.15); margin: .1rem;
+        white-space: nowrap;
+    }
+    .grado-chip i { font-size: .58rem; color: var(--teal); }
+
+    .materia-chip {
+        display: inline-flex; align-items: center; gap: .25rem;
+        padding: .18rem .5rem; border-radius: 6px;
+        font-size: .68rem; font-weight: 600;
+        background: var(--teal-light); color: var(--blue-mid);
+        border: 1px solid rgba(78,199,210,.25); margin: .1rem;
+        white-space: nowrap;
+    }
+    .materia-chip i { font-size: .58rem; }
+
+    .mas-chip {
+        display: inline-flex; align-items: center;
+        padding: .18rem .5rem; border-radius: 6px;
+        font-size: .68rem; font-weight: 600;
+        background: #f1f5f9; color: #64748b;
+        border: 1px solid #e2e8f0; margin: .1rem;
+    }
+
+    .count-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 28px; height: 28px; border-radius: 7px;
+        font-size: .78rem; font-weight: 700;
+        background: var(--teal-light); color: var(--blue-mid);
+        border: 1px solid rgba(78,199,210,.35);
+    }
+
+    /* ── Botones acción ── */
+    .act-wrap { display: inline-flex; gap: 3px; align-items: center; }
+    .act-btn {
+        width: 28px; height: 28px; border-radius: 7px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 1.5px solid; font-size: .72rem;
+        background: white; cursor: pointer;
+        transition: all .15s; text-decoration: none; padding: 0;
+    }
+    .act-edit { border-color: var(--teal); color: var(--teal); }
+    .act-del  { border-color: var(--red);  color: var(--red); }
+    .act-edit:hover { background: var(--teal); color: white; transform: translateY(-1px); }
+    .act-del:hover  { background: var(--red);  color: white; transform: translateY(-1px); }
+
+    /* ── Empty ── */
+    .pm-empty { padding: 4rem 1rem; text-align: center; }
+    .pm-empty i  { font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: 1rem; }
+    .pm-empty h6 { color: var(--blue-dark); font-weight: 600; margin-bottom: .4rem; }
+    .pm-empty p  { font-size: .83rem; color: var(--text-muted); margin: 0 0 1.25rem; }
+
+    /* ── Footer ── */
+    .pm-footer {
+        padding: .85rem 1.25rem; border-top: 1px solid var(--border);
+        background: var(--surface);
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: .5rem;
+    }
+    .pm-footer-info { font-size: .78rem; color: var(--text-muted); }
+
+    .no-results-row td { padding: 2rem; text-align: center; color: #94a3b8; font-size: .83rem; }
+
+    @media(max-width:768px) {
+        .pm-toolbar { flex-direction: column; align-items: stretch; gap: .75rem; }
+        .pm-footer  { flex-direction: column; align-items: center; gap: .75rem; }
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="container-fluid px-4">
+<div>
 
-    {{-- Resumen --}}
-    <div class="row g-3 mb-3">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #00508f !important;">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div style="width:42px;height:42px;background:rgba(0,80,143,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-chalkboard-teacher" style="color:#00508f;"></i>
-                    </div>
-                    <div>
-                        <div class="small text-muted">Profesores asignados</div>
-                        <div class="fw-bold fs-4" style="color:#00508f;">{{ $totalProfesores }}</div>
-                    </div>
-                </div>
+    {{-- ── STATS ── --}}
+    <div class="pm-stats">
+        <div class="pm-stat ps-prof">
+            <div class="pm-stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div>
+                <div class="pm-stat-lbl">Profesores</div>
+                <div class="pm-stat-num">{{ $totalProfesores }}</div>
+                <div class="pm-stat-sub">Con asignaciones</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #4ec7d2 !important;">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div style="width:42px;height:42px;background:rgba(78,199,210,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-list-alt" style="color:#4ec7d2;"></i>
-                    </div>
-                    <div>
-                        <div class="small text-muted">Total asignaciones</div>
-                        <div class="fw-bold fs-4" style="color:#4ec7d2;">{{ $totalAsignaciones }}</div>
-                    </div>
-                </div>
+        <div class="pm-stat ps-asign">
+            <div class="pm-stat-icon"><i class="fas fa-list-alt"></i></div>
+            <div>
+                <div class="pm-stat-lbl">Total Asignaciones</div>
+                <div class="pm-stat-num">{{ $totalAsignaciones }}</div>
+                <div class="pm-stat-sub">Registradas</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 10px; border-left: 4px solid #003b73 !important;">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div style="width:42px;height:42px;background:rgba(0,59,115,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-school" style="color:#003b73;"></i>
-                    </div>
-                    <div>
-                        <div class="small text-muted">Grupos cubiertos</div>
-                        <div class="fw-bold fs-4" style="color:#003b73;">{{ $asignaciones->sum(fn($g) => $g->count()) }}</div>
-                    </div>
-                </div>
+        <div class="pm-stat ps-grupos">
+            <div class="pm-stat-icon"><i class="fas fa-layer-group"></i></div>
+            <div>
+                <div class="pm-stat-lbl">Profesores</div>
+                <div class="pm-stat-num">{{ $asignaciones->count() }}</div>
+                <div class="pm-stat-sub">En la lista</div>
             </div>
         </div>
     </div>
 
-    {{-- Tabla --}}
-    <div class="card border-0 shadow-sm" style="border-radius: 10px;">
-        <div class="card-body p-0">
-
-            {{-- Buscador --}}
-            <div class="p-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <form method="GET" action="{{ route('profesor_materia_grado.index') }}" class="d-flex gap-2 align-items-center flex-wrap">
-                    <div class="position-relative" style="min-width:260px;">
-                        <i class="fas fa-search position-absolute" style="left:12px;top:50%;transform:translateY(-50%);color:#00508f;font-size:0.85rem;"></i>
-                        <input type="text" name="buscar" value="{{ request('buscar') }}"
-                               class="form-control form-control-sm ps-4"
-                               placeholder="Buscar profesor o materia..."
-                               style="border:1.5px solid #e2e8f0;border-radius:8px;">
-                    </div>
-                    <select name="per_page" class="form-select form-select-sm" style="width:auto;border:1.5px solid #e2e8f0;border-radius:8px;" onchange="this.form.submit()">
-                        @foreach([10,15,25,50] as $n)
-                            <option value="{{ $n }}" {{ request('per_page', 15) == $n ? 'selected' : '' }}>{{ $n }} por página</option>
-                        @endforeach
-                    </select>
-                    <button type="submit" class="btn btn-sm" style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border-radius:8px;padding:0.3rem 0.9rem;">
-                        <i class="fas fa-search me-1"></i> Buscar
-                    </button>
-                    @if(request('buscar'))
-                        <a href="{{ route('profesor_materia_grado.index') }}" class="btn btn-sm" style="border:1.5px solid #e2e8f0;border-radius:8px;color:#6b7280;padding:0.3rem 0.9rem;">
-                            <i class="fas fa-times me-1"></i> Limpiar
-                        </a>
-                    @endif
-                </form>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="pmgTable">
-                    <thead style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-                        <tr>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size:0.7rem;color:#003b73;">#</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size:0.7rem;color:#003b73;">Profesor</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size:0.7rem;color:#003b73;">Materia</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold" style="font-size:0.7rem;color:#003b73;">Grado</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold text-center" style="font-size:0.7rem;color:#003b73;">Sección</th>
-                            <th class="px-3 py-2 text-uppercase small fw-semibold text-center" style="font-size:0.7rem;color:#003b73;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($asignaciones as $asignacion)
-                            <tr class="pmg-row" style="border-bottom:1px solid #f1f5f9;">
-                                <td class="px-3 py-2 text-muted small">{{ $asignaciones->firstItem() + $loop->index }}</td>
-                                <td class="px-3 py-2">
-                                    <div class="fw-semibold" style="color:#003b73;font-size:0.9rem;">
-                                        {{ $asignacion->profesor?->nombre_completo ?? (($asignacion->profesor?->nombre ?? '') . ' ' . ($asignacion->profesor?->apellido ?? '')) ?: 'Sin asignar' }}
-                                    </div>
-                                </td>
-                                <td class="px-3 py-2">
-                                    <span class="badge" style="background:rgba(78,199,210,0.1);color:#00508f;border:1px solid #4ec7d2;font-size:0.78rem;font-weight:500;padding:0.3rem 0.6rem;">
-                                        <i class="fas fa-book me-1" style="font-size:0.65rem;"></i>
-                                        {{ $asignacion->materia->nombre ?? '—' }}
-                                    </span>
-                                </td>
-                                <td class="px-3 py-2 small" style="color:#334155;">
-                                    {{ $asignacion->grado?->nombre_completo ?? '—' }}
-                                </td>
-                                <td class="px-3 py-2 text-center">
-                                    <span class="badge rounded-pill fw-bold"
-                                          style="background:rgba(0,80,143,0.1);color:#00508f;border:1px solid #00508f;padding:0.3rem 0.7rem;font-size:0.8rem;">
-                                        {{ $asignacion->seccion }}
-                                    </span>
-                                </td>
-                                <td class="px-3 py-2 text-center">
-                                    <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <a href="{{ route('profesor_materia_grado.edit', $asignacion->id) }}"
-                                           class="btn btn-sm" title="Editar"
-                                           style="background:rgba(78,199,210,0.1);color:#00508f;border:1px solid #4ec7d2;border-radius:6px;padding:0.25rem 0.5rem;">
-                                            <i class="fas fa-edit" style="font-size:0.75rem;"></i>
-                                        </a>
-                                        <form method="POST"
-                                              action="{{ route('profesor_materia_grado.destroy', $asignacion->id) }}"
-                                              data-confirm="¿Eliminar esta asignación?"
-                                              class="m-0">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm" title="Eliminar"
-                                                    style="background:rgba(244,67,54,0.08);color:#d32f2f;border:1px solid #ef9a9a;border-radius:6px;padding:0.25rem 0.5rem;">
-                                                <i class="fas fa-trash" style="font-size:0.75rem;"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-5">
-                                    <i class="fas fa-inbox fa-3x mb-3" style="color:#00508f;opacity:0.3;"></i>
-                                    <h6 style="color:#003b73;">No hay asignaciones registradas</h6>
-                                    <a href="{{ route('profesor_materia_grado.create') }}"
-                                       class="btn btn-sm mt-2"
-                                       style="background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border-radius:8px;padding:0.4rem 1rem;">
-                                        <i class="fas fa-plus me-1"></i>Crear primera asignación
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+    {{-- ── TOOLBAR ── --}}
+    <div class="pm-toolbar">
+        <div class="pm-search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="pm-search"
+                   placeholder="Buscar por nombre de profesor, materia o grado...">
         </div>
+        <span style="font-size:.82rem;color:var(--text-muted);flex-shrink:0;">
+            <i class="fas fa-chalkboard-teacher" style="color:var(--blue-mid);"></i>
+            <strong id="visibleCount" style="color:var(--blue-mid);">{{ $asignaciones->count() }}</strong>
+            profesores
+        </span>
     </div>
 
-    {{-- Paginación --}}
-    @if($asignaciones->hasPages())
-        <div class="pmgi-footer">
-            <span class="pmgi-pages">
-                Mostrando {{ $asignaciones->firstItem() }}–{{ $asignaciones->lastItem() }} de {{ $asignaciones->total() }} asignaciones
+    {{-- ── TABLA ── --}}
+    <div class="pm-card">
+        <div class="pm-card-head">
+            <i class="fas fa-user-tag"></i>
+            <span>Asignaciones Profesor — Materia — Grado</span>
+        </div>
+
+        <div class="pm-tbl-wrapper">
+            <table class="pm-tbl" id="pmTable">
+                <thead>
+                    <tr>
+                        <th style="width:44px;" class="tc">#</th>
+                        <th>Profesor</th>
+                        <th>Grados asignados</th>
+                        <th>Materias asignadas</th>
+                        <th class="tc" style="width:70px;">Total</th>
+                        <th class="tr" style="width:90px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+
+                    @forelse($asignaciones as $profesorId => $filas)
+                    @php
+                        $profesor = $filas->first()->profesor;
+
+                        /* Grados únicos: "1ro Primaria — Sec. A" */
+                        $gradosUnicos = $filas->map(function($f) {
+                            $g = $f->grado;
+                            if (!$g) return null;
+                            $num = match((int)$g->numero) {
+                                1=>'1ro', 2=>'2do', 3=>'3ro',
+                                4=>'4to', 5=>'5to', 6=>'6to',
+                                7=>'7mo', 8=>'8vo', 9=>'9no',
+                                default => $g->numero.'°'
+                            };
+                            return $num . ' ' . ucfirst($g->nivel) . ' — Sec. ' . $f->seccion;
+                        })->filter()->unique()->values();
+
+                        /* Materias únicas */
+                        $materiasUnicas = $filas->map(fn($f) => $f->materia->nombre ?? null)
+                            ->filter()->unique()->values();
+
+                        /* Texto para búsqueda */
+                        $searchText = strtolower(
+                            ($profesor->nombre ?? '') . ' ' .
+                            ($profesor->apellido ?? '') . ' ' .
+                            $gradosUnicos->implode(' ') . ' ' .
+                            $materiasUnicas->implode(' ')
+                        );
+
+                        /* ID del primer registro (para editar/eliminar el grupo) */
+                        $primerIdDelGrupo = $filas->first()->id;
+                    @endphp
+                    <tr class="pm-row" data-search="{{ $searchText }}">
+
+                        {{-- # --}}
+                        <td class="tc">
+                            <span class="row-num">{{ $loop->iteration }}</span>
+                        </td>
+
+                        {{-- Profesor --}}
+                        <td>
+                            <div style="display:flex;align-items:center;gap:.65rem;">
+                                <div class="pm-av">
+                                    {{ strtoupper(substr($profesor->nombre ?? 'P', 0, 1) . substr($profesor->apellido ?? '', 0, 1)) }}
+                                </div>
+                                <div>
+                                    <div class="pm-name">{{ $profesor->nombre }} {{ $profesor->apellido }}</div>
+                                    @if($profesor->especialidad)
+                                        <div class="pm-sub">{{ $profesor->especialidad }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+
+                        {{-- Grados ── ahora con datos reales --}}
+                        <td>
+                            @if($gradosUnicos->isNotEmpty())
+                                <div style="display:flex;flex-wrap:wrap;gap:.1rem;">
+                                    @foreach($gradosUnicos->take(3) as $g)
+                                        <span class="grado-chip">
+                                            <i class="fas fa-layer-group"></i> {{ $g }}
+                                        </span>
+                                    @endforeach
+                                    @if($gradosUnicos->count() > 3)
+                                        <span class="mas-chip">+{{ $gradosUnicos->count() - 3 }} más</span>
+                                    @endif
+                                </div>
+                            @else
+                                <span style="color:#cbd5e1;font-size:.75rem;">—</span>
+                            @endif
+                        </td>
+
+                        {{-- Materias ── con datos reales --}}
+                        <td>
+                            @if($materiasUnicas->isNotEmpty())
+                                <div style="display:flex;flex-wrap:wrap;gap:.1rem;">
+                                    @foreach($materiasUnicas->take(4) as $m)
+                                        <span class="materia-chip">
+                                            <i class="fas fa-book"></i> {{ $m }}
+                                        </span>
+                                    @endforeach
+                                    @if($materiasUnicas->count() > 4)
+                                        <span class="mas-chip">+{{ $materiasUnicas->count() - 4 }} más</span>
+                                    @endif
+                                </div>
+                            @else
+                                <span style="color:#cbd5e1;font-size:.75rem;font-style:italic;">Sin materias</span>
+                            @endif
+                        </td>
+
+                        {{-- Total asignaciones del profesor --}}
+                        <td class="tc">
+                            <span class="count-badge">{{ $filas->count() }}</span>
+                        </td>
+
+                        {{-- Acciones: editar y eliminar el primer registro del grupo --}}
+                        <td class="tr">
+                            <div class="act-wrap">
+                                <a href="{{ route('profesor_materia_grado.edit', $primerIdDelGrupo) }}"
+                                   class="act-btn act-edit" title="Editar">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <button type="button"
+                                        class="act-btn act-del" title="Eliminar"
+                                        onclick="mostrarModalDelete(
+                                            '{{ route('profesor_materia_grado.destroy', $primerIdDelGrupo) }}',
+                                            '{{ addslashes(($profesor->nombre ?? '') . ' ' . ($profesor->apellido ?? '')) }}'
+                                        )">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    @empty
+                    <tr>
+                        <td colspan="6">
+                            <div class="pm-empty">
+                                <i class="fas fa-user-tag"></i>
+                                <h6>No hay asignaciones registradas</h6>
+                                <p>Comienza asignando materias a los profesores</p>
+                                <a href="{{ route('profesor_materia_grado.create') }}" class="pm-topbar-btn"
+                                   style="display:inline-flex;">
+                                    <i class="fas fa-plus"></i> Nueva Asignación
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+
+                </tbody>
+            </table>
+        </div>
+
+        @if($asignaciones->count() > 0)
+        <div class="pm-footer">
+            <span class="pm-footer-info">
+                {{ $asignaciones->count() }} {{ $asignaciones->count() == 1 ? 'profesor' : 'profesores' }}
+                con {{ $totalAsignaciones }} asignaciones en total
             </span>
-            {{ $asignaciones->appends(request()->query())->links() }}
         </div>
-    @endif
+        @endif
+    </div>
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input        = document.getElementById('searchInput');
+    const tbody        = document.getElementById('tableBody');
+    const visibleCount = document.getElementById('visibleCount');
+
+    if (!input || !tbody) return;
+
+    input.addEventListener('input', function () {
+        const term = this.value.toLowerCase().trim();
+        const noRow = tbody.querySelector('.no-results-row');
+        if (noRow) noRow.remove();
+
+        let visible = 0;
+        tbody.querySelectorAll('.pm-row').forEach(function (row) {
+            const match = term === '' || (row.dataset.search || '').includes(term);
+            row.classList.toggle('hidden', !match);
+            if (match) visible++;
+        });
+
+        if (visibleCount) visibleCount.textContent = visible;
+
+        if (visible === 0 && term !== '') {
+            const tr = document.createElement('tr');
+            tr.className = 'no-results-row';
+            tr.innerHTML = `<td colspan="6" style="text-align:center;padding:3rem 1rem;">
+                <i class="fas fa-search" style="font-size:1.75rem;color:#cbd5e1;display:block;margin-bottom:.75rem;"></i>
+                <p style="color:#94a3b8;margin:0;font-size:.85rem;">
+                    Sin resultados para <strong style="color:#0d2137;">"${term}"</strong>
+                </p>
+            </td>`;
+            tbody.appendChild(tr);
+        }
+    });
+});
+</script>
+@endpush

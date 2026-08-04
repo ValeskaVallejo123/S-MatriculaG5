@@ -9,9 +9,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('observaciones', function (Blueprint $table) {
-            $table->enum('tipo', ['academica', 'conductual', 'salud', 'otro'])
-                ->nullable()
-                ->after('descripcion');
+            if (!Schema::hasColumn('observaciones', 'tipo')) {
+                $table->enum('tipo', ['academica', 'conductual', 'salud', 'otro'])
+                    ->nullable()
+                    ->after('descripcion');
+            }
         });
     }
 

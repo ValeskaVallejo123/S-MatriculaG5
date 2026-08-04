@@ -8,12 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('seccion', function (Blueprint $table) {
-            // Solo agrega las que NO existan todavía
-            if (!Schema::hasColumn('seccion', 'grado')) {
+        Schema::table('secciones', function (Blueprint $table) {
+            if (!Schema::hasColumn('secciones', 'grado')) {
                 $table->string('grado', 20)->after('id');
             }
-            if (!Schema::hasColumn('seccion', 'nombre')) {
+            if (!Schema::hasColumn('secciones', 'nombre')) {
                 $table->string('nombre', 10)->after('grado');
             }
         });
@@ -21,7 +20,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('seccion', function (Blueprint $table) {
+        Schema::table('secciones', function (Blueprint $table) {
             $table->dropColumn(['grado', 'nombre']);
         });
     }
