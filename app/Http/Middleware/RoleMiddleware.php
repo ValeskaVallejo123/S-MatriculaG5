@@ -54,7 +54,9 @@ class RoleMiddleware
             abort(403, 'No tienes permiso para acceder a esta página.');
         }
 
-        return $next($request);
+        // 4. Si después de revisar todos los roles no coincide ninguno
+        abort(403, 'No tienes permiso para acceder a esta sección.');
+
     }
 
     /**
