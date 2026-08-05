@@ -293,10 +293,9 @@ class EstudianteController extends Controller
 
         return back()->with('success', 'Notificación marcada como leída.');
     }
-
     /* ============================================================
-   HISTORIAL PARA EL ESTUDIANTE (Solo Lectura)
-   ============================================================ */
+       HISTORIAL PARA EL ESTUDIANTE (Solo Lectura)
+       ============================================================ */
     public function historial()
     {
         $user = auth()->user();

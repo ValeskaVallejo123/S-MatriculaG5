@@ -129,8 +129,15 @@ class User extends Authenticatable
 
     public function tieneRol(string $nombreRol): bool
     {
-        return $this->rol &&
-            strtolower(trim($this->rol->nombre)) === strtolower(trim($nombreRol));
+        $nombreRol = strtolower(trim($nombreRol));
+
+        // Prioridad al user_type de la tabla users
+        if (strtolower(trim($this->user_type)) === $nombreRol) {
+            return true;
+        }
+
+        // Luego revisa la relación con la tabla roles
+        return $this->rol && strtolower(trim($this->rol->nombre)) === $nombreRol;
     }
 
     public function isSuperAdmin(): bool
@@ -155,9 +162,9 @@ class User extends Authenticatable
 
     public function isEstudiante(): bool
     {
-        return $this->id_rol == 4
-            || $this->tieneRol('Estudiante')
-            || $this->tieneRol('Alumno');
+        return $this->user_type === 'estudiante'
+            || $this->id_rol == 4
+            || $this->tieneRol('Estudiante');
     }
 
     public function isPadre(): bool
@@ -399,4 +406,6 @@ class User extends Authenticatable
         // Esto asume que tienes un campo email en ambas tablas para vincularlos
         return $this->hasOne(Estudiante::class, 'email', 'email');
     }
+
+
 }
