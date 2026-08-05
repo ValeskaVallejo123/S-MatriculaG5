@@ -33,8 +33,7 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo',
             'descripcion' => 'nullable|string',
             'nivel' => 'required|in:primaria,secundaria',
-            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana,Química,Física,Biología,Historia,Geografía',
-        ], [
+            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Tecnología,Formación Ciudadana,Formación Cívica y Ética,Química,Física,Biología,Historia,Geografía',
             'nombre.regex' => 'El nombre de la materia solo puede contener letras y espacios',
         ]);
 
@@ -62,7 +61,7 @@ class MateriaController extends Controller
             'codigo' => 'required|string|max:20|unique:materias,codigo,' . $materia->id,
             'descripcion' => 'nullable|string',
             'nivel' => 'required|in:primaria,secundaria',
-            'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Formación Ciudadana,Química,Física,Biología,Historia,Geografía',
+           'area' => 'required|in:Matemáticas,Español,Ciencias Naturales,Ciencias Sociales,Educación Física,Educación Artística,Inglés,Informática,Tecnología,Formación Ciudadana,Formación Cívica y Ética,Química,Física,Biología,Historia,Geografía',
             'activo' => 'boolean',
         ], [
             'nombre.regex' => 'El nombre de la materia solo puede contener letras y espacios',

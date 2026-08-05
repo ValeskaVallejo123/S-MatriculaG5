@@ -78,13 +78,13 @@ class UsuarioController extends Controller
             'rol_id'   => ['required', 'exists:roles,id'],
         ]);
 
-        User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'rol_id'   => $request->rol_id,
-            'activo'   => 1,
-        ]);
+User::create([
+    'name'     => $request->name,
+    'email'    => $request->email,
+    'password' => Hash::make($request->password),
+    'id_rol'   => $request->rol_id,
+    'activo'   => 1,
+]);
 
         return redirect()->route('superadmin.usuarios.index')
             ->with('success', 'Usuario creado exitosamente.');
@@ -114,10 +114,10 @@ class UsuarioController extends Controller
         ]);
 
         $datos = [
-            'name'   => $request->name,
-            'email'  => $request->email,
-            'rol_id' => $request->rol_id,
-        ];
+    'name'   => $request->name,
+    'email'  => $request->email,
+    'id_rol' => $request->rol_id,
+];
 
         if ($request->filled('password')) {
             $request->validate([

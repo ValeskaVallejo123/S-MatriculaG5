@@ -17,7 +17,7 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required','string','min:3','max:50','regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/'],
+          'name' => ['required','string','min:3','max:50','regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
             'email' => [
                 'required',
                 'max:100',

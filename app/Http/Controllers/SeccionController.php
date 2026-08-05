@@ -132,7 +132,7 @@ class SeccionController extends Controller
     {
         $validated = $request->validate([
             'estudiante_id' => 'required|exists:estudiantes,id',
-            'seccion_id'    => 'required|exists:seccion,id',
+            'seccion_id'    => 'required|exists:secciones,id',
         ]);
 
         $matricula = Matricula::where('estudiante_id', $request->estudiante_id)

@@ -60,9 +60,9 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre'   => 'required|string|min:3|max:50|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
-            'apellido' => 'required|string|min:3|max:50|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
-            'password' => 'required|confirmed|min:8|max:50|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).+$/',
+            'nombre'   => 'required|string|min:3|max:50|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u',
+'apellido' => 'required|string|min:3|max:50|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u',
+            'password' => 'required|confirmed|min:8|max:50|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
             'permisos' => 'nullable|array',
             'role'     => 'required|in:admin,super_admin',
         ], [
@@ -88,7 +88,7 @@ class AdminController extends Controller
 
         $passwordPlain = $validated['password'];
 
-        // ✅ CORREGIDO: se asigna id_rol correctamente
+        // CORREGIDO: se asigna id_rol correctamente
         // id_rol 1 = Super Admin | id_rol 2 = Administrador
         $admin = User::create([
             'name'           => $validated['nombre'] . ' ' . $validated['apellido'],
@@ -180,7 +180,7 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name'     => [
                 'required', 'string', 'min:3', 'max:100',
-                'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+                'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u',
             ],
             'email'    => [
                 'required', 'email', 'max:100',
@@ -210,7 +210,7 @@ class AdminController extends Controller
             'password.regex'     => 'La contraseña debe contener al menos: una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&#)',
         ]);
 
-        // ✅ CORREGIDO: se actualiza id_rol correctamente
+        //  CORREGIDO: se actualiza id_rol correctamente
         $admin->update([
             'name'           => $validated['name'],
             'email'          => $validated['email'],

@@ -121,7 +121,7 @@ class MatriculaController extends Controller
             // Padre/Tutor
             'padre_nombre'                => 'required|string|min:2|max:50',
             'padre_apellido'              => 'required|string|min:2|max:50',
-            'padre_dni'                   => 'required|string|max:13',
+            'padre_dni'                   => 'required|string|size:13',
             'padre_parentesco'            => 'required|in:padre,madre,otro',
             'padre_parentesco_otro'       => 'nullable|required_if:padre_parentesco,otro|string|max:50',
             'padre_email'                 => 'nullable|email|max:100|unique:users,email',
@@ -130,7 +130,7 @@ class MatriculaController extends Controller
             // Estudiante
             'estudiante_nombre'           => 'required|string|min:2|max:100',
             'estudiante_apellido'         => 'required|string|min:2|max:100',
-            'estudiante_dni'              => 'required|string|max:13|unique:estudiantes,dni',
+            'estudiante_dni'              => 'required|string|size:13|unique:estudiantes,dni',
             'estudiante_fecha_nacimiento' => 'required|date|before:today',
             'estudiante_sexo'             => 'required|in:masculino,femenino',
             'estudiante_email'            => 'nullable|email|max:100',
@@ -415,7 +415,7 @@ class MatriculaController extends Controller
             // Padre/Tutor
             'padre_nombre'                => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
             'padre_apellido'              => ['required', 'string', 'min:2', 'max:50', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
-            'padre_dni'                   => ['required', 'string', 'max:13', 'regex:/^\d+$/'], // Solo números
+            'padre_dni'                   => ['required', 'string', 'size:13', 'regex:/^\d+$/'], // Solo números // Solo números
             'padre_parentesco'            => 'required|in:padre,madre,otro',
             'padre_parentesco_otro'       => 'nullable|required_if:padre_parentesco,otro|string|max:50',
             'padre_email'                 => 'nullable|email|max:100|unique:users,email',
@@ -425,7 +425,7 @@ class MatriculaController extends Controller
             // Estudiante
             'estudiante_nombre'           => ['required', 'string', 'min:2', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
             'estudiante_apellido'         => ['required', 'string', 'min:2', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u'],
-            'estudiante_dni'              => ['required', 'string', 'max:13', 'unique:estudiantes,dni', 'regex:/^\d+$/'], // Solo números
+            'estudiante_dni'              => ['required', 'string', 'size:13', 'unique:estudiantes,dni', 'regex:/^\d+$/'], // Solo números// Solo números
             'estudiante_fecha_nacimiento' => 'required|date|before:today',
             'estudiante_sexo'             => 'required|in:masculino,femenino',
             'estudiante_email'            => 'nullable|email|max:100',
