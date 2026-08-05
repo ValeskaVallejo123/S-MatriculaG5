@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
+
 class Grado extends Model
 {
     use HasFactory;
+
+    protected $table = 'grados';
 
     protected $fillable = [
         'nivel',
@@ -21,14 +25,13 @@ class Grado extends Model
         'activo' => 'boolean',
     ];
 
-    // Relación con materias a través de profesor_materia_grados
-    public function materias()
-    {
-        return $this->belongsToMany(Materia::class, 'profesor_materia_grados')
-                    ->withPivot('profesor_id', 'seccion')
-                    ->withTimestamps();
-    }
-
+    // Relación con materias a través de grado_materia
+   public function materias()
+{
+    return $this->belongsToMany(Materia::class, 'grado_materia')
+        ->withPivot('horas_semanales', 'profesor_id')  // ← agregar profesor_id
+        ->withTimestamps();
+}
     // Accesor para nombre completo del grado
     public function getNombreCompletoAttribute()
     {

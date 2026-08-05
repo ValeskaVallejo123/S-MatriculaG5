@@ -10,20 +10,16 @@ return new class extends Migration
     {
         Schema::create('matriculas', function (Blueprint $table) {
             $table->id();
+
             // Relaciones obligatorias
             $table->foreignId('padre_id')->constrained('padres')->onDelete('cascade');
             $table->foreignId('estudiante_id')->constrained('estudiantes')->onDelete('cascade');
 
-            $table->foreignId('seccion_id')
-                ->nullable()
-                ->constrained('secciones')
-                ->nullOnDelete();
-
             // Usuario que aprueba/rechaza (admin o superadmin)
             $table->foreignId('usuario_decision_id')
-                  ->nullable()
-                  ->constrained('users')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
 
             // Información de la Matrícula
             $table->string('codigo_matricula', 20)->unique();
@@ -38,7 +34,7 @@ return new class extends Migration
 
             // Estado de la Matrícula
             $table->enum('estado', ['pendiente', 'aprobada', 'rechazada', 'cancelada'])
-                  ->default('pendiente');
+                ->default('pendiente');
 
             // Justificación si fue rechazada o cancelada
             $table->text('motivo_rechazo')->nullable();
@@ -47,8 +43,8 @@ return new class extends Migration
             // Fecha en que se aprobó/rechazó
             $table->timestamp('fecha_confirmacion')->nullable();
 
-             // Sección asignada (opcional)
-            
+            // Nota: seccion_id se agrega en una migración posterior
+            // (2026_03_22_023120_add_seccion_id_to_matriculas_table.php)
 
             $table->timestamps();
         });

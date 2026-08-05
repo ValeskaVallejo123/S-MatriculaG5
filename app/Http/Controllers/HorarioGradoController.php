@@ -93,24 +93,77 @@ class HorarioGradoController extends Controller
             ->where('jornada', $jornada)
             ->firstOrFail();
 
-        $horarioGrado->update([
-            'horario' => json_decode($request->horario, true)
-        ]);
+        $nuevoHorario = json_decode($request->horario, true);
 
-        // ← AGREGA ESTO: reordenar días correctamente
-        $ordenDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-        if ($horarioGrado->horario) {
-          $horarioOrdenado = [];
-          foreach ($ordenDias as $dia) {
-             if (isset($horarioGrado->horario[$dia])) {
-                $horarioOrdenado[$dia] = $horarioGrado->horario[$dia];
-             }
+        // ── Validar conflictos de profesor entre grados ──
+        $otrosHorarios = HorarioGrado::where('jornada', $jornada)
+            ->where('grado_id', '!=', $grado_id)
+            ->with('grado')
+            ->get();
+
+        $conflictos = [];
+        foreach ($nuevoHorario as $dia => $horas) {
+            if (!is_array($horas)) continue;
+            foreach ($horas as $hora => $celda) {
+                if (str_contains($hora, 'RECREO')) continue;
+                if (!is_array($celda) || !($celda['profesor_id'] ?? null)) continue;
+
+                foreach ($otrosHorarios as $otro) {
+                    $oData = $otro->horario;
+                    if (isset($oData[$dia][$hora]) &&
+                        is_array($oData[$dia][$hora]) &&
+                        ($oData[$dia][$hora]['profesor_id'] ?? null) == $celda['profesor_id']) {
+                        $g    = $otro->grado;
+                        $prof = \App\Models\Profesor::find($celda['profesor_id']);
+                        $nombre = $prof ? $prof->nombre : "Prof. #{$celda['profesor_id']}";
+                        $conflictos[] = "{$nombre} — {$dia} {$hora} ya está asignado en {$g->numero}° {$g->seccion}";
+                    }
+                }
             }
-           $horarioGrado->horario = $horarioOrdenado;
         }
 
-        return redirect()->route('superadmin.horarios_grado.show', [$grado_id, $jornada])
+        if (!empty($conflictos)) {
+            return redirect()->back()
+                ->with('conflictos', $conflictos)
+                ->with('horario_rechazado', $request->horario);
+        }
+
+        $horarioGrado->update(['horario' => $nuevoHorario]);
+
+        return redirect()->route('horarios_grado.show', [$grado_id, $jornada])
             ->with('success', 'Horario actualizado correctamente.');
+    }
+
+    public function verificarConflicto(Request $request, $grado_id, $jornada)
+    {
+        $profesorId = $request->profesor_id;
+        $dia        = $request->dia;
+        $hora       = $request->hora;
+
+        if (!$profesorId || str_contains($hora ?? '', 'RECREO')) {
+            return response()->json(['conflicto' => false, 'grados' => []]);
+        }
+
+        $horarios = HorarioGrado::where('jornada', $jornada)
+            ->where('grado_id', '!=', $grado_id)
+            ->with('grado')
+            ->get();
+
+        $conflictos = [];
+        foreach ($horarios as $h) {
+            $data = $h->horario;
+            if (isset($data[$dia][$hora]) &&
+                is_array($data[$dia][$hora]) &&
+                ($data[$dia][$hora]['profesor_id'] ?? null) == $profesorId) {
+                $g = $h->grado;
+                $conflictos[] = $g->numero . '° ' . $g->seccion;
+            }
+        }
+
+        return response()->json([
+            'conflicto' => !empty($conflictos),
+            'grados'    => $conflictos,
+        ]);
     }
 
     /*

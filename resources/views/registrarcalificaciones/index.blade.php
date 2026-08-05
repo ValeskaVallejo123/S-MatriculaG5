@@ -6,7 +6,7 @@
         $gradoSeleccionado = request('grado_id');
     @endphp
 
-    @php
+
         $usuario = auth()->user();
         $rutaDashboard = match($usuario->rol->nombre ?? '') {
             'Administrador' => route('admin.dashboard'),

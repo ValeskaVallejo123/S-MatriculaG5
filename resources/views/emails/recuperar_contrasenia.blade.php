@@ -50,7 +50,7 @@
       </h2>
 
       <p style="color:#4a5568;font-size:.88rem;line-height:1.7;margin:0 0 12px;">
-        Hola{{ isset($user) ? ', <strong style="color:#003b73;">' . $user->name . '</strong>' : '' }} 👋
+        Hola{!! isset($user) ? ', <strong style="color:#003b73;">' . $user->name . '</strong>' : '' !!} 👋
       </p>
 
       <p style="color:#4a5568;font-size:.88rem;line-height:1.7;margin:0 0 24px;">

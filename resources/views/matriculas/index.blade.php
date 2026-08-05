@@ -223,69 +223,69 @@
             </div>
         </div>
 
-        {{-- Filtros --}}
-        <div class="mat-filter">
-            <form action="{{ route('matriculas.index') }}" method="GET">
-                <div class="filter-grid">
-                    <div>
-                        <label class="filter-label"><i class="fas fa-search"></i> Buscar</label>
-                        <input type="text" name="buscar" class="filter-input"
-                               placeholder="Nombre, apellido o DNI..."
-                               value="{{ request('buscar') }}">
-                    </div>
-                    <div>
-                        <label class="filter-label"><i class="fas fa-graduation-cap"></i> Grado</label>
-                        <select name="grado" class="filter-select">
-                            <option value="">Todos</option>
-                            @foreach(['1°','2°','3°','4°','5°','6°'] as $g)
-                                <option value="{{ $g }}" {{ request('grado') === $g ? 'selected' : '' }}>{{ $g }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="filter-label"><i class="fas fa-flag"></i> Estado</label>
-                        <select name="estado" class="filter-select">
-                            <option value="">Todos</option>
-                            <option value="aprobada"  {{ request('estado') === 'aprobada'  ? 'selected' : '' }}>Aprobada</option>
-                            <option value="pendiente" {{ request('estado') === 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                            <option value="rechazada" {{ request('estado') === 'rechazada' ? 'selected' : '' }}>Rechazada</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="filter-label"><i class="fas fa-calendar"></i> Año</label>
-                        <select name="anio" class="filter-select">
-                            <option value="">Todos</option>
-                            <option value="2025" {{ request('anio') === '2025' ? 'selected' : '' }}>2025</option>
-                            <option value="2024" {{ request('anio') === '2024' ? 'selected' : '' }}>2024</option>
-                            <option value="2023" {{ request('anio') === '2023' ? 'selected' : '' }}>2023</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="filter-label" style="opacity:0;">-</label>
-                        <button type="submit" class="filter-btn">
-                            <i class="fas fa-filter"></i> Filtrar
-                        </button>
-                    </div>
+    {{-- Filtros --}}
+    <div class="mat-filter">
+        <form action="{{ route('matriculas.index') }}" method="GET">
+            <div class="filter-grid">
+                <div>
+                    <label class="filter-label"><i class="fas fa-search"></i> Buscar</label>
+                    <input type="text" name="buscar" class="filter-input"
+                           placeholder="Nombre, apellido o DNI..."
+                           value="{{ request('buscar') }}">
                 </div>
-                @if(request('buscar') || request('grado') || request('estado') || request('anio'))
-                    <a href="{{ route('matriculas.index') }}" class="filter-clear">
-                        <i class="fas fa-times"></i> Limpiar filtros
-                    </a>
-                @endif
-            </form>
+                <div>
+                    <label class="filter-label"><i class="fas fa-graduation-cap"></i> Grado</label>
+                    <select name="grado" class="filter-select">
+                        <option value="">Todos</option>
+                        @foreach(['Primer Grado','Segundo Grado','Tercer Grado','Cuarto Grado','Quinto Grado','Sexto Grado','Séptimo Grado','Octavo Grado','Noveno Grado'] as $g)
+                        <option value="{{ $g }}" {{ request('grado') === $g ? 'selected' : '' }}>{{ $g }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="filter-label"><i class="fas fa-flag"></i> Estado</label>
+                    <select name="estado" class="filter-select">
+                        <option value="">Todos</option>
+                        <option value="aprobada"  {{ request('estado') === 'aprobada'  ? 'selected' : '' }}>Aprobada</option>
+                        <option value="pendiente" {{ request('estado') === 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="rechazada" {{ request('estado') === 'rechazada' ? 'selected' : '' }}>Rechazada</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="filter-label"><i class="fas fa-calendar"></i> Año</label>
+                    <select name="anio" class="filter-select">
+                        <option value="">Todos</option>
+                        <option value="2025" {{ request('anio') === '2025' ? 'selected' : '' }}>2025</option>
+                        <option value="2024" {{ request('anio') === '2024' ? 'selected' : '' }}>2024</option>
+                        <option value="2023" {{ request('anio') === '2023' ? 'selected' : '' }}>2023</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="filter-label" style="opacity:0;">-</label>
+                    <button type="submit" class="filter-btn">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+            @if(request('buscar') || request('grado') || request('estado') || request('anio'))
+            <a href="{{ route('matriculas.index') }}" class="filter-clear">
+                <i class="fas fa-times"></i> Limpiar filtros
+            </a>
+            @endif
+        </form>
+    </div>
+
+    {{-- Table card --}}
+    <div class="mat-card">
+        <div class="mat-card-head">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Lista de Matrículas</span>
         </div>
 
-        {{-- Table card --}}
-        <div class="mat-card">
-            <div class="mat-card-head">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Lista de Matrículas</span>
-            </div>
-
-            <div style="overflow-x:auto;">
-                <table class="mat-tbl">
-                    <thead>
-                    <tr>
+        <div style="overflow-x:auto;">
+            <table class="mat-tbl">
+                <thead>
+                <tr>
                         <th>Estudiante</th>
                         <th class="tc">Grado / Sección</th>
                         <th class="tc">Año</th>
@@ -339,22 +339,21 @@
                                     <span class="bpill b-green">
                             <i class="fas fa-check-circle"></i> Aprobada
                           </span>
-                                @elseif($matricula->estado === 'pendiente')
-                                    <form action="{{ route('matriculas.aprobar', $matricula->id) }}" method="POST"
-                                          style="display:inline;">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="bpill b-yellow"
-                                                style="border:none;cursor:pointer;font-family:inherit;"
-                                                onclick="return confirm('¿Aprobar esta matrícula?')"
-                                                title="Clic para aprobar">
-                                            <i class="fas fa-clock"></i> Pendiente
-                                            <i class="fas fa-arrow-right" style="font-size:.6rem;margin-left:.2rem;opacity:.6;"></i>
-                                        </button>
-                                    </form>
-                                @elseif($matricula->estado === 'rechazada')
-                                    <span class="bpill b-red">
-                                  <i class="fas fa-times-circle"></i> Rechazada
+                             @elseif($matricula->estado === 'pendiente')
+                              <form action="{{ route('matriculas.aprobar', $matricula->id) }}" method="POST"
+                               style="display:inline;"
+                               data-confirm="¿Aprobar esta matrícula?">
+                               @csrf
+                               @method('PATCH')
+                               <button type="submit" class="bpill b-yellow"
+                                style="border:none;cursor:pointer;font-family:inherit;"
+                                title="Clic para aprobar">
+                                 <i class="fas fa-clock"></i> Pendiente
+                                <i class="fas fa-arrow-right" style="font-size:.6rem;margin-left:.2rem;opacity:.6;"></i>
+                               </button>
+                            </form>
+                               @elseif($matricula->estado === 'rechazada')
+                                 <span class="bpill b-red">                                  <i class="fas fa-times-circle"></i> Rechazada
                                  </span>
                                 @else
                                     <span class="bpill b-gray">{{ ucfirst($matricula->estado) }}</span>

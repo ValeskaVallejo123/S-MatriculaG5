@@ -70,11 +70,11 @@ class MateriaController extends Controller
                         ->with('success', 'Materia actualizada exitosamente');
     }
 
-    public function destroy(Materia $materia)
+    public function destroy(Request $request, Materia $materia)
     {
         $materia->delete();
 
-        return redirect()->route('materias.index')
+        return redirect()->route('materias.index', ['page' => $request->input('page', 1)])
                         ->with('success', 'Materia eliminada exitosamente');
     }
 }

@@ -8,7 +8,7 @@ use App\Models\PadrePermiso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PadrePermisoController extends Controller
+class ProfesorPermisoController extends Controller
 {
     public function __construct()
     {

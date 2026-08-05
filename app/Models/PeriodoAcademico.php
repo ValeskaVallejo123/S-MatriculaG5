@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\RegistrarCalificacion;
 
 class PeriodoAcademico extends Model
 {
@@ -15,7 +16,8 @@ class PeriodoAcademico extends Model
         'nombre_periodo',
         'tipo',
         'fecha_inicio',
-        'fecha_fin'
+        'fecha_fin',
+        'activo',
     ];
 
     protected $casts = [
@@ -24,11 +26,11 @@ class PeriodoAcademico extends Model
     ];
 
     /**
-     * Relación: Un periodo puede tener muchas calificaciones
+     * Relación: Un periodo puede tener muchas calificaciones registradas
      */
     public function calificaciones()
     {
-        return $this->hasMany(Calificacion::class, 'periodo_id');
+        return $this->hasMany(RegistrarCalificacion::class, 'periodo_academico_id');
     }
 
     /**

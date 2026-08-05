@@ -15,13 +15,37 @@ class UsuarioController extends Controller
      * Listar todos los usuarios del sistema.
      * Se usa paginación para evitar cargar todos los usuarios en memoria.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $usuarios = User::with('rol')
-            ->orderBy('created_at', 'DESC')
-            ->paginate(20);
+        $rolFiltro = $request->input('rol');
 
-        return view('superadmin.usuarios.lista', compact('usuarios'));
+        $query = User::with('rol')->orderBy('created_at', 'DESC');
+
+        if ($rolFiltro) {
+            // Mapeo de filtro URL → nombres reales de rol en la BD
+            $mapaRoles = [
+                'admin'     => ['admin', 'super_admin', 'Administrador'],
+                'profesor'  => ['profesor', 'Maestro'],
+                'Estudiante'=> ['Estudiante', 'estudiante'],
+                'Padre'     => ['Padre', 'padre'],
+            ];
+            $nombres = $mapaRoles[$rolFiltro] ?? [$rolFiltro];
+            $query->whereHas('rol', fn($q) => $q->whereIn('nombre', $nombres));
+        }
+
+        $usuarios = $query->paginate(20)->withQueryString();
+
+        // Conteos por rol para las pestañas
+        // Roles activos en el sistema: super_admin(1), admin(2), profesor(3), Estudiante(4), Padre(5)
+        $conteos = [
+            'total'         => User::count(),
+            'admin'         => User::whereHas('rol', fn($q) => $q->whereIn('nombre', ['admin', 'super_admin', 'Administrador']))->count(),
+            'profesor'      => User::whereHas('rol', fn($q) => $q->whereIn('nombre', ['profesor', 'Maestro']))->count(),
+            'Estudiante'    => User::whereHas('rol', fn($q) => $q->whereIn('nombre', ['Estudiante', 'estudiante']))->count(),
+            'Padre'         => User::whereHas('rol', fn($q) => $q->whereIn('nombre', ['Padre', 'padre']))->count(),
+        ];
+
+        return view('superadmin.usuarios.lista', compact('usuarios', 'rolFiltro', 'conteos'));
     }
 
     /**

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Seguridad de la Cuenta')
-@section('page-title', 'Configuración de Seguridad')
+@section('title', 'Cambiar Contraseña')
+@section('page-title', 'Seguridad de la Cuenta')
 
 @section('content')
     <div class="container-fluid">

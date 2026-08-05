@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ProfesorController extends Controller
 {
     public function __construct()
     {
-        // Solo admin y super_admin pueden manejar profesores
         $this->middleware(['auth', 'role:admin,super_admin']);
     }
 
@@ -25,10 +26,10 @@ class ProfesorController extends Controller
             ->when($busqueda, function ($query, $busqueda) {
                 $query->where(function ($q) use ($busqueda) {
                     $q->where('nombre', 'like', "%{$busqueda}%")
-                        ->orWhere('apellido', 'like', "%{$busqueda}%")
-                        ->orWhere('dni', 'like', "%{$busqueda}%")
-                        ->orWhere('email', 'like', "%{$busqueda}%")
-                        ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
+                      ->orWhere('apellido', 'like', "%{$busqueda}%")
+                      ->orWhere('dni', 'like', "%{$busqueda}%")
+                      ->orWhere('email', 'like', "%{$busqueda}%")
+                      ->orWhereRaw("CONCAT(nombre, ' ', apellido) LIKE ?", ["%{$busqueda}%"]);
                 });
             })
             ->latest()
@@ -66,21 +67,40 @@ class ProfesorController extends Controller
             'tipo_contrato'      => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
             'estado'             => 'required|in:activo,inactivo,licencia',
         ], [
-            'nombre.required'       => 'El nombre es obligatorio.',
-            'apellido.required'     => 'El apellido es obligatorio.',
-            'dni.required'          => 'El DNI es obligatorio.',
-            'dni.unique'            => 'Este DNI ya está registrado.',
-            'email.required'        => 'El email es obligatorio.',
-            'email.email'           => 'El email debe ser válido.',
-            'email.unique'          => 'Este email ya está registrado.',
-            'especialidad.required' => 'La especialidad es obligatoria.',
-            'estado.required'       => 'El estado es obligatorio.',
+            'nombre.required'       => 'El nombre es obligatorio',
+            'apellido.required'     => 'El apellido es obligatorio',
+            'dni.required'          => 'El DNI es obligatorio',
+            'dni.unique'            => 'Este DNI ya está registrado',
+            'email.required'        => 'El email es obligatorio',
+            'email.email'           => 'El email debe ser válido',
+            'email.unique'          => 'Este email ya está registrado',
+            'especialidad.required' => 'La especialidad es obligatoria',
+            'estado.required'       => 'El estado es obligatorio',
         ]);
 
-        Profesor::create($validated);
+        $validated = array_filter($validated, fn($v) => $v !== null && $v !== '');
+
+        $profesor = Profesor::create($validated);
+
+        // Crear cuenta de usuario si no existe ya uno con ese email
+        $maestroRolId = DB::table('roles')->where('nombre', 'Maestro')->value('id');
+        if ($maestroRolId && !DB::table('users')->where('email', $profesor->email)->exists()) {
+            DB::table('users')->insert([
+                'name'              => $profesor->nombre . ' ' . $profesor->apellido,
+                'email'             => $profesor->email,
+                'password'          => Hash::make('Docente2025!'),
+                'id_rol'            => $maestroRolId,
+                'activo'            => true,
+                'is_super_admin'    => false,
+                'is_protected'      => false,
+                'email_verified_at' => now(),
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+        }
 
         return redirect()->route('profesores.index')
-            ->with('success', 'Profesor creado exitosamente.');
+            ->with('success', 'Profesor creado exitosamente. Contraseña inicial: Docente2025!');
     }
 
     /**
@@ -105,30 +125,32 @@ class ProfesorController extends Controller
     public function update(Request $request, Profesor $profesor): RedirectResponse
     {
         $validated = $request->validate([
-            'nombre'             => 'required|string|max:50',
-            'apellido'           => 'required|string|max:50',
+            'nombre'             => 'required|string|max:255',
+            'apellido'           => 'required|string|max:255',
             'dni'                => 'required|string|max:13|unique:profesores,dni,' . $profesor->id,
             'fecha_nacimiento'   => 'nullable|date',
             'genero'             => 'nullable|in:masculino,femenino,otro',
             'telefono'           => 'nullable|string|max:20',
             'email'              => 'required|email|unique:profesores,email,' . $profesor->id,
-            'direccion'          => 'nullable|string|max:255',
+            'direccion'          => 'nullable|string',
             'especialidad'       => 'required|string|max:255',
             'nivel_academico'    => 'nullable|in:bachillerato,licenciatura,maestria,doctorado',
             'fecha_contratacion' => 'nullable|date',
             'tipo_contrato'      => 'nullable|in:tiempo_completo,medio_tiempo,por_horas',
             'estado'             => 'required|in:activo,inactivo,licencia',
         ], [
-            'nombre.required'       => 'El nombre es obligatorio.',
-            'apellido.required'     => 'El apellido es obligatorio.',
-            'dni.required'          => 'El DNI es obligatorio.',
-            'dni.unique'            => 'Este DNI ya está registrado.',
-            'email.required'        => 'El email es obligatorio.',
-            'email.email'           => 'El email debe ser válido.',
-            'email.unique'          => 'Este email ya está registrado.',
-            'especialidad.required' => 'La especialidad es obligatoria.',
-            'estado.required'       => 'El estado es obligatorio.',
+            'nombre.required'       => 'El nombre es obligatorio',
+            'apellido.required'     => 'El apellido es obligatorio',
+            'dni.required'          => 'El DNI es obligatorio',
+            'dni.unique'            => 'Este DNI ya está registrado',
+            'email.required'        => 'El email es obligatorio',
+            'email.email'           => 'El email debe ser válido',
+            'email.unique'          => 'Este email ya está registrado',
+            'especialidad.required' => 'La especialidad es obligatoria',
+            'estado.required'       => 'El estado es obligatorio',
         ]);
+
+        $validated = array_filter($validated, fn($v) => $v !== null && $v !== '');
 
         $profesor->update($validated);
 
@@ -139,11 +161,20 @@ class ProfesorController extends Controller
     /**
      * Eliminar profesor
      */
-    public function destroy(Profesor $profesor): RedirectResponse
+    public function destroy(Request $request, Profesor $profesor): RedirectResponse
     {
         $profesor->delete();
 
-        return redirect()->route('profesores.index')
+        return redirect()->route('profesores.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Profesor eliminado exitosamente.');
+    }
+
+    public function listarPublico()
+    {
+        $profesores = Profesor::where('estado', 'activo')
+            ->orderBy('apellido')
+            ->get();
+
+        return view('portal.profesores', compact('profesores'));
     }
 }

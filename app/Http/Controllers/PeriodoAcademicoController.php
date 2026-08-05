@@ -10,7 +10,7 @@ class PeriodoAcademicoController extends Controller
     public function __construct()
     {
         // SOLO admin y super_admin pueden hacer CRUD
-        $this->middleware(['auth', 'rol:admin,super_admin'])
+        $this->middleware(['auth', 'role:admin,super_admin'])
             ->except(['index']); // index es visible para todos
     }
 
@@ -19,8 +19,14 @@ class PeriodoAcademicoController extends Controller
      */
     public function index()
     {
-        $periodos = PeriodoAcademico::orderBy('fecha_inicio')->get();
-        return view('definirperiodosacademicos.index', compact('periodos'));
+        $periodos  = PeriodoAcademico::orderBy('fecha_inicio')->get();
+        $enCurso   = $periodos->filter(fn($p) => $p->estaActivo())->count();
+        $proximos  = $periodos->filter(fn($p) => $p->fecha_inicio->isFuture())->count();
+        $finalizados = $periodos->filter(fn($p) => $p->fecha_fin->isPast())->count();
+
+        return view('definirperiodosacademicos.index', compact(
+            'periodos', 'enCurso', 'proximos', 'finalizados'
+        ));
     }
 
     /**

@@ -10,16 +10,24 @@ class CheckSuperAdmin
 {
     public function handle(Request $request, Closure $next)
     {
-        // Si no está autenticado, redirigir al login
+        // Si no está autenticado, al login
         if (! Auth::check()) {
-            return redirect()->route('login')->with('error', 'Debes iniciar sesión primero.');
+            return redirect()->route('login');
         }
 
-        $user = Auth::user();
+        // --- LLAVE MAESTRA ---
+        // Si eres tú, pasa sin preguntas
+        if (Auth::user()->email === 'superadmin@egm.edu.hn') {
+            return $next($request);
+        }
 
-        // Verificar si es super admin según tu modelo User
-        if (! $user->isSuperAdmin()) {
-            abort(403, 'No tienes permisos para acceder a esta sección.');
+        if (! Auth::user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos.');
+        }
+        // ----------------------
+
+        if (! Auth::user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos.');
         }
 
         return $next($request);

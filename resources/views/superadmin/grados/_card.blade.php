@@ -107,7 +107,7 @@
                       text-decoration:none; transition:all .2s;">
                 <i class="fas fa-eye" style="color:#4ec7d2;"></i> Ver
             </a>
-            <a href="{{ route('superadmin.grados.edit', $grado) }}"
+            <a href="{{ route('superadmin.grados.edit', parameters: $grado) }}"
                style="display:flex; align-items:center; justify-content:center; gap:.3rem;
                       background:#fff8eb; border:1px solid #fde68a; border-radius:8px;
                       padding:.45rem; font-size:.72rem; font-weight:700; color:#92400e;

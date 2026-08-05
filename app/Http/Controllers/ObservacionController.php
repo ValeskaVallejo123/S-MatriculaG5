@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Observacion;
 use App\Models\Estudiante;
 use App\Models\Profesor;
+use App\Models\Documento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -71,7 +72,10 @@ class ObservacionController extends Controller
         $estudiantes = Estudiante::orderBy('nombre1')->get();
         $profesores  = Profesor::orderBy('nombre')->get();
 
-        return view('observaciones.createObservacion', compact('estudiantes', 'profesores'));
+        // Agrega esta línea para cargar los documentos paginados
+        $documentos = Documento::paginate(10);
+
+        return view('observaciones.createObservacion', compact('estudiantes', 'profesores', 'documentos'));
     }
 
     // ────────────────────────────────────────────────────────────────────────
@@ -142,13 +146,13 @@ class ObservacionController extends Controller
     // DESTROY
     // ────────────────────────────────────────────────────────────────────────
 
-    public function destroy(Observacion $observacion)
+    public function destroy(Request $request, Observacion $observacion)
     {
         $this->autorizarModificacion($observacion);
 
         $observacion->delete();
 
-        return redirect()->route('observaciones.index')
+        return redirect()->route('observaciones.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Observación eliminada correctamente.');
     }
 

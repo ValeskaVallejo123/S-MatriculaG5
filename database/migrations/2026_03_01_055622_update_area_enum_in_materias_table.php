@@ -21,7 +21,9 @@ return new class extends Migration
             'Física',
             'Biología',
             'Historia',
-            'Geografía'
+            'Geografía',
+            'Tecnología',
+            'Formación Cívica y Ética'
         ) NOT NULL");
     }
 
@@ -35,7 +37,9 @@ return new class extends Migration
             'Educación Física',
             'Educación Artística',
             'Inglés',
-            'Informática'
+            'Informática',
+            'Tecnología',
+            'Formación Cívica y Ética'
         ) NOT NULL");
     }
 };

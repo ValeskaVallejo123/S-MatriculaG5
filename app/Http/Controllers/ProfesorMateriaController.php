@@ -8,23 +8,30 @@ use App\Models\Profesor;
 use App\Models\ProfesorMateriaGrado;
 use Illuminate\Http\Request;
 
-class ProfesorMateriaGradoController extends Controller
+class ProfesorMateriaController extends Controller
 {
     public function __construct()
     {
         $this->middleware(['auth']);
     }
 
-    /** Lista todas las asignaciones agrupadas por profesor */
-    public function index()
+    /** Lista todas las asignaciones con paginación */
+    public function index(Request $request)
     {
-        $asignaciones = ProfesorMateriaGrado::with(['profesor', 'materia', 'grado'])
+        $perPage = in_array($request->per_page, [10, 25, 50]) ? $request->per_page : 15;
+
+        $query = ProfesorMateriaGrado::with(['profesor', 'materia', 'grado'])
             ->orderBy('profesor_id')
             ->orderBy('grado_id')
-            ->orderBy('seccion')
-            ->get()
-            ->groupBy('profesor_id');
+            ->orderBy('seccion');
 
+        if ($request->filled('buscar')) {
+            $b = $request->buscar;
+            $query->whereHas('profesor', fn($q) => $q->where('nombre', 'like', "%$b%")->orWhere('apellido', 'like', "%$b%"))
+                  ->orWhereHas('materia', fn($q) => $q->where('nombre', 'like', "%$b%"));
+        }
+
+        $asignaciones      = $query->paginate($perPage)->withQueryString();
         $totalAsignaciones = ProfesorMateriaGrado::count();
         $totalProfesores   = ProfesorMateriaGrado::distinct('profesor_id')->count();
 
@@ -38,7 +45,10 @@ class ProfesorMateriaGradoController extends Controller
     {
         $profesores = Profesor::orderBy('nombre')->get();
         $materias   = Materia::orderBy('nombre')->get();
-        $grados     = Grado::orderBy('nombre')->get();
+        $grados     = Grado::orderBy('numero')   // ✅ corregido
+                           ->orderBy('nivel')
+                           ->orderBy('seccion')
+                           ->get();
         $secciones  = ['A', 'B', 'C', 'D'];
 
         return view('profesor_materia_grado.create', compact(
@@ -82,7 +92,10 @@ class ProfesorMateriaGradoController extends Controller
     {
         $profesores = Profesor::orderBy('nombre')->get();
         $materias   = Materia::orderBy('nombre')->get();
-        $grados     = Grado::orderBy('nombre')->get();
+        $grados     = Grado::orderBy('numero')   // ✅ corregido
+                           ->orderBy('nivel')
+                           ->orderBy('seccion')
+                           ->get();
         $secciones  = ['A', 'B', 'C', 'D'];
 
         return view('profesor_materia_grado.edit', compact(
@@ -124,12 +137,12 @@ class ProfesorMateriaGradoController extends Controller
     }
 
     /** Eliminar asignación */
-    public function destroy(ProfesorMateriaGrado $profesor_materia_grado)
+    public function destroy(Request $request, ProfesorMateriaGrado $profesor_materia_grado)
     {
         $profesor_materia_grado->delete();
 
         return redirect()
-            ->route('profesor_materia_grado.index')
+            ->route('profesor_materia_grado.index', ['page' => $request->input('page', 1)])
             ->with('success', 'Asignación eliminada.');
     }
 }

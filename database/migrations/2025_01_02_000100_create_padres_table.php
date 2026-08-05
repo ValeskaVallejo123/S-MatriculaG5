@@ -11,6 +11,12 @@ return new class extends Migration
         Schema::create('padres', function (Blueprint $table) {
             $table->id();
 
+            // Relación con tabla users
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete(); // Si borras el usuario, se pone null
+
             // Información del Padre/Tutor
             $table->string('nombre', 50);
             $table->string('apellido', 50);
@@ -32,6 +38,7 @@ return new class extends Migration
             $table->text('observaciones')->nullable();
 
             $table->timestamps();
+
         });
     }
 

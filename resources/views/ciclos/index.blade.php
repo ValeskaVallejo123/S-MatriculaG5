@@ -58,7 +58,7 @@
                             <form action="{{ route('ciclos.destroy', $ciclo) }}" 
                                   method="POST" 
                                   class="inline"
-                                  onsubmit="return confirm('¿Está seguro de eliminar este ciclo?')">
+                                  data-confirm="¿Está seguro de eliminar este ciclo?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>

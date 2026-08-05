@@ -1,113 +1,163 @@
 @extends('layouts.app')
 
+@section('title', 'Subir Expediente')
+@section('page-title', 'Subir Nuevo Expediente Digital')
+
 @section('content')
-    <div class="container py-5" style="max-width: 900px;">
+    <div class="container py-4" style="max-width: 950px;">
 
-        <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
-                        <i class="fas fa-folder-open text-primary fs-4"></i>
+        {{-- Botón Volver --}}
+        <div class="mb-4">
+            <a href="{{ route('documentos.index') }}" class="btn btn-light shadow-sm fw-bold text-muted" style="border-radius: 10px; padding: 10px 20px;">
+                <i class="fas fa-arrow-left me-2"></i> Volver al Listado
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+            {{-- Encabezado con el degradado de tu sistema --}}
+            <div class="card-header border-0 py-3" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); color: white;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                        <i class="fas fa-file-upload" style="color: #00508f; font-size: 1.2rem;"></i>
                     </div>
-                    <h5 class="fw-bold mb-0" style="color: #003b73;">Subir Expediente Digital</h5>
-                </div>
-
-                <div class="alert border-0 p-4 mb-4" style="background-color: #f0f9fa; border-radius: 10px;">
-                    <h6 class="fw-bold small mb-3" style="color: #00508f;">
-                        <i class="fas fa-clipboard-check me-2"></i>Documentos que deberá presentar:
-                    </h6>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2 small"><i class="fas fa-check-circle text-info me-2"></i>Foto del estudiante (formato JPG/PNG)</li>
-                        <li class="mb-2 small"><i class="fas fa-check-circle text-info me-2"></i>Acta de nacimiento (PDF/JPG/PNG)</li>
-                        <li class="small"><i class="fas fa-check-circle text-info me-2"></i>Calificaciones del año anterior (PDF/JPG/PNG)</li>
-                    </ul>
-                </div>
-
-                <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold" style="color: #003b73;">Seleccionar Estudiante</label>
-                        <select name="estudiante_id" required class="form-select @error('estudiante_id') is-invalid @enderror" style="border: 2px solid #bfd9ea; border-radius: 8px; height: 45px;">
-                            <option value="">Seleccione al alumno...</option>
-                            @foreach($estudiantes as $estudiante)
-                                <option value="{{ $estudiante->id }}" {{ old('estudiante_id') == $estudiante->id ? 'selected' : '' }}>
-                                    {{ $estudiante->nombre }} {{ $estudiante->apellido }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('estudiante_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    <div>
+                        <h5 class="fw-bold mb-0">Formulario de Registro</h5>
+                        <small class="opacity-75">Complete todos los campos marcados con asterisco (*)</small>
                     </div>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Foto Estudiante</label>
-                            <div class="mb-2 text-center" style="min-height: 90px;">
-                                <img id="preview-foto" src="#" alt="Previsualización" class="rounded shadow-sm d-none" style="width: 85px; height: 85px; object-fit: cover; border: 2px solid #4ec7d2;">
-                                <div id="placeholder-foto" class="rounded bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 85px; height: 85px; border: 2px dashed #bfd9ea;">
-                                    <i class="fas fa-user text-muted"></i>
-                                </div>
-                            </div>
-                            <input type="file" name="foto" id="input-foto" class="form-control @error('foto') is-invalid @enderror" accept=".jpg,.png" required style="border: 2px solid #bfd9ea;">
-                            @error('foto') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Acta Nacimiento</label>
-                            <div class="mb-2 text-center" style="min-height: 90px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-file-pdf fa-3x text-danger opacity-25"></i>
-                            </div>
-                            <input type="file" name="acta_nacimiento" class="form-control @error('acta_nacimiento') is-invalid @enderror" accept=".pdf,.jpg,.png" required style="border: 2px solid #bfd9ea;">
-                            @error('acta_nacimiento') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Calificaciones</label>
-                            <div class="mb-2 text-center" style="min-height: 90px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-file-invoice fa-3x text-success opacity-25"></i>
-                            </div>
-                            <input type="file" name="calificaciones" class="form-control @error('calificaciones') is-invalid @enderror" accept=".pdf,.jpg,.png" required style="border: 2px solid #bfd9ea;">
-                            @error('calificaciones') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" style="background: linear-gradient(to right, #4ec7d2, #00508f); border: none; border-radius: 8px; letter-spacing: 1px;">
-                        <i class="fas fa-cloud-upload-alt me-2"></i>GUARDAR EXPEDIENTE
-                    </button>
-                </form>
-
-                <div class="alert border-0 mt-4 p-3" style="background-color: #f8fafc; border-left: 4px solid #4ec7d2;">
-                    <p class="mb-0 small text-muted">
-                        <i class="fas fa-info-circle text-info me-2"></i>
-                        Recuerde: Los archivos no deben exceder los **5MB** para asegurar una subida correcta.
-                    </p>
                 </div>
             </div>
-        </div>
 
-        <div class="d-flex gap-3">
-            <a href="{{ route('matriculas.index') }}" class="btn btn-outline-secondary flex-fill fw-bold py-2" style="border-radius: 8px;">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Matrícula
-            </a>
-            <a href="{{ route('documentos.index') }}" class="btn btn-light border flex-fill fw-bold py-2" style="border-radius: 8px; color: #64748b;">
-                <i class="fas fa-times me-2"></i>Cancelar
-            </a>
+            <div class="card-body p-4 p-md-5">
+                <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data" id="formExpediente">
+                    @csrf
+
+                    <div class="row">
+                        {{-- Selección de Estudiante --}}
+                        <div class="col-12 mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">1. Seleccionar Estudiante *</label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                <span class="input-group-text bg-white border-0"><i class="fas fa-user-graduate text-primary"></i></span>
+                                <select name="estudiante_id" id="estudiante_id" required
+                                        class="form-select border-0 @error('estudiante_id') is-invalid @enderror"
+                                        style="height: 55px; font-weight: 500;">
+                                    <option value="" selected disabled>Buscar alumno en la base de datos...</option>
+                                    @foreach($estudiantes as $est)
+                                        <option value="{{ $est->id }}" {{ old('estudiante_id') == $est->id ? 'selected' : '' }}>
+                                            {{ strtoupper($est->nombre1) }} {{ strtoupper($est->nombre2) }} {{ strtoupper($est->apellido1) }} {{ strtoupper($est->apellido2) }} — DNI: {{ $est->dni }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @error('estudiante_id') <div class="text-danger small mt-1 ps-2"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="col-12 mb-2">
+                            <label class="form-label small fw-bold text-uppercase text-muted">2. Documentación Digital *</label>
+                        </div>
+
+                        {{-- Sección de Archivos con diseño de Dropzone simulado --}}
+                        <div class="col-md-4 mb-4">
+                            <div class="file-upload-wrapper">
+                                <label class="small fw-bold mb-2 d-block">Foto de Perfil</label>
+                                <div class="upload-area" onclick="document.getElementById('foto').click()">
+                                    <i class="fas fa-camera mb-2"></i>
+                                    <p class="mb-0 small">JPG o PNG</p>
+                                    <input type="file" name="foto" id="foto" class="d-none" accept="image/*" required onchange="updateFileName(this)">
+                                    <div class="file-name mt-2 text-primary fw-bold small"></div>
+                                </div>
+                                @error('foto') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <div class="file-upload-wrapper">
+                                <label class="small fw-bold mb-2 d-block">Acta de Nacimiento</label>
+                                <div class="upload-area" onclick="document.getElementById('acta_nacimiento').click()">
+                                    <i class="fas fa-id-card mb-2"></i>
+                                    <p class="mb-0 small">PDF o Imagen</p>
+                                    <input type="file" name="acta_nacimiento" id="acta_nacimiento" class="d-none" accept=".pdf,.jpg,.png" required onchange="updateFileName(this)">
+                                    <div class="file-name mt-2 text-primary fw-bold small"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <div class="file-upload-wrapper">
+                                <label class="small fw-bold mb-2 d-block">Calificaciones</label>
+                                <div class="upload-area" onclick="document.getElementById('calificaciones').click()">
+                                    <i class="fas fa-file-invoice mb-2"></i>
+                                    <p class="mb-0 small">PDF o Imagen</p>
+                                    <input type="file" name="calificaciones" id="calificaciones" class="d-none" accept=".pdf,.jpg,.png" required onchange="updateFileName(this)">
+                                    <div class="file-name mt-2 text-primary fw-bold small"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Acciones Finales --}}
+                    <div class="row mt-4 pt-3 border-top">
+                        <div class="col-md-6 mb-2">
+                            <button type="submit" class="btn w-100 py-3 fw-bold text-white shadow-sm btn-save"
+                                    style="background: linear-gradient(to right, #4ec7d2, #00508f); border: none; border-radius: 12px; font-size: 1.1rem;">
+                                <i class="fas fa-cloud-upload-alt me-2"></i> GUARDAR EXPEDIENTE
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ route('documentos.index') }}" class="btn btn-light border w-100 py-3 fw-bold text-muted" style="border-radius: 12px; font-size: 1.1rem;">
+                                CANCELAR REGISTRO
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
+@endsection
 
-    {{-- Script para Previsualización en Tiempo Real --}}
+@push('styles')
+    <style>
+        .upload-area {
+            border: 2px dashed #bfd9ea;
+            border-radius: 12px;
+            padding: 30px 15px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #64748b;
+        }
+        .upload-area:hover {
+            border-color: #4ec7d2;
+            background: #f0f9ff;
+            color: #00508f;
+        }
+        .upload-area i {
+            font-size: 1.8rem;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,80,143,0.3) !important;
+        }
+        .form-select:focus {
+            box-shadow: none;
+            border-color: #4ec7d2;
+        }
+    </style>
+@endpush
+
+@push('scripts')
     <script>
-        document.getElementById('input-foto').onchange = evt => {
-            const [file] = document.getElementById('input-foto').files
-            if (file) {
-                const preview = document.getElementById('preview-foto');
-                const placeholder = document.getElementById('placeholder-foto');
-                preview.src = URL.createObjectURL(file);
-                preview.classList.remove('d-none');
-                placeholder.classList.add('d-none');
-            }
+        // Función para mostrar el nombre del archivo seleccionado en el diseño
+        function updateFileName(input) {
+            const fileName = input.files[0].name;
+            const display = input.parentElement.querySelector('.file-name');
+            const icon = input.parentElement.querySelector('i');
+
+            display.innerText = fileName;
+            icon.classList.remove('fa-camera', 'fa-id-card', 'fa-file-invoice');
+            icon.classList.add('fa-check-circle');
+            input.parentElement.style.borderColor = "#4ec7d2";
+            input.parentElement.style.background = "#f0f9ff";
         }
     </script>
-@endsection
-@endsection
-
+@endpush

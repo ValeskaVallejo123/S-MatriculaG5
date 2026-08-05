@@ -3,11 +3,6 @@
 @section('title', 'Detalles del Estudiante')
 @section('page-title', 'Información del Estudiante')
 
-@section('topbar-actions')
-    <a href="{{ route('padre.dashboard') }}" class="adm-btn-outline">
-        <i class="fas fa-arrow-left"></i> Mi Portal
-    </a>
-@endsection
 
 @push('styles')
 <style>

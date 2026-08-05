@@ -9,7 +9,7 @@ class ProfesorMateriaGrado extends Model
 {
     use HasFactory;
 
-    protected $table = 'profesor_materia_grados';
+   protected $table = 'profesor_materia';
 
     protected $fillable = [
         'profesor_id',
@@ -30,16 +30,15 @@ class ProfesorMateriaGrado extends Model
         return $this->belongsTo(Profesor::class, 'profesor_id');
     }
 
-    public function materia()
-    {
-        return $this->belongsTo(Materia::class, 'materia_id');
-    }
-
     public function grado()
     {
         return $this->belongsTo(Grado::class, 'grado_id');
     }
 
+    public function materia()
+    {
+        return $this->belongsTo(Materia::class, 'materia_id');
+    }
     /**
      * Verifica si ya existe una asignación
      * Profesor - Materia - Grado - Sección

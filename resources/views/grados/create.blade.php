@@ -3,34 +3,14 @@
 @section('title', 'Nuevo Grado')
 @section('page-title', 'Crear Nuevo Grado')
 
-@section('topbar-actions')
-    <a href="{{ route('grados.index') }}"
-       class="btn-back"
-       style="background:white; color:#00508f; padding:0.5rem 1.2rem; border-radius:8px;
-              text-decoration:none; font-weight:600; display:inline-flex; align-items:center;
-              gap:0.5rem; transition:all 0.3s ease; border:2px solid #00508f;
-              box-shadow:0 2px 8px rgba(0,80,143,0.2); font-size:0.9rem;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @section('content')
 <div class="container" style="max-width:900px;">
-
 
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-header" style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color: white; border-radius: 12px 12px 0 0; padding: 1.2rem;">
             <h5 class="mb-0 fw-bold">
                 <i class="fas fa-graduation-cap"></i> Formulario de Nuevo Grado
-
-    <div class="card border-0 shadow-sm" style="border-radius:12px;">
-
-        <div class="card-header border-0"
-             style="background:linear-gradient(135deg,#4ec7d2 0%,#00508f 100%);
-                    border-radius:12px 12px 0 0; padding:1.2rem;">
-            <h5 class="mb-0 fw-bold text-white">
-                <i class="fas fa-graduation-cap me-2"></i>Formulario de Nuevo Grado
-
             </h5>
         </div>
 
@@ -49,11 +29,7 @@
 
                 <div class="row g-3">
 
-
-                    <!-- Nivel Educativo -->
-
                     {{-- Nivel Educativo --}}
-
                     <div class="col-md-6">
                         <label for="nivel" class="form-label fw-semibold" style="color:#003b73;">
                             <i class="fas fa-layer-group text-primary me-1"></i>Nivel Educativo
@@ -63,23 +39,12 @@
                                 class="form-select @error('nivel') is-invalid @enderror"
                                 style="border:2px solid #bfd9ea; border-radius:8px; padding:0.6rem 1rem;">
                             <option value="">Seleccionar nivel...</option>
-
-                            {{-- Values en minúsculas: coinciden con ENUM BD y validación del controlador --}}
+                            {{-- Valores en minúsculas: coinciden con ENUM de la BD y validación del controlador --}}
                             <option value="primaria"   {{ old('nivel') === 'primaria'   ? 'selected' : '' }}>
                                 Primaria (1° - 6° Grado)
                             </option>
                             <option value="secundaria" {{ old('nivel') === 'secundaria' ? 'selected' : '' }}>
                                 Secundaria (7° - 9° Grado)
-
-                            <option value="Primaria"   {{ old('nivel') == 'Primaria'   ? 'selected' : '' }}>
-                                Primaria (1° – 6° Grado)
-                            </option>
-                            <option value="Básica"     {{ old('nivel') == 'Básica'     ? 'selected' : '' }}>
-                                Básica (7° – 9° Grado)
-                            </option>
-                            <option value="Secundaria" {{ old('nivel') == 'Secundaria' ? 'selected' : '' }}>
-                                Secundaria (10° – 12° Grado)
-
                             </option>
                         </select>
                         @error('nivel')
@@ -97,10 +62,7 @@
                                 class="form-select @error('numero') is-invalid @enderror"
                                 style="border:2px solid #bfd9ea; border-radius:8px; padding:0.6rem 1rem;">
                             <option value="">Seleccionar grado...</option>
-
                             {{-- 1-6 Primaria | 7-9 Secundaria --}}
-
-
                             @for($i = 1; $i <= 9; $i++)
                                 <option value="{{ $i }}" {{ old('numero') == $i ? 'selected' : '' }}>
                                     {{ $i }}° Grado
@@ -114,7 +76,6 @@
 
                     {{-- Sección --}}
                     <div class="col-md-6">
-
                         <label for="seccion" class="form-label fw-semibold" style="color: #003b73;">
                             <i class="fas fa-list-ol text-info"></i> Sección *
                         </label>
@@ -124,19 +85,9 @@
                                 required
                                 style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.6rem 1rem;">
                             <option value="">Seleccionar sección...</option>
-                            {{-- Solo A, B, C, D → coincide con ENUM BD y validación 'in:A,B,C,D' --}}
+                            {{-- Solo A, B, C, D → coincide con ENUM de la BD y validación 'in:A,B,C,D' --}}
                             @foreach(['A','B','C','D'] as $sec)
                                 <option value="{{ $sec }}" {{ old('seccion') === $sec ? 'selected' : '' }}>
-
-                        <label for="seccion" class="form-label fw-semibold" style="color:#003b73;">
-                            <i class="fas fa-list-ol text-info me-1"></i>Sección
-                        </label>
-                        <select id="seccion" name="seccion"
-                                class="form-select @error('seccion') is-invalid @enderror"
-                                style="border:2px solid #bfd9ea; border-radius:8px; padding:0.6rem 1rem;">
-                            <option value="">Sin sección</option>
-                            @foreach(['A','B','C','D','E'] as $sec)
-                                <option value="{{ $sec }}" {{ old('seccion') == $sec ? 'selected' : '' }}>
                                     Sección {{ $sec }}
                                 </option>
                             @endforeach
@@ -144,9 +95,6 @@
                         @error('seccion')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-
-                        <small class="text-muted">Opcional: deja vacío si no aplica.</small>
-
                     </div>
 
                     {{-- Año Lectivo --}}
@@ -171,22 +119,17 @@
                             <input class="form-check-input" type="checkbox"
                                    id="activo" name="activo" value="1"
                                    {{ old('activo', true) ? 'checked' : '' }}
-
                                    style="width: 3rem; height: 1.5rem; cursor: pointer;">
                             <label class="form-check-label fw-semibold" for="activo"
                                    style="color: #003b73; margin-left: 0.5rem;">
                                 <i class="fas fa-toggle-on text-success"></i> Grado Activo
-
-                                   style="width:3rem; height:1.5rem; cursor:pointer;">
-                            <label class="form-check-label fw-semibold" for="activo"
-                                   style="color:#003b73; margin-left:0.5rem;">
-                                <i class="fas fa-toggle-on text-success me-1"></i>Grado Activo
                             </label>
                         </div>
                     </div>
 
+                </div>{{-- fin fila --}}
 
-                <!-- Info contextual según nivel -->
+                {{-- Información contextual según nivel --}}
                 <div id="info-primaria" class="alert mt-3 d-none d-flex align-items-start"
                      style="border-radius: 8px; border-left: 4px solid #10b981; background: rgba(16,185,129,0.08);">
                     <i class="fas fa-magic me-2 mt-1" style="color: #10b981;"></i>
@@ -195,20 +138,6 @@
                         <p class="mb-0 small text-muted">
                             Al guardar se asignarán automáticamente: Español, Matemáticas, Ciencias Naturales,
                             Ciencias Sociales, Educación Artística, Educación Física, Inglés y Educación Cívica/Valores.
-                </div>{{-- fin row --}}
-
-                {{-- Info dinámica: Primaria --}}
-                <div id="info-primaria"
-                     class="alert mt-3 d-none d-flex align-items-start border-0"
-                     style="border-radius:8px; border-left:4px solid #10b981 !important;
-                            background:rgba(16,185,129,0.08);">
-                    <i class="fas fa-magic me-2 mt-1" style="color:#10b981;"></i>
-                    <div>
-                        <strong style="color:#065f46;">Asignación automática:</strong>
-                        <p class="mb-0 small text-muted">
-                            Al guardar se asignarán automáticamente las materias de Primaria:
-                            Español, Matemáticas, Ciencias Naturales, Ciencias Sociales,
-                            Educación Artística, Educación Física, Inglés y Educación Cívica/Valores.
                         </p>
                     </div>
                 </div>
@@ -230,15 +159,6 @@
                     <div>
                         <strong style="color: #003b73;">Nota:</strong>
                         <p class="mb-0 small text-muted">
-                {{-- Info dinámica: Básica / Secundaria / sin selección --}}
-                <div id="info-otros"
-                     class="alert mt-3 d-flex align-items-start border-0"
-                     style="border-radius:8px; border-left:4px solid #4ec7d2 !important;
-                            background:rgba(78,199,210,0.1);">
-                    <i class="fas fa-info-circle me-2 mt-1" style="color:#00508f;"></i>
-                    <div>
-                        <strong style="color:#003b73;">Nota:</strong>
-                        <p class="mb-0 small text-muted" id="info-otros-texto">
                             Selecciona el nivel educativo para ver las opciones de asignación de materias.
                         </p>
                     </div>
@@ -253,17 +173,6 @@
                     <a href="{{ route('grados.index') }}" class="btn flex-fill"
                        style="background: white; color: #6b7280; border: 2px solid #e5e7eb; border-radius: 8px; padding: 0.7rem; font-weight: 600;">
                         <i class="fas fa-times"></i> Cancelar
-                    <button type="submit"
-                            class="btn flex-fill fw-semibold"
-                            style="background:linear-gradient(135deg,#4ec7d2,#00508f);
-                                   color:white; border:none; border-radius:8px; padding:0.7rem;">
-                        <i class="fas fa-save me-1"></i>Guardar Grado
-                    </button>
-                    <a href="{{ route('grados.index') }}"
-                       class="btn flex-fill fw-semibold"
-                       style="background:white; color:#6b7280;
-                              border:2px solid #e5e7eb; border-radius:8px; padding:0.7rem;">
-                        <i class="fas fa-times me-1"></i>Cancelar
                     </a>
                 </div>
 
@@ -321,47 +230,14 @@ document.addEventListener('DOMContentLoaded', function () {
             opt.style.display = rango ? (n >= rango.min && n <= rango.max ? '' : 'none') : '';
         });
 
-        // Reset número si el valor actual no es válido para el nivel elegido
+        // Restablecer número si el valor actual no es válido para el nivel elegido
         const current = parseInt(numeroSelect.value);
         const rango = RANGOS[nivel];
-
-    const nivelSelect  = document.getElementById('nivel');
-    const numeroSelect = document.getElementById('numero');
-    const infoPrimaria = document.getElementById('info-primaria');
-    const infoOtros    = document.getElementById('info-otros');
-    const infoTexto    = document.getElementById('info-otros-texto');
-
-    const MENSAJES = {
-        'Básica':     'Después de guardar podrás asignar las materias de Básica desde la gestión de grados.',
-        'Secundaria': 'Después de guardar podrás asignar las materias de Secundaria desde la gestión de grados.',
-    };
-
-    const RANGOS = {
-        'Primaria':   { min: 1, max: 6 },
-        'Básica':     { min: 7, max: 9 },
-        'Secundaria': { min: 1, max: 9 },
-    };
-
-    function actualizarUI() {
-        const nivel   = nivelSelect.value;
-        const rango   = RANGOS[nivel] ?? null;
-        const options = numeroSelect.querySelectorAll('option');
-
-        // Filtrar opciones de número según nivel
-        options.forEach(function (opt) {
-            if (opt.value === '') return;
-            const n = parseInt(opt.value);
-            opt.style.display = (!rango || (n >= rango.min && n <= rango.max)) ? '' : 'none';
-        });
-
-        // Resetear número si el valor actual ya no es válido para el nivel
-        const current = parseInt(numeroSelect.value);
-
         if (rango && (current < rango.min || current > rango.max)) {
             numeroSelect.value = '';
         }
 
-        // Mostrar info contextual
+        // Mostrar información contextual
         infoPrimaria.classList.add('d-none');
         infoSecundaria.classList.add('d-none');
         infoDefault.classList.add('d-none');
@@ -372,15 +248,6 @@ document.addEventListener('DOMContentLoaded', function () {
             infoSecundaria.classList.remove('d-none');
         } else {
             infoDefault.classList.remove('d-none');
-        // Mostrar bloque informativo según nivel
-        if (nivel === 'Primaria') {
-            infoPrimaria.classList.remove('d-none');
-            infoOtros.classList.add('d-none');
-        } else {
-            infoPrimaria.classList.add('d-none');
-            infoTexto.textContent = MENSAJES[nivel]
-                ?? 'Selecciona el nivel educativo para ver las opciones de asignación de materias.';
-            infoOtros.classList.remove('d-none');
         }
     }
 
@@ -391,5 +258,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-@endsection
-@endsection

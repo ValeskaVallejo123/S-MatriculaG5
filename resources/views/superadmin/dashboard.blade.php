@@ -898,8 +898,7 @@
                     bootstrap.Modal.getOrCreate(modalEl).show();
                 }
 
-            })();
-        </script>
-    @endpush
-
+})();
+</script>
+@endpush
 @endsection

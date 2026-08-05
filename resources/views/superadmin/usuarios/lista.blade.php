@@ -3,15 +3,6 @@
 @section('title', 'Lista de usuarios')
 @section('page-title', 'Usuarios del Sistema')
 
-@section('topbar-actions')
-    <a href="{{ route('superadmin.dashboard') }}"
-       style="background:white; color:#00508f;
-              padding:.6rem .75rem; border-radius:9px; font-size:.83rem; font-weight:600;
-              display:inline-flex; align-items:center; gap:.4rem;
-              text-decoration:none; border:1.5px solid #00508f; transition:all .2s;">
-        <i class="fas fa-arrow-left"></i> Volver al Dashboard
-    </a>
-@endsection
 
 @push('styles')
 <style>
@@ -143,6 +134,10 @@
     font-size: .75rem; color: #6b7a90;            /* ← TAMAÑO texto paginación */
 }
 
+/* ── Stats grid responsive ── */
+@media(max-width:1100px){ .usr-stats-grid { grid-template-columns: repeat(3,1fr) !important; } }
+@media(max-width:700px) { .usr-stats-grid { grid-template-columns: repeat(2,1fr) !important; } }
+
 /* ── Empty state ── */
 .tbl-empty {
     text-align: center; padding: 3rem 1rem;
@@ -197,9 +192,104 @@
                          font-size:.78rem;font-weight:700; {{-- ← TAMAÑO badge total --}}
                          border:1px solid rgba(78,199,210,.4);
                          position:relative;z-index:1;">
-                <i class="fas fa-user-check"></i> Total: {{ $usuarios->total() }}
+                <i class="fas fa-user-check"></i>
+                @if($rolFiltro)
+                    @php
+                        $labelMap = ['admin'=>'Administradores','profesor'=>'Profesores','Estudiante'=>'Estudiantes','Padre'=>'Padres'];
+                        $labelFiltro = $labelMap[$rolFiltro] ?? $rolFiltro.'s';
+                    @endphp
+                    {{ $labelFiltro }}: {{ $usuarios->total() }}
+                @else
+                    Total: {{ $usuarios->total() }}
+                @endif
             </span>
         </div>
+    </div>
+
+    {{-- ── STAT CARDS ── --}}
+    <div class="usr-stats-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:.85rem;
+                margin:1rem 0 1.25rem;">
+
+        {{-- Total --}}
+        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
+                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
+                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#10b981;border-radius:4px 0 0 4px;"></div>
+            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
+                        background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-users" style="color:#10b981;font-size:1.05rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Total</div>
+                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['total'] }}</div>
+                <div style="font-size:.7rem;color:#6b7a90;">Usuarios</div>
+            </div>
+        </div>
+
+        {{-- Administradores --}}
+        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
+                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
+                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#475569;border-radius:4px 0 0 4px;"></div>
+            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
+                        background:rgba(71,85,105,.12);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-user-shield" style="color:#475569;font-size:1.05rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Administradores</div>
+                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['admin'] }}</div>
+                <div style="font-size:.7rem;color:#6b7a90;">Gestión del sistema</div>
+            </div>
+        </div>
+
+        {{-- Profesores --}}
+        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
+                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
+                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#4ec7d2;border-radius:4px 0 0 4px;"></div>
+            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
+                        background:rgba(78,199,210,.15);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-chalkboard-teacher" style="color:#00508f;font-size:1.05rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Profesores</div>
+                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['profesor'] }}</div>
+                <div style="font-size:.7rem;color:#6b7a90;">Docentes activos</div>
+            </div>
+        </div>
+
+        {{-- Estudiantes --}}
+        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
+                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
+                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#00508f;border-radius:4px 0 0 4px;"></div>
+            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
+                        background:rgba(0,80,143,.1);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-user-graduate" style="color:#00508f;font-size:1.05rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Estudiantes</div>
+                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['Estudiante'] }}</div>
+                <div style="font-size:.7rem;color:#6b7a90;">Alumnos registrados</div>
+            </div>
+        </div>
+
+        {{-- Padres --}}
+        <div style="background:white;border-radius:13px;border:1px solid #e8edf4;
+                    padding:1rem 1.1rem;display:flex;align-items:center;gap:.85rem;
+                    box-shadow:0 1px 4px rgba(0,59,115,.07);position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#10b981;border-radius:4px 0 0 4px;"></div>
+            <div style="width:42px;height:42px;border-radius:11px;flex-shrink:0;
+                        background:rgba(16,185,129,.12);display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-user-friends" style="color:#10b981;font-size:1.05rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6b7a90;margin-bottom:.15rem;">Padres</div>
+                <div style="font-size:1.6rem;font-weight:800;color:#003b73;line-height:1;">{{ $conteos['Padre'] }}</div>
+                <div style="font-size:.7rem;color:#6b7a90;">Tutores / padres</div>
+            </div>
+        </div>
+
     </div>
 
     {{-- ── BODY ── --}}
@@ -237,6 +327,45 @@
         </div>
         @endif
 
+        {{-- Filtros por rol --}}
+        @php
+            $tabs = [
+                ''          => ['label' => 'Todos',          'icon' => 'fa-users',            'count' => $conteos['total']],
+                'admin'     => ['label' => 'Administradores','icon' => 'fa-user-shield',       'count' => $conteos['admin']],
+                'profesor'  => ['label' => 'Profesores',     'icon' => 'fa-chalkboard-teacher','count' => $conteos['profesor']],
+                'Estudiante'=> ['label' => 'Estudiantes',    'icon' => 'fa-user-graduate',     'count' => $conteos['Estudiante']],
+                'Padre'     => ['label' => 'Padres',         'icon' => 'fa-user-friends',      'count' => $conteos['Padre']],
+            ];
+        @endphp
+        <div style="padding:.85rem 1.7rem .25rem; display:flex; flex-wrap:wrap; gap:.45rem; border-bottom:1px solid #e8edf4;">
+            @foreach ($tabs as $valor => $tab)
+                @php
+                    $activo = ($rolFiltro ?? '') === $valor;
+                    $url    = $valor === ''
+                        ? route('superadmin.usuarios.index')
+                        : route('superadmin.usuarios.index', ['rol' => $valor]);
+                @endphp
+                <a href="{{ $url }}"
+                   style="display:inline-flex;align-items:center;gap:.35rem;
+                          padding:.38rem .8rem; border-radius:999px;
+                          font-size:.75rem; font-weight:700; text-decoration:none;
+                          transition:all .2s;
+                          {{ $activo
+                              ? 'background:linear-gradient(135deg,#4ec7d2,#00508f);color:white;border:1.5px solid transparent;box-shadow:0 2px 8px rgba(0,80,143,.25);'
+                              : 'background:white;color:#00508f;border:1.5px solid #bfd9ea;' }}">
+                    <i class="fas {{ $tab['icon'] }}" style="font-size:.7rem;"></i>
+                    {{ $tab['label'] }}
+                    <span style="display:inline-flex;align-items:center;justify-content:center;
+                                 min-width:1.3rem;height:1.3rem;border-radius:999px;font-size:.65rem;
+                                 {{ $activo
+                                     ? 'background:rgba(255,255,255,.25);color:white;'
+                                     : 'background:#e8edf4;color:#00508f;' }}">
+                        {{ $tab['count'] }}
+                    </span>
+                </a>
+            @endforeach
+        </div>
+
         {{-- Tabla --}}
         <div class="tbl-wrap" style="overflow-x:auto;">
             <table>
@@ -263,15 +392,17 @@
                             <td>
                                 @php
                                     $coloresRol = [
-                                        'super_admin'   => 'background:#1e293b;color:white;',
-                                        'Administrador' => 'background:#475569;color:white;',
-                                        'admin'         => 'background:#475569;color:white;',
-                                        'Profesor'      => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
-                                        'profesor'      => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
-                                        'Estudiante'    => 'background:rgba(0,80,143,.1);color:#00508f;border:1.5px solid #bfd9ea;',
-                                        'estudiante'    => 'background:rgba(0,80,143,.1);color:#00508f;border:1.5px solid #bfd9ea;',
-                                        'Padre'         => 'background:#f0fdf4;color:#166534;border:1.5px solid #86efac;',
-                                        'padre'         => 'background:#f0fdf4;color:#166534;border:1.5px solid #86efac;',
+                                        'Super Administrador' => 'background:#1e293b;color:white;',
+                                        'super_admin'         => 'background:#1e293b;color:white;',
+                                        'Administrador'       => 'background:#475569;color:white;',
+                                        'admin'               => 'background:#475569;color:white;',
+                                        'Maestro'             => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
+                                        'Profesor'            => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
+                                        'profesor'            => 'background:rgba(78,199,210,.15);color:#00508f;border:1.5px solid #b2e8ed;',
+                                        'Estudiante'          => 'background:rgba(0,80,143,.1);color:#00508f;border:1.5px solid #bfd9ea;',
+                                        'estudiante'          => 'background:rgba(0,80,143,.1);color:#00508f;border:1.5px solid #bfd9ea;',
+                                        'Padre'               => 'background:#f0fdf4;color:#166534;border:1.5px solid #86efac;',
+                                        'padre'               => 'background:#f0fdf4;color:#166534;border:1.5px solid #86efac;',
                                     ];
                                     $nombreRol = $u->rol->nombre ?? 'Sin rol';
                                     $estiloRol = $coloresRol[$nombreRol] ?? 'background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;';
@@ -327,7 +458,12 @@
         <div class="tbl-footer">
             <span>
                 Mostrando {{ $usuarios->firstItem() }}–{{ $usuarios->lastItem() }}
-                de {{ $usuarios->total() }} usuarios
+                de {{ $usuarios->total() }}
+                @if($rolFiltro)
+                    {{ ['admin'=>'administradores','profesor'=>'profesores','Estudiante'=>'estudiantes','Padre'=>'padres'][$rolFiltro] ?? strtolower($rolFiltro).'s' }}
+                @else
+                    usuarios
+                @endif
             </span>
             {{ $usuarios->links() }}
         </div>

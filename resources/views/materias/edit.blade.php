@@ -3,12 +3,6 @@
 @section('title', 'Editar Materia')
 @section('page-title', 'Editar Materia')
 
-@section('topbar-actions')
-    <a href="{{ route('materias.index') }}"
-       style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:7px;font-size:.82rem;font-weight:600;background:#fff;color:#00508f;text-decoration:none;border:1.5px solid #00508f;">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-@endsection
 
 @push('styles')
 <style>

@@ -27,12 +27,21 @@ class ProfesorEstudianteController extends Controller
                 ->with('error', 'No tienes perfil de profesor asignado.');
         }
 
+        // Buscar el registro de grado por número y sección
+        $gradoRecord = DB::table('grados')
+            ->where('numero', $grado)
+            ->where('seccion', $seccion)
+            ->first();
+
+        if (!$gradoRecord) {
+            return redirect()->route('profesor.mis-cursos')
+                ->with('error', 'Grado no encontrado.');
+        }
+
         // Verificar que el profesor tiene asignado ese grado/sección
         $tieneAcceso = DB::table('profesor_materia_grados')
-            ->join('grados', 'profesor_materia_grados.grado_id', '=', 'grados.id')
-            ->where('profesor_materia_grados.profesor_id', $profesor->id)
-            ->where('grados.numero', $grado)
-            ->where('grados.seccion', $seccion)
+            ->where('profesor_id', $profesor->id)
+            ->where('grado_id', $gradoRecord->id)
             ->exists();
 
         if (!$tieneAcceso) {
@@ -40,10 +49,9 @@ class ProfesorEstudianteController extends Controller
                 ->with('error', 'No tienes acceso a este grado.');
         }
 
-        // Obtener estudiantes activos del grado y sección
+        // Obtener estudiantes activos del grado usando grado_id
         $estudiantes = DB::table('estudiantes')
-            ->where('grado', $grado)
-            ->where('seccion', $seccion)
+            ->where('grado_id', $gradoRecord->id)
             ->where('estado', 'activo')
             ->orderBy('apellido1')
             ->orderBy('nombre1')
@@ -51,11 +59,9 @@ class ProfesorEstudianteController extends Controller
 
         // Obtener materias que imparte el profesor en este grado
         $materias = DB::table('profesor_materia_grados')
-            ->join('grados', 'profesor_materia_grados.grado_id', '=', 'grados.id')
             ->join('materias', 'profesor_materia_grados.materia_id', '=', 'materias.id')
             ->where('profesor_materia_grados.profesor_id', $profesor->id)
-            ->where('grados.numero', $grado)
-            ->where('grados.seccion', $seccion)
+            ->where('profesor_materia_grados.grado_id', $gradoRecord->id)
             ->pluck('materias.nombre')
             ->toArray();
 

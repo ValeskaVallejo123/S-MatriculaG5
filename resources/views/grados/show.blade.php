@@ -363,6 +363,50 @@
                     </div>
                 @endif
 
+            {{-- Tabla de estudiantes --}}
+            <div class="gs-sec" style="margin-top:1.5rem;">
+                <i class="fas fa-user-graduate"></i>
+                Estudiantes ({{ $estudiantes->count() }})
+            </div>
+
+            @if($estudiantes->isEmpty())
+                <div class="gs-empty-table">
+                    <i class="fas fa-inbox"></i>
+                    <p style="font-weight:600;margin:.25rem 0;">No hay estudiantes asignados a este grado</p>
+                </div>
+            @else
+                <div class="gs-table-wrap">
+                    <table class="gs-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th><i class="fas fa-user" style="color:var(--teal);margin-right:.3rem;"></i>Nombre</th>
+                                <th><i class="fas fa-id-card" style="color:var(--teal);margin-right:.3rem;"></i>DNI</th>
+                                <th><i class="fas fa-venus-mars" style="color:var(--teal);margin-right:.3rem;"></i>Sexo</th>
+                                <th><i class="fas fa-circle" style="color:var(--teal);margin-right:.3rem;font-size:.6rem;"></i>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($estudiantes as $i => $est)
+                            <tr>
+                                <td class="text-muted" style="font-size:.75rem;">{{ $i + 1 }}</td>
+                                <td style="font-weight:600;">{{ $est->nombre_completo }}</td>
+                                <td><span class="gs-codigo">{{ $est->dni }}</span></td>
+                                <td style="font-size:.78rem;">{{ ucfirst($est->sexo ?? '—') }}</td>
+                                <td>
+                                    @if($est->estado === 'activo')
+                                        <span style="background:#ecfdf5;color:#059669;padding:.15rem .5rem;border-radius:5px;font-size:.72rem;font-weight:600;">Activo</span>
+                                    @else
+                                        <span style="background:#fee2e2;color:#dc2626;padding:.15rem .5rem;border-radius:5px;font-size:.72rem;font-weight:600;">Inactivo</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
             </div>
 
             {{-- SIDEBAR --}}
@@ -371,6 +415,10 @@
                 <div class="gs-side-card">
                     <div class="gs-side-header"><i class="fas fa-chart-bar"></i> Estadísticas</div>
                     <div class="gs-side-body">
+                        <div class="gs-stat-row">
+                            <span class="gs-stat-label"><i class="fas fa-user-graduate"></i> Estudiantes</span>
+                            <span class="gs-stat-val">{{ $estudiantes->count() }}</span>
+                        </div>
                         <div class="gs-stat-row">
                             <span class="gs-stat-label"><i class="fas fa-book"></i> Total materias</span>
                             <span class="gs-stat-val">{{ $grado->materias->count() }}</span>
@@ -401,7 +449,7 @@
                             <i class="fas fa-book"></i> Ver Materias
                         </a>
                         <form action="{{ route('grados.destroy', $grado) }}" method="POST"
-                              onsubmit="return confirm('¿Está seguro de eliminar este grado?')">
+                              data-confirm="¿Está seguro de eliminar este grado?">
                             @csrf @method('DELETE')
                             <button type="submit" class="gs-action-btn gs-action-outline-red">
                                 <i class="fas fa-trash"></i> Eliminar Grado

@@ -14,7 +14,7 @@ class Observacion extends Model
 {
     use HasFactory;
 
-    protected $table = 'observaciones'; // 👈 Tu tabla real
+    protected $table = 'observaciones'; //  Tu tabla real
 
     protected $fillable = [
         'estudiante_id',

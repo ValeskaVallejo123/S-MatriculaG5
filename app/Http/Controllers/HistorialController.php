@@ -14,17 +14,20 @@ class HistorialController extends Controller
     {
         $user = auth()->user();
 
-        // 1. FORZAR LA BUSQUEDA POR USUARIO LOGUEADO
-        // Si el usuario es un estudiante, ignoramos cualquier ID y buscamos por su user_id
-        if ($user->id_rol == 3 || $user->id_rol == '3') {
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Si es estudiante, busca por su user_id (ignora el $id de la URL)
+        if ($user->isEstudiante()) {
             $estudiante = \App\Models\Estudiante::where('user_id', $user->id)->first();
 
-            // Si no lo encuentra por user_id, mandamos un error claro
             if (!$estudiante) {
-                return "Error: El usuario " . $user->name . " (ID: " . $user->id . ") no tiene un perfil de estudiante vinculado en la tabla 'estudiantes'.";
+                return redirect()->back()
+                    ->with('error', 'No se encontró un perfil de estudiante vinculado a tu cuenta.');
             }
         } else {
-            // Si es Admin, usa el ID de la URL
+            // Admin / SuperAdmin: usa el ID de la URL
             $estudiante = \App\Models\Estudiante::findOrFail($id);
         }
 

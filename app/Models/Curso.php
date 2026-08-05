@@ -27,15 +27,17 @@ class Curso extends Model
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * Un curso tiene muchos estudiantes
+     */
     public function estudiantes()
     {
-        // Si en tu tabla matriculas tienes curso_id → úsalo
         return $this->hasMany(Estudiante::class, 'curso_id');
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Scopes (filtros)
+    | Scopes (Filtros)
     |--------------------------------------------------------------------------
     */
 
@@ -60,25 +62,29 @@ class Curso extends Model
     |--------------------------------------------------------------------------
     */
 
-    // Determina secciones válidas según grado y jornada
+    /**
+     * Determina secciones válidas según grado y jornada
+     */
     public static function seccionesDisponibles($grado, $jornada)
     {
         $jornada = strtolower($jornada);
 
         if ($grado >= 1 && $grado <= 6) {
             return $jornada === 'mañana'
-                ? ['A', 'B', 'C']   // 3 secciones mañana
-                : ['A', 'B'];      // 2 secciones tarde
+                ? ['A', 'B', 'C']
+                : ['A', 'B'];
         }
 
         if ($grado >= 9 && $grado <= 12) {
-            return ['A', 'B'];    // 2 secciones por jornada
+            return ['A', 'B'];
         }
 
         return [];
     }
 
-    // Devuelve el nombre completo del curso
+    /**
+     * Nombre completo del curso
+     */
     public function getNombreCompletoAttribute()
     {
         return "{$this->grado}° {$this->seccion} - " . ucfirst($this->jornada);

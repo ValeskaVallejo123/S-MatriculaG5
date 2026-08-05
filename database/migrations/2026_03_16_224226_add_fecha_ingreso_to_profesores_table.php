@@ -10,20 +10,19 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('secciones', function (Blueprint $table) {
-        $table->id();
-        $table->string('nombre');
-        $table->integer('capacidad')->default(30);
-        $table->timestamps();
-    });
-}
+    {
+        Schema::table('profesores', function (Blueprint $table) {
+            $table->date('fecha_ingreso')->nullable()->after('fecha_contratacion');
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('seccion');
+        Schema::table('profesores', function (Blueprint $table) {
+            //
+        });
     }
 };
