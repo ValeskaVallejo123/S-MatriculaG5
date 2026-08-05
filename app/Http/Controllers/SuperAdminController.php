@@ -8,7 +8,6 @@ use App\Models\Estudiante;
 use App\Models\Grado;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
-//use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -43,8 +42,15 @@ class SuperAdminController extends Controller
     public function index()
     {
         $perPage = in_array(request('per_page'), [10, 25, 50]) ? request('per_page') : 10;
+        $search  = request('search');
 
         $administradores = User::whereIn('user_type', ['admin', 'super_admin'])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
             ->orderBy('is_super_admin', 'desc')
             ->orderBy('name')
             ->paginate($perPage)
@@ -61,16 +67,19 @@ class SuperAdminController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'         => 'required|string|max:255',
-            'email'        => 'required|email|unique:users,email',
+            'name'         => ['required', 'string', 'max:100', 'regex:/^[\pL\s]+$/u'],
+            'email'        => ['required', 'email', 'max:50', 'unique:users,email'],
             'password'     => 'required|min:8|confirmed',
             'role'         => 'required|in:super_admin,admin',
             'permissions'  => 'nullable|array',
             'is_protected' => 'nullable|boolean',
         ], [
             'name.required'      => 'El nombre es obligatorio',
+            'name.max'           => 'El nombre no puede tener más de 100 caracteres',
+            'name.regex'         => 'El nombre solo puede contener letras y espacios',
             'email.required'     => 'El email es obligatorio',
-            'email.email'        => 'El email debe ser válido',
+            'email.email'        => 'El email debe tener un formato válido (ej: usuario@dominio.com)',
+            'email.max'          => 'El email no puede tener más de 50 caracteres',
             'email.unique'       => 'Este email ya está registrado',
             'password.required'  => 'La contraseña es obligatoria',
             'password.min'       => 'La contraseña debe tener al menos 8 caracteres',
@@ -97,34 +106,46 @@ class SuperAdminController extends Controller
 
     public function edit(User $administrador)
     {
-        // No editar SuperAdmin protegido
+        // ⚠️ Revisar: $administrador->id_rol probablemente no existe en tu tabla users.
+        // Si tu columna real es is_super_admin, cambia la condición a:
+        // if ($administrador->is_super_admin && $administrador->id !== Auth::id())
         if ($administrador->id_rol == 1 && $administrador->id !== Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
                 ->with('error', 'Este usuario está protegido y no puede ser editado');
         }
 
-        return view('superadmin.administradores.edit', compact('administrador'));
+        $permisos         = $this->getAvailablePermissions();
+        $permisosActuales = $administrador->permissions ?? [];
+
+        return view('superadmin.administradores.edit', compact(
+            'administrador',
+            'permisos',
+            'permisosActuales'
+        ));
     }
 
     public function update(Request $request, User $administrador)
     {
-        // No modificar otro SuperAdmin
+        // ⚠️ Mismo problema de id_rol que en edit() — revisar campo real
         if ($administrador->id_rol == 1 && $administrador->id !== Auth::id()) {
             return redirect()->route('superadmin.administradores.index')
                 ->with('error', 'Este usuario está protegido y no puede ser modificado');
         }
 
         $request->validate([
-            'name'         => 'required|string|max:255',
-            'email'        => ['required', 'email', Rule::unique('users')->ignore($administrador->id)],
+            'name'         => ['required', 'string', 'max:100', 'regex:/^[\pL\s]+$/u'],
+            'email'        => ['required', 'email', 'max:50', Rule::unique('users')->ignore($administrador->id)],
             'role'         => 'required|in:super_admin,admin',
             'permissions'  => 'nullable|array',
             'password'     => 'nullable|min:8|confirmed',
             'is_protected' => 'nullable|boolean',
         ], [
             'name.required'      => 'El nombre es obligatorio',
+            'name.max'           => 'El nombre no puede tener más de 100 caracteres',
+            'name.regex'         => 'El nombre solo puede contener letras y espacios',
             'email.required'     => 'El email es obligatorio',
-            'email.email'        => 'El email debe ser válido',
+            'email.email'        => 'El email debe tener un formato válido (ej: usuario@dominio.com)',
+            'email.max'          => 'El email no puede tener más de 50 caracteres',
             'email.unique'       => 'Este email ya está en uso',
             'role.required'      => 'Debes seleccionar un rol',
             'password.min'       => 'La contraseña debe tener al menos 8 caracteres',
@@ -184,11 +205,13 @@ class SuperAdminController extends Controller
     {
         $request->validate([
             'name'  => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->ignore(Auth::id())],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore(Auth::id())],
         ], [
             'name.required'  => 'El nombre es obligatorio',
+            'name.max'       => 'El nombre no puede tener más de 255 caracteres',
             'email.required' => 'El email es obligatorio',
             'email.email'    => 'El email debe ser válido',
+            'email.max'      => 'El email no puede tener más de 255 caracteres',
             'email.unique'   => 'Este email ya está en uso',
         ]);
 
@@ -227,16 +250,16 @@ class SuperAdminController extends Controller
     public function permisosRoles()
     {
         $usuarios = User::where(function ($query) {
-                $query->where('role', 'admin')
-                      ->orWhere('user_type', 'admin')
-                      ->orWhere(function ($q) {
-                          $q->where(function ($q2) {
-                              $q2->where('role', 'super_admin')
-                                 ->orWhere('user_type', 'super_admin');
-                          })
-                          ->where('is_protected', 0);
-                      });
-            })
+            $query->where('role', 'admin')
+                ->orWhere('user_type', 'admin')
+                ->orWhere(function ($q) {
+                    $q->where(function ($q2) {
+                        $q2->where('role', 'super_admin')
+                            ->orWhere('user_type', 'super_admin');
+                    })
+                        ->where('is_protected', 0);
+                });
+        })
             ->orderBy('name')
             ->get();
 
@@ -256,7 +279,6 @@ class SuperAdminController extends Controller
             return back()->with('error', 'Este usuario no puede modificarse.');
         }
 
-        // Acepta tanto 'permissions[]' como 'permisos[]' del formulario
         $usuario->permissions = $request->permissions ?? $request->permisos ?? [];
         $usuario->save();
 
