@@ -1,0 +1,252 @@
+@extends('layouts.app')
+
+@section('title', 'Editar Observacion')
+@section('page-title', 'Editar Observacion')
+
+@push('styles')
+    <style>
+        .form-control-sm, .form-select-sm {
+            border-radius: 6px;
+            border: 1.5px solid #e2e8f0;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        .form-control-sm:focus, .form-select-sm:focus {
+            border-color: #4ec7d2;
+            box-shadow: 0 0 0 0.15rem rgba(78, 199, 210, 0.15);
+        }
+        .form-label { color: #003b73; font-size: 0.85rem; margin-bottom: 0.3rem; }
+        small.text-muted { font-size: 0.7rem; display: block; margin-top: 0.15rem; }
+        .btn:hover { transform: translateY(-2px); transition: all 0.3s ease; }
+        .btn-back:hover { background: #00508f !important; color: white !important; transform: translateY(-2px); }
+        button[type="submit"]:hover { box-shadow: 0 4px 12px rgba(78, 199, 210, 0.4) !important; }
+        .border-bottom { border-color: rgba(0, 80, 143, 0.15) !important; }
+        textarea { min-height: 100px !important; }
+    </style>
+@endpush
+
+
+@section('content')
+
+    {{-- Header --}}
+    <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); border-radius: 12px;">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="me-3" style="width: 52px; height: 52px; background: rgba(78,199,210,0.3); border-radius: 12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i class="fas fa-pen-to-square text-white" style="font-size: 1.4rem;"></i>
+                    </div>
+                    <div class="text-white">
+                        <h5 class="mb-0 fw-bold" style="font-size: 1.2rem;">Editar Observacion</h5>
+                        <p class="mb-0 opacity-75" style="font-size: 0.85rem;">Modifique la informacion de la observacion</p>
+                    </div>
+                </div>
+                <div style="background: rgba(78,199,210,0.2); padding: 0.4rem 0.9rem; border-radius: 8px;">
+                    <span class="text-white small fw-semibold">ID: #{{ $observacion->id }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-body p-5">
+            <form action="{{ route('observaciones.update', $observacion) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                @if($errors->any())
+                    <div class="alert border-0 mb-4" style="background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444 !important; border-radius: 8px;">
+                        <ul class="mb-0 small" style="color: #991b1b;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <div class="row g-5">
+
+                    {{-- COLUMNA IZQUIERDA --}}
+                    <div class="col-lg-6">
+
+                        {{-- ESTUDIANTE --}}
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #4ec7d2, #00508f); border-radius: 9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <i class="fas fa-user-graduate" style="color:white; font-size:0.9rem;"></i>
+                                </div>
+                                <h6 class="mb-0 fw-bold" style="color:#003b73; font-size:1rem;">Estudiante</h6>
+                            </div>
+
+                            <label class="form-label small fw-semibold" style="color:#003b73;">
+                                Estudiante <span class="text-danger">*</span>
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-user-graduate position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#00508f; font-size:0.85rem; z-index:10;"></i>
+                                <select name="estudiante_id"
+                                        class="form-select ps-5 @error('estudiante_id') is-invalid @enderror"
+                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.65rem 1rem 0.65rem 2.8rem;"
+                                        required>
+                                    <option value="">Seleccione un estudiante</option>
+                                    @foreach($estudiantes as $est)
+                                        <option value="{{ $est->id }}" @selected($observacion->estudiante_id == $est->id)>
+                                            {{ $est->nombreCompleto }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @error('estudiante_id')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- PROFESOR (solo admin) --}}
+                        @if(auth()->user()->isAdmin() || auth()->user()->isSuperAdmin())
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #4ec7d2, #00508f); border-radius: 9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <i class="fas fa-chalkboard-user" style="color:white; font-size:0.9rem;"></i>
+                                </div>
+                                <h6 class="mb-0 fw-bold" style="color:#003b73; font-size:1rem;">Profesor</h6>
+                            </div>
+
+                            <label for="profesor_id" class="form-label small fw-semibold" style="color:#003b73;">Profesor asignado</label>
+                            <div class="position-relative">
+                                <i class="fas fa-chalkboard position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:#00508f; font-size:0.85rem; z-index:10;"></i>
+                                <select class="form-select ps-5" id="profesor_id" name="profesor_id"
+                                        style="border: 2px solid #bfd9ea; border-radius: 8px; padding: 0.65rem 1rem 0.65rem 2.8rem;">
+                                    <option value="">Sin asignar</option>
+                                    @foreach($profesores as $prof)
+                                        <option value="{{ $prof->id }}" @selected($observacion->profesor_id == $prof->id)>
+                                            {{ $prof->nombreCompleto }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- TIPO --}}
+                        <div class="mb-2">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #4ec7d2, #00508f); border-radius: 9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <i class="fas fa-tags" style="color:white; font-size:0.9rem;"></i>
+                                </div>
+                                <h6 class="mb-0 fw-bold" style="color:#003b73; font-size:1rem;">Tipo de Observacion</h6>
+                            </div>
+
+                            <label class="form-label small fw-semibold" style="color:#003b73;">
+                                Tipo <span class="text-danger">*</span>
+                            </label>
+
+                            <div class="row g-2">
+                                @foreach([
+                                    ['value'=>'academica',  'label'=>'Academica',  'icon'=>'fa-book',        'color'=>'#2196f3'],
+                                    ['value'=>'conductual', 'label'=>'Conductual', 'icon'=>'fa-user-shield', 'color'=>'#ef4444'],
+                                    ['value'=>'salud',      'label'=>'Salud',      'icon'=>'fa-heart-pulse', 'color'=>'#4caf50'],
+                                    ['value'=>'otro',       'label'=>'Otro',       'icon'=>'fa-ellipsis',    'color'=>'#9e9e9e'],
+                                ] as $t)
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="tipo" id="tipo_{{ $t['value'] }}"
+                                           value="{{ $t['value'] }}"
+                                           {{ $observacion->tipo === $t['value'] ? 'checked' : '' }}>
+                                    <label class="btn w-100 d-flex flex-column align-items-center gap-1 py-3"
+                                           for="tipo_{{ $t['value'] }}"
+                                           style="border: 2px solid #bfd9ea; border-radius: 10px; background: white; cursor:pointer; transition: all 0.2s;">
+                                        <i class="fas {{ $t['icon'] }}" style="font-size:1.4rem; color:{{ $t['color'] }};"></i>
+                                        <span class="small fw-semibold" style="color:#003b73;">{{ $t['label'] }}</span>
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
+
+                            @error('tipo')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    {{-- COLUMNA DERECHA — Descripcion --}}
+                    <div class="col-lg-6 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #4ec7d2, #00508f); border-radius: 9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fas fa-file-lines" style="color:white; font-size:0.9rem;"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold" style="color:#003b73; font-size:1rem;">Descripcion</h6>
+                        </div>
+
+                        <label for="descripcion" class="form-label small fw-semibold" style="color:#003b73;">
+                            Detalle de la observacion <span class="text-danger">*</span>
+                        </label>
+
+                        <div class="position-relative flex-fill d-flex flex-column">
+                            <i class="fas fa-pen-to-square position-absolute" style="left:12px; top:14px; color:#00508f; font-size:0.85rem;"></i>
+                            <textarea class="form-control ps-5 flex-fill @error('descripcion') is-invalid @enderror"
+                                      id="descripcion" name="descripcion"
+                                      placeholder="Describe la observacion con detalle..."
+                                      style="border: 2px solid #bfd9ea; border-radius: 8px; resize: none; min-height: 300px;">{{ $observacion->descripcion }}</textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-1">
+                            <span id="char_count" class="small text-muted">0 / 1000</span>
+                        </div>
+
+                        @error('descripcion')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                </div>
+
+                {{-- BOTONES --}}
+                <div class="d-flex gap-3 pt-4 mt-2 border-top">
+                    <button type="submit" class="btn fw-semibold flex-fill"
+                            style="background: linear-gradient(135deg, #4ec7d2 0%, #00508f 100%); color:white; border:none; padding:0.75rem; border-radius: 9px; font-size: 0.95rem;">
+                        <i class="fas fa-save me-2"></i>Actualizar Observacion
+                    </button>
+                    <a href="{{ route('observaciones.index') }}" class="btn fw-semibold flex-fill"
+                       style="border: 2px solid #00508f; color:#00508f; background:white; padding:0.75rem; border-radius: 9px; font-size: 0.95rem;">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+@push('styles')
+<style>
+    .btn-check:checked + label {
+        border-color: #4ec7d2 !important;
+        background: rgba(78,199,210,0.12) !important;
+        box-shadow: 0 0 0 3px rgba(78,199,210,0.2);
+    }
+    .btn-check + label:hover {
+        border-color: #4ec7d2 !important;
+        background: rgba(78,199,210,0.06) !important;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #4ec7d2 !important;
+        box-shadow: 0 0 0 0.15rem rgba(78,199,210,0.2) !important;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    const textarea  = document.getElementById('descripcion');
+    const charCount = document.getElementById('char_count');
+
+    function updateCount() {
+        const len = textarea.value.length;
+        charCount.textContent = `${len} / 1000`;
+        charCount.style.color = len > 900 ? '#ef4444' : len > 750 ? '#f59e0b' : '#6b7280';
+    }
+    textarea.addEventListener('input', updateCount);
+    updateCount();
+</script>
+@endpush
+
+@endsection

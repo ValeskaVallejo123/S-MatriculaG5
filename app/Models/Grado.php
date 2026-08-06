@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+
+
+class Grado extends Model
+{
+    use HasFactory;
+
+    protected $table = 'grados';
+
+    protected $fillable = [
+        'nivel',
+        'numero',
+        'seccion',
+        'anio_lectivo',
+        'capacidad',
+        'activo',
+    ];
+
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
+    // Relación con materias a través de profesor_materia_grados
+    public function materias()
+    {
+        return $this->belongsToMany(
+            Materia::class,
+            'profesor_materia_grados', // tabla real existente
+            'grado_id',
+            'materia_id'
+        )
+            ->withPivot('profesor_id', 'seccion')
+            ->withTimestamps();
+    }
+    // Accesor para nombre completo del grado
+    public function getNombreCompletoAttribute()
+    {
+        $nombre = $this->numero . '° Grado';
+        if ($this->seccion) {
+            $nombre .= ' Sección ' . $this->seccion;
+        }
+        return $nombre;
+    }
+
+    // Scope para filtrar por nivel
+    public function scopePrimaria($query)
+    {
+        return $query->where('nivel', 'primaria');
+    }
+
+    public function scopeSecundaria($query)
+    {
+        return $query->where('nivel', 'secundaria');
+    }
+
+    public function profesores()
+    {
+        return $this->hasMany(ProfesorGradoSeccion::class, 'grado_id');
+    }
+
+    public function profesoresMaterias()
+    {
+        return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
+    }
+
+    public function estudiantes()
+    {
+        return $this->belongsToMany(Estudiante::class, 'matriculas', 'seccion_id', 'estudiante_id')
+            ->withPivot('anio_lectivo', 'estado')
+            ->withTimestamps();
+    }
+}

@@ -10,9 +10,18 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
+    ->withMiddleware(function (Middleware $middleware) {
+
+        $middleware->alias([
+            'verificar.permiso' => \App\Http\Middleware\VerificarPermiso::class,
+            'verificar.rol'     => \App\Http\Middleware\VerificarRol::class,
+            'role'              => \App\Http\Middleware\RoleMiddleware::class,
+            'rol'               => \App\Http\Middleware\RoleMiddleware::class,
+            'es.padre'          => \App\Http\Middleware\EsPadre::class,
+        ]);
+
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
         //
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    ->create();

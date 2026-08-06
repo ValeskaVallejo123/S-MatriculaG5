@@ -1,149 +1,163 @@
 @extends('layouts.app')
 
-@section('title', 'Subir Documentos')
+@section('title', 'Subir Expediente')
+@section('page-title', 'Subir Nuevo Expediente Digital')
 
 @section('content')
-    <div class="max-w-4xl mx-auto my-10">
-        <div class="bg-white rounded-lg shadow p-8">
-            <h1 class="text-3xl font-bold mb-6 text-gray-800"><i class="bi bi-file-earmark-arrow-up"></i> Subir Documentos del Estudiante</h1>
+    <div class="container py-4" style="max-width: 950px;">
 
-            <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                @csrf
+        {{-- Botón Volver --}}
+        <div class="mb-4">
+            <a href="{{ route('documentos.index') }}" class="btn btn-light shadow-sm fw-bold text-muted" style="border-radius: 10px; padding: 10px 20px;">
+                <i class="fas fa-arrow-left me-2"></i> Volver al Listado
+            </a>
+        </div>
 
-                <!-- Información del Estudiante -->
-                <div class="border-b pb-4">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Información del Estudiante</h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold mb-2">Nombre del Estudiante *</label>
-                            <input
-                                type="text"
-                                name="nombre_estudiante"
-                                value="{{ old('nombre_estudiante') }}"
-                                class="w-full px-4 py-2 border rounded @error('nombre_estudiante') border-red-500 @enderror"
-                                required
-                            >
-                            @error('nombre_estudiante')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+        <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+            {{-- Encabezado con el degradado de tu sistema --}}
+            <div class="card-header border-0 py-3" style="background: linear-gradient(135deg, #00508f 0%, #003b73 100%); color: white;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                        <i class="fas fa-file-upload" style="color: #00508f; font-size: 1.2rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">Formulario de Registro</h5>
+                        <small class="opacity-75">Complete todos los campos marcados con asterisco (*)</small>
                     </div>
                 </div>
+            </div>
 
-                <!-- Archivos -->
-                <div class="border-b pb-4">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Documentos</h2>
+            <div class="card-body p-4 p-md-5">
+                <form action="{{ route('documentos.store') }}" method="POST" enctype="multipart/form-data" id="formExpediente">
+                    @csrf
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold mb-2">Acta de Nacimiento *</label>
-                            <input
-                                type="file"
-                                name="acta_nacimiento"
-                                id="acta_nacimiento"
-                                accept=".jpg,.png,.pdf"
-                                class="w-full px-4 py-2 border rounded @error('acta_nacimiento') border-red-500 @enderror"
-                                required
-                            >
-                            <p class="text-gray-500 text-sm mt-1">JPG, PNG o PDF (máx. 5 MB)</p>
-                            @error('acta_nacimiento')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                    <div class="row">
+                        {{-- Selección de Estudiante --}}
+                        <div class="col-12 mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted">1. Seleccionar Estudiante *</label>
+                            <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0;">
+                                <span class="input-group-text bg-white border-0"><i class="fas fa-user-graduate text-primary"></i></span>
+                                <select name="estudiante_id" id="estudiante_id" required
+                                        class="form-select border-0 @error('estudiante_id') is-invalid @enderror"
+                                        style="height: 55px; font-weight: 500;">
+                                    <option value="" selected disabled>Buscar alumno en la base de datos...</option>
+                                    @foreach($estudiantes as $est)
+                                        <option value="{{ $est->id }}" {{ old('estudiante_id') == $est->id ? 'selected' : '' }}>
+                                            {{ strtoupper($est->nombre1) }} {{ strtoupper($est->nombre2) }} {{ strtoupper($est->apellido1) }} {{ strtoupper($est->apellido2) }} — DNI: {{ $est->dni }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @error('estudiante_id') <div class="text-danger small mt-1 ps-2"><i class="fas fa-exclamation-circle me-1"></i>{{ $message }}</div> @enderror
                         </div>
 
-                        <div>
-                            <label class="block font-semibold mb-2">Calificaciones *</label>
-                            <input
-                                type="file"
-                                name="calificaciones"
-                                id="calificaciones"
-                                accept=".jpg,.png,.pdf"
-                                class="w-full px-4 py-2 border rounded @error('calificaciones') border-red-500 @enderror"
-                                required
-                            >
-                            <p class="text-gray-500 text-sm mt-1">JPG, PNG o PDF (máx. 5 MB)</p>
-                            @error('calificaciones')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                        <div class="col-12 mb-2">
+                            <label class="form-label small fw-bold text-uppercase text-muted">2. Documentación Digital *</label>
+                        </div>
+
+                        {{-- Sección de Archivos con diseño de Dropzone simulado --}}
+                        <div class="col-md-4 mb-4">
+                            <div class="file-upload-wrapper">
+                                <label class="small fw-bold mb-2 d-block">Foto de Perfil</label>
+                                <div class="upload-area" onclick="document.getElementById('foto').click()">
+                                    <i class="fas fa-camera mb-2"></i>
+                                    <p class="mb-0 small">JPG o PNG</p>
+                                    <input type="file" name="foto" id="foto" class="d-none" accept="image/*" required onchange="updateFileName(this)">
+                                    <div class="file-name mt-2 text-primary fw-bold small"></div>
+                                </div>
+                                @error('foto') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <div class="file-upload-wrapper">
+                                <label class="small fw-bold mb-2 d-block">Acta de Nacimiento</label>
+                                <div class="upload-area" onclick="document.getElementById('acta_nacimiento').click()">
+                                    <i class="fas fa-id-card mb-2"></i>
+                                    <p class="mb-0 small">PDF o Imagen</p>
+                                    <input type="file" name="acta_nacimiento" id="acta_nacimiento" class="d-none" accept=".pdf,.jpg,.png" required onchange="updateFileName(this)">
+                                    <div class="file-name mt-2 text-primary fw-bold small"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <div class="file-upload-wrapper">
+                                <label class="small fw-bold mb-2 d-block">Calificaciones</label>
+                                <div class="upload-area" onclick="document.getElementById('calificaciones').click()">
+                                    <i class="fas fa-file-invoice mb-2"></i>
+                                    <p class="mb-0 small">PDF o Imagen</p>
+                                    <input type="file" name="calificaciones" id="calificaciones" class="d-none" accept=".pdf,.jpg,.png" required onchange="updateFileName(this)">
+                                    <div class="file-name mt-2 text-primary fw-bold small"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Botones -->
-                <div class="flex gap-4 pt-4">
-                    <button type="submit" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">
-                        Subir Documentos
-                    </button>
-                    <a href="{{ route('documentos.index') }}" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 text-center leading-[3rem]">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
+                    {{-- Acciones Finales --}}
+                    <div class="row mt-4 pt-3 border-top">
+                        <div class="col-md-6 mb-2">
+                            <button type="submit" class="btn w-100 py-3 fw-bold text-white shadow-sm btn-save"
+                                    style="background: linear-gradient(to right, #4ec7d2, #00508f); border: none; border-radius: 12px; font-size: 1.1rem;">
+                                <i class="fas fa-cloud-upload-alt me-2"></i> GUARDAR EXPEDIENTE
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ route('documentos.index') }}" class="btn btn-light border w-100 py-3 fw-bold text-muted" style="border-radius: 12px; font-size: 1.1rem;">
+                                CANCELAR REGISTRO
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
-    {{-- Validación frontend de archivos --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                const maxSize = 5 * 1024 * 1024;
-                const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-
-                const acta = document.getElementById('acta_nacimiento').files[0];
-                const calif = document.getElementById('calificaciones').files[0];
-
-                let errorMessage = '';
-
-                if (acta && (!allowedTypes.includes(acta.type) || acta.size > maxSize)) {
-                    errorMessage = 'El Acta de Nacimiento debe ser JPG, PNG o PDF y no superar 5 MB.';
-                } else if (calif && (!allowedTypes.includes(calif.type) || calif.size > maxSize)) {
-                    errorMessage = 'Las Calificaciones deben ser JPG, PNG o PDF y no superar 5 MB.';
-                }
-
-                if (errorMessage) {
-                    e.preventDefault();
-                    alert(errorMessage); // Puedes reemplazar por modal si quieres
-                }
-            });
-        });
-    </script>
-
-    <style>
-        body {
-            background-color: #f8fafc;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        input[type="file"] {
-            padding: 0.5rem 0.5rem;
-        }
-    </style>
 @endsection
 
+@push('styles')
+    <style>
+        .upload-area {
+            border: 2px dashed #bfd9ea;
+            border-radius: 12px;
+            padding: 30px 15px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #64748b;
+        }
+        .upload-area:hover {
+            border-color: #4ec7d2;
+            background: #f0f9ff;
+            color: #00508f;
+        }
+        .upload-area i {
+            font-size: 1.8rem;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,80,143,0.3) !important;
+        }
+        .form-select:focus {
+            box-shadow: none;
+            border-color: #4ec7d2;
+        }
+    </style>
+@endpush
 
+@push('scripts')
+    <script>
+        // Función para mostrar el nombre del archivo seleccionado en el diseño
+        function updateFileName(input) {
+            const fileName = input.files[0].name;
+            const display = input.parentElement.querySelector('.file-name');
+            const icon = input.parentElement.querySelector('i');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            display.innerText = fileName;
+            icon.classList.remove('fa-camera', 'fa-id-card', 'fa-file-invoice');
+            icon.classList.add('fa-check-circle');
+            input.parentElement.style.borderColor = "#4ec7d2";
+            input.parentElement.style.background = "#f0f9ff";
+        }
+    </script>
+@endpush
