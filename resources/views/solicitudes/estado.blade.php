@@ -199,19 +199,23 @@
             @endif
 
             <form method="POST" action="{{ route('estado-solicitud.consultar') }}">
-                @csrf
-                <div class="row g-3 align-items-end">
+                @csrf<div class="row g-3 align-items-end">
                     <div class="col-md-6">
                         <label class="est-label">DNI del Estudiante</label>
                         <div class="est-input-wrap">
                             <span class="est-input-icon"><i class="fas fa-id-badge"></i></span>
-                            <input type="text" name="dni" class="est-input"
-                                   placeholder="Ej: 0801-1990-12345"
+                            <input type="text" name="dni" id="dni" class="est-input"
+                                   placeholder="Ej: 0801199012345"
                                    value="{{ old('dni', $dni ?? '') }}"
-                                   autocomplete="off">
+                                   autocomplete="off"
+                                   maxlength="13" minlength="13"
+                                   onkeypress="return /[0-9]/.test(event.key)" required>
                         </div>
+                        <small id="dniError" style="color:red;display:none;">
+                            El DNI debe contener exactamente 13 dígitos.
+                        </small>
                         <small style="color:#94a3b8;font-size:.7rem;margin-top:.25rem;display:block;">
-                            Formato: ####-####-#####
+                            Formato: #############
                         </small>
                     </div>
                     <div class="col-md-3">
@@ -220,6 +224,23 @@
                         </button>
                     </div>
                 </div>
+
+                <script>
+                    // Validación en vivo para DNI
+                    document.getElementById('dni').addEventListener('input', function() {
+                        const dni = this.value;
+                        const errorMsg = document.getElementById('dniError');
+
+                        if (dni.length > 0 && dni.length !== 13) {
+                            this.style.borderColor = "red";
+                            errorMsg.style.display = "block";
+                        } else {
+                            this.style.borderColor = "";
+                            errorMsg.style.display = "none";
+                        }
+                    });
+                </script>
+
             </form>
         </div>
     </div>

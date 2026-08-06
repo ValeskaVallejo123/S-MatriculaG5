@@ -173,7 +173,7 @@
             </div>
             <div>
                 <div class="sec-stat-lbl">Total Inscripciones</div>
-                <div class="sec-stat-num">{{ $inscripciones->total() }}</div>
+                <div class="sec-stat-num">{{ $matriculas->total() }}</div>
             </div>
         </div>
         <div class="sec-stat">
@@ -232,8 +232,8 @@
 
     {{-- Lista --}}
     <div class="sec-list-wrap">
-        @forelse($inscripciones as $inscripcion)
-            @php $estudiante = $inscripcion->estudiante; @endphp
+        @forelse($matriculas as $matricula)
+            @php $estudiante = $matricula->estudiante; @endphp
             @if(!$estudiante) @continue @endif
 
             <div class="sec-card">
@@ -259,12 +259,12 @@
 
                         {{-- Sección --}}
                         <div class="col-lg-3">
-                            @if($inscripcion->seccion)
+                            @if($matricula->seccion)
                                 <span class="sec-badge-sec">
-                                    <i class="fas fa-chalkboard"></i> {{ $inscripcion->seccion->nombre }}
+                                    <i class="fas fa-chalkboard"></i> {{ $matricula->seccion->nombre }}
                                 </span>
                                 <div class="sec-sub mt-1">
-                                    <i class="fas fa-users me-1"></i>Cap: {{ $inscripcion->seccion->capacidad }}
+                                    <i class="fas fa-users me-1"></i>Cap: {{ $matricula->seccion->capacidad }}
                                 </div>
                             @else
                                 <span class="sec-badge-pend">
@@ -277,25 +277,25 @@
                         <div class="col-lg-3">
                             <div class="sec-date">
                                 <i class="fas fa-calendar-alt text-muted me-1"></i>
-                                {{ $inscripcion->fecha_matricula ? \Carbon\Carbon::parse($inscripcion->fecha_matricula)->format('d/m/Y') : '—' }}
+                                {{ $matricula->fecha_matricula ? \Carbon\Carbon::parse($matricula->fecha_matricula)->format('d/m/Y') : '—' }}
                             </div>
-                            <div class="sec-code">Código: {{ $inscripcion->codigo_matricula }}</div>
+                            <div class="sec-code">Código: {{ $matricula->codigo_matricula }}</div>
                         </div>
 
                         {{-- Estado + botón --}}
                         <div class="col-lg-2">
                             <div class="d-flex align-items-center justify-content-end gap-2">
-                                @if($inscripcion->seccion)
+                                @if($matricula->seccion)
                                     <span class="sec-badge-ok"><i class="fas fa-check-circle"></i> Asignada</span>
                                 @else
                                     <span class="sec-badge-pend"><i class="fas fa-clock"></i> Pendiente</span>
                                 @endif
                                 <button type="button"
-                                        class="sec-btn-assign {{ $inscripcion->seccion ? 'assigned' : '' }}"
+                                        class="sec-btn-assign {{ $matricula->seccion ? 'assigned' : '' }}"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modalAsignar{{ $inscripcion->id }}"
-                                        title="{{ $inscripcion->seccion ? 'Cambiar sección' : 'Asignar sección' }}">
-                                    <i class="fas {{ $inscripcion->seccion ? 'fa-exchange-alt' : 'fa-user-check' }}"></i>
+                                        data-bs-target="#modalAsignar{{ $matricula->id }}"
+                                        title="{{ $matricula->seccion ? 'Cambiar sección' : 'Asignar sección' }}">
+                                    <i class="fas {{ $matricula->seccion ? 'fa-exchange-alt' : 'fa-user-check' }}"></i>
                                 </button>
                             </div>
                         </div>
@@ -305,7 +305,7 @@
             </div>
 
             {{-- Modal asignar sección --}}
-            <div class="modal fade" id="modalAsignar{{ $inscripcion->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="modalAsignar{{ $matricula->id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 4px 20px rgba(0,0,0,.15);">
                         <div class="modal-header sec-modal-header">
@@ -329,7 +329,7 @@
                                     <select name="seccion_id" class="sec-modal-select" required>
                                         <option value="">— Seleccione una sección —</option>
                                         @foreach($secciones as $s)
-                                            <option value="{{ $s->id }}" {{ $inscripcion->seccion_id == $s->id ? 'selected' : '' }}>
+                                            <option value="{{ $s->id }}" {{ $matricula->seccion_id == $s->id ? 'selected' : '' }}>
                                                 {{ $s->nombre }} (Cap: {{ $s->capacidad }})
                                             </option>
                                         @endforeach
@@ -368,12 +368,12 @@
         @endforelse
 
         {{-- Paginación --}}
-        @if($inscripciones->hasPages())
+        @if($matriculas->hasPages())
             <div class="sec-pag-footer" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-top:.5rem;">
                 <span class="sec-pag-info">
-                    Mostrando {{ $inscripciones->firstItem() }}–{{ $inscripciones->lastItem() }} de {{ $inscripciones->total() }} inscripciones
+                    Mostrando {{ $matriculas->firstItem() }}–{{ $matriculas->lastItem() }} de {{ $matriculas->total() }} inscripciones
                 </span>
-                {{ $inscripciones->appends(request()->query())->links() }}
+                {{ $matriculas->appends(request()->query())->links() }}
             </div>
         @endif
     </div>

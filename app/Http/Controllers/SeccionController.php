@@ -110,10 +110,21 @@ class SeccionController extends Controller
             ->whereNull('seccion_id')->get()
             ->groupBy(fn($m) => GradoHelper::normalizar($m->estudiante->grado ?? null));
 
+        $alumnos = Estudiante::orderBy('apellido1')
+            ->orderBy('nombre1')
+            ->get();
+
         return view('secciones.index', compact(
-            'matriculas', 'secciones', 'grados', 'letras',
-            'gradosSecciones', 'matriculasSinSeccionPorGrado',
-            'conSeccion', 'sinSeccion', 'seccionesPorGrado'
+            'matriculas',
+            'secciones',
+            'grados',
+            'letras',
+            'gradosSecciones',
+            'matriculasSinSeccionPorGrado',
+            'conSeccion',
+            'sinSeccion',
+            'seccionesPorGrado',
+            'alumnos'
         ));
     }
 
@@ -127,7 +138,7 @@ class SeccionController extends Controller
     {
         $validated = $request->validate([
             'estudiante_id' => 'required|exists:estudiantes,id',
-            'seccion_id'    => 'required|exists:seccion,id',
+            'seccion_id'    => 'required|exists:secciones,id',
         ]);
 
         $matricula = Matricula::where('estudiante_id', $request->estudiante_id)

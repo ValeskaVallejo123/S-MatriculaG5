@@ -164,6 +164,22 @@
                     </div>
                 </div>
 
+                {{-- Capacidad --}}
+                <div class="col-md-6">
+                    <label for="capacidad" class="form-label fw-semibold" style="color:#003b73;">
+                        <i class="fas fa-users text-primary me-1"></i> Capacidad
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="number" id="capacidad" name="capacidad"
+                           class="form-control @error('capacidad') is-invalid @enderror"
+                           value="{{ old('capacidad', 30) }}" min="1" max="60" required
+                           style="border:2px solid #bfd9ea; border-radius:8px; padding:0.6rem 1rem;">
+                    @error('capacidad')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+
                 {{-- Botones --}}
                 <div class="d-flex gap-2 mt-4 pt-3 border-top">
                     <button type="submit" class="btn flex-fill"

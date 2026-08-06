@@ -26,11 +26,16 @@ class Grado extends Model
         'activo' => 'boolean',
     ];
 
-    // Relación con materias a través de grado_materia
+    // Relación con materias a través de profesor_materia_grados
     public function materias()
     {
-        return $this->belongsToMany(Materia::class, 'grado_materia')
-            ->withPivot('horas_semanales', 'profesor_id')  // ← agregar profesor_id
+        return $this->belongsToMany(
+            Materia::class,
+            'profesor_materia_grados', // tabla real existente
+            'grado_id',
+            'materia_id'
+        )
+            ->withPivot('profesor_id', 'seccion')
             ->withTimestamps();
     }
     // Accesor para nombre completo del grado
