@@ -15,10 +15,8 @@ class DocumentoController extends Controller
     public function index()
     {
         $estudiantes = Estudiante::all();
-        $documentos = Documento::with('estudiante')->get();
-       return view('Documentos.indexDocumento', compact('documentos', 'estudiantes'));
-
-
+        $documentos = Documento::with('estudiante')->paginate(15);
+        return view('Documentos.indexDocumento', compact('documentos', 'estudiantes'));
     }
 
     /**

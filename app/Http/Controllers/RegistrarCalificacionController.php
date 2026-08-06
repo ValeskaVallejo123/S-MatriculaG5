@@ -11,6 +11,7 @@ use App\Models\Grado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class RegistrarCalificacionController extends Controller
 {
@@ -32,6 +33,10 @@ class RegistrarCalificacionController extends Controller
     {
         $user = Auth::user();
         $profesorActual = $this->getProfesorActual();
+
+        // ── Ruta del dashboard (para el botón/enlace "volver" en la vista) ──
+        // Ajusta 'dashboard' al nombre real de tu ruta si es distinto.
+        $rutaDashboard = Route::has('dashboard') ? route('dashboard') : url('/');
 
         // ── Si es profesor, solo ve sus grados y materias ────────────────────
         if ($profesorActual) {
@@ -147,7 +152,8 @@ class RegistrarCalificacionController extends Controller
             'estudiantes',
             'profesorActual',
             'gradoSeleccionado',
-            'profesoresDelGrado'
+            'profesoresDelGrado',
+            'rutaDashboard'
         ));
     }
 

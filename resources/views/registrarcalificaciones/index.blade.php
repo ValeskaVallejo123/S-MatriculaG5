@@ -4,8 +4,6 @@
 
     @php
         $gradoSeleccionado = request('grado_id');
-    @endphp
-
 
         $usuario = auth()->user();
         $rutaDashboard = match($usuario->rol->nombre ?? '') {

@@ -76,6 +76,12 @@ class Estudiante extends Model
         return $this->belongsTo(Padre::class, 'padre_id');
     }
 
+    // Estudiante -> Padres/Tutores a través de matrículas (inversa de Padre::estudiantes())
+    public function padres()
+    {
+        return $this->belongsToMany(Padre::class, 'matriculas', 'estudiante_id', 'padre_id');
+    }
+
     // Documentos del expediente (Muchos a Muchos o Uno a Muchos)
     public function documentos()
     {
@@ -90,6 +96,15 @@ class Estudiante extends Model
 
     // Relación con el curso/grado
     public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'curso_id');
+    }
+
+    // Alias de "curso()". Se agrega porque en algunas vistas/controladores
+    // (p. ej. PadreController@show) se hace referencia al grado del
+    // estudiante usando el nombre "gradoAsignado" en lugar de "curso".
+    // Ambos métodos apuntan a la misma relación (Curso a través de curso_id).
+    public function gradoAsignado()
     {
         return $this->belongsTo(Curso::class, 'curso_id');
     }

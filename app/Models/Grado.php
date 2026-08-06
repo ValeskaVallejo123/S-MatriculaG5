@@ -63,4 +63,11 @@ class Grado extends Model
     {
         return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
     }
+
+   public function estudiantes()
+{
+    return $this->belongsToMany(Estudiante::class, 'matriculas', 'seccion_id', 'estudiante_id')
+        ->withPivot('anio_lectivo', 'estado')
+        ->withTimestamps();
+}
 }
