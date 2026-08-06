@@ -379,9 +379,10 @@
                         <label>Primer Nombre <span class="req">*</span></label>
                         <input type="text" name="nombre1" value="{{ old('nombre1') }}"
                                class="{{ $errors->has('nombre1') ? 'is-invalid' : '' }}"
-                               placeholder="Ej: María" maxlength="50" required>
+                               placeholder="Ej: María" maxlength="50" required
+                               onkeypress="return /[a-zA-Z\s]/.test(event.key)">
                         @error('nombre1')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i>{{ $message }}</span>
+                        <span class="error-msg"><i class="fas fa-exclamation-circle"></i>{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -391,7 +392,8 @@
                             <span style="color:#6b7a90; font-weight:400; text-transform:none; font-size:.72rem;">(Opcional)</span>
                         </label>
                         <input type="text" name="nombre2" value="{{ old('nombre2') }}"
-                               placeholder="Opcional" maxlength="50">
+                               placeholder="Opcional" maxlength="50"
+                               onkeypress="return /[a-zA-Z\s]/.test(event.key)">
                     </div>
 
                     {{-- Primer Apellido --}}
@@ -399,9 +401,10 @@
                         <label>Primer Apellido <span class="req">*</span></label>
                         <input type="text" name="apellido1" value="{{ old('apellido1') }}"
                                class="{{ $errors->has('apellido1') ? 'is-invalid' : '' }}"
-                               placeholder="Ej: García" maxlength="50" required>
+                               placeholder="Ej: García" maxlength="50" required
+                               onkeypress="return /[a-zA-Z\s]/.test(event.key)">
                         @error('apellido1')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i>{{ $message }}</span>
+                        <span class="error-msg"><i class="fas fa-exclamation-circle"></i>{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -411,12 +414,12 @@
                             <span style="color:#6b7a90; font-weight:400; text-transform:none; font-size:.72rem;">(Opcional)</span>
                         </label>
                         <input type="text" name="apellido2" value="{{ old('apellido2') }}"
-                               placeholder="Opcional" maxlength="50">
+                               placeholder="Opcional" maxlength="50"
+                               onkeypress="return /[a-zA-Z\s]/.test(event.key)">
                     </div>
 
-                </div>
 
-                {{-- Fila 2 --}}
+                    {{-- Fila 2 --}}
                 <div class="grid-3" style="margin-top:1.1rem;">
 
                     <div class="field">

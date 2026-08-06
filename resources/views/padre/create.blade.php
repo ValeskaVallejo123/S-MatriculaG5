@@ -300,20 +300,23 @@
                         <label>Nombre(s) <span class="req">*</span></label>
                         <input type="text" name="nombre" value="{{ old('nombre') }}"
                                class="{{ $errors->has('nombre') ? 'is-invalid' : '' }}"
-                               placeholder="Ej: María Elena" maxlength="50" required>
+                               placeholder="Ej: María Elena" maxlength="50" required
+                               onkeypress="return /[a-zA-Z\s]/.test(event.key)">
                         @error('nombre')
                             <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
                         @enderror
                     </div>
 
                     {{-- apellido = campo que espera el controlador --}}
+                    {{-- Apellido(s) --}}
                     <div class="field">
                         <label>Apellido(s) <span class="req">*</span></label>
                         <input type="text" name="apellido" value="{{ old('apellido') }}"
                                class="{{ $errors->has('apellido') ? 'is-invalid' : '' }}"
-                               placeholder="Ej: García López" maxlength="50" required>
+                               placeholder="Ej: García López" maxlength="50" required
+                               onkeypress="return /[a-zA-Z\s]/.test(event.key)">
                         @error('apellido')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
+                        <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
                         @enderror
                     </div>
 
@@ -322,12 +325,12 @@
                         <label>DNI / Identidad</label>
                         <input type="text" name="dni" value="{{ old('dni') }}"
                                class="{{ $errors->has('dni') ? 'is-invalid' : '' }}"
-                               placeholder="0801-1990-XXXXX" maxlength="20">
+                               placeholder="0801199012345" maxlength="13" minlength="13" required
+                               onkeypress="return /[0-9]/.test(event.key)">
                         @error('dni')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
+                        <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
                         @enderror
                     </div>
-
                     {{-- Estado --}}
                     <div class="field">
                         <label>Estado</label>
@@ -405,40 +408,75 @@
                             <span class="prefix-tag">+504</span>
                             <input type="tel" name="telefono" value="{{ old('telefono') }}"
                                    class="{{ $errors->has('telefono') ? 'is-invalid' : '' }}"
-                                   placeholder="9999-9999" maxlength="15">
+                                   placeholder="99999999" maxlength="8" minlength="8" required
+                                   onkeypress="return /[0-9]/.test(event.key)">
                         </div>
                         @error('telefono')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
+                        <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
                         @enderror
                     </div>
-
+                    {{-- Teléfono Secundario --}}
                     <div class="field">
                         <label>Teléfono Secundario</label>
                         <div class="input-prefix">
                             <span class="prefix-tag">+504</span>
                             <input type="tel" name="telefono_secundario" value="{{ old('telefono_secundario') }}"
-                                   placeholder="9999-9999" maxlength="15">
+                                   class="{{ $errors->has('telefono_secundario') ? 'is-invalid' : '' }}"
+                                   placeholder="99999999" maxlength="8" minlength="8"
+                                   onkeypress="return /[0-9]/.test(event.key)">
                         </div>
+                        @error('telefono_secundario')
+                        <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
                     </div>
 
+                    {{-- Teléfono Trabajo --}}
                     <div class="field">
                         <label>Teléfono Trabajo</label>
                         <div class="input-prefix">
                             <span class="prefix-tag">+504</span>
                             <input type="tel" name="telefono_trabajo" value="{{ old('telefono_trabajo') }}"
-                                   placeholder="9999-9999" maxlength="15">
+                                   class="{{ $errors->has('telefono_trabajo') ? 'is-invalid' : '' }}"
+                                   placeholder="99999999" maxlength="8" minlength="8"
+                                   onkeypress="return /[0-9]/.test(event.key)">
                         </div>
-                    </div>
-
-                    <div class="field">
-                        <label>Correo Electrónico</label>
-                        <input type="email" name="correo" value="{{ old('correo') }}"
-                               class="{{ $errors->has('correo') ? 'is-invalid' : '' }}"
-                               placeholder="ejemplo@correo.com" maxlength="100">
-                        @error('correo')
-                            <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
+                        @error('telefono_trabajo')
+                        <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
                         @enderror
                     </div>
+
+
+                    {{-- Correo Electrónico --}}
+                    <div class="field">
+                        <label>Correo Electrónico</label>
+                        <input type="email" name="correo" id="correo"
+                               value="{{ old('correo') }}"
+                               class="{{ $errors->has('correo') ? 'is-invalid' : '' }}"
+                               placeholder="ejemplo123@gmail.com" maxlength="100" required>
+                        <small id="correoError" style="color:red; display:none;">
+                            Este no es un correo válido. Ejemplo: ejemplo123@gmail.com
+                        </small>
+                        @error('correo')
+                        <span class="error-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <script>
+                        document.getElementById('correo').addEventListener('input', function() {
+                            const correo = this.value;
+                            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // formato algo@algo.algo
+                            const errorMsg = document.getElementById('correoError');
+
+                            if (correo.length > 0 && !regex.test(correo)) {
+                                this.style.borderColor = "red";   // casilla se pone roja
+                                errorMsg.style.display = "block"; // muestra mensaje
+                            } else {
+                                this.style.borderColor = "";      // vuelve al estilo normal
+                                errorMsg.style.display = "none";  // oculta mensaje
+                            }
+                        });
+                    </script>
+
                 </div>
             </div>
 
