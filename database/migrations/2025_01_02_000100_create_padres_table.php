@@ -22,7 +22,18 @@ return new class extends Migration
             $table->string('apellido', 50);
             $table->string('dni', 13)->unique();
 
-            $table->enum('parentesco', ['padre', 'madre', 'tutor_legal', 'otro']);
+            $table->enum('parentesco', [
+                'padre',
+                'madre',
+                'tutor_legal',
+                'abuelo',
+                'abuela',
+                'tio',
+                'tia',
+                'hermano',
+                'hermana',
+                'otro'
+            ]);
             $table->string('parentesco_otro', 100)->nullable();
 
             // Información de Contacto

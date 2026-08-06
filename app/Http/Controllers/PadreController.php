@@ -104,7 +104,7 @@ class PadreController extends Controller
      */
     public function show($id)
     {
-        $padre = Padre::with(['estudiantes.gradoAsignado'])->findOrFail($id);
+        $padre = Padre::with(['estudiantes.curso'])->findOrFail($id);
         return view('padre.show', compact('padre'));
     }
 
@@ -258,10 +258,10 @@ class PadreController extends Controller
     private function validarPadre(Request $request, $id = null)
     {
         return $request->validate([
-            'nombre'              => 'required|string|min:2|max:50',
-            'apellido'            => 'required|string|min:2|max:50',
+            'nombre'              => 'required|string|min:2|regex:/^[\pL\s]+$/u|max:50',
+            'apellido'            => 'required|string|min:2|regex:/^[\pL\s]+$/u|max:50',
             'dni'                 => [
-                'nullable','string','max:20',
+                'nullable','string','max:20','required', 'digits:13', 'unique:padres,dni',
                 function ($attribute, $value, $fail) use ($id) {
                     if (!empty($value)) {
                         $query = Padre::where('dni', $value);
@@ -282,12 +282,12 @@ class PadreController extends Controller
                     }
                 },
             ],
-            'telefono'            => 'nullable|string|max:15',
-            'telefono_secundario' => 'nullable|string|max:15',
+            'telefono'            => 'nullable|string|digits:8',
+            'telefono_secundario' => 'nullable|string|digits:8',
             'direccion'           => 'nullable|string|max:255',
             'ocupacion'           => 'nullable|string|max:100',
             'lugar_trabajo'       => 'nullable|string|max:100',
-            'telefono_trabajo'    => 'nullable|string|max:15',
+            'telefono_trabajo'    => 'nullable|string|digits:8|max:15',
             'estado'              => 'nullable|string|in:activo,inactivo',
             'observaciones'       => 'nullable|string|max:500',
         ]);
