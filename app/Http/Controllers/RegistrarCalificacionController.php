@@ -89,17 +89,31 @@ class RegistrarCalificacionController extends Controller
             ->with('success', 'Calificaciones guardadas correctamente');
     }
 
-    public function ver()
+    public function ver(Request $request)
     {
-        $calificaciones = RegistrarCalificacion::with([
-            'estudiante',
-            'grado',
-            'materia',
-            'periodoAcademico'
-        ])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        // Filtros
+        $gradosFiltro   = Grado::orderBy('nivel')->orderBy('numero')->orderBy('seccion')->get();
+        $materiasFiltro = Materia::orderBy('nombre')->get();
+        $periodosFiltro = PeriodoAcademico::orderBy('nombre_periodo')->get();
 
-        return view('registrarcalificaciones.ver', compact('calificaciones'));
+        // Consulta de calificaciones con filtros
+        $query = RegistrarCalificacion::with(['estudiante','grado','materia','periodoAcademico']);
+
+        if ($request->filled('grado_id')) {
+            $query->where('grado_id', $request->grado_id);
+        }
+        if ($request->filled('materia_id')) {
+            $query->where('materia_id', $request->materia_id);
+        }
+        if ($request->filled('periodo_id')) {
+            $query->where('periodo_academico_id', $request->periodo_id);
+        }
+
+        $calificaciones = $query->orderBy('created_at','desc')->paginate(10);
+
+        return view('registrarcalificaciones.ver', compact(
+            'calificaciones','gradosFiltro','materiasFiltro','periodosFiltro'
+        ));
     }
+
 }

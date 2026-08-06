@@ -18,6 +18,7 @@ class Grado extends Model
         'numero',
         'seccion',
         'anio_lectivo',
+        'capacidad',
         'activo',
     ];
 
@@ -26,12 +27,12 @@ class Grado extends Model
     ];
 
     // Relación con materias a través de grado_materia
-   public function materias()
-{
-    return $this->belongsToMany(Materia::class, 'grado_materia')
-        ->withPivot('horas_semanales', 'profesor_id')  // ← agregar profesor_id
-        ->withTimestamps();
-}
+    public function materias()
+    {
+        return $this->belongsToMany(Materia::class, 'grado_materia')
+            ->withPivot('horas_semanales', 'profesor_id')  // ← agregar profesor_id
+            ->withTimestamps();
+    }
     // Accesor para nombre completo del grado
     public function getNombreCompletoAttribute()
     {
@@ -61,5 +62,12 @@ class Grado extends Model
     public function profesoresMaterias()
     {
         return $this->hasMany(ProfesorMateriaGrado::class, 'grado_id');
+    }
+
+    public function estudiantes()
+    {
+        return $this->belongsToMany(Estudiante::class, 'matriculas', 'seccion_id', 'estudiante_id')
+            ->withPivot('anio_lectivo', 'estado')
+            ->withTimestamps();
     }
 }

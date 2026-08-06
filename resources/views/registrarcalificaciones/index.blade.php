@@ -4,19 +4,7 @@
 
     @php
         $gradoSeleccionado = request('grado_id');
-    @endphp
-
-
-        $usuario = auth()->user();
-        $rutaDashboard = match($usuario->rol->nombre ?? '') {
-            'Administrador' => route('admin.dashboard'),
-            'Super Administrador' => route('superadmin.dashboard'),
-            'Profesor' => route('profesor.dashboard'),
-            'Estudiante' => route('estudiante.dashboard'),
-            'Padre' => route('padre.dashboard'),
-            default => route('home'),
-        };
-    @endphp
+        @endphp
 
     <div style="display:flex; gap:10px;">
 
@@ -26,13 +14,6 @@
        color:white;border:none;border-radius:8px;font-weight:600;">
             <i class="fas fa-eye me-1"></i>
             Ver Calificaciones
-        </a>
-
-        <a href="{{ $rutaDashboard }}"
-           class="btn"
-           style="border:2px solid #00508f;color:#00508f;border-radius:8px;font-weight:600;">
-            <i class="fas fa-arrow-left me-1"></i>
-            Volver
         </a>
 
     </div>

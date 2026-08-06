@@ -146,30 +146,35 @@
             </div>
             <div class="pe-card-body">
                 <div class="row g-3">
+                    {{-- Nombre (solo lectura) --}}
                     <div class="col-md-6">
                         <label class="pe-label" for="nombre">Nombre <span class="req">*</span></label>
                         <input type="text" id="nombre" name="nombre"
                                class="pe-input @error('nombre') is-invalid @enderror"
-                               value="{{ old('nombre', $padre->nombre) }}" required>
+                               value="{{ old('nombre', $padre->nombre) }}" disabled>
                         @error('nombre')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Apellido (solo lectura) --}}
                     <div class="col-md-6">
                         <label class="pe-label" for="apellido">Apellido <span class="req">*</span></label>
                         <input type="text" id="apellido" name="apellido"
                                class="pe-input @error('apellido') is-invalid @enderror"
-                               value="{{ old('apellido', $padre->apellido) }}" required>
+                               value="{{ old('apellido', $padre->apellido) }}" disabled>
                         @error('apellido')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- DNI (solo lectura) --}}
                     <div class="col-md-4">
                         <label class="pe-label" for="dni">DNI / Identidad</label>
                         <input type="text" id="dni" name="dni"
                                class="pe-input @error('dni') is-invalid @enderror"
-                               value="{{ old('dni', $padre->dni) }}" maxlength="20">
+                               value="{{ old('dni', $padre->dni) }}"
+                               placeholder="0801199012345" disabled>
                         @error('dni')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Parentesco --}}
                     <div class="col-md-4">
                         <label class="pe-label" for="parentesco">Parentesco <span class="req">*</span></label>
                         <select id="parentesco" name="parentesco"
@@ -182,6 +187,7 @@
                         @error('parentesco')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Estado --}}
                     <div class="col-md-4">
                         <label class="pe-label" for="estado">Estado <span class="req">*</span></label>
                         <select id="estado" name="estado"
@@ -192,12 +198,14 @@
                         @error('estado')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Otro Parentesco --}}
                     <div class="col-md-12" id="otro-parentesco-div"
                          style="display:{{ old('parentesco', $padre->parentesco) == 'otro' ? 'block' : 'none' }};">
                         <label class="pe-label" for="parentesco_otro">Especifique el Parentesco</label>
                         <input type="text" id="parentesco_otro" name="parentesco_otro"
                                class="pe-input @error('parentesco_otro') is-invalid @enderror"
-                               value="{{ old('parentesco_otro', $padre->parentesco_otro) }}" maxlength="50">
+                               value="{{ old('parentesco_otro', $padre->parentesco_otro) }}" maxlength="50"
+                               onkeypress="return /[a-zA-Z\s]/.test(event.key)">
                         @error('parentesco_otro')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
                 </div>
@@ -211,41 +219,98 @@
             </div>
             <div class="pe-card-body">
                 <div class="row g-3">
+                    {{-- Correo Electrónico --}}
                     <div class="col-md-6">
                         <label class="pe-label" for="correo">Correo Electrónico</label>
                         <input type="email" id="correo" name="correo"
                                class="pe-input @error('correo') is-invalid @enderror"
-                               value="{{ old('correo', $padre->correo) }}">
+                               value="{{ old('correo', $padre->correo) }}"
+                               placeholder="ejemplo123@gmail.com" maxlength="100">
+                        <small id="correoError" style="color:red; display:none;">
+                            Este no es un correo válido. Ejemplo: ejemplo123@gmail.com
+                        </small>
                         @error('correo')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Teléfono Principal --}}
                     <div class="col-md-3">
                         <label class="pe-label" for="telefono">Teléfono Principal</label>
                         <input type="text" id="telefono" name="telefono"
                                class="pe-input @error('telefono') is-invalid @enderror"
-                               value="{{ old('telefono', $padre->telefono) }}" maxlength="15">
+                               value="{{ old('telefono', $padre->telefono) }}"
+                               placeholder="99999999" maxlength="8" minlength="8"
+                               onkeypress="return /[0-9]/.test(event.key)">
+                        <small id="telefonoError" style="color:red; display:none;">
+                            El teléfono debe contener exactamente 8 dígitos.
+                        </small>
                         @error('telefono')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Teléfono Secundario --}}
                     <div class="col-md-3">
                         <label class="pe-label" for="telefono_secundario">Teléfono Secundario</label>
                         <input type="text" id="telefono_secundario" name="telefono_secundario"
                                class="pe-input @error('telefono_secundario') is-invalid @enderror"
-                               value="{{ old('telefono_secundario', $padre->telefono_secundario) }}" maxlength="15">
+                               value="{{ old('telefono_secundario', $padre->telefono_secundario) }}"
+                               placeholder="99999999" maxlength="8" minlength="8"
+                               onkeypress="return /[0-9]/.test(event.key)">
+                        <small id="telefonoSecError" style="color:red; display:none;">
+                            El teléfono debe contener exactamente 8 dígitos.
+                        </small>
                         @error('telefono_secundario')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
 
+                    {{-- Dirección --}}
                     <div class="col-12">
                         <label class="pe-label" for="direccion">Dirección</label>
                         <textarea id="direccion" name="direccion" rows="2"
-                                  class="pe-textarea @error('direccion') is-invalid @enderror">{{ old('direccion', $padre->direccion) }}</textarea>
+                                  class="pe-textarea @error('direccion') is-invalid @enderror"
+                                  maxlength="255">{{ old('direccion', $padre->direccion) }}</textarea>
                         @error('direccion')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Información Laboral --}}
+        <script>
+            // Validación en vivo para correo
+            document.getElementById('correo').addEventListener('input', function() {
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                const errorMsg = document.getElementById('correoError');
+                if (this.value.length > 0 && !regex.test(this.value)) {
+                    this.style.borderColor = "red";
+                    errorMsg.style.display = "block";
+                } else {
+                    this.style.borderColor = "";
+                    errorMsg.style.display = "none";
+                }
+            });
+
+            // Validación en vivo para Teléfono Principal
+            document.getElementById('telefono').addEventListener('input', function() {
+                const errorMsg = document.getElementById('telefonoError');
+                if (this.value.length > 0 && this.value.length !== 8) {
+                    this.style.borderColor = "red";
+                    errorMsg.style.display = "block";
+                } else {
+                    this.style.borderColor = "";
+                    errorMsg.style.display = "none";
+                }
+            });
+
+            // Validación en vivo para Teléfono Secundario
+            document.getElementById('telefono_secundario').addEventListener('input', function() {
+                const errorMsg = document.getElementById('telefonoSecError');
+                if (this.value.length > 0 && this.value.length !== 8) {
+                    this.style.borderColor = "red";
+                    errorMsg.style.display = "block";
+                } else {
+                    this.style.borderColor = "";
+                    errorMsg.style.display = "none";
+                }
+            });
+        </script>
+{{-- Información Laboral --}}
         <div class="pe-card">
             <div class="pe-card-head">
                 <h5><i class="fas fa-briefcase"></i> Información Laboral</h5>
